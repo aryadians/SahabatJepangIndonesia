@@ -1,6 +1,6 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import RegistrationForm from "@/components/home/RegistrationForm";
+import RegistrationWizard from "@/components/home/RegistrationWizard";
 import { useTranslations } from "next-intl";
 
 export default function RegistrationPage() {
@@ -11,12 +11,12 @@ export default function RegistrationPage() {
       <Header />
       
       <div className="pt-32 pb-20 px-4">
-        <div className="container mx-auto text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-[var(--sji-blue)] mb-4">{t('title')}</h1>
-          <p className="text-gray-500 max-w-2xl mx-auto">{t('subtitle')}</p>
+        <div className="container mx-auto text-center mb-16">
+          <h1 className="text-4xl md:text-6xl font-black text-[var(--sji-blue)] mb-4">{t('title')}</h1>
+          <p className="text-gray-500 max-w-2xl mx-auto text-lg">{t('subtitle')}</p>
         </div>
 
-        <RegistrationForm />
+        <RegistrationWizard />
       </div>
 
       <Footer />

@@ -14,6 +14,8 @@ import {
   ShieldCheck
 } from "lucide-react";
 
+import FileUpload from "@/components/shared/FileUpload";
+
 export default function StudentPortalPage() {
   const steps = [
     { name: "Pendaftaran", status: "completed", date: "15 Jan 2026" },
@@ -92,6 +94,17 @@ export default function StudentPortalPage() {
                       )}
                     </motion.div>
                   ))}
+                </div>
+              </div>
+
+              {/* Real Upload Section */}
+              <div className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-slate-100">
+                <h3 className="text-2xl font-bold text-slate-900 mb-8 flex items-center gap-3">
+                  <FileText className="text-[var(--sji-blue)]" /> Upload Berkas
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <FileUpload label="KTP / Kartu Identitas" onUpload={(url) => console.log(url)} />
+                  <FileUpload label="Passport (Opsional)" onUpload={(url) => console.log(url)} />
                 </div>
               </div>
             </div>

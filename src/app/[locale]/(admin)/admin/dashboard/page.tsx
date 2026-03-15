@@ -1,3 +1,5 @@
+import DashboardAnalytics from "@/components/admin/DashboardAnalytics";
+
 export default function DashboardPage() {
   const stats = [
     { label: 'Total Siswa', value: '2,543', change: '+12%', color: 'blue' },
@@ -24,6 +26,8 @@ export default function DashboardPage() {
           </div>
         ))}
       </div>
+
+      <DashboardAnalytics />
 
       {/* Main Content Area */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

@@ -7,15 +7,11 @@ import {notFound} from 'next/navigation';
 import {routing} from '@/i18n/routing';
 import { NextAuthProvider } from "@/components/providers/NextAuthProvider";
 
+import { constructMetadata } from "@/lib/metadata";
+
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: {
-    template: '%s | Sahabat Jp Indonesia',
-    default: 'Sahabat Jepang Indonesia - LPK Terpercaya ke Jepang'
-  },
-  description: "Lembaga Pelatihan Kerja (LPK) Sahabat Jepang Indonesia. Membantu Anda meraih impian bekerja di Jepang.",
-};
+export const metadata = constructMetadata();
 
 export default async function RootLayout({
   children,
