@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, phone, program, address } = body;
+    const { name, email, phone, program, address, education, birthDate } = body;
 
     if (!name || !email || !phone || !program) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -21,7 +21,6 @@ export async function POST(req: Request) {
     }
 
     // Create User & Student in a transaction
-    // Default password for new registrations is 'SJI123' (student should change it later)
     const hashedPassword = await bcrypt.hash("SJI123", 10);
 
     const result = await prisma.$transaction(async (tx) => {
@@ -45,6 +44,8 @@ export async function POST(req: Request) {
           studentId: `SJI-${Math.floor(1000 + Math.random() * 9000)}`,
           phone,
           address,
+          education,
+          birthDate: birthDate ? new Date(birthDate) : null,
           programId: programData?.id,
           status: "REGISTRATION",
         },

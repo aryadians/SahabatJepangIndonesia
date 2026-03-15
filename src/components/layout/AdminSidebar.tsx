@@ -21,6 +21,7 @@ export default function AdminSidebar() {
   const menuItems = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: <LayoutDashboard size={20} /> },
     { name: 'Data Siswa', path: '/admin/students', icon: <Users size={20} /> },
+    { name: 'Verifikasi Berkas', path: '/admin/documents', icon: <ShieldCheck size={20} /> },
     { name: 'Data Pengajar', path: '/admin/teachers', icon: <GraduationCap size={20} /> },
     { name: 'Program & Kelas', path: '/admin/programs', icon: <FileText size={20} /> },
     { name: 'Tagihan Biaya', path: '/admin/billing', icon: <CreditCard size={20} /> },

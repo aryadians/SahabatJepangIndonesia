@@ -47,6 +47,7 @@ model Student {
   
   phone           String?
   address         String?
+  education       String? // SMA/SMK, Diploma, Sarjana
   birthDate       DateTime?
   gender          String?
   

@@ -39,6 +39,7 @@ export function constructMetadata({
       creator: "@sjiofficial",
     },
     icons,
+    manifest: "/manifest.json",
     metadataBase: new URL(siteConfig.url),
     ...(noIndex && {
       robots: {
