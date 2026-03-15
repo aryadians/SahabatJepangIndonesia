@@ -22,44 +22,30 @@ const authMiddleware = withAuth(
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // 1. ABSOLUTELY SKIP middleware for API, static files, and internal paths
+  // CRITICAL: Bypass everything for API, Static, and System
   if (
-    pathname.startsWith('/api/') || 
-    pathname.startsWith('/_next/') ||
-    pathname.includes('.') ||
-    pathname === '/favicon.ico' ||
-    pathname === '/manifest.json'
+    pathname.startsWith('/api') || 
+    pathname.startsWith('/_next') || 
+    pathname.includes('.')
   ) {
     return NextResponse.next();
   }
 
-  // 2. Define which pages are public (accessible without login)
   const publicPathnameRegex = RegExp(
     `^(/(${routing.locales.join('|')}))?(/auth/signin|/registration|/about|/programs|/classes|/news|/contact|/faq)?$`,
     'i'
   );
   
-  const isPublicPage = publicPathnameRegex.test(pathname) || pathname === '/';
+  const isPublicPage = publicPathnameRegex.test(pathname) || pathname === '/' || pathname === '/id' || pathname === '/ja' || pathname === '/en';
 
-  // 3. Handle public vs protected routing
   if (isPublicPage) {
     return intlMiddleware(req);
   } else {
-    // PROTECTED ROUTES (Admin, Student Portal, Teacher Portal)
     return (authMiddleware as any)(req);
   }
 }
 
 export const config = {
-  // Matcher ignoring all internal and static paths
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, manifest.json (static files)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico|manifest.json|.*\\..*).*)'
-  ]
+  // Broad matcher, but we filter inside the function
+  matcher: ['/((?!_next|api|favicon.ico).*)']
 };

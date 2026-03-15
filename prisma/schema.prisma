@@ -191,6 +191,14 @@ model Announcement {
   createdAt   DateTime @default(now())
 }
 
+model SiteContent {
+  id        String   @id @default(cuid())
+  key       String   @unique // e.g., 'hero_title', 'contact_phone'
+  value     String
+  type      String   @default("TEXT") // TEXT, IMAGE, JSON
+  updatedAt DateTime @updatedAt
+}
+
 model Certificate {
   id          String   @id @default(cuid())
   studentId   String

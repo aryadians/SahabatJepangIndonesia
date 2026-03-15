@@ -2,8 +2,9 @@
 
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { ChevronRight, PlayCircle } from 'lucide-react';
+import { ChevronRight, PlayCircle, ShieldCheck, Zap } from 'lucide-react';
 import { Link } from '@/i18n/routing';
+import Image from 'next/image';
 
 export default function Hero() {
   const t = useTranslations('HomePage');
@@ -83,11 +84,14 @@ export default function Hero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
-              className="pt-12 flex items-center justify-center lg:justify-start gap-8 opacity-40 grayscale"
+              className="pt-12 flex flex-wrap items-center justify-center lg:justify-start gap-8 opacity-60"
             >
-              <div className="h-8 w-24 bg-slate-200 rounded-lg"></div>
-              <div className="h-8 w-24 bg-slate-200 rounded-lg"></div>
-              <div className="h-8 w-24 bg-slate-200 rounded-lg"></div>
+              <div className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest">
+                <ShieldCheck size={16} className="text-green-500" /> Resmi Kemnaker
+              </div>
+              <div className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest">
+                <Zap size={16} className="text-yellow-500" /> Proses Cepat
+              </div>
             </motion.div>
           </div>
 
@@ -99,11 +103,13 @@ export default function Hero() {
               className="relative z-10"
             >
               <div className="w-full aspect-square max-w-xl mx-auto bg-slate-100 rounded-[4rem] relative overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] border-[12px] border-white group">
-                {/* Decorative overlay */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-[var(--sji-blue)]/10 to-transparent"></div>
-                <div className="absolute inset-0 flex items-center justify-center text-slate-300 font-black text-2xl p-20 text-center">
-                  [ MODERN HERO ILLUSTRATION / 3D MODEL ]
-                </div>
+                <Image 
+                  src="https://images.unsplash.com/photo-1526481280693-3bfa7561693f?auto=format&fit=crop&q=80&w=1000" 
+                  alt="Japan Career"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-1000"
+                />
+                <div className="absolute inset-0 bg-gradient-to-tr from-[var(--sji-blue)]/40 to-transparent"></div>
                 
                 {/* Dynamic cards */}
                 <motion.div
