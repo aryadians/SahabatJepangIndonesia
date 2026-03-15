@@ -13,5 +13,19 @@
     "hero_description": "Kami membantu Anda meraih impian bekerja di Jepang dengan pelatihan bahasa dan budaya yang intensif.",
     "cta_join": "Gabung Sekarang",
     "cta_learn_more": "Pelajari Lebih Lanjut"
+  },
+  "Programs": {
+    "title": "Program Unggulan Kami",
+    "ssw": "SSW (Tokutei Ginou)",
+    "ssw_desc": "Bekerja di Jepang dengan keahlian khusus di berbagai bidang.",
+    "magang": "Magang (Ginou Jisshuusei)",
+    "magang_desc": "Program pelatihan kerja sambil belajar budaya kerja di Jepang.",
+    "kursus": "Kursus Bahasa Jepang",
+    "kursus_desc": "Persiapan ujian JLPT & JF-Test dari level dasar hingga mahir."
+  },
+  "Classes": {
+    "title": "Daftar Kelas & Biaya",
+    "price_start": "Mulai dari",
+    "join": "Daftar Sekarang"
   }
 }
