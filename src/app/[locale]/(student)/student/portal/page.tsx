@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import FileUpload from "@/components/shared/FileUpload";
+import AnnouncementBanner from "@/components/shared/AnnouncementBanner";
 
 export default function StudentPortalPage() {
   const steps = [

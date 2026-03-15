@@ -14,6 +14,8 @@ import {
   Loader2
 } from 'lucide-react';
 
+import { exportToExcel } from '@/lib/ExcelExport';
+
 export default function StudentsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [students, setStudents] = useState<any[]>([]);
@@ -22,6 +24,18 @@ export default function StudentsPage() {
   useEffect(() => {
     fetchStudents();
   }, []);
+
+  const handleExport = () => {
+    const exportData = students.map(s => ({
+      'ID Siswa': s.studentId,
+      'Nama': s.user.name,
+      'Email': s.user.email,
+      'Program': s.program?.name || '-',
+      'Status': s.status,
+      'Tanggal Daftar': new Date(s.createdAt).toLocaleDateString()
+    }));
+    exportToExcel(exportData, 'Data_Siswa_SJI');
+  };
 
   const fetchStudents = async () => {
     try {
@@ -55,7 +69,10 @@ export default function StudentsPage() {
           <p className="text-slate-500 text-sm">Kelola data ribuan siswa LPK Sahabat Jepang Indonesia</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all text-sm shadow-sm">
+          <button 
+            onClick={handleExport}
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all text-sm shadow-sm"
+          >
             <Download size={18} /> Export
           </button>
           <button className="flex items-center gap-2 px-6 py-2.5 bg-[var(--sji-blue)] text-white font-bold rounded-xl hover:bg-blue-700 transition-all text-sm shadow-lg shadow-blue-900/20">
