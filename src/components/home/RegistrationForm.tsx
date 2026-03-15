@@ -3,25 +3,50 @@
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { showSuccess } from '@/lib/swal';
+import { showSuccess, showError } from '@/lib/swal';
 import { useRouter } from '@/i18n/routing';
 
 export default function RegistrationForm() {
   const t = useTranslations('Registration');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    program: 'Tokutei Ginou (SSW)',
+    address: ''
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
-    // Simulate API Call
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Terjadi kesalahan");
+      }
+
       showSuccess(t('success_title'), t('success_msg')).then(() => {
         router.push('/');
       });
-    }, 1500);
+    } catch (error: any) {
+      showError("Gagal Mendaftar", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   return (
@@ -61,6 +86,9 @@ export default function RegistrationForm() {
               <input
                 required
                 type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[var(--sji-blue)] focus:border-transparent outline-none transition-all text-gray-700"
                 placeholder="Contoh: Ahmad Fauzi"
               />
@@ -72,6 +100,9 @@ export default function RegistrationForm() {
                 <input
                   required
                   type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[var(--sji-blue)] focus:border-transparent outline-none transition-all text-gray-700"
                   placeholder="ahmad@example.com"
                 />
@@ -81,6 +112,9 @@ export default function RegistrationForm() {
                 <input
                   required
                   type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[var(--sji-blue)] focus:border-transparent outline-none transition-all text-gray-700"
                   placeholder="081234567xxx"
                 />
@@ -89,7 +123,12 @@ export default function RegistrationForm() {
 
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-2">{t('program_interest')}</label>
-              <select className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[var(--sji-blue)] focus:border-transparent outline-none transition-all text-gray-700 bg-white">
+              <select 
+                name="program"
+                value={formData.program}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[var(--sji-blue)] focus:border-transparent outline-none transition-all text-gray-700 bg-white"
+              >
                 <option>Tokutei Ginou (SSW)</option>
                 <option>Magang Jepang</option>
                 <option>Kursus Bahasa Jepang</option>
@@ -99,6 +138,9 @@ export default function RegistrationForm() {
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-2">{t('address')}</label>
               <textarea
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
                 rows={3}
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[var(--sji-blue)] focus:border-transparent outline-none transition-all text-gray-700 resize-none"
                 placeholder="Jl. Raya Utama No. 123, Sidoarjo..."
