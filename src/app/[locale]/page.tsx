@@ -4,6 +4,7 @@ import Stats from "@/components/home/Stats";
 import Programs from "@/components/home/Programs";
 import RegistrationForm from "@/components/home/RegistrationForm";
 import Footer from "@/components/layout/Footer";
+import { Link } from "@/i18n/routing";
 
 export default function HomePage() {
   return (
@@ -11,6 +12,37 @@ export default function HomePage() {
       <Header />
       <Hero />
       <Stats />
+
+      {/* About Summary Section */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col lg:flex-row items-center gap-16">
+            <div className="lg:w-1/2">
+              <div className="relative">
+                <div className="w-full aspect-video bg-gray-100 rounded-[3rem] shadow-2xl border-8 border-white overflow-hidden flex items-center justify-center text-gray-400 font-bold">
+                  [ Video Profile / SJI Building Image ]
+                </div>
+                <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-[var(--sji-red)] rounded-[2rem] flex items-center justify-center text-white font-black text-3xl shadow-xl">
+                  10+
+                </div>
+              </div>
+            </div>
+            <div className="lg:w-1/2 space-y-6">
+              <span className="text-[var(--sji-red)] font-bold tracking-widest uppercase text-sm">Tentang Sahabat Jepang Indonesia</span>
+              <h2 className="text-4xl lg:text-5xl font-black text-[var(--sji-blue)] leading-tight">Mencetak SDM Indonesia yang Unggul & Berintegritas</h2>
+              <p className="text-gray-600 leading-relaxed text-lg">
+                Sejak berdiri, SJI telah berkomitmen untuk menjadi jembatan bagi putra-putri terbaik bangsa untuk meraih impian mereka berkarir secara profesional di Negeri Sakura. Kami tidak hanya mengajarkan bahasa, tapi juga mentalitas dan etos kerja Jepang.
+              </p>
+              <div className="pt-4">
+                <Link href="/about" className="inline-flex items-center gap-2 text-[var(--sji-blue)] font-bold text-lg hover:gap-4 transition-all">
+                  Selengkapnya tentang kami <span>→</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <Programs />
       
       {/* Registration Section on Home */}
