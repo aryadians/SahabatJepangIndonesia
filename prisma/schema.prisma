@@ -191,6 +191,25 @@ model Announcement {
   createdAt   DateTime @default(now())
 }
 
+model FAQ {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model TrainingClass {
+  id          String   @id @default(cuid())
+  title       String
+  category    String   // SSW, Magang, Kursus
+  price       String   
+  duration    String   
+  features    String   // Store as comma-separated or JSON
+  isPopular   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
 model SiteContent {
   id        String   @id @default(cuid())
   key       String   @unique 

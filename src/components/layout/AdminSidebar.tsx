@@ -27,6 +27,7 @@ export default function AdminSidebar() {
     { name: 'Mitra & SO', path: '/admin/partners', icon: <Globe size={20} /> },
     { name: 'Tagihan Biaya', path: '/admin/billing', icon: <CreditCard size={20} /> },
     { name: 'Manajemen Konten', path: '/admin/content', icon: <Type size={20} /> },
+    { name: 'Manajemen FAQ', path: '/admin/faq', icon: <HelpCircle size={20} /> },
     { name: 'Berita & Info', path: '/admin/news', icon: <FileText size={20} /> },
   ];
 

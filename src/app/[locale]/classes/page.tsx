@@ -1,118 +1,111 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
-import { CheckCircle2, Clock, Wallet } from "lucide-react";
+import { CheckCircle2, Clock, Wallet, Loader2 } from "lucide-react";
 import { Link } from "@/i18n/routing";
 
 export default function ClassesPage() {
   const t = useTranslations('Classes');
+  const [classes, setClasses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const classes = [
-    {
-      title: "Tokutei Ginou (SSW) - Kaigo",
-      category: "SSW",
-      price: "Rp 5.500.000",
-      duration: "4 Bulan",
-      features: ["JF-Test A2 / JLPT N4", "Skill Card Kaigo", "Wawancara User", "Bantuan COE"],
-      popular: true
-    },
-    {
-      title: "Magang Jepang (Ginou Jisshuusei)",
-      category: "Magang",
-      price: "Rp 4.500.000",
-      duration: "6 Bulan",
-      features: ["Pelatihan Fisik & Mental", "Bahasa Dasar N5-N4", "Budaya Kerja Jepang", "Asrama & Makan"],
-      popular: false
-    },
-    {
-      title: "Kursus Intensif JLPT N4",
-      category: "Kursus",
-      price: "Rp 2.500.000",
-      duration: "3 Bulan",
-      features: ["Materi JLPT N4", "Simulasi Ujian Mingguan", "Native Speaker Session", "Sertifikat LPK"],
-      popular: false
-    }
-  ];
+  useEffect(() => {
+    fetch('/api/admin/classes')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setClasses(data);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen bg-white">
       <Header />
       
-      <div className="pt-32 pb-20 px-4">
-        <div className="container mx-auto text-center mb-16">
+      <div className="pt-40 pb-24 px-6">
+        <div className="container mx-auto text-center mb-20 space-y-4">
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-extrabold text-[var(--sji-blue)] mb-4"
+            className="text-5xl md:text-7xl font-black text-slate-900 tracking-tight"
           >
             {t('title')}
           </motion.h1>
-          <p className="text-gray-500 max-w-2xl mx-auto">{t('subtitle')}</p>
+          <p className="text-xl text-slate-500 font-medium max-w-2xl mx-auto">{t('subtitle')}</p>
         </div>
 
-        <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-          {classes.map((item, index) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className={`relative bg-white rounded-[2.5rem] p-10 shadow-sm border border-gray-100 flex flex-col ${
-                item.popular ? 'ring-4 ring-[var(--sji-blue)]/10 scale-105 z-10' : ''
-              }`}
-            >
-              {item.popular && (
-                <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[var(--sji-red)] text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg">
-                  Terpopuler
-                </span>
-              )}
-
-              <div className="mb-8">
-                <span className="text-xs font-bold text-[var(--sji-red)] uppercase tracking-widest bg-red-50 px-3 py-1 rounded-full mb-4 inline-block">
-                  {item.category}
-                </span>
-                <h3 className="text-2xl font-bold text-gray-900 leading-tight">{item.title}</h3>
-              </div>
-
-              <div className="space-y-4 mb-8">
-                <div className="flex items-center gap-3 text-gray-600">
-                  <Wallet size={18} className="text-[var(--sji-blue)]" />
-                  <div className="text-sm">
-                    <span className="text-gray-400 block text-xs">{t('price_start')}</span>
-                    <span className="font-bold text-gray-900 text-xl">{item.price}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 text-gray-600">
-                  <Clock size={18} className="text-[var(--sji-blue)]" />
-                  <span className="text-sm font-medium">{item.duration}</span>
-                </div>
-              </div>
-
-              <div className="space-y-3 mb-10 flex-1">
-                {item.features.map((feature) => (
-                  <div key={feature} className="flex items-start gap-3 text-sm text-gray-600">
-                    <CheckCircle2 size={16} className="text-green-500 mt-0.5 shrink-0" />
-                    <span>{feature}</span>
-                  </div>
-                ))}
-              </div>
-
-              <Link
-                href="/registration"
-                className={`w-full py-4 rounded-2xl font-bold text-center transition-all ${
-                  item.popular 
-                    ? 'bg-[var(--sji-blue)] text-white shadow-xl shadow-blue-900/20 hover:bg-blue-700' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+        {loading ? (
+          <div className="p-20 text-center"><Loader2 className="animate-spin mx-auto text-[var(--sji-blue)]" /></div>
+        ) : (
+          <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {classes.map((item, index) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className={`relative bg-white rounded-[3.5rem] p-12 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.05)] border border-slate-50 flex flex-col group hover:shadow-[0_40px_80px_-15px_rgba(0,0,0,0.1)] transition-all duration-500 ${
+                  item.isPopular ? 'ring-4 ring-[var(--sji-blue)]/10 lg:scale-105 z-10 bg-gradient-to-b from-blue-50/20 to-white' : ''
                 }`}
               >
-                {t('join')}
-              </Link>
-            </motion.div>
-          ))}
-        </div>
+                {item.isPopular && (
+                  <span className="absolute top-8 right-8 bg-[var(--sji-red)] text-white text-[10px] font-black px-4 py-1.5 rounded-xl uppercase tracking-[0.2em] shadow-lg shadow-red-500/20">
+                    Popular
+                  </span>
+                )}
+
+                <div className="mb-10">
+                  <span className="text-[10px] font-black text-[var(--sji-red)] uppercase tracking-[0.2em] bg-red-50 px-4 py-1.5 rounded-xl mb-6 inline-block">
+                    {item.category}
+                  </span>
+                  <h3 className="text-3xl font-black text-slate-900 leading-tight group-hover:text-[var(--sji-blue)] transition-colors">{item.title}</h3>
+                </div>
+
+                <div className="space-y-6 mb-10">
+                  <div className="flex items-center gap-4 text-slate-600">
+                    <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-[var(--sji-blue)] shadow-inner">
+                      <Wallet size={20} />
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[10px] font-black uppercase tracking-widest">{t('price_start')}</span>
+                      <span className="font-black text-slate-900 text-2xl tracking-tighter">{item.price}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 text-slate-600">
+                    <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-[var(--sji-red)] shadow-inner">
+                      <Clock size={20} />
+                    </div>
+                    <span className="text-sm font-black uppercase tracking-widest text-slate-700">{item.duration} Pelatihan</span>
+                  </div>
+                </div>
+
+                <div className="space-y-4 mb-12 flex-1">
+                  {item.features.split(',').map((feature: string) => (
+                    <div key={feature} className="flex items-start gap-4 text-slate-500 font-medium">
+                      <CheckCircle2 size={18} className="text-green-500 mt-0.5 shrink-0" />
+                      <span className="text-sm">{feature.trim()}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <Link
+                  href="/registration"
+                  className={`w-full py-5 rounded-[1.5rem] font-black text-center transition-all ${
+                    item.isPopular 
+                      ? 'bg-[var(--sji-blue)] text-white shadow-2xl shadow-blue-900/30 hover:bg-blue-700' 
+                      : 'bg-slate-900 text-white hover:bg-slate-800'
+                  }`}
+                >
+                  {t('join')}
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
 
       <Footer />
