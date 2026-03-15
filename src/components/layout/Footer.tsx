@@ -80,23 +80,59 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact */}
-          <div className="space-y-8">
-            <h4 className="font-black text-lg uppercase tracking-widest text-slate-500">Kontak</h4>
-            <ul className="space-y-6">
+          {/* Contact & Map */}
+          <div className="space-y-8 lg:col-span-1">
+            <h4 className="font-black text-lg uppercase tracking-widest text-slate-500">Kontak & Lokasi</h4>
+            <ul className="space-y-6 mb-8">
               {[
-                { icon: <MapPin className="text-[var(--sji-red)]" size={20} />, text: 'Perum Putri Juanda Blok C3/05, Sidoarjo, Jawa Timur' },
-                { icon: <Phone className="text-[var(--sji-red)]" size={20} />, text: '+62 813-3327-0022' },
-                { icon: <Mail className="text-[var(--sji-red)]" size={20} />, text: 'official@sjigroup.co.id' },
+                { 
+                  icon: <MapPin className="text-[var(--sji-red)]" size={20} />, 
+                  text: 'Jl. Kav. Bumi Sedati No.16 Blok C2, Pepe, Kec. Sedati, Sidoarjo 61253',
+                  href: 'https://maps.app.goo.gl/T3fkcdrx35ypHn9GA'
+                },
+                { icon: <Phone className="text-[var(--sji-red)]" size={20} />, text: '+62 813-3327-0022', href: 'https://wa.me/6281333270022' },
+                { icon: <Mail className="text-[var(--sji-red)]" size={20} />, text: 'official@sjigroup.co.id', href: 'mailto:official@sjigroup.co.id' },
               ].map((item, i) => (
-                <li key={i} className="flex gap-4 group cursor-default">
-                  <div className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-slate-700 transition-colors">
-                    {item.icon}
-                  </div>
-                  <span className="text-slate-400 text-sm font-bold leading-relaxed">{item.text}</span>
+                <li key={i}>
+                  <a 
+                    href={item.href} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex gap-4 group hover:bg-slate-800/50 p-2 -m-2 rounded-xl transition-all"
+                  >
+                    <div className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-[var(--sji-blue)] transition-colors">
+                      {item.icon}
+                    </div>
+                    <span className="text-slate-400 text-sm font-bold leading-relaxed group-hover:text-white transition-colors">{item.text}</span>
+                  </a>
                 </li>
               ))}
             </ul>
+            
+            {/* Map Embed */}
+            <div className="space-y-4">
+              <div className="w-full h-40 rounded-2xl overflow-hidden border-2 border-slate-800 group relative">
+                <iframe 
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3956.844144123141!2d112.768424!3d-7.371389!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd7e50000000001%3A0x0!2zN8KwMjInMTcuMCJTIDExMsKwNDYnMDYuMyJF!5e0!3m2!1sid!2sid!4v1710500000000!5m2!1sid!2sid" 
+                  width="100%" 
+                  height="100%" 
+                  style={{ border: 0 }} 
+                  allowFullScreen 
+                  loading="lazy"
+                ></iframe>
+                <a 
+                  href="https://maps.app.goo.gl/T3fkcdrx35ypHn9GA" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity backdrop-blur-sm"
+                >
+                  <span className="bg-white text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase flex items-center gap-2">
+                    <ExternalLink size={14} /> Petunjuk Arah
+                  </span>
+                </a>
+              </div>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest text-center">JQ28+F4 Pepe, Kabupaten Sidoarjo</p>
+            </div>
           </div>
         </div>
 

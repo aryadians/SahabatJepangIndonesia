@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "ts-node -T src/scripts/seed.ts"
+    "seed": "node src/scripts/seed.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

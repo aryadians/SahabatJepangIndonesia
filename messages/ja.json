@@ -5,7 +5,8 @@
     "programs": "プログラム",
     "classes": "クラス一覧",
     "news": "ニュース",
-    "contact": "お問い合わせ"
+    "contact": "お問い合わせ",
+    "faq": "よくある質問"
   },
   "HomePage": {
     "title": "サハバット・ジュパン・インドネシア",
@@ -13,5 +14,48 @@
     "hero_description": "私たちは、集中的な日本語と文化のトレーニングを通じて、日本で働くというあなたの夢を叶えるお手伝いをします。",
     "cta_join": "今すぐ参加",
     "cta_learn_more": "もっと詳しく"
+  },
+  "Programs": {
+    "title": "私たちの主なプログラム",
+    "ssw": "SSW (特定技能)",
+    "ssw_desc": "様々な分野の専門知識を活かして日本で働く。",
+    "magang": "技能実習生",
+    "magang_desc": "日本の労働文化を学びながらの実務研修プログラム。",
+    "kursus": "日本語コース",
+    "kursus_desc": "初級から上級までのJLPTおよびJF-Test対策。"
+  },
+  "Classes": {
+    "title": "クラス一覧と費用",
+    "subtitle": "あなたの興味やキャリアの目標に合ったトレーニングプログラムをお選びください。",
+    "price_start": "から",
+    "join": "今すぐ申し込む"
+  },
+  "Registration": {
+    "title": "オンライン登録",
+    "subtitle": "日本への第一歩を踏み出すために、以下のフォームに記入してください。",
+    "personal_data": "個人データ",
+    "full_name": "氏名",
+    "email": "メールアドレス",
+    "phone": "WhatsApp番号",
+    "address": "住所",
+    "program_interest": "希望するプログラム",
+    "submit": "登録を送信する",
+    "success_title": "登録完了！",
+    "success_msg": "ご登録ありがとうございます。担当者よりWhatsAppにてご連絡いたします。"
+  },
+  "About": {
+    "title": "SJIについて",
+    "vision": "私たちのビジョン",
+    "mission": "私たちのミッション",
+    "description": "サハバット・ジュパン・インドネシア (SJI) は、日本でプロフェッショナルとして働くための人材育成に重点を置いたLPKです。"
+  },
+  "News": {
+    "title": "ニュースと発表",
+    "subtitle": "SJIの求人情報や活動に関する最新情報をお届けします。",
+    "read_more": "詳しく読む"
+  },
+  "FAQ": {
+    "title": "よくある質問",
+    "subtitle": "受験生からよく寄せられる質問の回答を掲載しています。"
   }
 }

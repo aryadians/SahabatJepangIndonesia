@@ -3,15 +3,59 @@
     "home": "Home",
     "about": "About Us",
     "programs": "Programs",
-    "classes": "Class List",
+    "classes": "Classes",
     "news": "News",
-    "contact": "Contact Us"
+    "contact": "Contact",
+    "faq": "FAQ"
   },
   "HomePage": {
     "title": "Sahabat Jepang Indonesia",
-    "subtitle": "Trusted Job Training Center (LPK) to Japan",
-    "hero_description": "We help you achieve your dreams of working in Japan through intensive Japanese language and culture training.",
+    "subtitle": "Trusted Training Center (LPK) to Japan",
+    "hero_description": "We help you achieve your dream of working in Japan through intensive language and cultural training.",
     "cta_join": "Join Now",
     "cta_learn_more": "Learn More"
+  },
+  "Programs": {
+    "title": "Our Featured Programs",
+    "ssw": "SSW (Tokutei Ginou)",
+    "ssw_desc": "Work in Japan with specific expertise in various fields.",
+    "magang": "Internship (Ginou Jisshuusei)",
+    "magang_desc": "Work training program while learning Japanese work culture.",
+    "kursus": "Japanese Language Course",
+    "kursus_desc": "JLPT & JF-Test preparation from basic to advanced levels."
+  },
+  "Classes": {
+    "title": "Class List & Costs",
+    "subtitle": "Choose the training program that fits your interests and career goals.",
+    "price_start": "Starting from",
+    "join": "Register Now"
+  },
+  "Registration": {
+    "title": "Online Registration",
+    "subtitle": "Complete the form below to start your first step to Japan.",
+    "personal_data": "Personal Data",
+    "full_name": "Full Name",
+    "email": "Active Email",
+    "phone": "WhatsApp Number",
+    "address": "Full Address",
+    "program_interest": "Program of Interest",
+    "submit": "Submit Registration",
+    "success_title": "Registration Successful!",
+    "success_msg": "Thank you for registering. Our team will contact you shortly via WhatsApp."
+  },
+  "About": {
+    "title": "About SJI",
+    "vision": "Our Vision",
+    "mission": "Our Mission",
+    "description": "Sahabat Jepang Indonesia (SJI) is a training center focused on human resource development for professional work in Japan."
+  },
+  "News": {
+    "title": "News & Announcements",
+    "subtitle": "Follow the latest developments regarding job info and activities at SJI.",
+    "read_more": "Read More"
+  },
+  "FAQ": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find answers to questions often asked by prospective students."
   }
 }

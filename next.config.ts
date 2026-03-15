@@ -1,3 +1,7 @@
+import type { NextConfig } from "next";
+const createNextIntlPlugin = require('next-intl/plugin');
+
+const withNextIntl = createNextIntlPlugin();
 const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
@@ -5,9 +9,8 @@ const withPWA = require('next-pwa')({
   disable: process.env.NODE_ENV === 'development'
 });
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  // Your other config options
+const nextConfig: NextConfig = {
+  turbopack: {}
 };
 
-module.exports = withPWA(nextConfig);
+module.exports = withPWA(withNextIntl(nextConfig));
