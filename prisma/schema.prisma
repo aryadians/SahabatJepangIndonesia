@@ -193,10 +193,18 @@ model Announcement {
 
 model SiteContent {
   id        String   @id @default(cuid())
-  key       String   @unique // e.g., 'hero_title', 'contact_phone'
+  key       String   @unique 
   value     String
-  type      String   @default("TEXT") // TEXT, IMAGE, JSON
+  type      String   @default("TEXT") 
   updatedAt DateTime @updatedAt
+}
+
+model Partner {
+  id        String   @id @default(cuid())
+  name      String
+  logoUrl   String
+  type      String   @default("MITRA") // MITRA or SO
+  createdAt DateTime @default(now())
 }
 
 model Certificate {

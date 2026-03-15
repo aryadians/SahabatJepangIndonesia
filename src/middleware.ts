@@ -6,9 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 const intlMiddleware = createMiddleware(routing);
 
 const authMiddleware = withAuth(
-  function onSuccess(req) {
-    return intlMiddleware(req);
-  },
+  (req) => intlMiddleware(req),
   {
     callbacks: {
       authorized: ({ token }) => !!token,
@@ -22,7 +20,7 @@ const authMiddleware = withAuth(
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // CRITICAL: Bypass everything for API, Static, and System
+  // 1. Bypass ALL API routes and static assets immediately
   if (
     pathname.startsWith('/api') || 
     pathname.startsWith('/_next') || 
@@ -31,21 +29,26 @@ export default function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // 2. Define public routes
+  const publicPages = ['/', '/auth/signin', '/registration', '/about', '/programs', '/classes', '/news', '/faq', '/contact'];
+  
+  // Regex to check if the path is a public page (with or without locale)
   const publicPathnameRegex = RegExp(
     `^(/(${routing.locales.join('|')}))?(/auth/signin|/registration|/about|/programs|/classes|/news|/contact|/faq)?$`,
     'i'
   );
   
-  const isPublicPage = publicPathnameRegex.test(pathname) || pathname === '/' || pathname === '/id' || pathname === '/ja' || pathname === '/en';
+  const isPublicPage = publicPathnameRegex.test(pathname) || pathname === '/';
 
   if (isPublicPage) {
     return intlMiddleware(req);
-  } else {
-    return (authMiddleware as any)(req);
   }
+
+  // 3. Protected routes (Admin & Portals)
+  return (authMiddleware as any)(req);
 }
 
 export const config = {
-  // Broad matcher, but we filter inside the function
-  matcher: ['/((?!_next|api|favicon.ico).*)']
+  // Ensure the middleware is NOT triggered for API and static files
+  matcher: ['/((?!api|_next|.*\\..*).*)']
 };

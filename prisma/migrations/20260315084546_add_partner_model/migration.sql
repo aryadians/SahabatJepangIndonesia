@@ -1,0 +1,8 @@
+-- CreateTable
+CREATE TABLE "Partner" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "logoUrl" TEXT NOT NULL,
+    "type" TEXT NOT NULL DEFAULT 'MITRA',
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

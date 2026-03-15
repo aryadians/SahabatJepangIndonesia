@@ -24,6 +24,7 @@ export default function AdminSidebar() {
     { name: 'Verifikasi Berkas', path: '/admin/documents', icon: <ShieldCheck size={20} /> },
     { name: 'Data Pengajar', path: '/admin/teachers', icon: <GraduationCap size={20} /> },
     { name: 'Program & Kelas', path: '/admin/programs', icon: <FileText size={20} /> },
+    { name: 'Mitra & SO', path: '/admin/partners', icon: <Globe size={20} /> },
     { name: 'Tagihan Biaya', path: '/admin/billing', icon: <CreditCard size={20} /> },
     { name: 'Manajemen Konten', path: '/admin/content', icon: <Type size={20} /> },
     { name: 'Berita & Info', path: '/admin/news', icon: <FileText size={20} /> },

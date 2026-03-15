@@ -10,7 +10,15 @@ const withPWA = require('next-pwa')({
 });
 
 const nextConfig: NextConfig = {
-  turbopack: {}
+  turbopack: {},
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
+  },
 };
 
 module.exports = withPWA(withNextIntl(nextConfig));

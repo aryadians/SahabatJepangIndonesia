@@ -1,3 +1,6 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Header from "@/components/layout/Header";
 import Hero from "@/components/home/Hero";
 import Stats from "@/components/home/Stats";
@@ -6,8 +9,19 @@ import RegistrationWizard from "@/components/home/RegistrationWizard";
 import Footer from "@/components/layout/Footer";
 import { Link } from "@/i18n/routing";
 import { Star, Quote, ArrowRight, ShieldCheck, Zap } from "lucide-react";
+import Image from 'next/image';
 
 export default function HomePage() {
+  const [partners, setPartners] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/partners')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setPartners(data);
+      });
+  }, []);
+
   const testimonials = [
     {
       name: "Ahmad Fauzi",
@@ -42,7 +56,7 @@ export default function HomePage() {
             <div className="lg:w-1/2 relative group">
               <div className="relative z-10">
                 <div className="w-full aspect-[4/3] bg-slate-100 rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.1)] border-[16px] border-white overflow-hidden flex items-center justify-center text-slate-300 font-black text-2xl group-hover:scale-[1.02] transition-transform duration-700">
-                  [ COMPANY PROFILE PHOTO ]
+                  <Image src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1000" alt="SJI Office" fill className="object-cover" />
                 </div>
                 {/* Floating badge */}
                 <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-[var(--sji-red)] rounded-[3rem] flex flex-col items-center justify-center text-white shadow-2xl shadow-red-500/40 rotate-12 group-hover:rotate-0 transition-transform duration-500">
@@ -64,7 +78,7 @@ export default function HomePage() {
                 </h2>
               </div>
               
-              <p className="text-xl text-slate-500 leading-relaxed font-medium">
+              <p className="text-xl text-slate-500 font-medium leading-relaxed">
                 Sejak berdiri, SJI telah berkomitmen untuk menjadi jembatan bagi putra-putri terbaik bangsa untuk meraih impian mereka berkarir secara profesional di Negeri Sakura. Kami tidak hanya mengajarkan bahasa, tapi juga mentalitas dan etos kerja Jepang.
               </p>
 
@@ -138,14 +152,26 @@ export default function HomePage() {
         </div>
       </section>
       
-      {/* Official Partners / Mitras */}
+      {/* Official Partners / Mitras (DYNAMIC FROM DB) */}
       <section className="py-24 bg-slate-50 border-t border-slate-100">
         <div className="container mx-auto px-6">
           <p className="text-center text-slate-400 font-black uppercase tracking-[0.3em] text-[10px] mb-16">Mitra Resmi & Sending Organization</p>
-          <div className="flex flex-wrap justify-center items-center gap-16 lg:gap-24 opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-700">
-            {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="h-10 w-32 bg-slate-300 rounded-lg hover:bg-slate-400 transition-colors"></div>
+          <div className="flex flex-wrap justify-center items-center gap-16 lg:gap-24 opacity-40 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-700">
+            {partners.map((p) => (
+              <div key={p.id} className="relative h-12 w-32 group">
+                <Image src={p.logoUrl} alt={p.name} fill className="object-contain filter" />
+                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-[8px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity text-[var(--sji-blue)]">
+                  {p.name}
+                </div>
+              </div>
             ))}
+            {partners.length === 0 && (
+              <>
+                <div className="h-10 w-32 bg-slate-200 rounded-lg animate-pulse"></div>
+                <div className="h-10 w-32 bg-slate-200 rounded-lg animate-pulse"></div>
+                <div className="h-10 w-32 bg-slate-200 rounded-lg animate-pulse"></div>
+              </>
+            )}
           </div>
         </div>
       </section>
