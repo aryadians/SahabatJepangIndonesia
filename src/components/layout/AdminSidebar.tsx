@@ -24,6 +24,7 @@ export default function AdminSidebar() {
     { name: 'Data Pengajar', path: '/admin/teachers', icon: <GraduationCap size={20} /> },
     { name: 'Program & Kelas', path: '/admin/programs', icon: <FileText size={20} /> },
     { name: 'Tagihan Biaya', path: '/admin/billing', icon: <CreditCard size={20} /> },
+    { name: 'Berita & Info', path: '/admin/news', icon: <FileText size={20} /> },
   ];
 
   return (
