@@ -5,8 +5,30 @@ import Programs from "@/components/home/Programs";
 import RegistrationForm from "@/components/home/RegistrationForm";
 import Footer from "@/components/layout/Footer";
 import { Link } from "@/i18n/routing";
+import { Star, Quote } from "lucide-react";
 
 export default function HomePage() {
+  const testimonials = [
+    {
+      name: "Ahmad Fauzi",
+      program: "Tokutei Ginou - Kaigo",
+      text: "Terima kasih SJI! Pelatihan bahasanya sangat intensif dan menyenangkan. Sekarang saya sudah bekerja di Osaka.",
+      location: "Tokyo, Japan"
+    },
+    {
+      name: "Siti Aminah",
+      program: "Magang - Food Processing",
+      text: "Metode Kitte Mitte Oboite sangat membantu saya yang nol bahasa Jepang hingga bisa lulus N4 dalam 4 bulan.",
+      location: "Chiba, Japan"
+    },
+    {
+      name: "Budi Santoso",
+      program: "Tokutei Ginou - Construction",
+      text: "Proses administrasi COE dan Visa dibantu sepenuhnya oleh tim SJI. Sangat terpercaya dan profesional.",
+      location: "Nagoya, Japan"
+    }
+  ];
+
   return (
     <main className="min-h-screen bg-white">
       <Header />
@@ -44,9 +66,41 @@ export default function HomePage() {
       </section>
 
       <Programs />
+
+      {/* Testimonials Section */}
+      <section className="py-24 bg-blue-50/50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-extrabold text-[var(--sji-blue)] mb-4">Apa Kata Alumni SJI?</h2>
+            <p className="text-gray-500 max-w-2xl mx-auto">Cerita sukses mereka yang telah mewujudkan impian berkarir di Jepang bersama kami.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((t, i) => (
+              <div key={i} className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-blue-50 relative group hover:shadow-xl transition-all">
+                <Quote className="absolute top-8 right-8 text-blue-100 w-12 h-12" />
+                <div className="flex gap-1 mb-6">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star key={s} size={16} className="fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                <p className="text-gray-600 italic leading-relaxed mb-8 relative z-10">"{t.text}"</p>
+                <div className="flex items-center gap-4 border-t border-gray-50 pt-6">
+                  <div className="w-12 h-12 rounded-full bg-slate-100 shrink-0"></div>
+                  <div>
+                    <h4 className="font-bold text-slate-900">{t.name}</h4>
+                    <p className="text-xs text-[var(--sji-red)] font-bold uppercase tracking-wider">{t.program}</p>
+                    <p className="text-[10px] text-gray-400">{t.location}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
       
       {/* Registration Section on Home */}
-      <section className="py-24 bg-slate-50 relative overflow-hidden">
+      <section className="py-24 bg-white relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-extrabold text-[var(--sji-blue)] mb-4">Mulai Karier Anda Hari Ini</h2>
@@ -56,33 +110,17 @@ export default function HomePage() {
         </div>
       </section>
       
-      {/* Visual Quote Section */}
-      <section className="py-24 bg-white relative overflow-hidden">
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <blockquote className="max-w-4xl mx-auto">
-            <p className="text-3xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-8">
-              "Membuka Gerbang Masa Depan Putra-Putri Indonesia Melalui Karier Profesional di <span className="text-[var(--sji-red)]">Jepang</span>."
-            </p>
-            <footer className="text-gray-500 font-bold uppercase tracking-widest">— Sahabat Jepang Indonesia</footer>
-          </blockquote>
-        </div>
-        
-        {/* Abstract shapes for visual interest */}
-        <div className="absolute top-0 left-0 w-64 h-64 bg-blue-50 rounded-full -translate-x-1/2 -translate-y-1/2 -z-10"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-red-50 rounded-full translate-x-1/3 translate-y-1/3 -z-10"></div>
-      </section>
-
       {/* Official Partners / Mitras */}
       <section className="py-20 bg-gray-50 border-t border-b border-gray-100">
         <div className="container mx-auto px-4">
           <p className="text-center text-gray-400 font-bold uppercase tracking-widest text-sm mb-12">Mitra Resmi & Sending Organization</p>
           <div className="flex flex-wrap justify-center items-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
             {/* These would be actual partner logos */}
-            <div className="h-12 w-32 bg-gray-300 rounded animate-pulse"></div>
-            <div className="h-12 w-32 bg-gray-300 rounded animate-pulse"></div>
-            <div className="h-12 w-32 bg-gray-300 rounded animate-pulse"></div>
-            <div className="h-12 w-32 bg-gray-300 rounded animate-pulse"></div>
-            <div className="h-12 w-32 bg-gray-300 rounded animate-pulse"></div>
+            <div className="h-12 w-32 bg-gray-300 rounded"></div>
+            <div className="h-12 w-32 bg-gray-300 rounded"></div>
+            <div className="h-12 w-32 bg-gray-300 rounded"></div>
+            <div className="h-12 w-32 bg-gray-300 rounded"></div>
+            <div className="h-12 w-32 bg-gray-300 rounded"></div>
           </div>
         </div>
       </section>
