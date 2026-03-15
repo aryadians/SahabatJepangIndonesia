@@ -93,6 +93,22 @@ export default function DashboardPage() {
           </div>
           
           <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+            <h4 className="text-lg font-bold text-slate-900 mb-6">Upcoming Interviews</h4>
+            <div className="space-y-4">
+              {[
+                { student: 'Ahmad Fauzi', company: 'Toyota Motor', time: '10:00 AM' },
+                { student: 'Siti Aminah', company: 'Zennoh Ag', time: '02:00 PM' },
+              ].map((item) => (
+                <div key={item.student} className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                  <p className="text-sm font-bold text-slate-900">{item.student}</p>
+                  <p className="text-xs text-slate-500">{item.company} • {item.time}</p>
+                  <button className="mt-3 w-full py-2 bg-[var(--sji-blue)] text-white text-[10px] font-black rounded-lg uppercase">Join Zoom</button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
             <h4 className="text-lg font-bold text-slate-900 mb-6">Upcoming Events</h4>
             <div className="space-y-4">
               {[

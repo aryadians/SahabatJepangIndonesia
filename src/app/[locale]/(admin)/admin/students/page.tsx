@@ -11,10 +11,12 @@ import {
   Mail,
   Phone,
   ArrowUpDown,
-  Loader2
+  Loader2,
+  Award
 } from 'lucide-react';
 
 import { exportToExcel } from '@/lib/ExcelExport';
+import { generateCertificatePDF } from '@/lib/CertificateGenerator';
 
 export default function StudentsPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -35,6 +37,16 @@ export default function StudentsPage() {
       'Tanggal Daftar': new Date(s.createdAt).toLocaleDateString()
     }));
     exportToExcel(exportData, 'Data_Siswa_SJI');
+  };
+
+  const handleCertificate = (student: any) => {
+    generateCertificatePDF({
+      studentName: student.user.name,
+      studentId: student.studentId,
+      programName: student.program?.name || 'Program Pelatihan SJI',
+      issueDate: new Date().toLocaleDateString(),
+      certNumber: `CERT/SJI/${new Date().getFullYear()}/${student.studentId.split('-')[1]}`
+    });
   };
 
   const fetchStudents = async () => {
@@ -132,6 +144,13 @@ export default function StudentsPage() {
                     </td>
                     <td className="px-8 py-5 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        <button 
+                          onClick={() => handleCertificate(student)}
+                          className="p-2 bg-white border border-slate-100 rounded-lg text-slate-400 hover:text-yellow-600 hover:border-yellow-100 transition-all"
+                          title="Generate Certificate"
+                        >
+                          <Award size={16} />
+                        </button>
                         <button className="p-2 bg-white border border-slate-100 rounded-lg text-slate-400 hover:text-[var(--sji-blue)]">
                           <Mail size={16} />
                         </button>
