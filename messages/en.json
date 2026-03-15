@@ -1,0 +1,17 @@
+{
+  "Navigation": {
+    "home": "Home",
+    "about": "About Us",
+    "programs": "Programs",
+    "classes": "Class List",
+    "news": "News",
+    "contact": "Contact Us"
+  },
+  "HomePage": {
+    "title": "Sahabat Jepang Indonesia",
+    "subtitle": "Trusted Job Training Center (LPK) to Japan",
+    "hero_description": "We help you achieve your dreams of working in Japan through intensive Japanese language and culture training.",
+    "cta_join": "Join Now",
+    "cta_learn_more": "Learn More"
+  }
+}

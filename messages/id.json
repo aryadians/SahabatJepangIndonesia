@@ -1,0 +1,17 @@
+{
+  "Navigation": {
+    "home": "Beranda",
+    "about": "Tentang Kami",
+    "programs": "Program",
+    "classes": "Daftar Kelas",
+    "news": "Berita",
+    "contact": "Hubungi Kami"
+  },
+  "HomePage": {
+    "title": "Sahabat Jepang Indonesia",
+    "subtitle": "Lembaga Pelatihan Kerja (LPK) Terpercaya ke Jepang",
+    "hero_description": "Kami membantu Anda meraih impian bekerja di Jepang dengan pelatihan bahasa dan budaya yang intensif.",
+    "cta_join": "Gabung Sekarang",
+    "cta_learn_more": "Pelajari Lebih Lanjut"
+  }
+}
