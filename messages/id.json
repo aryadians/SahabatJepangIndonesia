@@ -5,7 +5,8 @@
     "programs": "Program",
     "classes": "Daftar Kelas",
     "news": "Berita",
-    "contact": "Hubungi Kami"
+    "contact": "Hubungi Kami",
+    "faq": "FAQ"
   },
   "HomePage": {
     "title": "Sahabat Jepang Indonesia",
@@ -47,5 +48,14 @@
     "vision": "Visi Kami",
     "mission": "Misi Kami",
     "description": "Sahabat Jepang Indonesia (SJI) adalah LPK yang berfokus pada pengembangan sumber daya manusia untuk bekerja secara profesional di Jepang."
+  },
+  "News": {
+    "title": "Berita & Pengumuman",
+    "subtitle": "Ikuti perkembangan terbaru seputar info lowongan kerja dan kegiatan di SJI.",
+    "read_more": "Baca Selengkapnya"
+  },
+  "FAQ": {
+    "title": "Pertanyaan Umum",
+    "subtitle": "Temukan jawaban untuk pertanyaan yang sering diajukan calon siswa."
   }
 }
