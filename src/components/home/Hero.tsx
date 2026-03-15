@@ -2,48 +2,57 @@
 
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, PlayCircle } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 
 export default function Hero() {
   const t = useTranslations('HomePage');
 
   return (
-    <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-      {/* Background Shapes */}
-      <div className="absolute top-0 right-0 -z-10 opacity-10">
-        <svg width="600" height="600" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="400" cy="200" r="200" fill="var(--sji-blue)" />
-          <circle cx="200" cy="400" r="200" fill="var(--sji-red)" />
+    <section className="relative pt-32 pb-24 lg:pt-52 lg:pb-40 overflow-hidden bg-white">
+      {/* Background Decor */}
+      <div className="absolute top-0 right-0 -z-10 opacity-20 pointer-events-none">
+        <svg width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="600" cy="200" r="300" fill="url(#grad1)" />
+          <defs>
+            <linearGradient id="grad1" x1="300" y1="-100" x2="900" y2="500" gradientUnits="userSpaceOnUse">
+              <stop stopColor="var(--sji-blue)" />
+              <stop offset="1" stopColor="var(--sji-red)" />
+            </linearGradient>
+          </defs>
         </svg>
       </div>
 
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col lg:flex-row items-center gap-12">
-          <div className="flex-1 text-center lg:text-left">
-            <motion.span
+      <div className="container mx-auto px-6">
+        <div className="flex flex-col lg:flex-row items-center gap-20">
+          <div className="flex-1 text-center lg:text-left space-y-8">
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-block px-4 py-1.5 mb-6 text-sm font-bold tracking-wider text-[var(--sji-red)] uppercase bg-red-50 rounded-full"
+              transition={{ duration: 0.6 }}
+              className="inline-flex items-center gap-2 px-5 py-2 mb-2 text-sm font-black tracking-widest text-[var(--sji-red)] uppercase bg-red-50 rounded-2xl border border-red-100"
             >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+              </span>
               {t('subtitle')}
-            </motion.span>
+            </motion.div>
             
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-5xl lg:text-7xl font-extrabold text-[var(--sji-blue)] leading-tight mb-6"
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-5xl lg:text-8xl font-black text-slate-900 leading-[1.1] tracking-tighter"
             >
-              {t('title')}
+              Wujudkan Karir <br /> Impian di <span className="text-[var(--sji-blue)]">Jepang</span>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto lg:mx-0"
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-xl text-slate-500 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-medium"
             >
               {t('hero_description')}
             </motion.p>
@@ -51,22 +60,34 @@ export default function Hero() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 pt-4"
             >
               <Link
                 href="/registration"
-                className="px-8 py-4 bg-[var(--sji-red)] text-white font-bold rounded-lg shadow-lg hover:bg-red-700 transition-all flex items-center gap-2 group"
+                className="px-10 py-5 bg-[var(--sji-blue)] text-white font-black rounded-2xl shadow-2xl shadow-blue-900/30 hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group"
               >
                 {t('cta_join')}
                 <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link
-                href="/about"
-                className="px-8 py-4 bg-white text-[var(--sji-blue)] font-bold rounded-lg shadow-sm border border-gray-200 hover:bg-gray-50 transition-all"
-              >
-                {t('cta_learn_more')}
-              </Link>
+              <button className="flex items-center gap-3 text-slate-900 font-black hover:text-[var(--sji-red)] transition-colors group">
+                <div className="w-14 h-14 bg-white rounded-full shadow-xl flex items-center justify-center group-hover:scale-110 transition-all border border-slate-50">
+                  <PlayCircle size={28} className="text-[var(--sji-red)]" />
+                </div>
+                Tonton Video SJI
+              </button>
+            </motion.div>
+
+            {/* Trust Badges */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+              className="pt-12 flex items-center justify-center lg:justify-start gap-8 opacity-40 grayscale"
+            >
+              <div className="h-8 w-24 bg-slate-200 rounded-lg"></div>
+              <div className="h-8 w-24 bg-slate-200 rounded-lg"></div>
+              <div className="h-8 w-24 bg-slate-200 rounded-lg"></div>
             </motion.div>
           </div>
 
@@ -74,37 +95,46 @@ export default function Hero() {
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+              transition={{ duration: 1, delay: 0.4, type: 'spring' }}
               className="relative z-10"
             >
-              {/* Placeholder for Hero Image / 3D Asset */}
-              <div className="w-full aspect-square max-w-lg mx-auto bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl relative overflow-hidden shadow-2xl border-8 border-white">
-                <div className="absolute inset-0 flex items-center justify-center text-gray-400 font-bold text-lg p-10 text-center">
-                  [ 3D Animation / Student Hero Image ]
+              <div className="w-full aspect-square max-w-xl mx-auto bg-slate-100 rounded-[4rem] relative overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] border-[12px] border-white group">
+                {/* Decorative overlay */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-[var(--sji-blue)]/10 to-transparent"></div>
+                <div className="absolute inset-0 flex items-center justify-center text-slate-300 font-black text-2xl p-20 text-center">
+                  [ MODERN HERO ILLUSTRATION / 3D MODEL ]
                 </div>
                 
-                {/* Decorative floating elements */}
+                {/* Dynamic cards */}
                 <motion.div
-                  animate={{ y: [0, -20, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute top-10 right-10 w-20 h-20 bg-white/80 backdrop-blur rounded-2xl shadow-lg flex items-center justify-center text-4xl"
+                  animate={{ y: [0, -15, 0] }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                  className="absolute top-12 left-12 p-4 bg-white/90 backdrop-blur rounded-3xl shadow-2xl flex items-center gap-4 border border-white/50"
                 >
-                  🇯🇵
+                  <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center text-2xl">🇯🇵</div>
+                  <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Status</p>
+                    <p className="text-sm font-black text-slate-900 leading-none">Siap Terbang</p>
+                  </div>
                 </motion.div>
+
                 <motion.div
-                  animate={{ y: [0, 20, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute bottom-10 left-10 w-20 h-20 bg-white/80 backdrop-blur rounded-2xl shadow-lg flex items-center justify-center text-4xl"
+                  animate={{ y: [0, 15, 0] }}
+                  transition={{ duration: 5, repeat: Infinity }}
+                  className="absolute bottom-12 right-12 p-4 bg-white/90 backdrop-blur rounded-3xl shadow-2xl flex items-center gap-4 border border-white/50"
                 >
-                  🇮🇩
+                  <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-2xl">🎓</div>
+                  <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Lulus</p>
+                    <p className="text-sm font-black text-slate-900 leading-none">JLPT N4 Certified</p>
+                  </div>
                 </motion.div>
               </div>
             </motion.div>
             
-            {/* Dots Pattern */}
-            <div className="absolute -bottom-10 -right-10 w-48 h-48 -z-10 text-gray-200">
-               <svg width="100%" height="100%" fill="currentColor"><pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="2"></circle></pattern><rect width="100%" height="100%" fill="url(#dots)"></rect></svg>
-            </div>
+            {/* Shapes */}
+            <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-[var(--sji-red)]/5 rounded-full blur-3xl -z-10"></div>
+            <div className="absolute -top-10 -left-10 w-64 h-64 bg-[var(--sji-blue)]/5 rounded-full blur-3xl -z-10"></div>
           </div>
         </div>
       </div>
