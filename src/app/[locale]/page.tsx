@@ -2,6 +2,7 @@ import Header from "@/components/layout/Header";
 import Hero from "@/components/home/Hero";
 import Stats from "@/components/home/Stats";
 import Programs from "@/components/home/Programs";
+import RegistrationForm from "@/components/home/RegistrationForm";
 import Footer from "@/components/layout/Footer";
 
 export default function HomePage() {
@@ -11,6 +12,17 @@ export default function HomePage() {
       <Hero />
       <Stats />
       <Programs />
+      
+      {/* Registration Section on Home */}
+      <section className="py-24 bg-slate-50 relative overflow-hidden">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-extrabold text-[var(--sji-blue)] mb-4">Mulai Karier Anda Hari Ini</h2>
+            <p className="text-gray-500 max-w-2xl mx-auto">Jangan tunda impian Anda. Daftar sekarang dan tim kami akan membimbing Anda hingga berangkat ke Jepang.</p>
+          </div>
+          <RegistrationForm />
+        </div>
+      </section>
       
       {/* Visual Quote Section */}
       <section className="py-24 bg-white relative overflow-hidden">

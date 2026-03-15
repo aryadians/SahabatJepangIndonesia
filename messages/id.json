@@ -25,7 +25,27 @@
   },
   "Classes": {
     "title": "Daftar Kelas & Biaya",
+    "subtitle": "Pilih program pelatihan yang sesuai dengan minat dan tujuan karier Anda.",
     "price_start": "Mulai dari",
     "join": "Daftar Sekarang"
+  },
+  "Registration": {
+    "title": "Pendaftaran Online",
+    "subtitle": "Lengkapi formulir di bawah ini untuk memulai langkah awal Anda ke Jepang.",
+    "personal_data": "Data Pribadi",
+    "full_name": "Nama Lengkap",
+    "email": "Email Aktif",
+    "phone": "Nomor WhatsApp",
+    "address": "Alamat Lengkap",
+    "program_interest": "Program yang Diminati",
+    "submit": "Kirim Pendaftaran",
+    "success_title": "Pendaftaran Berhasil!",
+    "success_msg": "Terima kasih telah mendaftar. Tim kami akan segera menghubungi Anda melalui WhatsApp."
+  },
+  "About": {
+    "title": "Tentang SJI",
+    "vision": "Visi Kami",
+    "mission": "Misi Kami",
+    "description": "Sahabat Jepang Indonesia (SJI) adalah LPK yang berfokus pada pengembangan sumber daya manusia untuk bekerja secara profesional di Jepang."
   }
 }
