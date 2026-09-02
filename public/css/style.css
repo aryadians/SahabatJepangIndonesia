@@ -1,0 +1,374 @@
+/* ==========================================================================
+   LPK SAHABAT JEPANG INDONESIA - MAIN DESIGN STYLESHEET
+   Theme: Japanese Modern Crimson & Pure White (Merah - Putih)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap');
+
+:root {
+    --primary-red: #DC2626;
+    --primary-red-dark: #991B1B;
+    --primary-red-deep: #7F1D1D;
+    --primary-red-light: #FEE2E2;
+    --primary-red-glow: rgba(220, 38, 38, 0.35);
+    
+    --japan-crimson: #BA131A;
+    --sakura-pink: #FDE2E4;
+    --sakura-accent: #FB7185;
+    --gold-accent: #F59E0B;
+    
+    --bg-light: #F8FAFC;
+    --bg-card: #FFFFFF;
+    --bg-dark: #0F172A;
+    
+    --text-main: #1E293B;
+    --text-muted: #64748B;
+    --text-light: #94A3B8;
+    
+    --border-color: #E2E8F0;
+    --border-red: rgba(220, 38, 38, 0.2);
+    
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 20px 35px -10px rgba(0, 0, 0, 0.08), 0 10px 20px -5px rgba(220, 38, 38, 0.05);
+    --shadow-red: 0 15px 30px -5px rgba(220, 38, 38, 0.3);
+    --shadow-glow: 0 0 30px rgba(220, 38, 38, 0.2);
+}
+
+/* Base Setup */
+html {
+    scroll-behavior: smooth;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--text-main);
+    background-color: #FFFFFF;
+    overflow-x: hidden;
+}
+
+body {
+    overflow-x: hidden;
+    position: relative;
+    background-color: #FAFAFA;
+}
+
+.font-japanese {
+    font-family: 'Zen Maru Gothic', 'Noto Sans JP', sans-serif;
+}
+
+/* Japanese Pattern Backgrounds */
+.bg-japanese-pattern {
+    background-color: #FFFFFF;
+    background-image: radial-gradient(#DC2626 0.75px, transparent 0.75px), radial-gradient(#DC2626 0.75px, #FFFFFF 0.75px);
+    background-size: 30px 30px;
+    background-position: 0 0, 15px 15px;
+    background-opacity: 0.03;
+}
+
+.bg-seigaiha {
+    background-color: #FFFFFF;
+    background-image: radial-gradient(circle at 100% 150%, #DC2626 24%, #FFFFFF 25%, #FFFFFF 28%, #DC2626 29%, #DC2626 36%, #FFFFFF 36%, #FFFFFF 40%, transparent 40%, transparent),
+                      radial-gradient(circle at 0    150%, #DC2626 24%, #FFFFFF 25%, #FFFFFF 28%, #DC2626 29%, #DC2626 36%, #FFFFFF 36%, #FFFFFF 40%, transparent 40%, transparent),
+                      radial-gradient(circle at 50%  100%, #FFFFFF 10%, #DC2626 11%, #DC2626 23%, #FFFFFF 24%, #FFFFFF 30%, #DC2626 31%, #DC2626 43%, #FFFFFF 44%, #FFFFFF 50%, #DC2626 51%, #DC2626 63%, #FFFFFF 64%, #FFFFFF 71%, transparent 71%, transparent),
+                      radial-gradient(circle at 100% 50%, #FFFFFF 5%, #DC2626 6%, #DC2626 15%, #FFFFFF 16%, #FFFFFF 20%, #DC2626 21%, #DC2626 30%, #FFFFFF 31%, #FFFFFF 38%, #DC2626 39%, #DC2626 48%, #FFFFFF 49%, #FFFFFF 55%, transparent 55%, transparent),
+                      radial-gradient(circle at 0    50%, #FFFFFF 5%, #DC2626 6%, #DC2626 15%, #FFFFFF 16%, #FFFFFF 20%, #DC2626 21%, #DC2626 30%, #FFFFFF 31%, #FFFFFF 38%, #DC2626 39%, #DC2626 48%, #FFFFFF 49%, #FFFFFF 55%, transparent 55%, transparent);
+    background-size: 80px 40px;
+    opacity: 0.04;
+}
+
+.bg-hero-gradient {
+    background: radial-gradient(circle at 80% 20%, rgba(220, 38, 38, 0.08) 0%, rgba(255, 255, 255, 0) 60%),
+                radial-gradient(circle at 10% 80%, rgba(220, 38, 38, 0.05) 0%, rgba(255, 255, 255, 0) 50%),
+                linear-gradient(180deg, #FFFFFF 0%, #FFF5F5 50%, #FFFFFF 100%);
+}
+
+.bg-red-gradient {
+    background: linear-gradient(135deg, #DC2626 0%, #B91C1C 50%, #991B1B 100%);
+}
+
+.bg-dark-gradient {
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+}
+
+/* Glassmorphism Classes */
+.glass-nav {
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(220, 38, 38, 0.08);
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04);
+}
+
+.glass-card-hover {
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-card-hover:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 35px -10px rgba(220, 38, 38, 0.12), 0 1px 3px rgba(0,0,0,0.05);
+    border-color: rgba(220, 38, 38, 0.3);
+}
+
+/* 3D Perspective & Tilt Card */
+.card-3d-wrap {
+    perspective: 1000px;
+}
+
+.card-3d {
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+    transform-style: preserve-3d;
+}
+
+.card-3d:hover {
+    transform: rotateY(3deg) rotateX(2deg) translateY(-8px);
+}
+
+/* Animated Buttons */
+.btn-red-primary {
+    background: linear-gradient(135deg, #EF4444 0%, #DC2626 50%, #B91C1C 100%);
+    color: #FFFFFF;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.4);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-red-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: 0.6s;
+}
+
+.btn-red-primary:hover::before {
+    left: 100%;
+}
+
+.btn-red-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px -5px rgba(220, 38, 38, 0.55);
+}
+
+.btn-white-outline {
+    background: #FFFFFF;
+    color: #DC2626;
+    border: 1.5px solid #DC2626;
+    transition: all 0.3s ease;
+}
+
+.btn-white-outline:hover {
+    background: #FEF2F2;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px -4px rgba(220, 38, 38, 0.15);
+}
+
+/* Floating Animations */
+@keyframes floatSlow {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-12px) rotate(1.5deg);
+    }
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 0 14px rgba(220, 38, 38, 0);
+    }
+}
+
+@keyframes spinSlow {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-float {
+    animation: floatSlow 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+    animation: pulseGlow 2.5s infinite;
+}
+
+.animate-spin-slow {
+    animation: spinSlow 25s linear infinite;
+}
+
+/* Scroll Fade-In & Reveal Effects */
+.reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(35px);
+    transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+.reveal-on-scroll.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.reveal-fade {
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+.reveal-fade.revealed {
+    opacity: 1;
+}
+
+.reveal-scale {
+    opacity: 0;
+    transform: scale(0.92);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-scale.revealed {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.reveal-slide-left {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: opacity 0.75s ease, transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-slide-left.revealed {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.reveal-slide-right {
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.75s ease, transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-slide-right.revealed {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Stagger Delay Utility */
+.delay-100 { transition-delay: 100ms; }
+.delay-200 { transition-delay: 200ms; }
+.delay-300 { transition-delay: 300ms; }
+.delay-400 { transition-delay: 400ms; }
+.delay-500 { transition-delay: 500ms; }
+
+/* 3D Canvas Background */
+#hero3dCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Modals & Popups */
+.custom-modal {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s ease;
+}
+
+.custom-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-backdrop-blur {
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.modal-content-box {
+    transform: scale(0.94) translateY(15px);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.custom-modal.active .modal-content-box {
+    transform: scale(1) translateY(0);
+}
+
+/* Japanese Torii & Sun Accent Elements */
+.japanese-sun {
+    position: relative;
+}
+.japanese-sun::after {
+    content: '';
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    width: 70px;
+    height: 70px;
+    background: radial-gradient(circle, rgba(220, 38, 38, 0.15) 0%, rgba(220, 38, 38, 0) 70%);
+    border-radius: 50%;
+    z-index: -1;
+}
+
+/* Timeline Custom Styles */
+.timeline-dot {
+    box-shadow: 0 0 0 5px rgba(220, 38, 38, 0.15);
+}
+
+.timeline-line {
+    background: linear-gradient(180deg, #DC2626 0%, #F87171 70%, #FEE2E2 100%);
+}
+
+/* Lazy Load Image Styling */
+.lazy-img {
+    filter: blur(10px);
+    transition: filter 0.6s ease, transform 0.6s ease;
+}
+
+.lazy-img.loaded {
+    filter: blur(0px);
+}
+
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+    width: 9px;
+}
+::-webkit-scrollbar-track {
+    background: #F8FAFC;
+}
+::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 6px;
+    border: 2px solid #F8FAFC;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #DC2626;
+}
+
+/* Form Styles */
+.input-japan {
+    border: 1.5px solid #E2E8F0;
+    transition: all 0.25s ease;
+}
+.input-japan:focus {
+    border-color: #DC2626;
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12);
+    outline: none;
+}
+
+/* Range Slider Styling */
+input[type=range] {
+    accent-color: #DC2626;
+}
