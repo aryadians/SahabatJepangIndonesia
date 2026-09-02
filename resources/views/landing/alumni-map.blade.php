@@ -153,8 +153,8 @@
                         </div>
 
                         <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
-                            <span>Asal: {{ $t->origin_city }}</span>
-                            <span class="text-japan-400 font-bold">{{ $t->badge_tag ?? 'Alumni Sukses' }}</span>
+                            <span>Asal: {{ $t->origin }}</span>
+                            <span class="text-japan-400 font-bold">{{ $t->tag ?? 'Alumni Sukses' }}</span>
                         </div>
                     </div>
                 @endforeach

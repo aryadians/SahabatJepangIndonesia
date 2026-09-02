@@ -72,6 +72,7 @@ class LandingPageController extends Controller
             return [
                 'title' => $fac->title,
                 'category' => $fac->category,
+                'description' => $fac->description,
                 'desc' => $fac->description,
                 'image' => $fac->image
             ];

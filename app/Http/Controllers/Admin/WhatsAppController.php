@@ -15,10 +15,11 @@ class WhatsAppController extends Controller
     {
         $templates = WhatsAppTemplate::all();
         $logs = WhatsAppLog::latest()->paginate(15);
+        $totalLogs = WhatsAppLog::count();
         $leads = Consultation::latest()->take(20)->get();
         $students = Student::latest()->take(20)->get();
 
-        return view('admin.whatsapp.index', compact('templates', 'logs', 'leads', 'students'));
+        return view('admin.whatsapp.index', compact('templates', 'logs', 'totalLogs', 'leads', 'students'));
     }
 
     public function updateTemplate(Request $request, $id)

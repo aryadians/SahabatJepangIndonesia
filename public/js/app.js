@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initConsultationForm();
     initScrollToTop();
     initFaqAccordion();
+    initInstantPagePrefetch();
 });
 
 /* ==========================================================================
@@ -767,4 +768,25 @@ window.resetQuiz = function () {
     document.getElementById('quizResultScreen')?.classList.add('hidden');
     document.getElementById('quizStep1')?.classList.remove('hidden');
 };
+
+/* ==========================================================================
+   10. INSTANT PAGE PREFETCHING (Zero-Lag Navigation)
+   ========================================================================== */
+function initInstantPagePrefetch() {
+    const prefetched = new Set();
+
+    document.querySelectorAll('a[href^="/"], a[href^="' + window.location.origin + '"]').forEach((link) => {
+        link.addEventListener('mouseenter', () => {
+            const href = link.getAttribute('href');
+            if (!href || href.startsWith('#') || href.includes('logout') || prefetched.has(href)) return;
+
+            prefetched.add(href);
+            const prefetchLink = document.createElement('link');
+            prefetchLink.rel = 'prefetch';
+            prefetchLink.href = href;
+            document.head.appendChild(prefetchLink);
+        }, { passive: true });
+    });
+}
+
 

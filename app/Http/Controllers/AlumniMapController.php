@@ -76,7 +76,7 @@ class AlumniMapController extends Controller
         ];
 
         // Query Alumni & Testimoni
-        $testimonialsQuery = Testimonial::where('is_active', true);
+        $testimonialsQuery = Testimonial::query();
         if ($selectedSector) {
             $testimonialsQuery->where('program', 'like', "%{$selectedSector}%");
         }
