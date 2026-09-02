@@ -56,6 +56,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('/leads/{id}/status', [AdminConsultationController::class, 'updateStatus'])->name('consultations.status');
     Route::delete('/leads/{id}', [AdminConsultationController::class, 'destroy'])->name('consultations.destroy');
     Route::get('/leads/export', [AdminConsultationController::class, 'exportCsv'])->name('consultations.export');
+    Route::get('/leads/{id}/print', [AdminConsultationController::class, 'printForm'])->name('consultations.print');
 
     // 3. Site Settings & Hero CMS
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');

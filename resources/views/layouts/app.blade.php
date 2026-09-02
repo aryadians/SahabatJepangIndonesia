@@ -16,10 +16,19 @@
 
     <!-- Open Graph / Facebook / WhatsApp -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ url('/') }}">
-    <meta property="og:title" content="LPK Sahabat Jepang Indonesia - Karir Gemilang di Negeri Sakura">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="@yield('title', 'LPK Sahabat Jepang Indonesia - Karir Gemilang di Negeri Sakura')">
     <meta property="og:description" content="Raih impian bekerja di Jepang dengan gaji puluhan juta rupiah. Terakreditasi resmi Kemenaker RI & Izin SO Resmi.">
     <meta property="og:image" content="https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80">
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', 'LPK Sahabat Jepang Indonesia')">
+    <meta name="twitter:description" content="Lembaga Pelatihan Kerja & Penyaluran Resmi ke Jepang berizin SO Kemenaker RI.">
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80">
+
+    <!-- Favicon (SVG Torii / Kanji Japanese Emblem) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23DC2626'/><circle cx='50' cy='50' r='38' fill='white'/><text x='50' y='66' font-size='46' font-weight='900' font-family='sans-serif' text-anchor='middle' fill='%23DC2626'>友</text></svg>">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

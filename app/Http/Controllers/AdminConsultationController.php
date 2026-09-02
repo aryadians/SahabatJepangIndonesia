@@ -133,4 +133,13 @@ class AdminConsultationController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+    /**
+     * Cetak Lembar Formulir Pendaftaran / Biodata Siswa (PDF / Print View)
+     */
+    public function printForm($id)
+    {
+        $consultation = Consultation::findOrFail($id);
+        return view('admin.consultations.print', compact('consultation'));
+    }
 }

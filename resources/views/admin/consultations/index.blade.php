@@ -200,7 +200,8 @@
                                 <!-- Detail & Follow-up Modal Trigger -->
                                 <button 
                                     type="button" 
-                                    onclick="openLeadDetail({{ json_encode($lead) }})" 
+                                    data-lead='@json($lead)'
+                                    onclick="openLeadDetail(JSON.parse(this.getAttribute('data-lead')))" 
                                     class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition"
                                 >
                                     <i data-lucide="eye" class="w-3.5 h-3.5 text-slate-500"></i>
@@ -323,9 +324,15 @@
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('leadDetailModal')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100">
-                        Tutup
-                    </button>
+                    <a 
+                        id="modalLeadPrintBtn" 
+                        href="#" 
+                        target="_blank" 
+                        class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-bold transition flex items-center gap-1.5"
+                    >
+                        <i data-lucide="printer" class="w-4 h-4 text-slate-500"></i>
+                        <span>Cetak Formulir (PDF)</span>
+                    </a>
                     <button type="submit" class="btn-red-primary px-6 py-2.5 rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5">
                         <i data-lucide="save" class="w-4 h-4"></i>
                         <span>Simpan Catatan & Status</span>
@@ -353,6 +360,7 @@
         document.getElementById('modalLeadMessage').textContent = lead.message || 'Tidak ada pesan tambahan.';
         document.getElementById('modalLeadStatus').value = lead.status;
         document.getElementById('modalLeadNotes').value = lead.admin_notes || '';
+        document.getElementById('modalLeadPrintBtn').href = `/admin/leads/${lead.id}/print`;
 
         // Form action url
         const form = document.getElementById('leadUpdateForm');
