@@ -158,6 +158,34 @@
                 <span>Jadwal Angkatan & Kuota</span>
             </a>
 
+            <div class="px-3 pt-3 pb-1 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                Keuangan & CRM Growth
+            </div>
+
+            <a 
+                href="{{ route('admin.finance.index') }}" 
+                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.finance.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+            >
+                <i data-lucide="trending-up" class="w-4 h-4"></i>
+                <span>Proyeksi Kas & Keuangan</span>
+            </a>
+
+            <a 
+                href="{{ route('admin.whatsapp.index') }}" 
+                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.whatsapp.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+            >
+                <i data-lucide="message-square" class="w-4 h-4"></i>
+                <span>Otomatisasi WhatsApp</span>
+            </a>
+
+            <a 
+                href="{{ route('admin.affiliates.index') }}" 
+                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.affiliates.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+            >
+                <i data-lucide="handshake" class="w-4 h-4"></i>
+                <span>Kemitraan SMK & BKK</span>
+            </a>
+
             @if(auth()->user()->isAdmin())
                 <div class="px-3 pt-3 pb-1 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
                     Kelola Konten Web

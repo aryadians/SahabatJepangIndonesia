@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class SiteSetting extends Model
 {
@@ -20,18 +21,30 @@ class SiteSetting extends Model
      */
     public static function get($key, $default = null)
     {
-        $setting = static::where('key', $key)->first();
-        return $setting ? $setting->value : $default;
+        $all = static::allCached();
+        return $all[$key] ?? $default;
     }
 
     /**
-     * Helper to set setting value by key
+     * Get all settings cached in memory
+     */
+    public static function allCached(): array
+    {
+        return Cache::remember('site_settings_all', 3600, function () {
+            return static::all()->pluck('value', 'key')->toArray();
+        });
+    }
+
+    /**
+     * Helper to set setting value by key and invalidate cache
      */
     public static function set($key, $value, $group = 'general')
     {
-        return static::updateOrCreate(
+        $setting = static::updateOrCreate(
             ['key' => $key],
             ['value' => $value, 'group' => $group]
         );
+        Cache::forget('site_settings_all');
+        return $setting;
     }
 }

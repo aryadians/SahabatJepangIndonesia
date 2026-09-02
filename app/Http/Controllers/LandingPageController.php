@@ -60,22 +60,20 @@ class LandingPageController extends Controller
         })->toArray();
 
         // 4. Ambil FAQs
-        $faqsFromDb = Faq::orderBy('order')->get();
-        $faqs = $faqsFromDb->map(function ($f) {
+        $faqs = Faq::orderBy('order')->get()->map(function ($f) {
             return [
                 'q' => $f->question,
-                'a' => $f->answer,
+                'a' => $f->answer
             ];
         })->toArray();
 
         // 5. Ambil Facilities
-        $facilitiesFromDb = Facility::orderBy('order')->get();
-        $facilities = $facilitiesFromDb->map(function ($fac) {
+        $facilities = Facility::orderBy('order')->get()->map(function ($fac) {
             return [
                 'title' => $fac->title,
                 'category' => $fac->category,
-                'description' => $fac->description,
-                'image' => $fac->image,
+                'desc' => $fac->description,
+                'image' => $fac->image
             ];
         })->toArray();
 
@@ -107,9 +105,12 @@ class LandingPageController extends Controller
             'program' => 'required|string|max:150',
             'city' => 'nullable|string|max:150',
             'message' => 'nullable|string|max:1000',
+            'affiliate_code' => 'nullable|string|max:50',
         ]);
 
         try {
+            $affCode = $validated['affiliate_code'] ?? $request->query('ref') ?? session('ref_code');
+
             $consultation = Consultation::create([
                 'name' => $validated['name'],
                 'phone' => $validated['phone'],
@@ -118,6 +119,7 @@ class LandingPageController extends Controller
                 'program' => $validated['program'],
                 'city' => $validated['city'] ?? null,
                 'message' => $validated['message'] ?? null,
+                'affiliate_code' => $affCode,
                 'status' => 'pending'
             ]);
 

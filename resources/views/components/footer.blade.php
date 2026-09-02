@@ -43,13 +43,13 @@
 
             <!-- Col 2: Program Links (2 cols) -->
             <div class="lg:col-span-2 space-y-3">
-                <h4 class="font-extrabold text-white text-sm uppercase tracking-wider">Program Karir</h4>
+                <h4 class="font-extrabold text-white text-sm uppercase tracking-wider">Program & Fitur</h4>
                 <ul class="space-y-2 text-xs sm:text-sm text-slate-400">
                     <li><a href="{{ route('home') }}#program" class="hover:text-red-400 transition">Tokutei Ginou (SSW)</a></li>
                     <li><a href="{{ route('home') }}#program" class="hover:text-red-400 transition">Magang (Jisshusei)</a></li>
-                    <li><a href="{{ route('home') }}#program" class="hover:text-red-400 transition">Kursus Bahasa Jepang</a></li>
-                    <li><a href="{{ route('home') }}#program" class="hover:text-red-400 transition">Engineer Profesional</a></li>
-                    <li><a href="{{ route('home') }}#kalkulator" class="hover:text-red-400 transition">Simulasi Gaji</a></li>
+                    <li><a href="{{ route('exam.simulator') }}" class="hover:text-red-400 transition flex items-center gap-1 font-bold text-slate-300"><span>Tryout JLPT CBT</span> <span class="px-1 py-0.2 rounded bg-japan-600 text-white text-[8px]">Gratis</span></a></li>
+                    <li><a href="{{ route('alumni.map') }}" class="hover:text-red-400 transition">Peta Sebaran Alumni</a></li>
+                    <li><a href="{{ route('affiliates.public.register') }}" class="hover:text-red-400 transition text-emerald-400 font-bold">Kemitraan SMK / BKK</a></li>
                 </ul>
             </div>
 
