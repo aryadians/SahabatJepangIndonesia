@@ -13,7 +13,7 @@
             <h3 class="font-extrabold text-slate-900 text-base">Tambah Fasilitas / Foto Baru</h3>
         </div>
 
-        <form action="{{ route('admin.facilities.store') }}" method="POST" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <form action="{{ route('admin.facilities.store') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             @csrf
             
             <div class="space-y-1.5">
@@ -26,9 +26,14 @@
                 <input type="text" name="category" required placeholder="Akomodasi / Pembelajaran / Olahraga" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600">
             </div>
 
-            <div class="space-y-1.5 sm:col-span-2">
-                <label class="block text-xs font-bold text-slate-700 uppercase">URL Gambar / Foto *</label>
-                <input type="text" name="image" required placeholder="https://images.unsplash.com/..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600">
+            <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700 uppercase">Upload File Foto (Base64)</label>
+                <input type="file" name="image_file" accept="image/*" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:outline-none focus:border-japan-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-japan-600 file:text-white hover:file:bg-japan-700 cursor-pointer">
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700 uppercase">Atau URL Gambar / Foto</label>
+                <input type="text" name="image" placeholder="https://images.unsplash.com/..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600">
             </div>
 
             <div class="space-y-1.5 sm:col-span-2">

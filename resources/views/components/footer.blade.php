@@ -11,11 +11,15 @@
             <!-- Col 1: Brand & Bio (5 cols) -->
             <div class="lg:col-span-5 space-y-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-japan-600 flex items-center justify-center text-white font-japanese font-black text-xl shadow-md">
-                        友
-                    </div>
+                    @if(!empty($settings['site_logo']))
+                        <img src="{{ $settings['site_logo'] }}" alt="{{ $settings['site_name'] ?? 'LPK Sahabat Jepang' }}" class="h-10 w-auto object-contain max-w-[140px] rounded-lg bg-white/10 p-1">
+                    @else
+                        <div class="w-10 h-10 rounded-2xl bg-japan-600 flex items-center justify-center text-white font-japanese font-black text-xl shadow-md">
+                            友
+                        </div>
+                    @endif
                     <div>
-                        <h3 class="font-black text-lg text-white tracking-tight">LPK SAHABAT JEPANG INDONESIA</h3>
+                        <h3 class="font-black text-lg text-white tracking-tight">{{ $settings['site_name'] ?? 'LPK SAHABAT JEPANG INDONESIA' }}</h3>
                         <p class="text-xs text-slate-400 font-japanese">友好日本インドネシア • Sending Organization</p>
                     </div>
                 </div>

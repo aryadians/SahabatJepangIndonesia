@@ -16,7 +16,7 @@
         </a>
     </div>
 
-    <form action="{{ $article->exists ? route('admin.articles.update', $article->id) : route('admin.articles.store') }}" method="POST" class="space-y-5">
+    <form action="{{ $article->exists ? route('admin.articles.update', $article->id) : route('admin.articles.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
         @csrf
         @if($article->exists)
             @method('PUT')
@@ -41,9 +41,16 @@
                 </div>
             </div>
 
-            <div class="space-y-1.5">
-                <label class="block text-xs font-bold text-slate-700 uppercase">URL Gambar Thumbnail *</label>
-                <input type="text" name="thumbnail" value="{{ old('thumbnail', $article->thumbnail) }}" required placeholder="https://images.unsplash.com/..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">Upload File Thumbnail (Base64)</label>
+                    <input type="file" name="thumbnail_file" accept="image/*" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:outline-none focus:border-japan-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-japan-600 file:text-white hover:file:bg-japan-700 cursor-pointer">
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">Atau URL Gambar Thumbnail</label>
+                    <input type="text" name="thumbnail" value="{{ old('thumbnail', $article->thumbnail) }}" placeholder="https://images.unsplash.com/..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600">
+                </div>
             </div>
 
             <div class="space-y-1.5">

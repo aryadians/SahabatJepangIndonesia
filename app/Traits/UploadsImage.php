@@ -3,33 +3,35 @@
 namespace App\Traits;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 trait UploadsImage
 {
     /**
-     * Handle Image upload or fallback to URL string
+     * Konversi upload gambar / file menjadi Base64 Data URI string untuk disimpan ke database (LONGTEXT)
      *
      * @param Request $request
-     * @param string $fileField
-     * @param string $urlField
-     * @param string $folder
-     * @param string|null $oldImage
+     * @param string $fileField Nama input file (e.g. 'image_file', 'logo_file')
+     * @param string $urlField Nama input teks URL / base64 string manual
+     * @param string|null $oldValue Nilai lama jika tidak ada upload baru
      * @return string|null
      */
-    public function handleImageUpload(Request $request, string $fileField = 'image_file', string $urlField = 'image', string $folder = 'uploads', ?string $oldImage = null): ?string
+    public function handleImageUpload(Request $request, string $fileField = 'image_file', string $urlField = 'image', ?string $oldValue = null): ?string
     {
+        // 1. Jika ada file yang diunggah (gambar atau video), konversi ke Base64 Data URI
         if ($request->hasFile($fileField)) {
             $file = $request->file($fileField);
-            $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('public/' . $folder, $filename);
-            return '/storage/' . $folder . '/' . $filename;
+            $mimeType = $file->getMimeType();
+            $fileData = file_get_contents($file->getRealPath());
+            $base64 = base64_encode($fileData);
+            return "data:{$mimeType};base64,{$base64}";
         }
 
+        // 2. Jika admin memasukkan URL atau base64 string manual
         if ($request->filled($urlField)) {
             return $request->input($urlField);
         }
 
-        return $oldImage;
+        // 3. Kembalikan nilai gambar lama jika tidak diubah
+        return $oldValue;
     }
 }

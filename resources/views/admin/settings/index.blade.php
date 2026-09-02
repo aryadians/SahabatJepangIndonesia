@@ -1,37 +1,96 @@
 @extends('admin.layouts.admin')
 
-@section('title', 'Pengaturan Konten Website')
-@section('page_title', 'Pengaturan Website & Teks Hero')
+@section('title', 'Pengaturan Konten Website & Logo')
+@section('page_title', 'Pengaturan Website & Logo Header')
 
 @section('content')
-<form action="{{ route('admin.settings.update') }}" method="POST" class="space-y-8 max-w-5xl">
+<form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data" class="space-y-8 max-w-5xl">
     @csrf
 
-    <!-- 1. General & Top Bar Settings -->
-    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5">
+    <!-- 1. Logo & Brand Identity Settings (Base64 LONGTEXT) -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
         <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
-                <i data-lucide="globe" class="w-5 h-5"></i>
+                <i data-lucide="image" class="w-5 h-5"></i>
             </div>
             <div>
-                <h3 class="font-extrabold text-slate-900 text-base">Identitas Website & Top Announcement Bar</h3>
-                <p class="text-xs text-slate-500">Nama lembaga, logo subtitle, dan teks pengumuman di bagian paling atas website</p>
+                <h3 class="font-extrabold text-slate-900 text-base">Logo Website (Header & Footer)</h3>
+                <p class="text-xs text-slate-500">Ubah logo brand website yang tampil di header atas dan footer (disimpan sebagai Base64)</p>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div class="space-y-1.5">
-                <label class="block text-xs font-bold text-slate-700 uppercase">Nama Lembaga (Brand)</label>
-                <input type="text" name="site_name" value="{{ $settings['site_name'] ?? 'LPK Sahabat Jepang Indonesia' }}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600 font-semibold">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+            
+            <!-- Logo Preview Box -->
+            <div class="md:col-span-4 p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center space-y-3">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Preview Logo Aktif</p>
+                <div class="h-20 w-full flex items-center justify-center bg-white p-2 rounded-xl border border-slate-200 shadow-inner overflow-hidden">
+                    @if(!empty($settings['site_logo']))
+                        <img id="logoPreviewImg" src="{{ $settings['site_logo'] }}" alt="Logo LPK" class="max-h-full max-w-full object-contain">
+                    @else
+                        <div id="logoDefaultBadge" class="flex items-center gap-2">
+                            <div class="w-10 h-10 rounded-xl bg-japan-600 text-white flex items-center justify-center font-japanese font-black text-lg">
+                                友
+                            </div>
+                            <span class="font-extrabold text-slate-800 text-xs text-left">Badge Default (Kanji 友)</span>
+                        </div>
+                    @endif
+                </div>
+                <p class="text-[10px] text-slate-400">Format: PNG transparan, JPG, WEBP, atau SVG</p>
             </div>
 
-            <div class="space-y-1.5">
-                <label class="block text-xs font-bold text-slate-700 uppercase">Tagline / Subtitle Brand</label>
-                <input type="text" name="site_tagline" value="{{ $settings['site_tagline'] ?? '友好日本インドネシア • Penyalur Resmi RI' }}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600">
+            <!-- Upload & Input Controls -->
+            <div class="md:col-span-8 space-y-4">
+                
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">1. Unggah File Logo Baru (Otomatis Tersimpan Base64)</label>
+                    <input 
+                        type="file" 
+                        name="site_logo_file" 
+                        accept="image/*" 
+                        onchange="previewImageFile(this, 'logoPreviewImg')"
+                        class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:outline-none focus:border-japan-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-japan-600 file:text-white hover:file:bg-japan-700 cursor-pointer"
+                    >
+                    <p class="text-[10px] text-slate-400">File langsung dikonversi ke Base64 format tanpa memerlukan hosting eksternal.</p>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">2. Atau Masukkan URL / Data Base64 Manual</label>
+                    <input type="text" name="site_logo" value="{{ $settings['site_logo'] ?? '' }}" placeholder="https://... atau data:image/png;base64,..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600 font-mono">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-700 uppercase">Nama Brand Header</label>
+                        <input type="text" name="site_name" value="{{ $settings['site_name'] ?? 'SAHABAT JEPANG' }}" class="w-full px-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600 font-bold">
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-700 uppercase">Tagline / Subtitle Header</label>
+                        <input type="text" name="site_tagline" value="{{ $settings['site_tagline'] ?? 'Penyalur Resmi Kemenaker' }}" class="w-full px-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600">
+                    </div>
+                </div>
+
             </div>
 
+        </div>
+    </div>
+
+    <!-- 2. Top Announcement Bar Settings -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5">
+        <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
+                <i data-lucide="megaphone" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <h3 class="font-extrabold text-slate-900 text-base">Top Announcement Bar (Banner Pengumuman Atas)</h3>
+                <p class="text-xs text-slate-500">Teks berjalan atau promosi yang berada di paling atas website</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div class="space-y-1.5">
-                <label class="block text-xs font-bold text-slate-700 uppercase">Badge Pengumuman Atas</label>
+                <label class="block text-xs font-bold text-slate-700 uppercase">Badge Label</label>
                 <input type="text" name="announcement_badge" value="{{ $settings['announcement_badge'] ?? 'Batch Baru 2026 Dibuka' }}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600">
             </div>
 
@@ -42,7 +101,7 @@
         </div>
     </div>
 
-    <!-- 2. Hero Section Settings -->
+    <!-- 3. Hero Section Settings -->
     <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5">
         <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
@@ -50,7 +109,7 @@
             </div>
             <div>
                 <h3 class="font-extrabold text-slate-900 text-base">Konten Hero Section (Beranda Utama)</h3>
-                <p class="text-xs text-slate-500">Judul utama (headline), sub-judul penjelas, dan gambar banner depan</p>
+                <p class="text-xs text-slate-500">Judul utama (headline), sub-judul penjelas, dan gambar banner visual</p>
             </div>
         </div>
 
@@ -77,15 +136,25 @@
                 <textarea name="hero_subtitle" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600">{{ $settings['hero_subtitle'] ?? '' }}</textarea>
             </div>
 
-            <div class="space-y-1.5">
-                <label class="block text-xs font-bold text-slate-700 uppercase">URL Gambar Utama Hero</label>
-                <input type="text" name="hero_image" value="{{ $settings['hero_image'] ?? 'https://images.unsplash.com/photo-1528164344705-475426879c0d?auto=format&fit=crop&w=900&q=80' }}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600">
-                <p class="text-[11px] text-slate-400">Masukkan link URL gambar yang ingin ditampilkan di kartu visual hero beranda.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">Upload Gambar Banner Hero (Base64)</label>
+                    <input 
+                        type="file" 
+                        name="hero_image_file" 
+                        accept="image/*" 
+                        class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:outline-none focus:border-japan-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-japan-600 file:text-white hover:file:bg-japan-700 cursor-pointer"
+                    >
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">Atau URL Gambar Hero</label>
+                    <input type="text" name="hero_image" value="{{ $settings['hero_image'] ?? '' }}" placeholder="https://images.unsplash.com/..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600 font-mono">
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 3. Stat Counters Settings -->
+    <!-- 4. Stat Counters Settings -->
     <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5">
         <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
@@ -126,7 +195,7 @@
         </div>
     </div>
 
-    <!-- 4. Contact & Footer Settings -->
+    <!-- 5. Contact & Footer Settings -->
     <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5">
         <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
@@ -175,4 +244,24 @@
     </div>
 
 </form>
+
+<script>
+    function previewImageFile(input, targetImgId) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById(targetImgId);
+                const defaultBadge = document.getElementById('logoDefaultBadge');
+                if (img) {
+                    img.src = e.target.result;
+                    img.classList.remove('hidden');
+                }
+                if (defaultBadge) {
+                    defaultBadge.classList.add('hidden');
+                }
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
 @endsection

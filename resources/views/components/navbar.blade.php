@@ -5,21 +5,25 @@
             
             <!-- Brand Logo (Left) -->
             <a href="{{ route('home') }}" class="flex items-center gap-3 group flex-shrink-0">
-                <div class="relative w-11 h-11 rounded-2xl bg-gradient-to-tr from-japan-700 via-japan-600 to-red-500 flex items-center justify-center text-white shadow-md shadow-red-500/25 group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
-                    <span class="font-japanese font-black text-xl tracking-tighter">友</span>
-                    <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-japan-600 flex items-center justify-center">
-                        <span class="w-1.5 h-1.5 rounded-full bg-japan-600"></span>
-                    </span>
-                </div>
+                @if(!empty($settings['site_logo']))
+                    <img src="{{ $settings['site_logo'] }}" alt="{{ $settings['site_name'] ?? 'LPK Sahabat Jepang' }}" class="h-11 w-auto object-contain max-w-[160px] rounded-lg">
+                @else
+                    <div class="relative w-11 h-11 rounded-2xl bg-gradient-to-tr from-japan-700 via-japan-600 to-red-500 flex items-center justify-center text-white shadow-md shadow-red-500/25 group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
+                        <span class="font-japanese font-black text-xl tracking-tighter">友</span>
+                        <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-japan-600 flex items-center justify-center">
+                            <span class="w-1.5 h-1.5 rounded-full bg-japan-600"></span>
+                        </span>
+                    </div>
+                @endif
                 <div class="flex flex-col justify-center">
                     <div class="flex items-center gap-2">
-                        <span class="font-extrabold text-base sm:text-lg text-slate-900 tracking-tight leading-none">SAHABAT JEPANG</span>
+                        <span class="font-extrabold text-base sm:text-lg text-slate-900 tracking-tight leading-none">{{ $settings['site_name'] ?? 'SAHABAT JEPANG' }}</span>
                         <span class="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-red-100 text-japan-700 tracking-wide">LPK & SO</span>
                     </div>
                     <p class="text-[11px] text-slate-500 font-medium flex items-center gap-1.5 mt-1 leading-none">
                         <span class="font-japanese text-[11px] text-japan-600 font-bold">友好日本</span>
                         <span class="text-slate-300">•</span>
-                        <span>Penyalur Resmi Kemenaker</span>
+                        <span>{{ $settings['site_tagline'] ?? 'Penyalur Resmi Kemenaker' }}</span>
                     </p>
                 </div>
             </a>
