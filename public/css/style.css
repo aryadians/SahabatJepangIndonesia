@@ -397,3 +397,33 @@ input[type=range] {
     -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
 }
 
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVE POLISH
+   ========================================================================== */
+@media (max-width: 640px) {
+    /* Touch target comfort */
+    button, a {
+        touch-action: manipulation;
+    }
+
+    /* Modal max-height & full width on small screens */
+    .modal-content-box {
+        max-height: 92vh;
+        width: 100% !important;
+        margin: 0.5rem;
+    }
+
+    /* Reduce heavy blur filters on low-power mobile GPUs */
+    .glass-card, .glass-nav {
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+}
+
+/* Responsive Table Scroll Styling */
+.overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+

@@ -49,18 +49,19 @@ class AdminConsultationController extends Controller
     }
 
     /**
-     * Update Status Konsultasi (Pending -> Contacted -> Registered)
+     * Update Status Konsultasi (Pending -> Contacted -> Registered -> Cancelled)
      */
     public function updateStatus(Request $request, $id)
     {
         $validated = $request->validate([
             'status' => 'required|in:pending,contacted,registered,cancelled',
+            'admin_notes' => 'nullable|string',
         ]);
 
         $consultation = Consultation::findOrFail($id);
-        $consultation->update(['status' => $validated['status']]);
+        $consultation->update($validated);
 
-        return back()->with('success', "Status data {$consultation->name} berhasil diperbarui menjadi {$validated['status']}.");
+        return back()->with('success', "Data follow-up {$consultation->name} berhasil diperbarui.");
     }
 
     /**
@@ -105,7 +106,8 @@ class AdminConsultationController extends Controller
                 'Pendidikan',
                 'Program Minat',
                 'Kota Asal',
-                'Pesan / Catatan',
+                'Pesan / Catatan Pendaftar',
+                'Catatan Internal Admin / Konselor',
                 'Status',
                 'Tanggal Pendaftaran'
             ]);
@@ -120,6 +122,7 @@ class AdminConsultationController extends Controller
                     $row->program,
                     $row->city ?? '-',
                     $row->message ?? '-',
+                    $row->admin_notes ?? '-',
                     strtoupper($row->status),
                     $row->created_at->format('d/m/Y H:i')
                 ]);

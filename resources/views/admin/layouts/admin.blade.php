@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Admin Panel') - LPK Sahabat Jepang Indonesia</title>
-    
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'Admin Dashboard') - LPK Sahabat Jepang Indonesia</title>
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -18,25 +19,28 @@
                 extend: {
                     colors: {
                         japan: {
-                            50: '#FEF2F2',
-                            100: '#FEE2E2',
-                            200: '#FECACA',
-                            500: '#EF4444',
-                            600: '#DC2626',
-                            700: '#B91C1C',
-                            800: '#991B1B',
-                            900: '#7F1D1D',
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#9f1239',
+                            900: '#881337',
+                            950: '#4c0519',
                         }
                     },
                     fontFamily: {
                         sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        japanese: ['"Zen Maru Gothic"', 'sans-serif'],
+                        japanese: ['"Noto Sans JP"', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
-    
+
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -45,23 +49,33 @@
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex">
 
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="adminSidebarBackdrop" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-30 hidden md:hidden" onclick="toggleAdminSidebar(false)"></div>
+
     <!-- Sidebar Navigation -->
-    <aside class="w-64 bg-slate-900 text-slate-300 flex-shrink-0 hidden md:flex flex-col justify-between min-h-screen sticky top-0">
+    <aside id="adminSidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-slate-900 text-slate-300 flex-shrink-0 flex flex-col justify-between min-h-screen transition-transform duration-300 -translate-x-full md:translate-x-0 md:static">
         
         <div>
             <!-- Sidebar Header -->
-            <div class="h-20 flex items-center gap-3 px-6 border-b border-slate-800">
-                <div class="w-10 h-10 rounded-2xl bg-japan-600 text-white flex items-center justify-center font-japanese font-black text-lg shadow-md">
-                    友
+            <div class="h-20 flex items-center justify-between px-6 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-japan-600 text-white flex items-center justify-center font-japanese font-black text-lg shadow-md">
+                        友
+                    </div>
+                    <div>
+                        <h2 class="font-extrabold text-white text-sm tracking-tight">LPK SAHABAT JEPANG</h2>
+                        <p class="text-[11px] text-red-400 font-semibold font-japanese">Admin CMS & Leads</p>
+                    </div>
                 </div>
-                <div>
-                    <h2 class="font-extrabold text-white text-sm tracking-tight">LPK SAHABAT JEPANG</h2>
-                    <p class="text-[11px] text-red-400 font-semibold font-japanese">Admin CMS & Leads</p>
-                </div>
+
+                <!-- Mobile Close Button -->
+                <button type="button" onclick="toggleAdminSidebar(false)" class="md:hidden text-slate-400 hover:text-white p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
             </div>
 
             <!-- Navigation Links -->
-            <nav class="p-4 space-y-1.5 text-xs font-semibold">
+            <nav class="p-4 space-y-1.5 text-xs font-semibold overflow-y-auto max-h-[calc(100vh-10rem)]">
                 
                 <div class="px-3 pt-2 pb-1 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
                     Utama
@@ -197,7 +211,15 @@
         <!-- Topbar -->
         <header class="h-20 bg-white border-b border-slate-200 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-20 shadow-sm">
             <div class="flex items-center gap-3">
-                <span class="font-bold text-slate-800 text-base sm:text-lg">@yield('page_title', 'Admin Panel')</span>
+                <button 
+                    type="button" 
+                    onclick="toggleAdminSidebar(true)" 
+                    class="md:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-japan-600 transition"
+                    aria-label="Toggle sidebar menu"
+                >
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+                <span class="font-bold text-slate-800 text-base sm:text-lg truncate">@yield('page_title', 'Admin Panel')</span>
             </div>
 
             <div class="flex items-center gap-4">
@@ -243,7 +265,23 @@
     </div>
 
     <script>
+        // Initialize Icons
         lucide.createIcons();
+
+        // Responsive Admin Sidebar Toggle
+        function toggleAdminSidebar(open) {
+            const sidebar = document.getElementById('adminSidebar');
+            const backdrop = document.getElementById('adminSidebarBackdrop');
+            if (!sidebar || !backdrop) return;
+
+            if (open) {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
+            }
+        }
     </script>
 </body>
 </html>

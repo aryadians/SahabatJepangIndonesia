@@ -1,5 +1,5 @@
 <!-- Navigation Bar -->
-<header id="mainNavbar" class="sticky top-0 z-40 w-full transition-all duration-300 bg-white/90 backdrop-blur-md border-b border-red-100/80 shadow-sm">
+<header id="mainNavbar" class="sticky top-0 z-40 w-full transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-red-100/80 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-20 gap-4">
             
@@ -24,35 +24,104 @@
                 </div>
             </a>
 
-            <!-- Desktop Nav Links (Center) -->
-            <nav class="hidden lg:flex items-center justify-center gap-1 xl:gap-2 flex-1 max-w-2xl mx-2">
-                <a href="#beranda" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
+            <!-- Desktop Nav Links (Clean, Focused with Hover Dropdown) -->
+            <nav class="hidden lg:flex items-center justify-center gap-1 xl:gap-2 flex-1 max-w-xl mx-2">
+                
+                <a href="{{ route('home') }}#beranda" class="px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
                     Beranda
                 </a>
-                <a href="#tentang" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
+                
+                <a href="{{ route('home') }}#tentang" class="px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
                     Tentang
                 </a>
-                <a href="#program" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
-                    Program
+                
+                <a href="{{ route('home') }}#program" class="px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
+                    Program Karir
                 </a>
-                <a href="#kalkulator" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
+                
+                <a href="{{ route('home') }}#kalkulator" class="px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
                     Simulasi Gaji
                 </a>
-                <a href="#alur" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
-                    Alur Proses
-                </a>
-                <a href="#fasilitas" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
-                    Fasilitas
-                </a>
-                <a href="#testimoni" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
-                    Testimoni
-                </a>
-                <a href="#faq" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
-                    FAQ
-                </a>
-                <a href="{{ route('articles.index') }}" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
+                
+                <a href="{{ route('articles.index') }}" class="px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
                     Artikel
                 </a>
+
+                <!-- Dropdown Menu "Lainnya" (Hover Activated) -->
+                <div class="relative group">
+                    <button 
+                        type="button" 
+                        class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-700 group-hover:text-japan-600 group-hover:bg-red-50/70 transition-all"
+                        aria-expanded="false"
+                    >
+                        <span>Lainnya</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-hover:text-japan-600 group-hover:rotate-180 transition-transform duration-300"></i>
+                    </button>
+
+                    <!-- Dropdown Content Box -->
+                    <div class="absolute left-1/2 -translate-x-1/2 top-full pt-2 opacity-0 invisible translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50">
+                        <div class="w-64 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-red-100 p-2 space-y-1 ring-1 ring-black/5">
+                            
+                            <!-- Alur Proses -->
+                            <a 
+                                href="{{ route('home') }}#alur" 
+                                class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-red-50 text-slate-700 hover:text-japan-700 transition group/item"
+                            >
+                                <div class="w-8 h-8 rounded-lg bg-red-50 text-japan-600 group-hover/item:bg-japan-600 group-hover/item:text-white flex items-center justify-center transition">
+                                    <i data-lucide="git-branch" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-900 group-hover/item:text-japan-700">Alur Keberangkatan</p>
+                                    <p class="text-[10px] text-slate-400">Tahapan seleksi s/d terbang</p>
+                                </div>
+                            </a>
+
+                            <!-- Fasilitas & Asrama -->
+                            <a 
+                                href="{{ route('home') }}#fasilitas" 
+                                class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-red-50 text-slate-700 hover:text-japan-700 transition group/item"
+                            >
+                                <div class="w-8 h-8 rounded-lg bg-red-50 text-japan-600 group-hover/item:bg-japan-600 group-hover/item:text-white flex items-center justify-center transition">
+                                    <i data-lucide="building" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-900 group-hover/item:text-japan-700">Fasilitas & Asrama</p>
+                                    <p class="text-[10px] text-slate-400">Galeri sarana & asrama</p>
+                                </div>
+                            </a>
+
+                            <!-- Testimoni Alumni -->
+                            <a 
+                                href="{{ route('home') }}#testimoni" 
+                                class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-red-50 text-slate-700 hover:text-japan-700 transition group/item"
+                            >
+                                <div class="w-8 h-8 rounded-lg bg-red-50 text-japan-600 group-hover/item:bg-japan-600 group-hover/item:text-white flex items-center justify-center transition">
+                                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-900 group-hover/item:text-japan-700">Testimoni Alumni</p>
+                                    <p class="text-[10px] text-slate-400">Kisah sukses di Jepang</p>
+                                </div>
+                            </a>
+
+                            <!-- Tanya Jawab (FAQ) -->
+                            <a 
+                                href="{{ route('home') }}#faq" 
+                                class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-red-50 text-slate-700 hover:text-japan-700 transition group/item"
+                            >
+                                <div class="w-8 h-8 rounded-lg bg-red-50 text-japan-600 group-hover/item:bg-japan-600 group-hover/item:text-white flex items-center justify-center transition">
+                                    <i data-lucide="help-circle" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-900 group-hover/item:text-japan-700">Tanya Jawab (FAQ)</p>
+                                    <p class="text-[10px] text-slate-400">Pertanyaan umum</p>
+                                </div>
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+
             </nav>
 
             <!-- Actions (Right) -->
@@ -104,41 +173,46 @@
 
         <!-- Mobile Dropdown Menu -->
         <div id="mobileMenu" class="hidden lg:hidden py-4 border-t border-slate-100 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl px-4 space-y-1 my-2">
-            <a href="#beranda" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
+            <a href="{{ route('home') }}#beranda" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
                 <i data-lucide="home" class="w-4 h-4 text-japan-600"></i>
                 <span>Beranda</span>
             </a>
-            <a href="#tentang" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
+            <a href="{{ route('home') }}#tentang" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
                 <i data-lucide="shield-check" class="w-4 h-4 text-japan-600"></i>
                 <span>Tentang Kami & Legalitas</span>
             </a>
-            <a href="#program" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
+            <a href="{{ route('home') }}#program" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
                 <i data-lucide="briefcase" class="w-4 h-4 text-japan-600"></i>
                 <span>Program Karir (SSW & Magang)</span>
             </a>
-            <a href="#kalkulator" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
+            <a href="{{ route('home') }}#kalkulator" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
                 <i data-lucide="calculator" class="w-4 h-4 text-japan-600"></i>
                 <span>Simulasi Gaji & Tabungan</span>
-            </a>
-            <a href="#alur" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
-                <i data-lucide="git-branch" class="w-4 h-4 text-japan-600"></i>
-                <span>Alur Keberangkatan</span>
-            </a>
-            <a href="#fasilitas" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
-                <i data-lucide="building" class="w-4 h-4 text-japan-600"></i>
-                <span>Fasilitas & Asrama</span>
-            </a>
-            <a href="#testimoni" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
-                <i data-lucide="message-square" class="w-4 h-4 text-japan-600"></i>
-                <span>Testimoni Alumni</span>
-            </a>
-            <a href="#faq" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
-                <i data-lucide="help-circle" class="w-4 h-4 text-japan-600"></i>
-                <span>Tanya Jawab (FAQ)</span>
             </a>
             <a href="{{ route('articles.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
                 <i data-lucide="newspaper" class="w-4 h-4 text-japan-600"></i>
                 <span>Artikel & Berita</span>
+            </a>
+            
+            <div class="pt-2 pb-1 px-3 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                Informasi Lainnya
+            </div>
+
+            <a href="{{ route('home') }}#alur" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-japan-600 hover:bg-red-50 transition">
+                <i data-lucide="git-branch" class="w-3.5 h-3.5 text-japan-600"></i>
+                <span>Alur Keberangkatan</span>
+            </a>
+            <a href="{{ route('home') }}#fasilitas" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-japan-600 hover:bg-red-50 transition">
+                <i data-lucide="building" class="w-3.5 h-3.5 text-japan-600"></i>
+                <span>Fasilitas & Asrama</span>
+            </a>
+            <a href="{{ route('home') }}#testimoni" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-japan-600 hover:bg-red-50 transition">
+                <i data-lucide="message-square" class="w-3.5 h-3.5 text-japan-600"></i>
+                <span>Testimoni Alumni</span>
+            </a>
+            <a href="{{ route('home') }}#faq" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-japan-600 hover:bg-red-50 transition">
+                <i data-lucide="help-circle" class="w-3.5 h-3.5 text-japan-600"></i>
+                <span>Tanya Jawab (FAQ)</span>
             </a>
             
             <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">

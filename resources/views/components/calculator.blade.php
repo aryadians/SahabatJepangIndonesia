@@ -7,22 +7,44 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         <!-- Section Header -->
-        <div class="text-center max-w-3xl mx-auto mb-16 space-y-3 reveal-on-scroll">
+        <div class="text-center max-w-3xl mx-auto mb-12 space-y-3 reveal-on-scroll">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-100 text-japan-700 text-xs font-bold uppercase tracking-wider">
                 <span class="font-japanese text-sm">給与シミュレーション</span>
-                <span>• Kalkulator Interaktif</span>
+                <span>• Transparansi Finansial</span>
             </div>
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
                 Simulasi Penghasilan & <br class="hidden sm:inline">
-                <span class="text-japan-600">Tabungan Bersih di Jepang</span>
+                <span class="text-japan-600">Transparansi Biaya Program</span>
             </h2>
             <p class="text-base sm:text-lg text-slate-600 leading-relaxed">
-                Hitung perkiraan gaji kotor, potongan wajib standar Jepang, biaya hidup, dan estimasi uang yang bisa Anda tabung atau kirimkan ke keluarga setiap bulannya.
+                Ketahui secara terbuka potensi penghasilan bulanan di Jepang serta rincian biaya pelatihan tanpa biaya tersembunyi.
             </p>
+
+            <!-- Tab Switcher -->
+            <div class="pt-4 flex items-center justify-center">
+                <div class="inline-flex p-1.5 rounded-2xl bg-slate-100 border border-slate-200">
+                    <button 
+                        type="button" 
+                        id="tabSalaryBtn" 
+                        onclick="switchCalcTab('salary')" 
+                        class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-white text-japan-700 shadow-sm transition"
+                    >
+                        💰 Simulasi Gaji & Tabungan
+                    </button>
+                    <button 
+                        type="button" 
+                        id="tabCostBtn" 
+                        onclick="switchCalcTab('cost')" 
+                        class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition"
+                    >
+                        📋 Transparansi Biaya & Dana Talangan
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <!-- Calculator Interactive Grid -->
-        <div class="max-w-5xl mx-auto rounded-3xl bg-gradient-to-br from-white via-red-50/40 to-white border border-red-200/80 shadow-2xl p-6 sm:p-10 reveal-scale">
+        <!-- TAB 1: SALARY & SAVINGS SIMULATOR -->
+        <div id="salaryTabContent" class="max-w-5xl mx-auto rounded-3xl bg-gradient-to-br from-white via-red-50/40 to-white border border-red-200/80 shadow-2xl p-6 sm:p-10 reveal-scale">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                 
                 <!-- Left: Controls & Sliders -->
@@ -93,7 +115,6 @@
                 <!-- Right: Breakdown Result Box -->
                 <div class="lg:col-span-6 rounded-3xl bg-slate-900 text-white p-6 sm:p-8 shadow-xl relative overflow-hidden border border-slate-800">
                     
-                    <!-- Japanese Kanji Decorative Header -->
                     <div class="flex items-center justify-between pb-4 border-b border-slate-800">
                         <div>
                             <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Hasil Kalkulasi</span>
@@ -105,7 +126,6 @@
                     </div>
 
                     <div class="space-y-4 py-5 border-b border-slate-800">
-                        <!-- Gross Salary -->
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-xs text-slate-400 font-medium">Gaji Kotor (Base + Lembur)</p>
@@ -114,13 +134,11 @@
                             <span id="calcGrossYen" class="text-base font-extrabold text-white">¥ 232.000</span>
                         </div>
 
-                        <!-- Deductions -->
                         <div class="flex items-center justify-between">
                             <p class="text-xs text-slate-400 font-medium">Potongan Pajak & Asuransi (18%)</p>
                             <span id="calcDeductionsYen" class="text-sm font-bold text-rose-400">- ¥ 41.760</span>
                         </div>
 
-                        <!-- Living Cost -->
                         <div class="flex items-center justify-between">
                             <p class="text-xs text-slate-400 font-medium">Sewa Asrama, Makan & Utilitas</p>
                             <span id="calcLivingCostYen" class="text-sm font-bold text-rose-400">- ¥ 50.880</span>
@@ -157,5 +175,102 @@
             </div>
         </div>
 
+        <!-- TAB 2: COST TRANSPARENCY & FINANCIAL AID -->
+        <div id="costTabContent" class="hidden max-w-5xl mx-auto rounded-3xl bg-white border border-slate-200 shadow-2xl p-6 sm:p-10">
+            <div class="space-y-8">
+                
+                <div class="text-center sm:text-left space-y-1">
+                    <h3 class="text-xl sm:text-2xl font-black text-slate-900">Transparansi Rincian Biaya & Skema Dana Talangan</h3>
+                    <p class="text-xs sm:text-sm text-slate-600">Seluruh biaya dijelaskan di awal secara tertulis di depan notaris/perjanjian resmi tanpa pungutan liar.</p>
+                </div>
+
+                <!-- 3 Step Cost Breakdown Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                        <div class="w-8 h-8 rounded-xl bg-red-100 text-japan-700 font-black flex items-center justify-center text-xs">
+                            1
+                        </div>
+                        <h4 class="font-extrabold text-slate-900 text-sm">Tahap 1: Pelatihan di LPK</h4>
+                        <ul class="text-xs text-slate-600 space-y-1.5">
+                            <li>• Modul Buku & Aplikasi Bahasa</li>
+                            <li>• Pengajar Native & Bersertifikasi</li>
+                            <li>• Asrama & Sarana Pelatihan</li>
+                            <li>• Simulasi Wawancara (Mensetsu)</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                        <div class="w-8 h-8 rounded-xl bg-red-100 text-japan-700 font-black flex items-center justify-center text-xs">
+                            2
+                        </div>
+                        <h4 class="font-extrabold text-slate-900 text-sm">Tahap 2: Sertifikasi & Ujian</h4>
+                        <ul class="text-xs text-slate-600 space-y-1.5">
+                            <li>• Ujian JFT-Basic A2 / JLPT N4</li>
+                            <li>• Ujian Keahlian Sektor (Skill Test)</li>
+                            <li>• Bimbingan Try-Out Ujian</li>
+                            <li>• Penerbitan Sertifikat Kelulusan</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                        <div class="w-8 h-8 rounded-xl bg-red-100 text-japan-700 font-black flex items-center justify-center text-xs">
+                            3
+                        </div>
+                        <h4 class="font-extrabold text-slate-900 text-sm">Tahap 3: Dokumen & Terbang</h4>
+                        <ul class="text-xs text-slate-600 space-y-1.5">
+                            <li>• Medical Check-Up (MCU) Resmi</li>
+                            <li>• Paspor & Visa Kerja Imigrasi</li>
+                            <li>• Pengurusan COE (Eligibility)</li>
+                            <li>• Tiket Pesawat ke Jepang</li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <!-- Dana Talangan Highlight Banner -->
+                <div class="p-6 rounded-2xl bg-gradient-to-r from-japan-900 to-japan-700 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+                    <div class="space-y-2 text-center sm:text-left">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-xs">
+                            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                            <span>Skema Dana Talangan Resmi</span>
+                        </div>
+                        <h4 class="text-lg sm:text-xl font-black text-white">Bisa Berangkat Dahulu, Cicil Setelah Bergaji di Jepang</h4>
+                        <p class="text-xs sm:text-sm text-red-100/90 max-w-xl">
+                            Untuk siswa berprestasi yang terkendala biaya, LPK menyediakan fasilitas talangan kerjasama lembaga perbankan resmi yang dapat dicicil ringan dari gaji bulanan di Jepang.
+                        </p>
+                    </div>
+
+                    <button onclick="openModal('consultationModal')" class="btn-white-outline bg-white text-japan-700 hover:bg-red-50 px-6 py-3 rounded-xl text-xs font-black shadow-lg flex-shrink-0">
+                        Konsultasi Skema Biaya
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 </section>
+
+<script>
+    function switchCalcTab(tab) {
+        const salaryContent = document.getElementById('salaryTabContent');
+        const costContent = document.getElementById('costTabContent');
+        const salaryBtn = document.getElementById('tabSalaryBtn');
+        const costBtn = document.getElementById('tabCostBtn');
+
+        if (tab === 'salary') {
+            salaryContent.classList.remove('hidden');
+            costContent.classList.add('hidden');
+            
+            salaryBtn.className = 'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-white text-japan-700 shadow-sm transition';
+            costBtn.className = 'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition';
+        } else {
+            salaryContent.classList.add('hidden');
+            costContent.classList.remove('hidden');
+
+            costBtn.className = 'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-white text-japan-700 shadow-sm transition';
+            salaryBtn.className = 'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition';
+        }
+    }
+</script>

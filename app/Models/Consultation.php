@@ -18,5 +18,6 @@ class Consultation extends Model
         'city',
         'message',
         'status',
+        'admin_notes',
     ];
 }
