@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProgramController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\StudentController;
+use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\AdminConsultationController;
 use App\Http\Controllers\ArticleController;
@@ -84,12 +86,23 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // 10. Batch Schedules CMS
     Route::resource('schedules', BatchScheduleController::class)->except(['create', 'show', 'edit']);
 
-    // 11. Admin Profile & Password
+    // 11. Data Diri Siswa & Keuangan LPK
+    Route::get('/students/export', [StudentController::class, 'exportCsv'])->name('students.export');
+    Route::get('/students/{id}/print', [StudentController::class, 'printDossier'])->name('students.print');
+    Route::post('/students/{id}/payment', [StudentController::class, 'updatePayment'])->name('students.payment');
+    Route::resource('students', StudentController::class)->except(['show']);
+
+    // 12. Data Pengajar / Sensei
+    Route::resource('teachers', TeacherController::class)->except(['show']);
+
+    // 13. Admin Profile & Password
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
     // Friendly Aliases (Singular / Variations)
+    Route::get('/student', fn() => redirect()->route('admin.students.index'));
+    Route::get('/teacher', fn() => redirect()->route('admin.teachers.index'));
     Route::get('/setting', fn() => redirect()->route('admin.settings.index'));
     Route::get('/lead', fn() => redirect()->route('admin.consultations.index'));
     Route::get('/program', fn() => redirect()->route('admin.programs.index'));

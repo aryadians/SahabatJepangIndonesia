@@ -27,11 +27,16 @@ class DashboardController extends Controller
             'testimonials' => Testimonial::count(),
             'faqs' => Faq::count(),
             'partners' => Partner::count(),
+            'students' => \App\Models\Student::count(),
+            'students_active' => \App\Models\Student::whereIn('status', ['active', 'interview', 'passed_interview'])->count(),
+            'students_departed' => \App\Models\Student::where('status', 'departed')->count(),
+            'teachers' => \App\Models\Teacher::count(),
         ];
 
         $latestLeads = Consultation::latest()->take(5)->get();
+        $latestStudents = \App\Models\Student::latest()->take(5)->get();
         $programs = Program::orderBy('order')->get();
 
-        return view('admin.dashboard', compact('counts', 'latestLeads', 'programs'));
+        return view('admin.dashboard', compact('counts', 'latestLeads', 'latestStudents', 'programs'));
     }
 }
