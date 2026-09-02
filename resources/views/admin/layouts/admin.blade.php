@@ -143,6 +143,18 @@
                     <span>Mitra Kaisha</span>
                 </a>
 
+                <div class="px-3 pt-4 pb-1 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                    Sistem & Keamanan
+                </div>
+
+                <a 
+                    href="{{ route('admin.profile.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.profile.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white' }}"
+                >
+                    <i data-lucide="user-cog" class="w-4 h-4"></i>
+                    <span>Profil & Kata Sandi</span>
+                </a>
+
             </nav>
         </div>
 
@@ -181,14 +193,14 @@
             </div>
 
             <div class="flex items-center gap-4">
-                <div class="text-right hidden sm:block">
+                <a href="{{ route('admin.profile.index') }}" class="text-right hidden sm:block hover:opacity-80 transition">
                     <p class="text-xs font-bold text-slate-900">{{ auth()->user()->name ?? 'Administrator' }}</p>
                     <p class="text-[11px] text-slate-400">{{ auth()->user()->email ?? 'admin@sahabatjepangindonesia.com' }}</p>
-                </div>
+                </a>
                 
-                <div class="w-10 h-10 rounded-xl bg-red-100 text-japan-700 font-bold flex items-center justify-center text-sm shadow-sm">
+                <a href="{{ route('admin.profile.index') }}" class="w-10 h-10 rounded-xl bg-red-100 text-japan-700 font-bold flex items-center justify-center text-sm shadow-sm hover:ring-2 hover:ring-red-400 transition">
                     {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
-                </div>
+                </a>
             </div>
         </header>
 

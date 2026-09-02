@@ -137,6 +137,7 @@
     @include('components.consultation-modal')
     @include('components.program-modal')
     @include('components.facility-modal')
+    @include('components.quiz-modal')
     @include('components.success-modal')
 
     <!-- Custom App Script -->

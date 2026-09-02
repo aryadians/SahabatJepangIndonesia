@@ -654,3 +654,117 @@ function initFaqAccordion() {
         });
     });
 }
+
+/* ==========================================================================
+   11. PROGRAM MATCHMAKER QUIZ ENGINE
+   ========================================================================== */
+const quizAnswers = {
+    age: '',
+    education: '',
+    japanese: '',
+    sector: ''
+};
+
+window.selectQuizAnswer = function (key, value, nextStep) {
+    quizAnswers[key] = value;
+
+    // Update progress bar
+    const bar = document.getElementById('quizProgressBar');
+    const stepText = document.getElementById('quizStepText');
+    const percentText = document.getElementById('quizPercentText');
+
+    if (nextStep === 2) {
+        document.getElementById('quizStep1')?.classList.add('hidden');
+        document.getElementById('quizStep2')?.classList.remove('hidden');
+        if (bar) bar.style.width = '50%';
+        if (stepText) stepText.textContent = 'Langkah 2 dari 4: Pendidikan';
+        if (percentText) percentText.textContent = '50%';
+    } else if (nextStep === 3) {
+        document.getElementById('quizStep2')?.classList.add('hidden');
+        document.getElementById('quizStep3')?.classList.remove('hidden');
+        if (bar) bar.style.width = '75%';
+        if (stepText) stepText.textContent = 'Langkah 3 dari 4: Bahasa Jepang';
+        if (percentText) percentText.textContent = '75%';
+    } else if (nextStep === 4) {
+        document.getElementById('quizStep3')?.classList.add('hidden');
+        document.getElementById('quizStep4')?.classList.remove('hidden');
+        if (bar) bar.style.width = '100%';
+        if (stepText) stepText.textContent = 'Langkah 4 dari 4: Pilihan Sektor';
+        if (percentText) percentText.textContent = '100%';
+    } else if (nextStep === 'result') {
+        document.getElementById('quizStep4')?.classList.add('hidden');
+        document.getElementById('quizResultScreen')?.classList.remove('hidden');
+        calculateQuizRecommendation();
+    }
+};
+
+function calculateQuizRecommendation() {
+    let recTitle = 'Tokutei Ginou (SSW) - Pengolahan Makanan';
+    let recDesc = 'Berdasarkan profil usia dan pendidikan Anda, jalur Tokutei Ginou (SSW) adalah opsi terbaik dengan standar gaji resmi setara pekerja Jepang dan kesempatan tinggal jangka panjang.';
+    let recSalary = '¥ 190.000 - 260.000';
+
+    if (quizAnswers.education === 'Sarjana S1' && (quizAnswers.sector.includes('IT') || quizAnswers.sector.includes('Engineering'))) {
+        recTitle = 'Engineer & Professional Career';
+        recDesc = 'Latar belakang pendidikan Sarjana Anda sangat bernilai tinggi untuk jalur visa kerja Engineer di perusahaan teknologi dan manufaktur Jepang.';
+        recSalary = '¥ 230.000 - 380.000+';
+    } else if (quizAnswers.sector.includes('Kaigo')) {
+        recTitle = 'Tokutei Ginou (SSW) - Kaigo (Caregiver)';
+        recDesc = 'Bidang Kaigo (Perawat Lansia) memiliki kuota keberangkatan terbesar dan tunjangan tertinggi di Jepang dengan proses pelatihan intensif yang terstruktur.';
+        recSalary = '¥ 210.000 - 270.000';
+    } else if (quizAnswers.age === '18-25' && quizAnswers.japanese === 'Nol / Pemula') {
+        recTitle = 'Ginou Jisshusei (Magang Kerja Industri)';
+        recDesc = 'Program Magang Kerja Industri sangat ideal untuk pemula usia muda, memberikan pelatihan menyeluruh, tempat tinggal, dan tabungan pensiun (Nenkin) puluhan juta rupiah.';
+        recSalary = '¥ 160.000 - 210.000';
+    } else if (quizAnswers.sector.includes('Manufaktur')) {
+        recTitle = 'Tokutei Ginou (SSW) - Manufaktur & Permesinan';
+        recDesc = 'Industri manufaktur dan permesinan Jepang menawarkan jam lembur stabil, lingkungan kerja berteknologi canggih, dan fasilitas tunjangan lengkap.';
+        recSalary = '¥ 195.000 - 260.000';
+    }
+
+    const titleEl = document.getElementById('quizResultProgramTitle');
+    const descEl = document.getElementById('quizResultProgramDesc');
+    const salaryEl = document.getElementById('quizResultSalary');
+
+    if (titleEl) titleEl.textContent = recTitle;
+    if (descEl) descEl.textContent = recDesc;
+    if (salaryEl) salaryEl.textContent = recSalary;
+}
+
+window.claimQuizRecommendation = function () {
+    const titleEl = document.getElementById('quizResultProgramTitle');
+    const recTitle = titleEl ? titleEl.textContent.trim() : 'Tokutei Ginou (SSW)';
+    
+    closeModal('quizModal');
+
+    // Preset values in consultation form
+    const consultSelect = document.getElementById('consultProgramSelect');
+    const consultAge = document.querySelector('#consultationModal input[name="age"]');
+    const consultEdu = document.querySelector('#consultationModal select[name="education"]');
+    
+    if (consultSelect) consultSelect.value = recTitle;
+    if (consultAge && quizAnswers.age === '18-25') consultAge.value = 21;
+    if (consultAge && quizAnswers.age === '26-30') consultAge.value = 27;
+    if (consultEdu && quizAnswers.education) consultEdu.value = quizAnswers.education;
+
+    setTimeout(() => openModal('consultationModal'), 200);
+};
+
+window.resetQuiz = function () {
+    quizAnswers.age = '';
+    quizAnswers.education = '';
+    quizAnswers.japanese = '';
+    quizAnswers.sector = '';
+
+    const bar = document.getElementById('quizProgressBar');
+    const stepText = document.getElementById('quizStepText');
+    const percentText = document.getElementById('quizPercentText');
+
+    if (bar) bar.style.width = '25%';
+    if (stepText) stepText.textContent = 'Langkah 1 dari 4: Usia';
+    if (percentText) percentText.textContent = '25%';
+
+    document.querySelectorAll('.quiz-step').forEach((el) => el.classList.add('hidden'));
+    document.getElementById('quizResultScreen')?.classList.add('hidden');
+    document.getElementById('quizStep1')?.classList.remove('hidden');
+};
+

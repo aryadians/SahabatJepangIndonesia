@@ -15,6 +15,19 @@
         <i data-lucide="arrow-up" class="w-5 h-5 group-hover:-translate-y-0.5 transition-transform"></i>
     </button>
 
+    <!-- Floating Quiz Matchmaker Button -->
+    <button 
+        type="button" 
+        onclick="openModal('quizModal')" 
+        class="group flex items-center gap-2 p-3 sm:px-4 sm:py-2.5 rounded-full bg-slate-900 text-amber-300 shadow-xl border border-amber-400/40 hover:scale-105 hover:bg-slate-800 transition-all duration-300"
+        title="Tes Kecocokan Program Jepang 30 Detik"
+    >
+        <i data-lucide="compass" class="w-5 h-5 text-amber-400 group-hover:rotate-45 transition-transform"></i>
+        <span class="hidden sm:inline font-black text-xs text-white">
+            Tes Minat Kerja (30 Dtk)
+        </span>
+    </button>
+
     <!-- Floating WhatsApp Action Button -->
     <a 
         href="https://api.whatsapp.com/send?phone=6281234567890&text=Halo%20Admin%20LPK%20Sahabat%20Jepang%20Indonesia,%20saya%20tertarik%20bertanya%20tentang%20pelatihan%20dan%20kerja%20di%20Jepang" 

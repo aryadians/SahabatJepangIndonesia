@@ -55,6 +55,17 @@
             <!-- Actions (Right) -->
             <div class="flex items-center gap-2.5 sm:gap-3 flex-shrink-0">
                 
+                <!-- Tes Minat Quiz Button (Desktop) -->
+                <button 
+                    type="button" 
+                    onclick="openModal('quizModal')" 
+                    class="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 transition"
+                    title="Cek program yang cocok untuk Anda"
+                >
+                    <i data-lucide="compass" class="w-4 h-4 text-amber-600"></i>
+                    <span>Tes Minat</span>
+                </button>
+
                 <!-- Direct WhatsApp Icon Button (Desktop & Tablet) -->
                 <a 
                     href="https://api.whatsapp.com/send?phone=6281234567890&text=Halo%20Admin%20LPK%20Sahabat%20Jepang%20Indonesia,%20saya%20ingin%20tanya%20program%20ke%20Jepang" 
@@ -124,6 +135,14 @@
             </a>
             
             <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
+                <button 
+                    type="button" 
+                    onclick="openModal('quizModal')" 
+                    class="w-full py-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm font-bold flex items-center justify-center gap-2"
+                >
+                    <i data-lucide="compass" class="w-4 h-4 text-amber-600"></i>
+                    <span>Tes Minat & Kecocokan Program</span>
+                </button>
                 <button 
                     type="button"
                     onclick="openModal('consultationModal')" 

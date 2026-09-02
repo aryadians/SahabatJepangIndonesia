@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FacilityController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\PartnerController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProgramController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\TestimonialController;
@@ -70,6 +71,11 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
     // 8. Partners CRUD
     Route::resource('partners', PartnerController::class)->except(['create', 'show', 'edit']);
+
+    // 9. Admin Profile & Password
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
     // Friendly Aliases (Singular / Variations)
     Route::get('/setting', fn() => redirect()->route('admin.settings.index'));
