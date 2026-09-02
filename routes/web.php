@@ -33,6 +33,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 // Laravel default route named 'login' redirect
 Route::get('/login', fn() => redirect()->route('admin.login'))->name('login');
+Route::get('/dashboard', fn() => redirect()->route('admin.dashboard'));
 
 /*
 |--------------------------------------------------------------------------
@@ -70,4 +71,12 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // 8. Partners CRUD
     Route::resource('partners', PartnerController::class)->except(['create', 'show', 'edit']);
 
+    // Friendly Aliases (Singular / Variations)
+    Route::get('/setting', fn() => redirect()->route('admin.settings.index'));
+    Route::get('/lead', fn() => redirect()->route('admin.consultations.index'));
+    Route::get('/program', fn() => redirect()->route('admin.programs.index'));
+    Route::get('/facility', fn() => redirect()->route('admin.facilities.index'));
+    Route::get('/testimonial', fn() => redirect()->route('admin.testimonials.index'));
+    Route::get('/faq', fn() => redirect()->route('admin.faqs.index'));
+    Route::get('/partner', fn() => redirect()->route('admin.partners.index'));
 });
