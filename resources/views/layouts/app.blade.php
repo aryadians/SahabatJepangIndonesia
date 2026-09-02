@@ -110,9 +110,9 @@
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-2 sm:gap-6">
             <span class="inline-flex items-center gap-1.5 bg-white/20 text-white px-2.5 py-0.5 rounded-full text-xs font-semibold backdrop-blur-sm">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                Batch Baru 2026 Dibuka
+                {{ $settings['announcement_badge'] ?? 'Batch Baru 2026 Dibuka' }}
             </span>
-            <span>🌸 <strong>Pendaftaran Gelombang Khusus Tokutei Ginou & Magang Jepang Telah Dibuka!</strong> Kuota Terbatas.</span>
+            <span>{{ $settings['announcement_text'] ?? '🌸 Pendaftaran Gelombang Khusus Tokutei Ginou & Magang Jepang Telah Dibuka! Kuota Terbatas.' }}</span>
             <button onclick="openModal('consultationModal')" class="underline underline-offset-4 hover:text-red-200 font-bold ml-1 transition">
                 Daftar Sekarang &rarr;
             </button>

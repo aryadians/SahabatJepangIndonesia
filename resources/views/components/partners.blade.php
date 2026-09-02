@@ -10,58 +10,32 @@
 
     <!-- Infinite Scrolling Logo Marquee -->
     <div class="relative w-full overflow-hidden mask-fade-edges">
-        <div class="flex items-center gap-8 sm:gap-12 animate-marquee whitespace-nowrap">
+        <div class="flex items-center gap-6 sm:gap-10 animate-marquee whitespace-nowrap">
             
-            <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100/80 text-slate-700 font-bold text-xs sm:text-sm hover:border-red-200 transition">
-                <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
-                <span>Tokyo Foods Industry Co., Ltd. (東京都)</span>
-            </div>
-
-            <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100/80 text-slate-700 font-bold text-xs sm:text-sm hover:border-red-200 transition">
-                <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
-                <span>Kansai Social Welfare Caregiver (大阪府)</span>
-            </div>
-
-            <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100/80 text-slate-700 font-bold text-xs sm:text-sm hover:border-red-200 transition">
-                <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
-                <span>Aichi Precision Automotive Corp (愛知県)</span>
-            </div>
-
-            <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100/80 text-slate-700 font-bold text-xs sm:text-sm hover:border-red-200 transition">
-                <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
-                <span>Kyushu Tech Design & Engineering (福岡県)</span>
-            </div>
-
-            <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100/80 text-slate-700 font-bold text-xs sm:text-sm hover:border-red-200 transition">
-                <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
-                <span>Hokkaido Modern Agri Farm (北海道)</span>
-            </div>
-
-            <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100/80 text-slate-700 font-bold text-xs sm:text-sm hover:border-red-200 transition">
-                <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
-                <span>Yokohama Logistics & Packaging (神奈川県)</span>
-            </div>
-
-            <!-- Duplicate for infinite seamless scroll -->
-            <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100/80 text-slate-700 font-bold text-xs sm:text-sm hover:border-red-200 transition">
-                <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
-                <span>Tokyo Foods Industry Co., Ltd. (東京都)</span>
-            </div>
-
-            <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100/80 text-slate-700 font-bold text-xs sm:text-sm hover:border-red-200 transition">
-                <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
-                <span>Kansai Social Welfare Caregiver (大阪府)</span>
-            </div>
-
-            <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100/80 text-slate-700 font-bold text-xs sm:text-sm hover:border-red-200 transition">
-                <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
-                <span>Aichi Precision Automotive Corp (愛知県)</span>
-            </div>
-
-            <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100/80 text-slate-700 font-bold text-xs sm:text-sm hover:border-red-200 transition">
-                <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
-                <span>Kyushu Tech Design & Engineering (福岡県)</span>
-            </div>
+            @if(isset($partners) && count($partners) > 0)
+                @foreach($partners as $partner)
+                    <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100/80 text-slate-700 font-bold text-xs sm:text-sm hover:border-red-200 transition">
+                        <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
+                        <span>{{ $partner->name }} {{ $partner->prefecture ? "({$partner->prefecture})" : '' }}</span>
+                    </div>
+                @endforeach
+                <!-- Duplicate for continuous infinite seamless scroll -->
+                @foreach($partners as $partner)
+                    <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100/80 text-slate-700 font-bold text-xs sm:text-sm hover:border-red-200 transition">
+                        <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
+                        <span>{{ $partner->name }} {{ $partner->prefecture ? "({$partner->prefecture})" : '' }}</span>
+                    </div>
+                @endforeach
+            @else
+                <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100/80 text-slate-700 font-bold text-xs sm:text-sm">
+                    <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
+                    <span>Tokyo Foods Industry Co., Ltd. (東京都)</span>
+                </div>
+                <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100/80 text-slate-700 font-bold text-xs sm:text-sm">
+                    <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
+                    <span>Kansai Social Welfare Caregiver (大阪府)</span>
+                </div>
+            @endif
 
         </div>
     </div>

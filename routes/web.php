@@ -1,19 +1,73 @@
 <?php
 
+use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\FacilityController;
+use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\PartnerController;
+use App\Http\Controllers\Admin\ProgramController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\AdminConsultationController;
 use App\Http\Controllers\LandingPageController;
 use Illuminate\Support\Facades\Route;
 
-// Landing Page Public Routes
+/*
+|--------------------------------------------------------------------------
+| Web Public Routes
+|--------------------------------------------------------------------------
+*/
 Route::get('/', [LandingPageController::class, 'index'])->name('home');
 Route::post('/konsultasi', [LandingPageController::class, 'storeConsultation'])->name('consultation.store');
 
-// Admin Panel Leads Management Routes
+/*
+|--------------------------------------------------------------------------
+| Admin Authentication Routes
+|--------------------------------------------------------------------------
+*/
 Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
+
+// Laravel default route named 'login' redirect
+Route::get('/login', fn() => redirect()->route('admin.login'))->name('login');
+
+/*
+|--------------------------------------------------------------------------
+| Admin Protected CMS & Leads Management Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+    
+    // 1. Dashboard Overview
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+
+    // 2. Leads & Consultations Management
     Route::get('/leads', [AdminConsultationController::class, 'index'])->name('consultations.index');
     Route::post('/leads/{id}/status', [AdminConsultationController::class, 'updateStatus'])->name('consultations.status');
     Route::delete('/leads/{id}', [AdminConsultationController::class, 'destroy'])->name('consultations.destroy');
     Route::get('/leads/export', [AdminConsultationController::class, 'exportCsv'])->name('consultations.export');
+
+    // 3. Site Settings & Hero CMS
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+    // 4. Programs CRUD
+    Route::resource('programs', ProgramController::class)->except(['show']);
+
+    // 5. Facilities CRUD
+    Route::resource('facilities', FacilityController::class)->except(['create', 'show', 'edit']);
+
+    // 6. Testimonials CRUD
+    Route::resource('testimonials', TestimonialController::class)->except(['create', 'show', 'edit']);
+
+    // 7. FAQs CRUD
+    Route::resource('faqs', FaqController::class)->except(['create', 'show', 'edit']);
+
+    // 8. Partners CRUD
+    Route::resource('partners', PartnerController::class)->except(['create', 'show', 'edit']);
+
 });
-
-
