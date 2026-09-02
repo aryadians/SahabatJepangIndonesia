@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="id" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -71,13 +71,13 @@
         }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col md:flex-row">
+<body class="bg-slate-100 text-slate-800 antialiased h-full overflow-hidden flex">
 
     <!-- Mobile Sidebar Backdrop -->
     <div id="adminSidebarBackdrop" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-30 hidden md:hidden" onclick="toggleAdminSidebar(false)"></div>
 
-    <!-- Sidebar Navigation (Full Height Sticky 100% Screen) -->
-    <aside id="adminSidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-slate-900 text-slate-300 flex-shrink-0 flex flex-col h-screen md:sticky md:top-0 transition-transform duration-300 -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none border-r border-slate-800 select-none">
+    <!-- Sidebar Navigation (Fixed Full-Height App Shell) -->
+    <aside id="adminSidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-slate-900 text-slate-300 flex-shrink-0 flex flex-col h-full transition-transform duration-300 -translate-x-full md:translate-x-0 md:static border-r border-slate-800 select-none">
         
         <!-- Sidebar Header (Fixed at top) -->
         <div class="h-16 flex-shrink-0 flex items-center justify-between px-5 border-b border-slate-800 bg-slate-950/60">
@@ -255,11 +255,11 @@
 
     </aside>
 
-    <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col min-w-0">
+    <!-- Main Content Area (Scrolls independently while Sidebar remains 100% fixed) -->
+    <div class="flex-1 flex flex-col h-full overflow-y-auto min-w-0 bg-slate-100">
         
-        <!-- Topbar -->
-        <header class="h-16 bg-white border-b border-slate-200 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-20 shadow-sm">
+        <!-- Topbar (Fixed at top of right pane) -->
+        <header class="h-16 bg-white border-b border-slate-200 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-20 shadow-sm flex-shrink-0">
             <div class="flex items-center gap-3">
                 <button 
                     type="button" 
@@ -284,7 +284,7 @@
             </div>
         </header>
 
-        <!-- Main Body -->
+        <!-- Main Body (Scrolls smoothly without affecting the sidebar) -->
         <main class="p-4 sm:p-6 lg:p-8 flex-1 space-y-6">
             
             <!-- Global Flash Messages -->
@@ -338,7 +338,6 @@
             const modal = document.getElementById(id);
             if (modal) {
                 modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
             }
         }
 
@@ -346,7 +345,6 @@
             const modal = document.getElementById(id);
             if (modal) {
                 modal.classList.remove('active');
-                document.body.style.overflow = 'auto';
             }
         }
     </script>
