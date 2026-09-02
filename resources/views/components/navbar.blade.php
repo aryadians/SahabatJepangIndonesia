@@ -97,6 +97,20 @@
                                 </div>
                             </a>
 
+                            <!-- Tim Sensei / Pengajar -->
+                            <a 
+                                href="{{ route('home') }}#pengajar" 
+                                class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-red-50 text-slate-700 hover:text-japan-700 transition group/item"
+                            >
+                                <div class="w-8 h-8 rounded-lg bg-red-50 text-japan-600 group-hover/item:bg-japan-600 group-hover/item:text-white flex items-center justify-center transition">
+                                    <i data-lucide="user-check" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-900 group-hover/item:text-japan-700">Sensei & Pengajar</p>
+                                    <p class="text-[10px] text-slate-400">Instruktur N1/N2 & Native</p>
+                                </div>
+                            </a>
+
                             <!-- Fasilitas & Asrama -->
                             <a 
                                 href="{{ route('home') }}#fasilitas" 
@@ -230,6 +244,10 @@
             <a href="{{ route('home') }}#fasilitas" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-japan-600 hover:bg-red-50 transition">
                 <i data-lucide="building" class="w-3.5 h-3.5 text-japan-600"></i>
                 <span>Fasilitas & Asrama</span>
+            </a>
+            <a href="{{ route('home') }}#pengajar" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-japan-600 hover:bg-red-50 transition">
+                <i data-lucide="user-check" class="w-3.5 h-3.5 text-japan-600"></i>
+                <span>Sensei & Pengajar</span>
             </a>
             <a href="{{ route('home') }}#testimoni" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-japan-600 hover:bg-red-50 transition">
                 <i data-lucide="message-square" class="w-3.5 h-3.5 text-japan-600"></i>

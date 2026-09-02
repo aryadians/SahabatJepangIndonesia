@@ -27,6 +27,9 @@
     <!-- 6. Facilities & Dormitory Gallery (Lazy Loaded Lightbox) -->
     @include('components.facilities')
 
+    <!-- 6.5. Professional Sensei & Instructors Showcase -->
+    @include('components.teachers')
+
     <!-- 7. Testimonials & Alumni Success Stories -->
     @include('components.testimonials')
 
