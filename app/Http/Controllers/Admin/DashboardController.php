@@ -31,6 +31,9 @@ class DashboardController extends Controller
             'students_active' => \App\Models\Student::whereIn('status', ['active', 'interview', 'passed_interview'])->count(),
             'students_departed' => \App\Models\Student::where('status', 'departed')->count(),
             'teachers' => \App\Models\Teacher::count(),
+            'schedules' => \App\Models\BatchSchedule::count(),
+            'articles' => \App\Models\Article::count(),
+            'receivables' => \App\Models\Student::selectRaw('SUM(total_cost - paid_amount) as total_unpaid')->value('total_unpaid') ?? 0,
         ];
 
         $latestLeads = Consultation::latest()->take(5)->get();
