@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\BatchScheduleController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FacilityController;
 use App\Http\Controllers\Admin\FaqController;
@@ -80,7 +81,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // 9. Articles / Blog CMS
     Route::resource('articles', AdminArticleController::class)->except(['show']);
 
-    // 10. Admin Profile & Password
+    // 10. Batch Schedules CMS
+    Route::resource('schedules', BatchScheduleController::class)->except(['create', 'show', 'edit']);
+
+    // 11. Admin Profile & Password
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');

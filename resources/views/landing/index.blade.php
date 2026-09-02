@@ -15,6 +15,9 @@
     <!-- 3. Programs Catalog Section (SSW, Magang, Bahasa, Engineer) -->
     @include('components.programs')
 
+    <!-- 3.5. Jadwal Angkatan & Kuota Penerimaan -->
+    @include('components.schedule')
+
     <!-- 4. Interactive Salary & Savings Simulator -->
     @include('components.calculator')
 

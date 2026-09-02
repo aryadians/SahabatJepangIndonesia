@@ -82,7 +82,10 @@ class LandingPageController extends Controller
         // 6. Ambil Partners
         $partners = Partner::orderBy('order')->get();
 
-        return view('landing.index', compact('settings', 'programs', 'testimonials', 'faqs', 'facilities', 'partners'));
+        // 7. Ambil Jadwal Gelombang & Kuota Kelas (Batch Schedules)
+        $schedules = \App\Models\BatchSchedule::orderBy('order')->get();
+
+        return view('landing.index', compact('settings', 'programs', 'testimonials', 'faqs', 'facilities', 'partners', 'schedules'));
     }
 
     /**

@@ -66,6 +66,23 @@
                     <div class="absolute left-1/2 -translate-x-1/2 top-full pt-2 opacity-0 invisible translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-200 z-50">
                         <div class="w-64 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-red-100 p-2 space-y-1 ring-1 ring-black/5">
                             
+                            <!-- Jadwal & Kuota Kelas -->
+                            <a 
+                                href="{{ route('home') }}#jadwal" 
+                                class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-red-50 text-slate-700 hover:text-japan-700 transition group/item"
+                            >
+                                <div class="w-8 h-8 rounded-lg bg-red-50 text-japan-600 group-hover/item:bg-japan-600 group-hover/item:text-white flex items-center justify-center transition">
+                                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-900 group-hover/item:text-japan-700 flex items-center gap-1.5">
+                                        <span>Jadwal & Kuota</span>
+                                        <span class="px-1.5 py-0.2 rounded bg-japan-100 text-japan-700 text-[9px] font-black">Baru</span>
+                                    </p>
+                                    <p class="text-[10px] text-slate-400">Jadwal masuk gelombang baru</p>
+                                </div>
+                            </a>
+
                             <!-- Alur Proses -->
                             <a 
                                 href="{{ route('home') }}#alur" 
@@ -202,6 +219,10 @@
                 Informasi Lainnya
             </div>
 
+            <a href="{{ route('home') }}#jadwal" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-japan-600 hover:bg-red-50 transition">
+                <i data-lucide="calendar" class="w-3.5 h-3.5 text-japan-600"></i>
+                <span class="font-bold text-japan-600">Jadwal & Kuota Angkatan Baru</span>
+            </a>
             <a href="{{ route('home') }}#alur" class="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-japan-600 hover:bg-red-50 transition">
                 <i data-lucide="git-branch" class="w-3.5 h-3.5 text-japan-600"></i>
                 <span>Alur Keberangkatan</span>
