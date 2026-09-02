@@ -50,7 +50,7 @@
                 </div>
 
                 <!-- Japanese Hanko / Red Seal Graphic Badge (Top Right) -->
-                <div class="absolute -top-4 -right-4 w-20 h-20 rounded-full bg-japan-700 text-white flex items-center justify-center p-2 shadow-xl border-2 border-white transform rotate-12 hidden sm:flex">
+                <div class="absolute -top-4 -right-4 w-20 h-20 rounded-full bg-japan-700 text-white hidden sm:flex items-center justify-center p-2 shadow-xl border-2 border-white transform rotate-12">
                     <div class="text-center">
                         <p class="font-japanese text-xs font-black leading-none">公式認定</p>
                         <p class="text-[9px] font-bold uppercase tracking-tighter mt-0.5">RESMI</p>

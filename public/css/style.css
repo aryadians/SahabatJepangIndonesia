@@ -60,7 +60,6 @@ body {
     background-image: radial-gradient(#DC2626 0.75px, transparent 0.75px), radial-gradient(#DC2626 0.75px, #FFFFFF 0.75px);
     background-size: 30px 30px;
     background-position: 0 0, 15px 15px;
-    background-opacity: 0.03;
 }
 
 .bg-seigaiha {
@@ -372,3 +371,29 @@ body {
 input[type=range] {
     accent-color: #DC2626;
 }
+
+/* Infinite Logo Marquee */
+@keyframes marqueeScroll {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.animate-marquee {
+    display: inline-flex;
+    width: max-content;
+    animation: marqueeScroll 28s linear infinite;
+}
+
+.animate-marquee:hover {
+    animation-play-state: paused;
+}
+
+.mask-fade-edges {
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+

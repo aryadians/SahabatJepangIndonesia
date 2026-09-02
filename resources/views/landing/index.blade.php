@@ -6,6 +6,9 @@
     <!-- 1. Hero Section (3D Animated Canvas & Counters) -->
     @include('components.hero')
 
+    <!-- 1.5. Trusted Japanese Kaisha & Kumiai Partners Marquee -->
+    @include('components.partners')
+
     <!-- 2. About & Credibility Section (SO Kemenaker RI & Akreditasi) -->
     @include('components.about')
 
