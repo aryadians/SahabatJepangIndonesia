@@ -1,77 +1,135 @@
 <!-- Navigation Bar -->
-<header id="mainNavbar" class="sticky top-0 z-40 w-full transition-all duration-300 bg-white/85 backdrop-blur-md border-b border-red-100">
+<header id="mainNavbar" class="sticky top-0 z-40 w-full transition-all duration-300 bg-white/90 backdrop-blur-md border-b border-red-100/80 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-20">
+        <div class="flex items-center justify-between h-20 gap-4">
             
-            <!-- Brand Logo -->
-            <a href="{{ route('home') }}" class="flex items-center gap-3 group">
-                <div class="relative w-11 h-11 rounded-2xl bg-gradient-to-tr from-japan-700 via-japan-600 to-red-500 flex items-center justify-center text-white shadow-md shadow-red-500/20 group-hover:scale-105 transition-transform duration-300">
-                    <!-- Japanese Torii / Mount Fuji Crest Silhouette -->
+            <!-- Brand Logo (Left) -->
+            <a href="{{ route('home') }}" class="flex items-center gap-3 group flex-shrink-0">
+                <div class="relative w-11 h-11 rounded-2xl bg-gradient-to-tr from-japan-700 via-japan-600 to-red-500 flex items-center justify-center text-white shadow-md shadow-red-500/25 group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
                     <span class="font-japanese font-black text-xl tracking-tighter">友</span>
-                    <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-white border-2 border-japan-600 flex items-center justify-center">
-                        <span class="w-2 h-2 rounded-full bg-japan-600"></span>
+                    <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-japan-600 flex items-center justify-center">
+                        <span class="w-1.5 h-1.5 rounded-full bg-japan-600"></span>
                     </span>
                 </div>
-                <div>
-                    <div class="flex items-center gap-1.5">
-                        <span class="font-extrabold text-lg sm:text-xl text-slate-900 tracking-tight">SAHABAT JEPANG</span>
-                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-japan-700 uppercase">LPK & SO</span>
+                <div class="flex flex-col justify-center">
+                    <div class="flex items-center gap-2">
+                        <span class="font-extrabold text-base sm:text-lg text-slate-900 tracking-tight leading-none">SAHABAT JEPANG</span>
+                        <span class="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-red-100 text-japan-700 tracking-wide">LPK & SO</span>
                     </div>
-                    <p class="text-xs text-slate-500 font-medium flex items-center gap-1">
-                        <span class="font-japanese text-[11px] text-japan-600 font-semibold">友好日本インドネシア</span>
-                        <span>• Penyalur Resmi RI</span>
+                    <p class="text-[11px] text-slate-500 font-medium flex items-center gap-1.5 mt-1 leading-none">
+                        <span class="font-japanese text-[11px] text-japan-600 font-bold">友好日本</span>
+                        <span class="text-slate-300">•</span>
+                        <span>Penyalur Resmi Kemenaker</span>
                     </p>
                 </div>
             </a>
 
-            <!-- Desktop Nav Links -->
-            <nav class="hidden lg:flex items-center gap-8">
-                <a href="#beranda" class="text-sm font-semibold text-slate-700 hover:text-japan-600 transition-colors">Beranda</a>
-                <a href="#tentang" class="text-sm font-semibold text-slate-700 hover:text-japan-600 transition-colors">Tentang Kami</a>
-                <a href="#program" class="text-sm font-semibold text-slate-700 hover:text-japan-600 transition-colors">Program Karir</a>
-                <a href="#kalkulator" class="text-sm font-semibold text-slate-700 hover:text-japan-600 transition-colors">Simulasi Gaji</a>
-                <a href="#alur" class="text-sm font-semibold text-slate-700 hover:text-japan-600 transition-colors">Alur Proses</a>
-                <a href="#fasilitas" class="text-sm font-semibold text-slate-700 hover:text-japan-600 transition-colors">Fasilitas</a>
-                <a href="#testimoni" class="text-sm font-semibold text-slate-700 hover:text-japan-600 transition-colors">Testimoni</a>
-                <a href="#faq" class="text-sm font-semibold text-slate-700 hover:text-japan-600 transition-colors">FAQ</a>
+            <!-- Desktop Nav Links (Center) -->
+            <nav class="hidden lg:flex items-center justify-center gap-1 xl:gap-2 flex-1 max-w-2xl mx-2">
+                <a href="#beranda" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
+                    Beranda
+                </a>
+                <a href="#tentang" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
+                    Tentang
+                </a>
+                <a href="#program" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
+                    Program
+                </a>
+                <a href="#kalkulator" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
+                    Simulasi Gaji
+                </a>
+                <a href="#alur" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
+                    Alur Proses
+                </a>
+                <a href="#fasilitas" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
+                    Fasilitas
+                </a>
+                <a href="#testimoni" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
+                    Testimoni
+                </a>
+                <a href="#faq" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
+                    FAQ
+                </a>
             </nav>
 
-            <!-- Actions -->
-            <div class="hidden sm:flex items-center gap-3">
-                <a href="https://api.whatsapp.com/send?phone=6281234567890&text=Halo%20Admin%20LPK%20Sahabat%20Jepang%20Indonesia,%20saya%20ingin%20tanya%20program%20ke%20Jepang" target="_blank" rel="noopener noreferrer" class="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:text-japan-600 hover:border-japan-300 hover:bg-red-50/50 transition">
-                    <i data-lucide="phone-call" class="w-4 h-4"></i>
+            <!-- Actions (Right) -->
+            <div class="flex items-center gap-2.5 sm:gap-3 flex-shrink-0">
+                
+                <!-- Direct WhatsApp Icon Button (Desktop & Tablet) -->
+                <a 
+                    href="https://api.whatsapp.com/send?phone=6281234567890&text=Halo%20Admin%20LPK%20Sahabat%20Jepang%20Indonesia,%20saya%20ingin%20tanya%20program%20ke%20Jepang" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    class="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-xl border border-slate-200 text-slate-600 hover:text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50/50 transition"
+                    title="Hubungi Admin WhatsApp"
+                >
+                    <i data-lucide="message-circle" class="w-4 h-4"></i>
                 </a>
-                <button onclick="openModal('consultationModal')" class="btn-red-primary px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2">
-                    <i data-lucide="send" class="w-4 h-4"></i>
+
+                <!-- CTA Button -->
+                <button 
+                    type="button"
+                    onclick="openModal('consultationModal')" 
+                    class="btn-red-primary px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-red-600/20"
+                >
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-200"></i>
                     <span>Konsultasi Gratis</span>
                 </button>
-            </div>
 
-            <!-- Mobile Hamburger Button -->
-            <div class="flex lg:hidden items-center gap-2">
-                <button onclick="openModal('consultationModal')" class="sm:hidden btn-red-primary px-3 py-2 rounded-lg text-xs font-bold">
-                    Daftar
-                </button>
-                <button id="mobileMenuBtn" class="p-2 rounded-xl text-slate-700 hover:bg-red-50 hover:text-japan-600 focus:outline-none transition">
-                    <i data-lucide="menu" class="w-6 h-6"></i>
+                <!-- Mobile Hamburger Toggle Button -->
+                <button 
+                    id="mobileMenuBtn" 
+                    type="button"
+                    class="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl text-slate-700 hover:bg-red-50 hover:text-japan-600 border border-slate-200/80 transition focus:outline-none"
+                    aria-label="Toggle navigation menu"
+                >
+                    <i data-lucide="menu" class="w-5 h-5"></i>
                 </button>
             </div>
         </div>
 
         <!-- Mobile Dropdown Menu -->
-        <div id="mobileMenu" class="hidden lg:hidden py-4 border-t border-red-50 bg-white/95 backdrop-blur-md rounded-b-2xl shadow-xl px-4 space-y-3">
-            <a href="#beranda" class="block py-2 text-sm font-semibold text-slate-700 hover:text-japan-600">Beranda</a>
-            <a href="#tentang" class="block py-2 text-sm font-semibold text-slate-700 hover:text-japan-600">Tentang Kami & Legalitas</a>
-            <a href="#program" class="block py-2 text-sm font-semibold text-slate-700 hover:text-japan-600">Program Karir (SSW & Magang)</a>
-            <a href="#kalkulator" class="block py-2 text-sm font-semibold text-slate-700 hover:text-japan-600">Simulasi Gaji & Tabungan</a>
-            <a href="#alur" class="block py-2 text-sm font-semibold text-slate-700 hover:text-japan-600">Alur Keberangkatan</a>
-            <a href="#fasilitas" class="block py-2 text-sm font-semibold text-slate-700 hover:text-japan-600">Fasilitas & Asrama</a>
-            <a href="#testimoni" class="block py-2 text-sm font-semibold text-slate-700 hover:text-japan-600">Testimoni Alumni</a>
-            <a href="#faq" class="block py-2 text-sm font-semibold text-slate-700 hover:text-japan-600">Tanya Jawab (FAQ)</a>
+        <div id="mobileMenu" class="hidden lg:hidden py-4 border-t border-slate-100 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl px-4 space-y-1 my-2">
+            <a href="#beranda" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
+                <i data-lucide="home" class="w-4 h-4 text-japan-600"></i>
+                <span>Beranda</span>
+            </a>
+            <a href="#tentang" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
+                <i data-lucide="shield-check" class="w-4 h-4 text-japan-600"></i>
+                <span>Tentang Kami & Legalitas</span>
+            </a>
+            <a href="#program" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
+                <i data-lucide="briefcase" class="w-4 h-4 text-japan-600"></i>
+                <span>Program Karir (SSW & Magang)</span>
+            </a>
+            <a href="#kalkulator" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
+                <i data-lucide="calculator" class="w-4 h-4 text-japan-600"></i>
+                <span>Simulasi Gaji & Tabungan</span>
+            </a>
+            <a href="#alur" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
+                <i data-lucide="git-branch" class="w-4 h-4 text-japan-600"></i>
+                <span>Alur Keberangkatan</span>
+            </a>
+            <a href="#fasilitas" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
+                <i data-lucide="building" class="w-4 h-4 text-japan-600"></i>
+                <span>Fasilitas & Asrama</span>
+            </a>
+            <a href="#testimoni" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
+                <i data-lucide="message-square" class="w-4 h-4 text-japan-600"></i>
+                <span>Testimoni Alumni</span>
+            </a>
+            <a href="#faq" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
+                <i data-lucide="help-circle" class="w-4 h-4 text-japan-600"></i>
+                <span>Tanya Jawab (FAQ)</span>
+            </a>
             
             <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
-                <button onclick="openModal('consultationModal')" class="w-full btn-red-primary py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2">
-                    <i data-lucide="user-check" class="w-4 h-4"></i>
+                <button 
+                    type="button"
+                    onclick="openModal('consultationModal')" 
+                    class="w-full btn-red-primary py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-sm"
+                >
+                    <i data-lucide="send" class="w-4 h-4"></i>
                     <span>Daftar Konsultasi Online</span>
                 </button>
             </div>
