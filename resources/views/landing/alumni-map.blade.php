@@ -5,85 +5,100 @@
 @section('content')
 <div class="bg-slate-950 text-white min-h-screen py-10 sm:py-16 relative overflow-hidden">
 
-    <!-- Japanese Red & Sakura Ambient Glows -->
-    <div class="absolute -top-40 -left-40 w-[35rem] h-[35rem] rounded-full bg-red-600/15 blur-[140px] pointer-events-none"></div>
-    <div class="absolute top-1/3 -right-40 w-[30rem] h-[30rem] rounded-full bg-rose-600/10 blur-[140px] pointer-events-none"></div>
-    <div class="absolute bottom-10 left-1/3 w-[35rem] h-[35rem] rounded-full bg-blue-600/10 blur-[140px] pointer-events-none"></div>
+    <!-- Ambient Japanese Red Glows -->
+    <div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-red-600/15 blur-[120px] pointer-events-none"></div>
+    <div class="absolute top-1/3 -right-32 w-96 h-96 rounded-full bg-rose-600/10 blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-10 left-1/3 w-96 h-96 rounded-full bg-red-800/10 blur-[120px] pointer-events-none"></div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-12">
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 relative z-10 space-y-12">
 
         <!-- Top Header Hero -->
-        <div class="text-center space-y-4 max-w-3xl mx-auto">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-bold font-japanese shadow-sm">
+        <div class="text-center space-y-4 max-w-4xl mx-auto">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-bold font-japanese shadow-xs">
                 <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                <span>日本全国の卒業生ネットワーク • 47 Prefektur Jepang</span>
+                <span>日本全国の卒業生ネットワーク • Sebaran 47 Prefektur Jepang</span>
             </div>
-            <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+            
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
                 Peta Sebaran Alumni di Seluruh Jepang
             </h1>
-            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl mx-auto">
-                Ratusan alumni LPK Sahabat Jepang Indonesia telah resmi berkarir dan tersebar di 8 wilayah utama dan 47 prefektur Jepang, dari Tokyo, Nagoya, Osaka, hingga Fukuoka dan Hokkaido.
+            
+            <p class="text-xs sm:text-sm md:text-base text-slate-300 leading-relaxed max-w-2xl mx-auto">
+                Ratusan alumni LPK Sahabat Jepang Indonesia telah resmi bekerja dan tersebar di 8 wilayah utama dan 47 prefektur Jepang, mulai dari Tokyo, Nagoya, Osaka, hingga Fukuoka dan Hokkaido.
             </p>
 
-            <!-- Quick Live Counter Stats -->
-            <div class="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto">
-                <div class="p-5 rounded-3xl bg-slate-900/90 border border-slate-800 backdrop-blur-md text-center hover:border-red-500/50 transition">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Total Alumni Bekerja</span>
-                    <h3 class="text-3xl font-black text-japan-500 mt-1">{{ $totalAlumniCount }}+</h3>
-                    <p class="text-[10px] text-slate-500 mt-0.5">Peserta Aktif di Jepang</p>
+            <!-- Quick Live Counter 4 Stats Boxes -->
+            <div class="pt-4 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5 max-w-4xl mx-auto">
+                
+                <!-- Stat 1 -->
+                <div class="p-5 rounded-3xl bg-slate-900/90 border border-slate-800 backdrop-blur-md text-center hover:border-red-500/50 transition shadow-lg flex flex-col justify-between min-h-[120px]">
+                    <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider block">Total Alumni Bekerja</span>
+                    <h3 class="text-3xl sm:text-4xl font-black text-japan-500 my-1 font-mono leading-none">{{ $totalAlumniCount }}+</h3>
+                    <p class="text-[11px] text-slate-400 font-medium">Peserta Aktif di Jepang</p>
                 </div>
-                <div class="p-5 rounded-3xl bg-slate-900/90 border border-slate-800 backdrop-blur-md text-center hover:border-emerald-500/50 transition">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Cakupan Wilayah</span>
-                    <h3 class="text-3xl font-black text-emerald-400 mt-1">47 Prefektur</h3>
-                    <p class="text-[10px] text-slate-500 mt-0.5">8 Region Utama</p>
+
+                <!-- Stat 2 -->
+                <div class="p-5 rounded-3xl bg-slate-900/90 border border-slate-800 backdrop-blur-md text-center hover:border-emerald-500/50 transition shadow-lg flex flex-col justify-between min-h-[120px]">
+                    <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider block">Cakupan Wilayah</span>
+                    <h3 class="text-3xl sm:text-4xl font-black text-emerald-400 my-1 font-mono leading-none">47</h3>
+                    <p class="text-[11px] text-slate-400 font-medium">Prefektur di 8 Region</p>
                 </div>
-                <div class="p-5 rounded-3xl bg-slate-900/90 border border-slate-800 backdrop-blur-md text-center hover:border-blue-500/50 transition">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Mitra Kaisha</span>
-                    <h3 class="text-3xl font-black text-blue-400 mt-1">85+ Perusahaan</h3>
-                    <p class="text-[10px] text-slate-500 mt-0.5">Kerjasama Resmi SO</p>
+
+                <!-- Stat 3 -->
+                <div class="p-5 rounded-3xl bg-slate-900/90 border border-slate-800 backdrop-blur-md text-center hover:border-blue-500/50 transition shadow-lg flex flex-col justify-between min-h-[120px]">
+                    <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider block">Mitra Kaisha</span>
+                    <h3 class="text-3xl sm:text-4xl font-black text-blue-400 my-1 font-mono leading-none">85+</h3>
+                    <p class="text-[11px] text-slate-400 font-medium">Perusahaan Resmi SO</p>
                 </div>
-                <div class="p-5 rounded-3xl bg-slate-900/90 border border-slate-800 backdrop-blur-md text-center hover:border-amber-500/50 transition">
-                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Tingkat Kelulusan</span>
-                    <h3 class="text-3xl font-black text-amber-400 mt-1">99.4%</h3>
-                    <p class="text-[10px] text-slate-500 mt-0.5">Visa & COE Terbit</p>
+
+                <!-- Stat 4 -->
+                <div class="p-5 rounded-3xl bg-slate-900/90 border border-slate-800 backdrop-blur-md text-center hover:border-amber-500/50 transition shadow-lg flex flex-col justify-between min-h-[120px]">
+                    <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider block">Tingkat Kelulusan</span>
+                    <h3 class="text-3xl sm:text-4xl font-black text-amber-400 my-1 font-mono leading-none">99.4%</h3>
+                    <p class="text-[11px] text-slate-400 font-medium">Visa & COE Terbit</p>
                 </div>
+
             </div>
         </div>
 
-        <!-- Sektor Karir Filter Pills -->
-        <div class="flex items-center justify-center gap-2 flex-wrap bg-slate-900/80 p-2 rounded-3xl border border-slate-800/80 max-w-4xl mx-auto backdrop-blur-md">
-            <a 
-                href="{{ route('alumni.map') }}" 
-                class="px-4 py-2 rounded-2xl text-xs font-black transition {{ empty($selectedSector) ? 'bg-japan-600 text-white shadow-lg shadow-red-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
-            >
-                Semua Sektor Karir
-            </a>
-            @foreach(['Kaigo' => 'Kaigo / Caregiver', 'Makanan' => 'Pengolahan Makanan', 'Manufaktur' => 'Manufaktur Mesin', 'Pertanian' => 'Pertanian (Nougyou)', 'Konstruksi' => 'Konstruksi', 'Perhotelan' => 'Perhotelan'] as $secKey => $secLbl)
+        <!-- Sektor Karir Filter Bar (Single Horizontal Line / Clean Wrap) -->
+        <div class="max-w-5xl mx-auto">
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 px-3 bg-slate-900/90 rounded-2xl border border-slate-800 backdrop-blur-md justify-start md:justify-center shadow-lg">
                 <a 
-                    href="{{ route('alumni.map', ['sector' => $secKey]) }}" 
-                    class="px-4 py-2 rounded-2xl text-xs font-black transition {{ $selectedSector === $secKey ? 'bg-japan-600 text-white shadow-lg shadow-red-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
+                    href="{{ route('alumni.map') }}" 
+                    class="px-4 py-2 rounded-xl text-xs font-black whitespace-nowrap flex-shrink-0 transition {{ empty($selectedSector) ? 'bg-japan-600 text-white shadow-md shadow-red-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
                 >
-                    {{ $secLbl }}
+                    Semua Sektor Karir
                 </a>
-            @endforeach
+                @foreach(['Kaigo' => 'Kaigo / Caregiver', 'Makanan' => 'Pengolahan Makanan', 'Manufaktur' => 'Manufaktur Mesin', 'Pertanian' => 'Pertanian (Nougyou)', 'Konstruksi' => 'Konstruksi', 'Perhotelan' => 'Perhotelan'] as $secKey => $secLbl)
+                    <a 
+                        href="{{ route('alumni.map', ['sector' => $secKey]) }}" 
+                        class="px-4 py-2 rounded-xl text-xs font-black whitespace-nowrap flex-shrink-0 transition {{ $selectedSector === $secKey ? 'bg-japan-600 text-white shadow-md shadow-red-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
+                    >
+                        {{ $secLbl }}
+                    </a>
+                @endforeach
+            </div>
         </div>
 
         <!-- 8 Regions Japan Matrix Showcase -->
-        <div class="space-y-5">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="space-y-6">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-800 pb-4">
                 <div>
-                    <h3 class="text-xl font-black text-white flex items-center gap-2">
-                        <i data-lucide="map" class="w-5 h-5 text-japan-500"></i>
+                    <h3 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2.5">
+                        <i data-lucide="map" class="w-6 h-6 text-japan-500"></i>
                         <span>Sebaran 8 Wilayah & Prefektur di Jepang</span>
                     </h3>
-                    <p class="text-xs text-slate-400">Peta konsentrasi penempatan kerja alumni LPK Sahabat Jepang Indonesia</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Peta konsentrasi penempatan kerja alumni LPK Sahabat Jepang Indonesia</p>
                 </div>
-                <span class="font-japanese text-xs text-red-400 font-bold hidden sm:inline">日本全国 8地方ネットワーク</span>
+                <span class="font-japanese text-xs text-red-400 font-bold bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20 whitespace-nowrap">
+                    日本全国 8地方ネットワーク
+                </span>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 @foreach($regions as $regKey => $reg)
-                    <div class="p-6 rounded-3xl bg-slate-900/90 border border-slate-800 hover:border-japan-600 transition-all duration-300 group space-y-4 flex flex-col justify-between shadow-lg hover:shadow-red-600/10">
+                    <div class="p-6 rounded-3xl bg-slate-900/90 border border-slate-800 hover:border-japan-600 transition-all duration-300 group flex flex-col justify-between shadow-lg hover:shadow-red-600/10 min-h-[220px]">
                         <div class="space-y-3">
                             <div class="flex items-center justify-between">
                                 <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase text-white shadow-xs {{ $reg['color'] }}">
@@ -99,21 +114,21 @@
                                 <p class="text-xs text-japan-400 font-bold font-japanese mt-0.5">{{ $reg['hub'] }}</p>
                             </div>
 
-                            <div class="pt-2 flex flex-wrap gap-1.5">
+                            <div class="pt-1 flex flex-wrap gap-1.5">
                                 @foreach($reg['prefectures'] as $pref)
-                                    <span class="px-2.5 py-1 rounded-lg bg-slate-800/90 border border-slate-700/60 text-[10px] text-slate-300 font-medium">
+                                    <span class="px-2.5 py-0.5 rounded-lg bg-slate-800 border border-slate-700 text-[10px] text-slate-300 font-medium">
                                         {{ $pref }}
                                     </span>
                                 @endforeach
                             </div>
                         </div>
 
-                        <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                        <div class="pt-3 mt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
                             <span class="flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                                 <span>Status: Aktif</span>
                             </span>
-                            <span class="text-japan-400 font-bold font-mono">100% Legal</span>
+                            <span class="text-japan-400 font-bold font-mono text-[11px]">100% Terdaftar</span>
                         </div>
                     </div>
                 @endforeach
@@ -121,49 +136,52 @@
         </div>
 
         <!-- Real Alumni Stories & Verified Kaisha Placements -->
-        <div class="space-y-6 pt-6">
+        <div class="space-y-6 pt-4">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                 <div>
-                    <h3 class="text-2xl font-black text-white flex items-center gap-2">
+                    <h3 class="text-2xl font-black text-white flex items-center gap-2.5">
                         <i data-lucide="award" class="w-6 h-6 text-amber-500"></i>
                         <span>Kisah Sukses & Penempatan Kaisha Alumni</span>
                     </h3>
-                    <p class="text-xs text-slate-400">Bukti nyata alumni yang telah sukses bekerja di berbagai kota dan perusahaan di Jepang</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Bukti nyata alumni yang telah sukses bekerja di berbagai kota dan perusahaan di Jepang</p>
                 </div>
-                <button onclick="openModal('consultationModal')" class="btn-red-primary px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 shadow-lg shadow-red-600/30">
+                <button onclick="openModal('consultationModal')" class="btn-red-primary px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 shadow-lg shadow-red-600/30 whitespace-nowrap">
                     <i data-lucide="sparkles" class="w-4 h-4 text-amber-200"></i>
                     <span>Ikuti Jejak Mereka Sekarang</span>
                 </button>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($testimonials as $t)
-                    <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-4 flex flex-col justify-between hover:border-red-500/60 transition-all duration-300 shadow-xl group">
+                    <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 flex flex-col justify-between hover:border-red-500/60 transition-all duration-300 shadow-xl group space-y-4">
                         <div class="space-y-4">
                             
                             <!-- Avatar & Location Header -->
                             <div class="flex items-center gap-3.5">
                                 <img src="{{ $t->avatar }}" alt="{{ $t->name }}" class="w-14 h-14 rounded-2xl object-cover border-2 border-japan-600 shadow-md flex-shrink-0 group-hover:scale-105 transition">
                                 <div>
-                                    <h4 class="font-extrabold text-white text-base leading-tight">{{ $t->name }}</h4>
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="font-extrabold text-white text-base leading-tight">{{ $t->name }}</h4>
+                                        <span class="w-2 h-2 rounded-full bg-emerald-400" title="Alumni Aktif"></span>
+                                    </div>
                                     <p class="text-xs text-red-400 font-bold font-japanese flex items-center gap-1 mt-0.5">
-                                        <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+                                        <i data-lucide="map-pin" class="w-3.5 h-3.5 text-japan-500"></i>
                                         <span>{{ $t->prefecture }}, Jepang</span>
                                     </p>
                                 </div>
                             </div>
 
                             <!-- Placement Info Box -->
-                            <div class="p-4 rounded-2xl bg-slate-800/80 border border-slate-700/80 text-xs space-y-1.5 font-mono">
-                                <div class="flex justify-between text-slate-400">
+                            <div class="p-4 rounded-2xl bg-slate-800/90 border border-slate-700/80 text-xs space-y-2 font-mono">
+                                <div class="flex justify-between items-center text-slate-400">
                                     <span>Program:</span>
-                                    <span class="text-white font-bold">{{ $t->program }}</span>
+                                    <span class="text-white font-bold bg-slate-700 px-2 py-0.5 rounded text-[11px]">{{ $t->program }}</span>
                                 </div>
-                                <div class="flex justify-between text-slate-400">
+                                <div class="flex justify-between items-center text-slate-400">
                                     <span>Perusahaan:</span>
-                                    <span class="text-japan-300 font-bold font-japanese">{{ $t->company }}</span>
+                                    <span class="text-japan-300 font-bold font-japanese text-[11px]">{{ $t->company }}</span>
                                 </div>
-                                <div class="flex justify-between text-slate-400 border-t border-slate-700 pt-1.5">
+                                <div class="flex justify-between items-center text-slate-400 border-t border-slate-700/80 pt-2">
                                     <span>Gaji Bersih / Bulan:</span>
                                     <span class="text-emerald-400 font-black text-sm">{{ $t->salary }}</span>
                                 </div>
@@ -177,7 +195,7 @@
 
                         <!-- Footer Badge -->
                         <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-500 font-medium">
-                            <span>Asal: {{ $t->origin }}</span>
+                            <span class="text-[11px]">Asal: <strong class="text-slate-300">{{ $t->origin }}</strong></span>
                             <span class="px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-400 font-bold text-[10px] border border-red-500/30">
                                 {{ $t->tag ?? 'Alumni Sukses' }}
                             </span>

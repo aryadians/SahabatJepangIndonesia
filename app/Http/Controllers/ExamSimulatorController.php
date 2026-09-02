@@ -16,20 +16,22 @@ class ExamSimulatorController extends Controller
         $settings = SiteSetting::allCached();
         $selectedLevel = $request->query('level', 'N5');
 
-        if (!in_array($selectedLevel, ['N5', 'N4', 'N3', 'JFT-Basic'])) {
+        if (!in_array($selectedLevel, ['N5', 'N4', 'N3', 'JFT-Basic', 'all'])) {
             $selectedLevel = 'N5';
         }
 
-        $questions = ExamQuestion::where('level', $selectedLevel)
-            ->where('is_active', true)
-            ->orderBy('order')
-            ->get();
+        $query = ExamQuestion::where('is_active', true);
+        if ($selectedLevel !== 'all') {
+            $query->where('level', $selectedLevel);
+        }
+        $questions = $query->orderBy('order')->get();
 
         $levelsCount = [
             'N5' => ExamQuestion::where('level', 'N5')->where('is_active', true)->count(),
             'N4' => ExamQuestion::where('level', 'N4')->where('is_active', true)->count(),
             'N3' => ExamQuestion::where('level', 'N3')->where('is_active', true)->count(),
             'JFT-Basic' => ExamQuestion::where('level', 'JFT-Basic')->where('is_active', true)->count(),
+            'all' => ExamQuestion::where('is_active', true)->count(),
         ];
 
         return view('landing.exam-simulator', compact('settings', 'questions', 'selectedLevel', 'levelsCount'));
@@ -43,10 +45,11 @@ class ExamSimulatorController extends Controller
         $level = $request->input('level', 'N5');
         $userAnswers = $request->input('answers', []); // [question_id => selected_option]
 
-        $questions = ExamQuestion::where('level', $level)
-            ->where('is_active', true)
-            ->orderBy('order')
-            ->get();
+        $query = ExamQuestion::where('is_active', true);
+        if ($level !== 'all') {
+            $query->where('level', $level);
+        }
+        $questions = $query->orderBy('order')->get();
 
         $totalPoints = 0;
         $earnedPoints = 0;

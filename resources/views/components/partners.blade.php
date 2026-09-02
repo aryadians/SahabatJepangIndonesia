@@ -1,42 +1,207 @@
-<!-- Trusted Kaisha & Kumiai Partners Marquee Banner -->
-<section class="py-10 bg-white border-b border-red-50 relative overflow-hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 text-center">
-        <p class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center justify-center gap-2">
-            <span class="w-8 h-px bg-slate-200"></span>
-            <span>Dipercaya oleh 50+ Organisasi Pengawas (Kumiai) & Perusahaan Penerima (Kaisha) di Jepang</span>
-            <span class="w-8 h-px bg-slate-200"></span>
-        </p>
-    </div>
+<!-- Kemitraan, Legalitas & Dukungan Resmi Pemerintah Section -->
+<section id="kemitraan" class="py-16 sm:py-24 bg-white relative overflow-hidden border-b border-red-50">
+    
+    <!-- Ambient Background Glows -->
+    <div class="absolute top-0 right-0 w-96 h-96 bg-red-50/60 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 w-96 h-96 bg-rose-50/40 rounded-full blur-3xl pointer-events-none"></div>
 
-    <!-- Infinite Scrolling Logo Marquee -->
-    <div class="relative w-full overflow-hidden mask-fade-edges">
-        <div class="flex items-center gap-6 sm:gap-10 animate-marquee whitespace-nowrap">
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 relative z-10 space-y-16">
+
+        <!-- Section Header -->
+        <div class="text-center max-w-3xl mx-auto space-y-3 reveal-on-scroll">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-red-100 text-japan-700 text-xs font-bold uppercase tracking-wider">
+                <span class="font-japanese text-sm">公式提携・政府支援</span>
+                <span>• Kemitraan & Dukungan Resmi</span>
+            </div>
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                Dipercaya Pemerintah, Didukung <br class="hidden sm:inline">
+                <span class="text-japan-600">85+ Perusahaan Terkemuka Jepang</span>
+            </h2>
+            <p class="text-xs sm:text-sm md:text-base text-slate-600 leading-relaxed">
+                LPK Sahabat Jepang Indonesia beroperasi dengan legalitas resmi penuh di bawah pengawasan kementerian dan bekerjasama dengan institusi strategis Indonesia - Jepang.
+            </p>
+        </div>
+
+        <!-- 3 Pillars Grid: Pemerintah, Eksternal & Perbankan, Mitra Industri Jepang -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
             
-            @if(isset($partners) && count($partners) > 0)
-                @foreach($partners as $partner)
-                    <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100/80 text-slate-700 font-bold text-xs sm:text-sm hover:border-red-200 transition">
-                        <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
-                        <span>{{ $partner->name }} {{ $partner->prefecture ? "({$partner->prefecture})" : '' }}</span>
+            <!-- Pillar 1: Dukungan Pemerintah & Regulasi Resmi -->
+            <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-b from-red-50/40 via-white to-white border border-red-100 shadow-md hover:shadow-xl transition-all duration-300 space-y-5 flex flex-col justify-between group">
+                <div class="space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-red-100 text-japan-600 flex items-center justify-center font-bold shadow-xs group-hover:scale-105 transition">
+                        <i data-lucide="landmark" class="w-6 h-6"></i>
                     </div>
-                @endforeach
-                <!-- Duplicate for continuous infinite seamless scroll -->
-                @foreach($partners as $partner)
-                    <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100/80 text-slate-700 font-bold text-xs sm:text-sm hover:border-red-200 transition">
-                        <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
-                        <span>{{ $partner->name }} {{ $partner->prefecture ? "({$partner->prefecture})" : '' }}</span>
+
+                    <div>
+                        <span class="text-[10px] font-extrabold text-japan-600 uppercase tracking-widest block">Pilar 01</span>
+                        <h3 class="text-xl font-extrabold text-slate-900 mt-1">Regulasi & Dukungan Pemerintah</h3>
+                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">Terakreditasi penuh dan beroperasi di bawah payung hukum ketenagakerjaan resmi RI & Jepang.</p>
                     </div>
-                @endforeach
-            @else
-                <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100/80 text-slate-700 font-bold text-xs sm:text-sm">
-                    <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
-                    <span>Tokyo Foods Industry Co., Ltd. (東京都)</span>
+
+                    <div class="space-y-2.5 pt-2">
+                        <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-japan-600 flex-shrink-0 mt-0.5"></i>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-900">Kemnaker RI (SO Resmi)</h4>
+                                <p class="text-[11px] text-slate-500">Izin Sending Organization Resmi Kemenaker</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                            <i data-lucide="file-badge" class="w-4 h-4 text-japan-600 flex-shrink-0 mt-0.5"></i>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-900">BP2MI & SISKOP2MI</h4>
+                                <p class="text-[11px] text-slate-500">Sistem penempatan PMI resmi & terproteksi</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                            <i data-lucide="check-circle-2" class="w-4 h-4 text-japan-600 flex-shrink-0 mt-0.5"></i>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-900">OTIT & JITCO Jepang</h4>
+                                <p class="text-[11px] text-slate-500">Standar resmi magang & Tokutei Ginou</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100/80 text-slate-700 font-bold text-xs sm:text-sm">
-                    <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
-                    <span>Kansai Social Welfare Caregiver (大阪府)</span>
+
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-japan-700 font-bold">
+                    <span>100% Legal & Terdaftar</span>
+                    <i data-lucide="check" class="w-4 h-4 text-emerald-600"></i>
                 </div>
-            @endif
+            </div>
+
+            <!-- Pillar 2: Kemitraan Eksternal, Perbankan & Pendidikan -->
+            <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-b from-blue-50/40 via-white to-white border border-blue-100 shadow-md hover:shadow-xl transition-all duration-300 space-y-5 flex flex-col justify-between group">
+                <div class="space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold shadow-xs group-hover:scale-105 transition">
+                        <i data-lucide="handshake" class="w-6 h-6"></i>
+                    </div>
+
+                    <div>
+                        <span class="text-[10px] font-extrabold text-blue-600 uppercase tracking-widest block">Pilar 02</span>
+                        <h3 class="text-xl font-extrabold text-slate-900 mt-1">Dukungan Eksternal & Finansial</h3>
+                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">Didukung perbankan nasional terpercaya dan asosiasi pengirim tenaga kerja resmi.</p>
+                    </div>
+
+                    <div class="space-y-2.5 pt-2">
+                        <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                            <i data-lucide="credit-card" class="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5"></i>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-900">Bank Mitra (BNI, Mandiri, BCA)</h4>
+                                <p class="text-[11px] text-slate-500">Fasilitas dana talangan & transaksi devisa</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                            <i data-lucide="graduation-cap" class="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5"></i>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-900">45+ SMK & Kampus Vokasi BKK</h4>
+                                <p class="text-[11px] text-slate-500">MoU kemitraan penyaluran langsung siswa</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                            <i data-lucide="building-2" class="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5"></i>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-900">Asosiasi LPK-SO Nasional</h4>
+                                <p class="text-[11px] text-slate-500">Standar mutu pelatihan & etika pengiriman</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-blue-700 font-bold">
+                    <span>Fasilitas Talangan Tersedia</span>
+                    <i data-lucide="check" class="w-4 h-4 text-emerald-600"></i>
+                </div>
+            </div>
+
+            <!-- Pillar 3: Mitra Perusahaan Industri (Kaisha & Kumiai Jepang) -->
+            <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-b from-amber-50/40 via-white to-white border border-amber-100 shadow-md hover:shadow-xl transition-all duration-300 space-y-5 flex flex-col justify-between group">
+                <div class="space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold shadow-xs group-hover:scale-105 transition">
+                        <i data-lucide="building" class="w-6 h-6"></i>
+                    </div>
+
+                    <div>
+                        <span class="text-[10px] font-extrabold text-amber-600 uppercase tracking-widest block">Pilar 03</span>
+                        <h3 class="text-xl font-extrabold text-slate-900 mt-1">Mitra Industri Jepang (Kaisha)</h3>
+                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">Jaringan langsung dengan perusahaan terkemuka di 47 prefektur Jepang.</p>
+                    </div>
+
+                    <div class="space-y-2.5 pt-2">
+                        <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                            <i data-lucide="heart-pulse" class="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5"></i>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-900">Grup Caregiver Lansia (Kaigo)</h4>
+                                <p class="text-[11px] text-slate-500">Tokyo, Kanagawa, Osaka, Kyoto, Aichi</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                            <i data-lucide="cpu" class="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5"></i>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-900">Manufaktur & Otomotif</h4>
+                                <p class="text-[11px] text-slate-500">Pabrik komponen mesin, presisi & perakitan</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                            <i data-lucide="utensils" class="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5"></i>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-900">Industri Pangan & Perhotelan</h4>
+                                <p class="text-[11px] text-slate-500">Food processing chain & jaringan resort hotel</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-amber-700 font-bold">
+                    <span>85+ Kaisha Aktif Menerima</span>
+                    <i data-lucide="check" class="w-4 h-4 text-emerald-600"></i>
+                </div>
+            </div>
 
         </div>
+
+        <!-- Kaisha & Kumiai Partners Running Marquee -->
+        <div class="space-y-4 pt-4">
+            <p class="text-xs font-extrabold uppercase tracking-widest text-slate-400 text-center flex items-center justify-center gap-3">
+                <span class="w-12 h-px bg-slate-200"></span>
+                <span>Jaringan Perusahaan Penerima (Kaisha) & Kumiai di Jepang</span>
+                <span class="w-12 h-px bg-slate-200"></span>
+            </p>
+
+            <div class="relative w-full overflow-hidden mask-fade-edges py-2">
+                <div class="flex items-center gap-4 sm:gap-6 animate-marquee whitespace-nowrap">
+                    @if(isset($partners) && count($partners) > 0)
+                        @foreach($partners as $partner)
+                            <div class="inline-flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-slate-800 font-extrabold text-xs sm:text-sm hover:border-red-300 hover:bg-red-50/50 transition shadow-xs">
+                                <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
+                                <span>{{ $partner->name }} {{ $partner->prefecture ? "({$partner->prefecture})" : '' }}</span>
+                            </div>
+                        @endforeach
+                        <!-- Duplicate for continuous infinite seamless scroll -->
+                        @foreach($partners as $partner)
+                            <div class="inline-flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-slate-800 font-extrabold text-xs sm:text-sm hover:border-red-300 hover:bg-red-50/50 transition shadow-xs">
+                                <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
+                                <span>{{ $partner->name }} {{ $partner->prefecture ? "({$partner->prefecture})" : '' }}</span>
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="inline-flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-slate-800 font-extrabold text-xs sm:text-sm">
+                            <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
+                            <span>Tokyo Foods Industry Co., Ltd. (東京都)</span>
+                        </div>
+                        <div class="inline-flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-slate-800 font-extrabold text-xs sm:text-sm">
+                            <span class="w-2.5 h-2.5 rounded-full bg-japan-600"></span>
+                            <span>Kansai Social Welfare Caregiver (大阪府)</span>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+
     </div>
 </section>

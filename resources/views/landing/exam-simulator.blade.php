@@ -28,7 +28,13 @@
 
             <!-- Level Selector Pills -->
             <div class="flex flex-wrap items-center gap-1.5 bg-slate-950 p-2 rounded-2xl border border-slate-800 shadow-inner">
-                @foreach(['N5' => 'JLPT N5', 'N4' => 'JLPT N4', 'N3' => 'JLPT N3', 'JFT-Basic' => 'JFT-Basic A2'] as $lvl => $lbl)
+                <a 
+                    href="{{ route('exam.simulator', ['level' => 'all']) }}" 
+                    class="px-3.5 py-2 rounded-xl text-xs font-black transition {{ $selectedLevel === 'all' ? 'bg-japan-600 text-white shadow-lg shadow-red-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
+                >
+                    🔥 Grand Tryout (100 Soal)
+                </a>
+                @foreach(['N5' => 'JLPT N5 (25 Soal)', 'N4' => 'JLPT N4 (25 Soal)', 'N3' => 'JLPT N3 (25 Soal)', 'JFT-Basic' => 'JFT-Basic (25 Soal)'] as $lvl => $lbl)
                     <a 
                         href="{{ route('exam.simulator', ['level' => $lvl]) }}" 
                         class="px-3.5 py-2 rounded-xl text-xs font-extrabold transition {{ $selectedLevel === $lvl ? 'bg-japan-600 text-white shadow-lg shadow-red-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
@@ -159,9 +165,9 @@
                     <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Sisa Waktu Pengerjaan</span>
                     <div class="text-4xl font-black text-white font-mono flex items-center justify-center gap-2">
                         <i data-lucide="timer" class="w-7 h-7 text-red-500 animate-pulse"></i>
-                        <span id="timerDisplay">25:00</span>
+                        <span id="timerDisplay">{{ sprintf('%02d:00', max(30, (int) ceil(count($questions) * 1.2))) }}</span>
                     </div>
-                    <p class="text-[11px] text-slate-500 font-medium">Timer otomatis berjalan saat ujian dimulai</p>
+                    <p class="text-[11px] text-slate-500 font-medium">Timer otomatis berjalan saat mulai menjawab</p>
                 </div>
 
                 <!-- Navigator Question Matrix -->
@@ -211,7 +217,7 @@
                     <span>Hasil Evaluasi Ujian</span>
                 </div>
                 <h2 class="text-2xl sm:text-4xl font-black text-slate-900">
-                    Rekapitulasi Nilai Ujian {{ $selectedLevel }}
+                    Rekapitulasi Nilai Ujian {{ $selectedLevel === 'all' ? '100 Soal Lengkap' : $selectedLevel }}
                 </h2>
                 <p class="text-xs sm:text-sm text-slate-600">
                     Berikut adalah hasil analisis skor dan kunci pembahasan lengkap dari simulasi ujian Anda.
@@ -281,7 +287,8 @@
     const questionsData = @json($questions);
     let currentIndex = 0;
     let userAnswers = {}; // { questionId: 'A' }
-    let timerSeconds = 25 * 60; // 25 minutes
+    let totalMinutes = Math.max(30, Math.ceil(questionsData.length * 1.2));
+    let timerSeconds = totalMinutes * 60;
     let timerInterval = null;
     let isTimerStarted = false;
 
