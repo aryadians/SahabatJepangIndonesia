@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FacilityController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Admin\ProgramController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\AdminConsultationController;
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\LandingPageController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +22,8 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/', [LandingPageController::class, 'index'])->name('home');
 Route::post('/konsultasi', [LandingPageController::class, 'storeConsultation'])->name('consultation.store');
+Route::get('/artikel', [ArticleController::class, 'index'])->name('articles.index');
+Route::get('/artikel/{slug}', [ArticleController::class, 'show'])->name('articles.show');
 
 /*
 |--------------------------------------------------------------------------
@@ -72,7 +76,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // 8. Partners CRUD
     Route::resource('partners', PartnerController::class)->except(['create', 'show', 'edit']);
 
-    // 9. Admin Profile & Password
+    // 9. Articles / Blog CMS
+    Route::resource('articles', AdminArticleController::class)->except(['show']);
+
+    // 10. Admin Profile & Password
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
@@ -85,4 +92,5 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/testimonial', fn() => redirect()->route('admin.testimonials.index'));
     Route::get('/faq', fn() => redirect()->route('admin.faqs.index'));
     Route::get('/partner', fn() => redirect()->route('admin.partners.index'));
+    Route::get('/article', fn() => redirect()->route('admin.articles.index'));
 });

@@ -33,6 +33,9 @@
     <!-- 9. Interactive FAQ Accordion -->
     @include('components.faq')
 
+    <!-- 9.5. Educational News & Articles Preview -->
+    @include('components.articles')
+
     <!-- 10. Final Call To Action Banner -->
     @include('components.cta-banner')
 @endsection

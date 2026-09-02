@@ -143,6 +143,14 @@
                     <span>Mitra Kaisha</span>
                 </a>
 
+                <a 
+                    href="{{ route('admin.articles.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.articles.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white' }}"
+                >
+                    <i data-lucide="newspaper" class="w-4 h-4"></i>
+                    <span>Artikel & Berita</span>
+                </a>
+
                 <div class="px-3 pt-4 pb-1 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
                     Sistem & Keamanan
                 </div>

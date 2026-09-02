@@ -50,6 +50,9 @@
                 <a href="#faq" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
                     FAQ
                 </a>
+                <a href="{{ route('articles.index') }}" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50/70 transition-all">
+                    Artikel
+                </a>
             </nav>
 
             <!-- Actions (Right) -->
@@ -132,6 +135,10 @@
             <a href="#faq" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
                 <i data-lucide="help-circle" class="w-4 h-4 text-japan-600"></i>
                 <span>Tanya Jawab (FAQ)</span>
+            </a>
+            <a href="{{ route('articles.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
+                <i data-lucide="newspaper" class="w-4 h-4 text-japan-600"></i>
+                <span>Artikel & Berita</span>
             </a>
             
             <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
