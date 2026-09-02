@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -21,6 +20,10 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'role',
+        'phone',
+        'avatar',
+        'is_active',
         'password',
     ];
 
@@ -44,6 +47,36 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * Check if user is Administrator
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user is Teacher / Sensei
+     */
+    public function isTeacher(): bool
+    {
+        return $this->role === 'teacher';
+    }
+
+    /**
+     * Role Label
+     */
+    public function getRoleNameAttribute(): string
+    {
+        return match($this->role) {
+            'admin' => 'Administrator',
+            'teacher' => 'Pengajar / Sensei',
+            'staff' => 'Staf LPK',
+            default => ucfirst($this->role ?? 'User'),
+        };
     }
 }

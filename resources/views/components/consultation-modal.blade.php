@@ -1,58 +1,57 @@
-<!-- Consultation & Registration Modal Pop-up -->
-<div id="consultationModal" class="custom-modal fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+<!-- Consultation & Registration Modal Pop-up (Clean, Compact, Responsive) -->
+<div id="consultationModal" class="custom-modal fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     
     <!-- Backdrop Blur -->
-    <div class="modal-backdrop-blur fixed inset-0"></div>
+    <div class="modal-backdrop-blur fixed inset-0" onclick="closeModal('consultationModal')"></div>
 
-    <!-- Modal Box -->
-    <div class="modal-content-box relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-red-100 z-10 my-8">
+    <!-- Modal Box (Strict Max Height & Clean Scroll) -->
+    <div class="modal-content-box relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden border border-red-100 z-10 my-auto flex flex-col max-h-[88vh]">
         
-        <!-- Modal Header Banner -->
-        <div class="bg-gradient-to-r from-japan-800 via-japan-600 to-red-600 text-white p-6 sm:p-8 relative">
+        <!-- Modal Header Banner (Compact & Fixed) -->
+        <div class="bg-gradient-to-r from-japan-900 via-japan-700 to-red-600 text-white p-5 sm:p-6 relative flex-shrink-0">
             <button 
                 type="button" 
                 onclick="closeModal('consultationModal')" 
-                class="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition focus:outline-none"
+                class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition focus:outline-none"
+                aria-label="Tutup Formulir"
             >
-                <i data-lucide="x" class="w-5 h-5"></i>
+                <i data-lucide="x" class="w-4 h-4"></i>
             </button>
 
-            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-xs font-semibold mb-2">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-sm text-[11px] font-semibold mb-1.5">
                 <span class="font-japanese">無料相談</span>
-                <span>• Formulir Konsultasi Gratis</span>
+                <span>• Konsultasi Gratis</span>
             </div>
             
-            <h3 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                Pendaftaran & Konsultasi Karir Jepang
+            <h3 class="text-xl sm:text-2xl font-black text-white tracking-tight">
+                Pendaftaran & Konsultasi Karir
             </h3>
-            <p class="text-xs sm:text-sm text-red-100 mt-1">
-                Isi formulir singkat di bawah ini. Tim konselor resmi LPK Sahabat Jepang Indonesia akan segera menghubungi Anda melalui WhatsApp.
+            <p class="text-[11px] sm:text-xs text-red-100 mt-0.5">
+                Isi data singkat berikut. Tim konselor LPK SJI akan segera menghubungi Anda melalui WhatsApp.
             </p>
         </div>
 
-        <!-- Form Body -->
-        <form action="{{ route('consultation.store') }}" method="POST" class="consultation-form p-6 sm:p-8 space-y-5">
+        <!-- Form Body (Scrollable Container) -->
+        <form action="{{ route('consultation.store') }}" method="POST" class="consultation-form p-5 sm:p-6 space-y-3.5 overflow-y-auto flex-1 text-xs">
             @csrf
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                
-                <!-- Nama Lengkap -->
-                <div class="space-y-1.5">
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+            <!-- Nama Lengkap & No WhatsApp -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="space-y-1">
+                    <label class="block font-bold text-slate-700 uppercase text-[10px]">
                         Nama Lengkap <span class="text-red-500">*</span>
                     </label>
                     <input 
                         type="text" 
                         name="name" 
                         required 
-                        placeholder="Contoh: Muhammad Budi Santoso"
-                        class="w-full input-japan px-4 py-3 rounded-xl text-sm text-slate-900 bg-slate-50 focus:bg-white"
+                        placeholder="Nama lengkap Anda"
+                        class="w-full px-3.5 py-2 rounded-xl text-xs text-slate-900 bg-slate-50 border border-slate-200 focus:bg-white focus:border-japan-600 focus:outline-none"
                     >
                 </div>
 
-                <!-- No WhatsApp -->
-                <div class="space-y-1.5">
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                <div class="space-y-1">
+                    <label class="block font-bold text-slate-700 uppercase text-[10px]">
                         Nomor WhatsApp Aktif <span class="text-red-500">*</span>
                     </label>
                     <input 
@@ -60,14 +59,30 @@
                         name="phone" 
                         required 
                         placeholder="Contoh: 081234567890"
-                        class="w-full input-japan px-4 py-3 rounded-xl text-sm text-slate-900 bg-slate-50 focus:bg-white"
+                        class="w-full px-3.5 py-2 rounded-xl text-xs text-slate-900 bg-slate-50 border border-slate-200 focus:bg-white focus:border-japan-600 focus:outline-none font-semibold"
                     >
                 </div>
+            </div>
 
-                <!-- Usia -->
-                <div class="space-y-1.5">
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                        Usia Anda (Tahun)
+            <!-- Program Minat -->
+            <div class="space-y-1">
+                <label class="block font-bold text-slate-700 uppercase text-[10px]">
+                    Pilihan Program Minat <span class="text-red-500">*</span>
+                </label>
+                <select id="consultProgramSelect" name="program" required class="w-full px-3.5 py-2 rounded-xl text-xs text-slate-900 bg-slate-50 border border-slate-200 focus:bg-white focus:border-japan-600 focus:outline-none font-bold text-japan-700">
+                    <option value="Tokutei Ginou (SSW)">Tokutei Ginou (Specified Skilled Worker / SSW)</option>
+                    <option value="Ginou Jisshusei (Magang Kerja)">Ginou Jisshusei (Magang Praktik Kerja)</option>
+                    <option value="Kursus Intensif Bahasa & Budaya">Kursus Intensif Bahasa Jepang (N5, N4, N3)</option>
+                    <option value="Engineer & Professional Career">Engineer & Profesional (IT / Teknik)</option>
+                    <option value="Belum Tahu / Ingin Konsultasi Dulu">Ingin Konsultasi Pilihan Program Dulu</option>
+                </select>
+            </div>
+
+            <!-- Usia & Pendidikan Terakhir -->
+            <div class="grid grid-cols-2 gap-3">
+                <div class="space-y-1">
+                    <label class="block font-bold text-slate-700 uppercase text-[10px]">
+                        Usia (Tahun)
                     </label>
                     <input 
                         type="number" 
@@ -75,76 +90,60 @@
                         min="16" 
                         max="50" 
                         placeholder="Contoh: 21"
-                        class="w-full input-japan px-4 py-3 rounded-xl text-sm text-slate-900 bg-slate-50 focus:bg-white"
+                        class="w-full px-3.5 py-2 rounded-xl text-xs text-slate-900 bg-slate-50 border border-slate-200 focus:bg-white focus:border-japan-600 focus:outline-none"
                     >
                 </div>
 
-                <!-- Pendidikan Terakhir -->
-                <div class="space-y-1.5">
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                <div class="space-y-1">
+                    <label class="block font-bold text-slate-700 uppercase text-[10px]">
                         Pendidikan Terakhir
                     </label>
-                    <select name="education" class="w-full input-japan px-4 py-3 rounded-xl text-sm text-slate-900 bg-slate-50 focus:bg-white">
+                    <select name="education" class="w-full px-3.5 py-2 rounded-xl text-xs text-slate-900 bg-slate-50 border border-slate-200 focus:bg-white focus:border-japan-600 focus:outline-none">
                         <option value="SMA / SMK Sederajat">SMA / SMK Sederajat</option>
                         <option value="Diploma (D1 - D3)">Diploma (D1 - D3)</option>
                         <option value="Sarjana (S1 / D4)">Sarjana (S1 / D4)</option>
                         <option value="SMP / Sederajat">SMP / Sederajat</option>
                     </select>
                 </div>
-
-            </div>
-
-            <!-- Program Minat -->
-            <div class="space-y-1.5">
-                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Pilihan Program Minat <span class="text-red-500">*</span>
-                </label>
-                <select id="consultProgramSelect" name="program" required class="w-full input-japan px-4 py-3 rounded-xl text-sm text-slate-900 bg-slate-50 focus:bg-white font-semibold">
-                    <option value="Tokutei Ginou (SSW)">Tokutei Ginou (Specified Skilled Worker / SSW)</option>
-                    <option value="Ginou Jisshusei (Magang Kerja)">Ginou Jisshusei (Program Magang Praktik Kerja)</option>
-                    <option value="Kursus Intensif Bahasa & Budaya">Kursus Intensif Bahasa & Budaya Jepang (N5, N4, N3)</option>
-                    <option value="Engineer & Professional Career">Program Engineer & Profesional (IT / Teknik)</option>
-                    <option value="Belum Tahu / Ingin Konsultasi Dulu">Belum Tahu / Ingin Konsultasi Pilihan Terbaik Dulu</option>
-                </select>
             </div>
 
             <!-- Kota Asal / Domisili -->
-            <div class="space-y-1.5">
-                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Kota Asal / Domisili Saat Ini
+            <div class="space-y-1">
+                <label class="block font-bold text-slate-700 uppercase text-[10px]">
+                    Kota Asal / Domisili
                 </label>
                 <input 
                     type="text" 
                     name="city" 
                     placeholder="Contoh: Bandung, Surabaya, Medan, dll."
-                    class="w-full input-japan px-4 py-3 rounded-xl text-sm text-slate-900 bg-slate-50 focus:bg-white"
+                    class="w-full px-3.5 py-2 rounded-xl text-xs text-slate-900 bg-slate-50 border border-slate-200 focus:bg-white focus:border-japan-600 focus:outline-none"
                 >
             </div>
 
-            <!-- Catatan / Pertanyaan -->
-            <div class="space-y-1.5">
-                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Pertanyaan / Catatan Tambahan (Opsional)
+            <!-- Pertanyaan / Catatan Tambahan -->
+            <div class="space-y-1">
+                <label class="block font-bold text-slate-700 uppercase text-[10px]">
+                    Pertanyaan / Catatan (Opsional)
                 </label>
                 <textarea 
                     name="message" 
-                    rows="3" 
-                    placeholder="Tuliskan jika ada pertanyaan khusus seputar bidang kerja, asrama, atau tes bahasa..."
-                    class="w-full input-japan px-4 py-3 rounded-xl text-sm text-slate-900 bg-slate-50 focus:bg-white"
+                    rows="2" 
+                    placeholder="Tuliskan pertanyaan seputar biaya, asrama, atau alur seleksi..."
+                    class="w-full px-3.5 py-2 rounded-xl text-xs text-slate-900 bg-slate-50 border border-slate-200 focus:bg-white focus:border-japan-600 focus:outline-none"
                 ></textarea>
             </div>
 
-            <!-- Submit Button -->
-            <div class="pt-3">
+            <!-- Submit Button (Fixed at bottom) -->
+            <div class="pt-2">
                 <button 
                     type="submit" 
-                    class="w-full btn-red-primary py-4 rounded-xl font-bold text-base flex items-center justify-center gap-2 shadow-lg shadow-red-600/30"
+                    class="w-full btn-red-primary py-3 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-red-600/30 transition hover:scale-[1.01]"
                 >
-                    <i data-lucide="send" class="w-5 h-5"></i>
+                    <i data-lucide="send" class="w-4 h-4"></i>
                     <span>Kirim Formulir Pendaftaran</span>
                 </button>
-                <p class="text-[11px] text-slate-500 text-center mt-3">
-                    🔒 Data pribadi Anda dijamin aman & hanya digunakan untuk keperluan konsultasi resmi LPK Sahabat Jepang Indonesia.
+                <p class="text-[10px] text-slate-400 text-center mt-2">
+                    🔒 Data pribadi Anda dijamin aman untuk keperluan seleksi resmi LPK SJI.
                 </p>
             </div>
 

@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TestimonialController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AdminConsultationController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\LandingPageController;
@@ -30,13 +31,19 @@ Route::get('/artikel/{slug}', [ArticleController::class, 'show'])->name('article
 
 /*
 |--------------------------------------------------------------------------
-| Admin Authentication Routes
+| Admin & Sensei Authentication Routes (With Forgot & Reset Password)
 |--------------------------------------------------------------------------
 */
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    // Forgot & Reset Password
+    Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
+    Route::post('/forgot-password', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 });
 
 // Laravel default route named 'login' redirect
@@ -45,7 +52,7 @@ Route::get('/dashboard', fn() => redirect()->route('admin.dashboard'));
 
 /*
 |--------------------------------------------------------------------------
-| Admin Protected CMS & Leads Management Routes
+| Admin Protected CMS, Academic, Finance & RBAC Management Routes
 |--------------------------------------------------------------------------
 */
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
@@ -95,12 +102,16 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // 12. Data Pengajar / Sensei
     Route::resource('teachers', TeacherController::class)->except(['show']);
 
-    // 13. Admin Profile & Password
+    // 13. User Management & RBAC Roles
+    Route::resource('users', UserController::class)->except(['create', 'show', 'edit']);
+
+    // 14. Admin Profile & Password
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
     // Friendly Aliases (Singular / Variations)
+    Route::get('/user', fn() => redirect()->route('admin.users.index'));
     Route::get('/student', fn() => redirect()->route('admin.students.index'));
     Route::get('/teacher', fn() => redirect()->route('admin.teachers.index'));
     Route::get('/setting', fn() => redirect()->route('admin.settings.index'));
@@ -111,4 +122,5 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/faq', fn() => redirect()->route('admin.faqs.index'));
     Route::get('/partner', fn() => redirect()->route('admin.partners.index'));
     Route::get('/article', fn() => redirect()->route('admin.articles.index'));
+    Route::get('/schedule', fn() => redirect()->route('admin.schedules.index'));
 });

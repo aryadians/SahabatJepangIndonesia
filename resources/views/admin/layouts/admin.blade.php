@@ -87,7 +87,9 @@
                 </div>
                 <div>
                     <h2 class="font-black text-white text-xs tracking-tight uppercase leading-none">LPK SAHABAT JEPANG</h2>
-                    <p class="text-[10px] text-red-400 font-semibold font-japanese mt-0.5">Admin Management</p>
+                    <p class="text-[10px] text-red-400 font-semibold font-japanese mt-0.5">
+                        {{ auth()->user()->role === 'teacher' ? 'Portal Pengajar / Sensei' : 'Admin Management' }}
+                    </p>
                 </div>
             </div>
 
@@ -156,69 +158,81 @@
                 <span>Jadwal Angkatan & Kuota</span>
             </a>
 
-            <div class="px-3 pt-3 pb-1 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
-                Kelola Konten Web
-            </div>
+            @if(auth()->user()->isAdmin())
+                <div class="px-3 pt-3 pb-1 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                    Kelola Konten Web
+                </div>
 
-            <a 
-                href="{{ route('admin.settings.index') }}" 
-                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.settings.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
-            >
-                <i data-lucide="sliders" class="w-4 h-4"></i>
-                <span>Pengaturan & Hero</span>
-            </a>
+                <a 
+                    href="{{ route('admin.settings.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.settings.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="sliders" class="w-4 h-4"></i>
+                    <span>Pengaturan & Hero</span>
+                </a>
 
-            <a 
-                href="{{ route('admin.programs.index') }}" 
-                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.programs.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
-            >
-                <i data-lucide="briefcase" class="w-4 h-4"></i>
-                <span>Program Karir</span>
-            </a>
+                <a 
+                    href="{{ route('admin.programs.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.programs.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="briefcase" class="w-4 h-4"></i>
+                    <span>Program Karir</span>
+                </a>
 
-            <a 
-                href="{{ route('admin.facilities.index') }}" 
-                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.facilities.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
-            >
-                <i data-lucide="building" class="w-4 h-4"></i>
-                <span>Fasilitas & Asrama</span>
-            </a>
+                <a 
+                    href="{{ route('admin.facilities.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.facilities.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="building" class="w-4 h-4"></i>
+                    <span>Fasilitas & Asrama</span>
+                </a>
 
-            <a 
-                href="{{ route('admin.testimonials.index') }}" 
-                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.testimonials.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
-            >
-                <i data-lucide="message-square" class="w-4 h-4"></i>
-                <span>Testimoni Alumni</span>
-            </a>
+                <a 
+                    href="{{ route('admin.testimonials.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.testimonials.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                    <span>Testimoni Alumni</span>
+                </a>
 
-            <a 
-                href="{{ route('admin.faqs.index') }}" 
-                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.faqs.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
-            >
-                <i data-lucide="help-circle" class="w-4 h-4"></i>
-                <span>Tanya Jawab (FAQ)</span>
-            </a>
+                <a 
+                    href="{{ route('admin.faqs.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.faqs.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="help-circle" class="w-4 h-4"></i>
+                    <span>Tanya Jawab (FAQ)</span>
+                </a>
 
-            <a 
-                href="{{ route('admin.partners.index') }}" 
-                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.partners.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
-            >
-                <i data-lucide="handshake" class="w-4 h-4"></i>
-                <span>Mitra Kaisha</span>
-            </a>
+                <a 
+                    href="{{ route('admin.partners.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.partners.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="handshake" class="w-4 h-4"></i>
+                    <span>Mitra Kaisha</span>
+                </a>
 
-            <a 
-                href="{{ route('admin.articles.index') }}" 
-                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.articles.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
-            >
-                <i data-lucide="newspaper" class="w-4 h-4"></i>
-                <span>Artikel & Berita</span>
-            </a>
+                <a 
+                    href="{{ route('admin.articles.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.articles.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="newspaper" class="w-4 h-4"></i>
+                    <span>Artikel & Berita</span>
+                </a>
+            @endif
 
             <div class="px-3 pt-3 pb-1 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
                 Sistem & Keamanan
             </div>
+
+            @if(auth()->user()->isAdmin())
+                <a 
+                    href="{{ route('admin.users.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.users.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="users" class="w-4 h-4"></i>
+                    <span>Manajemen Pengguna (RBAC)</span>
+                </a>
+            @endif
 
             <a 
                 href="{{ route('admin.profile.index') }}" 
@@ -273,12 +287,21 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <a href="{{ route('admin.profile.index') }}" class="text-right hidden sm:block hover:opacity-80 transition">
-                    <p class="text-xs font-bold text-slate-900">{{ auth()->user()->name ?? 'Administrator' }}</p>
+                <div class="text-right hidden sm:block">
+                    <div class="flex items-center justify-end gap-1.5">
+                        <p class="text-xs font-bold text-slate-900">{{ auth()->user()->name ?? 'Administrator' }}</p>
+                        @if(auth()->user()->isAdmin())
+                            <span class="px-1.5 py-0.2 rounded bg-red-100 text-japan-800 font-extrabold text-[9px]">Admin</span>
+                        @elseif(auth()->user()->isTeacher())
+                            <span class="px-1.5 py-0.2 rounded bg-blue-100 text-blue-800 font-extrabold text-[9px]">Sensei</span>
+                        @else
+                            <span class="px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 font-extrabold text-[9px]">Staf</span>
+                        @endif
+                    </div>
                     <p class="text-[10px] text-slate-400">{{ auth()->user()->email ?? 'admin@sahabatjepangindonesia.com' }}</p>
-                </a>
+                </div>
                 
-                <a href="{{ route('admin.profile.index') }}" class="w-9 h-9 rounded-xl bg-red-100 text-japan-700 font-bold flex items-center justify-center text-xs shadow-sm hover:ring-2 hover:ring-red-400 transition">
+                <a href="{{ route('admin.profile.index') }}" class="w-9 h-9 rounded-xl bg-red-100 text-japan-700 font-bold flex items-center justify-center text-xs shadow-sm hover:ring-2 hover:ring-red-400 transition" title="Edit Profil">
                     {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
                 </a>
             </div>

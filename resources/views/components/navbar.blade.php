@@ -184,6 +184,16 @@
                     <i data-lucide="message-circle" class="w-4 h-4"></i>
                 </a>
 
+                <!-- Portal Staf / Login Admin (Desktop & Tablet) -->
+                <a 
+                    href="{{ route('admin.login') }}" 
+                    class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200/80 transition"
+                    title="Login Portal Admin & Pengajar"
+                >
+                    <i data-lucide="lock" class="w-3.5 h-3.5 text-japan-600"></i>
+                    <span class="hidden sm:inline">Portal Staf</span>
+                </a>
+
                 <!-- CTA Button -->
                 <button 
                     type="button"
@@ -257,6 +267,15 @@
                 <i data-lucide="help-circle" class="w-3.5 h-3.5 text-japan-600"></i>
                 <span>Tanya Jawab (FAQ)</span>
             </a>
+
+            <!-- Mobile Portal Admin / Sensei Button -->
+            <div class="pt-3 border-t border-slate-100">
+                <a href="{{ route('admin.login') }}" class="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold shadow-md hover:bg-slate-800 transition">
+                    <i data-lucide="lock" class="w-3.5 h-3.5 text-red-400"></i>
+                    <span>Login Portal Staf & Pengajar</span>
+                </a>
+            </div>
+        </div>
             
             <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
                 <button 
