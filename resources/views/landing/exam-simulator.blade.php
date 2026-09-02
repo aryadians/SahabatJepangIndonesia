@@ -3,34 +3,35 @@
 @section('title', 'Simulasi Ujian JLPT & JFT-Basic CBT Online - LPK Sahabat Jepang Indonesia')
 
 @section('content')
-<div class="bg-slate-900 text-white min-h-screen py-8 sm:py-12 relative overflow-hidden">
+<div class="bg-slate-950 text-white min-h-screen py-8 sm:py-12 relative overflow-hidden">
 
     <!-- Ambient Japanese Red Glow Background -->
-    <div class="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-red-600/20 blur-3xl pointer-events-none"></div>
-    <div class="absolute top-1/2 -right-40 w-96 h-96 rounded-full bg-rose-600/15 blur-3xl pointer-events-none"></div>
+    <div class="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-red-600/15 blur-[120px] pointer-events-none"></div>
+    <div class="absolute top-1/2 -right-40 w-96 h-96 rounded-full bg-rose-600/10 blur-[120px] pointer-events-none"></div>
 
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-6">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-6">
 
-        <!-- Header Banner -->
-        <div class="bg-slate-800/80 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-slate-700 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <!-- Top Header Banner -->
+        <div class="bg-slate-900/90 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div class="space-y-2">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-bold font-japanese">
-                    <span>日本語能力試験 • CBT Simulator</span>
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-bold font-japanese">
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                    <span>日本語能力試験・JFT-Basic CBT Simulator</span>
                 </div>
-                <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                    Simulasi Ujian JLPT & JFT-Basic Online
+                <h1 class="text-2xl sm:text-4xl font-black text-white tracking-tight">
+                    Simulasi Tryout JLPT & JFT-Basic Online
                 </h1>
-                <p class="text-xs sm:text-sm text-slate-300 max-w-xl">
-                    Uji kesiapan bahasa Jepang Anda secara gratis dan instan. Dilengkapi penilaian standar kelulusan resmi, kunci jawaban, dan pembahasan lengkap.
+                <p class="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
+                    Uji kemampuan bahasa Jepang Anda secara instan dan gratis tanpa perlu login. Standar kurikulum resmi mencakup Kosakata (Kotoba), Tata Bahasa (Bunpou), Kanji, dan Pemahaman Membaca (Dokkai).
                 </p>
             </div>
 
             <!-- Level Selector Pills -->
-            <div class="flex flex-wrap items-center gap-2 bg-slate-900/90 p-1.5 rounded-2xl border border-slate-700/80">
-                @foreach(['N5' => 'JLPT N5', 'N4' => 'JLPT N4', 'N3' => 'JLPT N3', 'JFT-Basic' => 'JFT A2'] as $lvl => $lbl)
+            <div class="flex flex-wrap items-center gap-1.5 bg-slate-950 p-2 rounded-2xl border border-slate-800 shadow-inner">
+                @foreach(['N5' => 'JLPT N5', 'N4' => 'JLPT N4', 'N3' => 'JLPT N3', 'JFT-Basic' => 'JFT-Basic A2'] as $lvl => $lbl)
                     <a 
                         href="{{ route('exam.simulator', ['level' => $lvl]) }}" 
-                        class="px-3.5 py-2 rounded-xl text-xs font-extrabold transition {{ $selectedLevel === $lvl ? 'bg-japan-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
+                        class="px-3.5 py-2 rounded-xl text-xs font-extrabold transition {{ $selectedLevel === $lvl ? 'bg-japan-600 text-white shadow-lg shadow-red-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
                     >
                         {{ $lbl }}
                     </a>
@@ -44,27 +45,32 @@
             <!-- Left: Active Question Area (8 Cols) -->
             <div class="lg:col-span-8 space-y-4">
                 
-                <div class="bg-white text-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 min-h-[460px] flex flex-col justify-between relative">
+                <div class="bg-white text-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 min-h-[480px] flex flex-col justify-between relative">
                     
                     <div>
                         <!-- Top Metadata & Section Badge -->
                         <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
-                            <div class="flex items-center gap-2">
-                                <span class="w-8 h-8 rounded-xl bg-red-100 text-japan-700 font-black text-xs flex items-center justify-center" id="currentQNumBadge">
+                            <div class="flex items-center gap-3">
+                                <span class="w-9 h-9 rounded-xl bg-red-100 text-japan-700 font-black text-sm flex items-center justify-center shadow-xs" id="currentQNumBadge">
                                     1
                                 </span>
                                 <div>
-                                    <span class="text-xs font-bold text-slate-400 block uppercase" id="currentQSection">
-                                        {{ $questions[0]->section ?? 'Kotoba' }}
-                                    </span>
-                                    <h4 class="text-xs font-bold text-japan-700 font-japanese">
-                                        Tingkat {{ $selectedLevel }} ({{ $questions[0]->points ?? 10 }} Poin)
-                                    </h4>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[11px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-700" id="currentQSection">
+                                            {{ $questions[0]->section ?? 'Kotoba' }}
+                                        </span>
+                                        <span class="text-xs font-bold text-japan-600 font-japanese">
+                                            Level {{ $selectedLevel }}
+                                        </span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-400 font-semibold mt-0.5">
+                                        Bobot: {{ $questions[0]->points ?? 10 }} Poin
+                                    </p>
                                 </div>
                             </div>
 
-                            <span class="text-xs font-bold text-slate-400">
-                                Soal <span id="currentQIndexText" class="text-slate-900 font-extrabold">1</span> dari {{ count($questions) }}
+                            <span class="text-xs font-bold text-slate-400 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
+                                Soal <span id="currentQIndexText" class="text-slate-900 font-black text-sm">1</span> dari {{ count($questions) }}
                             </span>
                         </div>
 
@@ -73,13 +79,17 @@
                             <h3 id="questionTitle" class="text-base sm:text-lg font-extrabold text-slate-900 leading-relaxed font-sans">
                                 {{ $questions[0]->question ?? 'Memuat soal...' }}
                             </h3>
-                            <div id="questionJapaneseBox" class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 font-japanese text-sm sm:text-base font-bold leading-relaxed">
-                                {{ $questions[0]->question_japanese ?? '' }}
-                            </div>
+                            @if(!empty($questions[0]->question_japanese))
+                                <div id="questionJapaneseBox" class="p-4 rounded-2xl bg-red-50/50 border border-red-100 text-slate-900 font-japanese text-base sm:text-lg font-bold leading-relaxed shadow-xs">
+                                    {{ $questions[0]->question_japanese }}
+                                </div>
+                            @else
+                                <div id="questionJapaneseBox" class="hidden p-4 rounded-2xl bg-red-50/50 border border-red-100 text-slate-900 font-japanese text-base sm:text-lg font-bold leading-relaxed shadow-xs"></div>
+                            @endif
                         </div>
 
                         <!-- Multiple Choice Options -->
-                        <div class="space-y-2.5" id="optionsContainer">
+                        <div class="space-y-3" id="optionsContainer">
                             @php
                                 $firstQ = $questions[0] ?? null;
                             @endphp
@@ -89,91 +99,102 @@
                                         type="button" 
                                         onclick="selectAnswer('{{ $optKey }}')" 
                                         id="optBtn_{{ $optKey }}"
-                                        class="option-btn w-full p-3.5 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left font-semibold text-xs sm:text-sm text-slate-800 flex items-center gap-3 transition"
+                                        class="option-btn w-full p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/40 text-left font-semibold text-xs sm:text-sm text-slate-800 flex items-center gap-3.5 transition group"
                                     >
-                                        <span class="w-7 h-7 rounded-xl bg-slate-100 text-slate-700 font-extrabold text-xs flex items-center justify-center flex-shrink-0 option-key">
+                                        <span class="w-8 h-8 rounded-xl bg-slate-100 group-hover:bg-japan-100 group-hover:text-japan-700 text-slate-700 font-black text-xs flex items-center justify-center flex-shrink-0 option-key transition">
                                             {{ $optKey }}
                                         </span>
-                                        <span class="flex-1 font-japanese option-text">{{ $optVal }}</span>
+                                        <span class="flex-1 font-japanese font-bold text-slate-800 group-hover:text-japan-900 option-text text-sm sm:text-base">{{ $optVal }}</span>
                                     </button>
                                 @endforeach
                             @endif
                         </div>
+
                     </div>
 
-                    <!-- Bottom Nav Actions (Prev / Next / Finish) -->
-                    <div class="pt-6 mt-6 border-t border-slate-100 flex items-center justify-between">
+                    <!-- Bottom Nav Actions -->
+                    <div class="flex items-center justify-between border-t border-slate-100 pt-5 mt-8">
                         <button 
                             type="button" 
                             id="btnPrevQ" 
                             onclick="prevQuestion()" 
-                            class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 text-xs font-bold flex items-center gap-1.5 transition disabled:opacity-40 disabled:cursor-not-allowed"
                             disabled
+                            class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-xs flex items-center gap-1.5 transition"
                         >
-                            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
                             <span>Sebelumnya</span>
                         </button>
 
-                        <button 
-                            type="button" 
-                            id="btnNextQ" 
-                            onclick="nextQuestion()" 
-                            class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5 transition shadow-sm"
-                        >
-                            <span>Selanjutnya</span>
-                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <button 
+                                type="button" 
+                                onclick="finishExam()" 
+                                class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-emerald-600/30 transition"
+                            >
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                <span>Kumpulkan Ujian</span>
+                            </button>
+
+                            <button 
+                                type="button" 
+                                id="btnNextQ" 
+                                onclick="nextQuestion()" 
+                                class="btn-red-primary px-6 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-md shadow-red-600/30"
+                            >
+                                <span>Selanjutnya</span>
+                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
                     </div>
 
                 </div>
 
             </div>
 
-            <!-- Right: Timer, Progress & Number Grid (4 Cols) -->
+            <!-- Right: Timer, Progress & Question Grid (4 Cols) -->
             <div class="lg:col-span-4 space-y-4">
                 
-                <!-- Timer Card -->
-                <div class="bg-slate-800 rounded-3xl p-5 border border-slate-700 shadow-xl space-y-3 text-center">
-                    <div class="flex items-center justify-center gap-2 text-xs font-bold text-slate-400 uppercase">
-                        <i data-lucide="clock" class="w-4 h-4 text-red-400"></i>
-                        <span>Sisa Waktu Pengerjaan</span>
+                <!-- Live Countdown Timer Card -->
+                <div class="bg-slate-900/90 rounded-3xl p-6 border border-slate-800 shadow-xl space-y-3 text-center backdrop-blur-md">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Sisa Waktu Pengerjaan</span>
+                    <div class="text-4xl font-black text-white font-mono flex items-center justify-center gap-2">
+                        <i data-lucide="timer" class="w-7 h-7 text-red-500 animate-pulse"></i>
+                        <span id="timerDisplay">25:00</span>
                     </div>
-                    <div id="timerDisplay" class="font-mono text-3xl sm:text-4xl font-black text-white tracking-widest text-japan-500">
-                        15:00
-                    </div>
-                    <p class="text-[11px] text-slate-400">Waktu berjalan otomatis saat Anda mulai memilih jawaban.</p>
+                    <p class="text-[11px] text-slate-500 font-medium">Timer otomatis berjalan saat ujian dimulai</p>
                 </div>
 
-                <!-- Number Grid Navigator -->
-                <div class="bg-slate-800 rounded-3xl p-5 border border-slate-700 shadow-xl space-y-4">
-                    <div class="flex items-center justify-between">
-                        <h4 class="text-xs font-extrabold text-white uppercase tracking-wider">Navigasi Soal</h4>
-                        <span id="answeredCountText" class="text-[11px] text-red-400 font-bold">0 / {{ count($questions) }} Terjawab</span>
+                <!-- Navigator Question Matrix -->
+                <div class="bg-slate-900/90 rounded-3xl p-6 border border-slate-800 shadow-xl space-y-4 backdrop-blur-md">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <h4 class="font-extrabold text-white text-xs uppercase tracking-wider">Navigasi Nomor Soal</h4>
+                        <span class="text-xs font-bold text-emerald-400" id="answeredCountText">0 / {{ count($questions) }} Terjawab</span>
                     </div>
 
-                    <div class="grid grid-cols-5 gap-2" id="questionNavGrid">
+                    <!-- Question Badges Grid -->
+                    <div class="grid grid-cols-5 gap-2 max-h-60 overflow-y-auto pr-1" id="questionNavGrid">
                         @foreach($questions as $idx => $q)
                             <button 
                                 type="button" 
-                                id="navBtn_{{ $idx }}" 
                                 onclick="goToQuestion({{ $idx }})" 
-                                class="nav-q-btn h-10 rounded-xl font-bold text-xs flex items-center justify-center transition {{ $idx === 0 ? 'bg-japan-600 text-white ring-2 ring-red-400' : 'bg-slate-700 text-slate-300 hover:bg-slate-600' }}"
+                                id="navBtn_{{ $idx }}"
+                                class="nav-q-btn h-10 rounded-xl font-bold text-xs flex items-center justify-center transition {{ $idx === 0 ? 'bg-japan-600 text-white ring-2 ring-red-400' : 'bg-slate-800 text-slate-300 hover:bg-slate-700' }}"
                             >
                                 {{ $idx + 1 }}
                             </button>
                         @endforeach
                     </div>
 
-                    <!-- Finish Exam Button -->
-                    <div class="pt-2 border-t border-slate-700">
-                        <button 
-                            type="button" 
-                            onclick="finishExam()" 
-                            class="w-full btn-red-primary py-3 rounded-2xl text-xs font-black flex items-center justify-center gap-2 shadow-lg shadow-red-600/30"
-                        >
-                            <i data-lucide="check-circle" class="w-4 h-4"></i>
-                            <span>Selesai & Lihat Skor</span>
-                        </button>
+                    <!-- Legend -->
+                    <div class="pt-3 border-t border-slate-800 grid grid-cols-2 gap-2 text-[11px] text-slate-400">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded bg-emerald-600"></span>
+                            <span>Sudah Terjawab</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded bg-slate-800 border border-slate-700"></span>
+                            <span>Belum Dijawab</span>
+                        </div>
                     </div>
                 </div>
 
@@ -181,66 +202,73 @@
 
         </div>
 
-        <!-- Result Evaluation Card (Hidden Initially) -->
+        <!-- Result Screen Card (Hidden Initially) -->
         <div id="resultCard" class="hidden bg-white text-slate-900 rounded-3xl p-6 sm:p-10 shadow-2xl border border-red-100 space-y-8 animate-fadeIn">
             
-            <div class="text-center space-y-3 border-b border-slate-100 pb-8">
-                <div id="passBadge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-black mb-2">
-                    <!-- Dynamic -->
+            <div class="text-center space-y-3 max-w-xl mx-auto">
+                <div id="passBadge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-black mb-2 bg-emerald-100 text-emerald-800 border border-emerald-300">
+                    <i data-lucide="award" class="w-4 h-4 text-emerald-600"></i>
+                    <span>Hasil Evaluasi Ujian</span>
                 </div>
-                <h2 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-                    Hasil Skor Simulasi Ujian JLPT {{ $selectedLevel }}
+                <h2 class="text-2xl sm:text-4xl font-black text-slate-900">
+                    Rekapitulasi Nilai Ujian {{ $selectedLevel }}
                 </h2>
-                <p class="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto">
-                    Evaluasi komprehensif kemampuan bahasa Jepang Anda untuk persiapan karir & kerja di Jepang.
+                <p class="text-xs sm:text-sm text-slate-600">
+                    Berikut adalah hasil analisis skor dan kunci pembahasan lengkap dari simulasi ujian Anda.
                 </p>
+            </div>
 
-                <!-- Score Board -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 max-w-3xl mx-auto">
-                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-                        <span class="text-[11px] font-bold text-slate-400 uppercase">Skor Diperoleh</span>
-                        <h3 class="text-2xl sm:text-3xl font-black text-japan-600 mt-1" id="resEarnedPoints">0</h3>
-                    </div>
-                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-                        <span class="text-[11px] font-bold text-slate-400 uppercase">Total Poin</span>
-                        <h3 class="text-2xl sm:text-3xl font-black text-slate-800 mt-1" id="resTotalPoints">100</h3>
-                    </div>
-                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-                        <span class="text-[11px] font-bold text-slate-400 uppercase">Persentase</span>
-                        <h3 class="text-2xl sm:text-3xl font-black text-blue-600 mt-1" id="resPercentage">0%</h3>
-                    </div>
-                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-                        <span class="text-[11px] font-bold text-slate-400 uppercase">Benar / Salah</span>
-                        <h3 class="text-2xl sm:text-3xl font-black text-emerald-600 mt-1" id="resCounts">0 / 0</h3>
-                    </div>
+            <!-- Score Stats Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto">
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Skor Anda</span>
+                    <h3 class="text-2xl sm:text-3xl font-black text-japan-600 mt-1" id="resEarnedPoints">0</h3>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Total Poin</span>
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900 mt-1" id="resTotalPoints">100</h3>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Persentase</span>
+                    <h3 class="text-2xl sm:text-3xl font-black text-blue-600 mt-1" id="resPercentage">0%</h3>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Benar / Salah</span>
+                    <h3 class="text-2xl sm:text-3xl font-black text-emerald-600 mt-1" id="resCounts">0 / 0</h3>
                 </div>
             </div>
 
-            <!-- Call to Action Banner -->
-            <div class="p-6 rounded-3xl bg-gradient-to-r from-japan-900 via-japan-700 to-red-600 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
-                <div class="space-y-1">
-                    <h3 class="font-extrabold text-lg text-white">Ingin Lolos JLPT / SSW dengan Skor Maksimal?</h3>
-                    <p class="text-xs text-red-100">Ikuti pelatihan intensif bahasa & budaya Jepang bersama Sensei bersertifikasi N1/N2 di LPK SJI.</p>
+            <!-- CTA Next Steps -->
+            <div class="p-6 rounded-3xl bg-gradient-to-r from-japan-900 via-japan-800 to-red-700 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+                <div class="space-y-1 text-center sm:text-left">
+                    <h4 class="font-extrabold text-base sm:text-lg text-white">Ingin Mematangkan Persiapan & Langsung Kerja ke Jepang?</h4>
+                    <p class="text-xs text-red-100">Konsultasikan hasil nilai Anda dengan Sensei LPK Sahabat Jepang Indonesia untuk percepatan kelas.</p>
                 </div>
-                <button onclick="openModal('consultationModal')" class="px-6 py-3 rounded-2xl bg-white text-japan-700 font-black text-xs hover:bg-red-50 transition shadow-md flex-shrink-0 flex items-center gap-2">
+                <button onclick="openModal('consultationModal')" class="px-6 py-3 rounded-2xl bg-white text-japan-700 hover:bg-red-50 font-black text-xs sm:text-sm whitespace-nowrap shadow-md transition flex items-center gap-2">
                     <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
-                    <span>Daftar Kelas Persiapan</span>
+                    <span>Daftar Konsultasi Kelas</span>
                 </button>
             </div>
 
             <!-- Detailed Answers & Explanations Accordion -->
             <div class="space-y-4">
-                <h3 class="font-extrabold text-slate-900 text-lg">Kunci Jawaban & Pembahasan Lengkap</h3>
-                <div id="explanationsList" class="space-y-3">
-                    <!-- Dynamic -->
+                <div class="border-b border-slate-200 pb-3 flex items-center justify-between">
+                    <h3 class="font-extrabold text-slate-900 text-base flex items-center gap-2">
+                        <i data-lucide="book-open" class="w-4 h-4 text-japan-600"></i>
+                        <span>Kunci Jawaban & Pembahasan Lengkap</span>
+                    </h3>
+                    <span class="text-xs font-bold text-slate-400">Pembahasan Tiap Nomor</span>
+                </div>
+
+                <div class="space-y-3" id="explanationsList">
+                    <!-- Populated dynamically via JS -->
                 </div>
             </div>
 
-            <!-- Retry Button -->
-            <div class="text-center pt-4 border-t border-slate-100">
-                <a href="{{ route('exam.simulator', ['level' => $selectedLevel]) }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition">
+            <div class="text-center pt-4">
+                <a href="{{ route('exam.simulator', ['level' => $selectedLevel]) }}" class="px-6 py-3 rounded-2xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold text-xs inline-flex items-center gap-2">
                     <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                    <span>Coba Ujian Kembali</span>
+                    <span>Ulangi Simulasi Ujian Ini</span>
                 </a>
             </div>
 
@@ -252,12 +280,15 @@
 <script>
     const questionsData = @json($questions);
     let currentIndex = 0;
-    const userAnswers = {}; // { question_id: 'A' }
-    let timerSeconds = 15 * 60;
+    let userAnswers = {}; // { questionId: 'A' }
+    let timerSeconds = 25 * 60; // 25 minutes
     let timerInterval = null;
+    let isTimerStarted = false;
 
     function startTimer() {
-        if (timerInterval) return;
+        if (isTimerStarted) return;
+        isTimerStarted = true;
+
         timerInterval = setInterval(() => {
             if (timerSeconds <= 0) {
                 clearInterval(timerInterval);
@@ -265,50 +296,63 @@
                 return;
             }
             timerSeconds--;
-            const mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
-            const secs = (timerSeconds % 60).toString().padStart(2, '0');
-            document.getElementById('timerDisplay').innerText = `${mins}:${secs}`;
+            const mins = Math.floor(timerSeconds / 60);
+            const secs = timerSeconds % 60;
+            document.getElementById('timerDisplay').innerText = 
+                `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
         }, 1000);
     }
 
     function renderQuestion(idx) {
-        if (!questionsData[idx]) return;
         currentIndex = idx;
         const q = questionsData[idx];
+        if (!q) return;
 
+        // Meta tags
         document.getElementById('currentQNumBadge').innerText = idx + 1;
         document.getElementById('currentQIndexText').innerText = idx + 1;
         document.getElementById('currentQSection').innerText = q.section || 'Kotoba';
-        document.getElementById('questionTitle').innerText = q.question;
-        document.getElementById('questionJapaneseBox').innerText = q.question_japanese || '';
 
+        // Title & Japanese
+        document.getElementById('questionTitle').innerText = q.question;
+        const jpBox = document.getElementById('questionJapaneseBox');
+        if (q.question_japanese) {
+            jpBox.innerText = q.question_japanese;
+            jpBox.classList.remove('hidden');
+        } else {
+            jpBox.classList.add('hidden');
+        }
+
+        // Render options
         const optionsContainer = document.getElementById('optionsContainer');
         optionsContainer.innerHTML = '';
 
         const opts = { 'A': q.option_a, 'B': q.option_b, 'C': q.option_c, 'D': q.option_d };
-        const selected = userAnswers[q.id] || null;
+        const selectedOpt = userAnswers[q.id];
 
         for (const [k, v] of Object.entries(opts)) {
-            const isSel = selected === k;
+            if (!v) continue;
+            const isSel = (selectedOpt === k);
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.onclick = () => selectAnswer(k);
-            btn.className = `option-btn w-full p-3.5 rounded-2xl border-2 text-left font-semibold text-xs sm:text-sm text-slate-800 flex items-center gap-3 transition ${
-                isSel ? 'border-japan-600 bg-red-50 text-japan-700 shadow-sm' : 'border-slate-200 hover:border-japan-600 hover:bg-slate-50'
+            btn.className = `option-btn w-full p-4 rounded-2xl border-2 text-left font-semibold text-xs sm:text-sm flex items-center gap-3.5 transition group ${
+                isSel ? 'border-japan-600 bg-red-50 text-japan-900 shadow-sm' : 'border-slate-200 hover:border-japan-600 hover:bg-red-50/40 text-slate-800'
             }`;
-
             btn.innerHTML = `
-                <span class="w-7 h-7 rounded-xl font-extrabold text-xs flex items-center justify-center flex-shrink-0 ${
-                    isSel ? 'bg-japan-600 text-white' : 'bg-slate-100 text-slate-700'
+                <span class="w-8 h-8 rounded-xl font-black text-xs flex items-center justify-center flex-shrink-0 transition ${
+                    isSel ? 'bg-japan-600 text-white' : 'bg-slate-100 text-slate-700 group-hover:bg-japan-100 group-hover:text-japan-700'
                 }">${k}</span>
-                <span class="flex-1 font-japanese font-bold">${v}</span>
+                <span class="flex-1 font-japanese font-bold text-sm sm:text-base ${isSel ? 'text-japan-900' : 'text-slate-800'}">${v}</span>
             `;
             optionsContainer.appendChild(btn);
         }
 
         // Prev & Next Buttons state
         document.getElementById('btnPrevQ').disabled = (idx === 0);
-        document.getElementById('btnNextQ').innerText = (idx === questionsData.length - 1) ? 'Selesai' : 'Selanjutnya';
+        document.getElementById('btnNextQ').innerHTML = (idx === questionsData.length - 1) 
+            ? '<span>Selesai</span><i data-lucide="check" class="w-4 h-4"></i>' 
+            : '<span>Selanjutnya</span><i data-lucide="chevron-right" class="w-4 h-4"></i>';
 
         // Update nav grid highlight
         document.querySelectorAll('.nav-q-btn').forEach((btn, i) => {
@@ -318,7 +362,7 @@
             } else if (isAns) {
                 btn.className = 'nav-q-btn h-10 rounded-xl font-bold text-xs flex items-center justify-center transition bg-emerald-600 text-white';
             } else {
-                btn.className = 'nav-q-btn h-10 rounded-xl font-bold text-xs flex items-center justify-center transition bg-slate-700 text-slate-300 hover:bg-slate-600';
+                btn.className = 'nav-q-btn h-10 rounded-xl font-bold text-xs flex items-center justify-center transition bg-slate-800 text-slate-300 hover:bg-slate-700';
             }
         });
 
