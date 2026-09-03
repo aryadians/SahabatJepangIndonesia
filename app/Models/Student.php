@@ -164,8 +164,8 @@ class Student extends Model
     public function getRegistrationCategoryLabelAttribute(): string
     {
         return match($this->registration_category) {
-            'kemenkes_kaigo' => 'Beasiswa Kemenkes RI (Kaigo)',
-            'smk_go_japan' => 'Program SMK Go Japan',
+            'smile_project', 'kemenkes_kaigo' => 'SMILE Project (Kemenkes & Poltekkes)',
+            'smk_go_japan' => 'Program Pemerintah: SMK Go Japan',
             'bkk_smk' => 'Kemitraan BKK SMK',
             'poltekkes_kampus' => 'Kemitraan Poltekkes & STIKes',
             default => 'Jalur Reguler / Umum',
@@ -178,9 +178,9 @@ class Student extends Model
     public function getRegistrationCategoryBadgeAttribute(): array
     {
         return match($this->registration_category) {
-            'kemenkes_kaigo' => [
+            'smile_project', 'kemenkes_kaigo' => [
                 'bg' => 'bg-emerald-100 text-emerald-800 border-emerald-300',
-                'label' => 'Beasiswa Kemenkes (Kaigo)',
+                'label' => 'SMILE Project (Kemenkes)',
                 'icon' => 'award',
             ],
             'smk_go_japan' => [

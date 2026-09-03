@@ -51,9 +51,13 @@ class StudentController extends Controller
             $query->where('mcu_result', $request->mcu_result);
         }
 
-        // 5b. Filter Kategori / Jalur Pendaftaran (Umum, Kemenkes, SMK Go Japan, BKK, Kampus)
+        // 5b. Filter Kategori / Jalur Pendaftaran (Umum, SMILE Project, SMK Go Japan, BKK, Kampus)
         if ($request->filled('registration_category') && $request->registration_category !== 'all') {
-            $query->where('registration_category', $request->registration_category);
+            if (in_array($request->registration_category, ['smile_project', 'kemenkes_kaigo'])) {
+                $query->whereIn('registration_category', ['smile_project', 'kemenkes_kaigo']);
+            } else {
+                $query->where('registration_category', $request->registration_category);
+            }
         }
 
         // 6. Select light columns for list performance (exclude heavy base64 strings)
@@ -74,7 +78,7 @@ class StudentController extends Controller
             'active_students' => Student::whereIn('status', ['active', 'interview', 'passed_interview'])->count(),
             'departed_students' => Student::where('status', 'departed')->count(),
             'total_receivables' => Student::selectRaw('SUM(total_cost - paid_amount) as total_unpaid')->value('total_unpaid') ?? 0,
-            'kemenkes_count' => Student::where('registration_category', 'kemenkes_kaigo')->count(),
+            'smile_project_count' => Student::whereIn('registration_category', ['smile_project', 'kemenkes_kaigo'])->count(),
             'smk_go_japan_count' => Student::where('registration_category', 'smk_go_japan')->count(),
         ];
 

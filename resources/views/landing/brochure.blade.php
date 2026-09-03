@@ -203,17 +203,17 @@
                                         <td class="p-3">Penerjemahan dokumen resmi, koordinasi Kaisha di Jepang</td>
                                         <td class="p-3 text-right font-mono font-bold text-slate-800">Rp 8.500.000</td>
                                     </tr>
-                                    <!-- Jalur Beasiswa Pemerintah Kemenkes (100% GRATIS) -->
+                                    <!-- Jalur Beasiswa Pemerintah: SMILE Project Kemenkes & Poltekkes (100% GRATIS) -->
                                     <tr class="bg-emerald-50/80 border-y-2 border-emerald-300">
                                         <td class="p-3">
                                             <span class="font-bold text-emerald-900 flex items-center gap-1.5">
                                                 <i data-lucide="award" class="w-4 h-4 text-emerald-600"></i>
-                                                <span>Jalur Beasiswa Kemenkes RI (Kaigo / Caregiver)</span>
+                                                <span>Program Pemerintah: SMILE Project (Kemenkes & Poltekkes Kaigo)</span>
                                             </span>
-                                            <p class="text-[10px] text-emerald-700 mt-0.5 font-medium">Khusus alumni Poltekkes Kemenkes & STIKes mitra (Telah sukses 4 Gelombang)</p>
+                                            <p class="text-[10px] text-emerald-700 mt-0.5 font-medium">Khusus alumni Poltekkes Kemenkes & STIKes mitra se-Indonesia (Sukses 4 Gelombang)</p>
                                         </td>
                                         <td class="p-3 text-emerald-800 text-[11px]">
-                                            Pelatihan bahasa intensif, modul, asrama, ujian sertifikasi, CoE, visa & penempatan dibiayai penuh negara.
+                                            Pelatihan bahasa intensif, modul, asrama, ujian sertifikasi Kaigo, CoE, visa & penempatan RS Jepang 100% dibiayai negara.
                                         </td>
                                         <td class="p-3 text-right whitespace-nowrap">
                                             <span class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-black text-xs uppercase shadow-xs inline-block">100% GRATIS</span>

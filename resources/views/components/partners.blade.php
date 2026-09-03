@@ -179,25 +179,25 @@
                 <div class="space-y-3 max-w-3xl">
                     <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-red-600 text-white text-[11px] font-black uppercase tracking-wider shadow-md">
                         <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-                        <span>Program Pemerintah Kemenkes RI • 100% GRATIS</span>
+                        <span>Dukungan Resmi Pemerintah Republik Indonesia</span>
                     </div>
                     <h3 class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white leading-tight">
-                        MoU Poltekkes & STIKes Se-Indonesia <br class="hidden sm:inline">
-                        <span class="text-red-400">Program Kaigo Gratis Kemenkes (4 Gelombang Sukses)</span>
+                        2 Program Unggulan Pemerintah: <br class="hidden sm:inline">
+                        <span class="text-red-400">SMK Go Japan</span> & <span class="text-emerald-400">SMILE Project (Poltekkes Kemenkes)</span>
                     </h3>
                     <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                        LPK Sahabat Jepang Indonesia telah resmi menandatangani <b>Nota Kesepahaman (MoU)</b> dengan berbagai Poltekkes Kemenkes dan STIKes di seluruh Indonesia. Kami rutin menyelenggarakan <b>Bursa Kerja Khusus & Campus Recruitment</b> langsung di kampus kesehatan, serta telah sukses memberangkatkan <b>4 Gelombang</b> tenaga perawat (Kaigo) dengan pendanaan penuh dari <b>Kementerian Kesehatan Republik Indonesia</b>.
+                        LPK Sahabat Jepang Indonesia dipercaya menyelenggarakan program resmi pemerintah RI untuk 2 jalur utama: <b>Program SMK Go Japan</b> (khusus siswa/alumni SMK bidang teknik & industri) dan <b>SMILE Project Kemenkes RI</b> (program beasiswa Kaigo 100% gratis kerjasama MoU Poltekkes & STIKes yang telah sukses memberangkatkan <b>4 Gelombang</b> tenaga perawat ke Jepang).
                     </p>
                 </div>
 
-                <!-- Action Button -->
+                <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto flex-shrink-0">
                     <a 
-                        href="{{ route('brochure.index', ['program' => 'Tokutei Ginou (SSW)']) }}" 
+                        href="{{ route('brochure.index') }}" 
                         class="btn-red-primary px-6 py-3.5 rounded-2xl text-xs sm:text-sm font-black shadow-lg shadow-red-600/30 flex items-center justify-center gap-2"
                     >
                         <i data-lucide="download" class="w-4 h-4"></i>
-                        <span>Unduh Brosur Jalur Kemenkes</span>
+                        <span>Katalog Brosur Resmi</span>
                     </a>
                     <button 
                         type="button" 
@@ -205,9 +205,60 @@
                         class="px-5 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 border border-white/20"
                     >
                         <i data-lucide="message-circle" class="w-4 h-4 text-emerald-400"></i>
-                        <span>Konsultasi Jalur Kampus</span>
+                        <span>Konsultasi Jalur Pemerintah</span>
                     </button>
                 </div>
+            </div>
+
+            <!-- 2 Core Government Program Highlight Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10 pt-2">
+                
+                <!-- Program 1: SMK Go Japan -->
+                <div class="p-6 rounded-2xl bg-blue-950/40 border border-blue-500/30 space-y-4 flex flex-col justify-between hover:border-blue-400/60 transition">
+                    <div class="space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 rounded-xl bg-blue-500 text-white text-[10px] font-black uppercase tracking-wider shadow-xs">
+                                Jalur 01 • Khusus Siswa & Alumni SMK
+                            </span>
+                            <span class="text-xs font-mono text-blue-300 font-bold">Vokasi Industri</span>
+                        </div>
+                        <h4 class="text-xl font-black text-white">Program SMK Go Japan</h4>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Program penyaluran kerja terintegrasi bagi siswa dan alumni SMK se-Indonesia. Pelatihan bahasa Jepang, pengelasan, manufaktur, otomotif, dan permesinan presisi langsung ke perusahaan terkemuka di Jepang via jaringan BKK SMK nasional.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-blue-500/20 flex items-center justify-between text-xs">
+                        <span class="text-blue-300 font-bold">Mitra 45+ BKK SMK Nasional</span>
+                        <a href="{{ route('brochure.index', ['program' => 'Ginou Jisshusei (Magang)']) }}" class="text-white hover:text-blue-300 font-black inline-flex items-center gap-1">
+                            <span>Unduh Brosur</span>
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Program 2: SMILE Project (Kemenkes & Poltekkes) -->
+                <div class="p-6 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 space-y-4 flex flex-col justify-between hover:border-emerald-400/60 transition">
+                    <div class="space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 rounded-xl bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider shadow-xs">
+                                Jalur 02 • Beasiswa 100% GRATIS Kemenkes
+                            </span>
+                            <span class="text-xs font-mono text-emerald-300 font-bold">4 Gelombang Sukses</span>
+                        </div>
+                        <h4 class="text-xl font-black text-white">SMILE Project (Poltekkes & STIKes)</h4>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Program beasiswa pemerintah dari Kementerian Kesehatan RI (Kemenkes) khusus lulusan Keperawatan & Kebidanan. Biaya belajar bahasa, asrama, sertifikasi Kaigo, CoE, visa, hingga tiket pesawat 100% dibiayai negara.
+                        </p>
+                    </div>
+                    <div class="pt-3 border-t border-emerald-500/20 flex items-center justify-between text-xs">
+                        <span class="text-emerald-300 font-bold">MoU Poltekkes Se-Indonesia</span>
+                        <a href="{{ route('brochure.index', ['program' => 'Tokutei Ginou (SSW)']) }}" class="text-white hover:text-emerald-300 font-black inline-flex items-center gap-1">
+                            <span>Unduh Brosur</span>
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </a>
+                    </div>
+                </div>
+
             </div>
 
             <!-- 4 Highlight KPI Badges -->
@@ -216,7 +267,7 @@
                 <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
                     <p class="text-[10px] font-bold text-red-400 uppercase tracking-wider">Rekam Jejak</p>
                     <p class="text-2xl sm:text-3xl font-black text-white mt-1">4 Gelombang</p>
-                    <p class="text-[11px] text-slate-400 mt-0.5">Program Kemenkes sukses tuntas</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">SMILE Project sukses tuntas</p>
                 </div>
 
                 <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">

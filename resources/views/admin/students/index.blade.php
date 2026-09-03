@@ -92,11 +92,11 @@
             <div class="sm:col-span-2">
                 <select name="registration_category" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition">
                     <option value="all">Semua Jalur Siswa</option>
-                    <option value="umum" {{ request('registration_category') === 'umum' ? 'selected' : '' }}>Jalur Reguler</option>
-                    <option value="kemenkes_kaigo" {{ request('registration_category') === 'kemenkes_kaigo' ? 'selected' : '' }}>Beasiswa Kemenkes</option>
-                    <option value="smk_go_japan" {{ request('registration_category') === 'smk_go_japan' ? 'selected' : '' }}>SMK Go Japan</option>
+                    <option value="smk_go_japan" {{ request('registration_category') === 'smk_go_japan' ? 'selected' : '' }}>SMK Go Japan (Pemerintah)</option>
+                    <option value="smile_project" {{ in_array(request('registration_category'), ['smile_project', 'kemenkes_kaigo']) ? 'selected' : '' }}>SMILE Project (Kemenkes)</option>
+                    <option value="umum" {{ request('registration_category') === 'umum' ? 'selected' : '' }}>Jalur Reguler / Umum</option>
                     <option value="bkk_smk" {{ request('registration_category') === 'bkk_smk' ? 'selected' : '' }}>Mitra BKK SMK</option>
-                    <option value="poltekkes_kampus" {{ request('registration_category') === 'poltekkes_kampus' ? 'selected' : '' }}>Mitra Poltekkes</option>
+                    <option value="poltekkes_kampus" {{ request('registration_category') === 'poltekkes_kampus' ? 'selected' : '' }}>Mitra Poltekkes / STIKes</option>
                 </select>
             </div>
 
