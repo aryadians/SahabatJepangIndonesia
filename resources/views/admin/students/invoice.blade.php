@@ -31,11 +31,11 @@
 
     <!-- Top Action Bar (No-Print) -->
     <div class="max-w-3xl mx-auto mb-6 flex items-center justify-between no-print">
-        <a href="{{ route('admin.students.index') }}" class="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition flex items-center gap-1.5 shadow-xs">
-            &larr; Kembali ke Data Siswa
+        <a href="{{ auth()->check() ? route('admin.students.index') : route('student.portal') }}" class="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition flex items-center gap-1.5 shadow-xs">
+            &larr; {{ auth()->check() ? 'Kembali ke Data Siswa' : 'Kembali ke Portal Siswa' }}
         </a>
         <div class="flex items-center gap-2">
-            <a href="{{ route('admin.students.receipt', $student->id) }}" class="px-4 py-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold hover:bg-emerald-100 transition">
+            <a href="{{ auth()->check() ? route('admin.students.receipt', $student->id) : route('student.public.receipt', $student->nis) }}" class="px-4 py-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold hover:bg-emerald-100 transition">
                 Cetak Kwitansi Pembayaran
             </a>
             <button onclick="window.print()" class="px-5 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition shadow-md flex items-center gap-2">

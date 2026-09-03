@@ -61,6 +61,14 @@ Route::post('/brosur/download', [BrochureController::class, 'download'])->name('
 Route::get('/brosur/file/{id}', [BrochureController::class, 'downloadFile'])->name('brochure.download.file');
 Route::get('/biaya', fn() => redirect()->route('brochure.index'));
 
+use App\Http\Controllers\StudentPortalController;
+
+// 5.5. Portal Cek Status Mandiri Siswa & Bukti Pembayaran Resmi
+Route::get('/cek-status', [StudentPortalController::class, 'index'])->name('student.portal');
+Route::get('/portal-siswa', fn() => redirect()->route('student.portal'));
+Route::get('/kwitansi/{nis}', [StudentPortalController::class, 'publicReceipt'])->name('student.public.receipt');
+Route::get('/invoice/{nis}', [StudentPortalController::class, 'publicInvoice'])->name('student.public.invoice');
+
 // 6. Dynamic XML Sitemap for SEO & Search Engine Crawlers
 Route::get('/sitemap.xml', function () {
     $articles = \App\Models\Article::where('is_published', true)->latest()->get();
@@ -72,6 +80,7 @@ Route::get('/sitemap.xml', function () {
         ['url' => url('/'), 'priority' => '1.0', 'changefreq' => 'daily'],
         ['url' => route('brochure.index'), 'priority' => '0.9', 'changefreq' => 'daily'],
         ['url' => route('exam.simulator'), 'priority' => '0.9', 'changefreq' => 'weekly'],
+        ['url' => route('student.portal'), 'priority' => '0.8', 'changefreq' => 'weekly'],
         ['url' => route('alumni.map'), 'priority' => '0.8', 'changefreq' => 'weekly'],
         ['url' => route('articles.index'), 'priority' => '0.8', 'changefreq' => 'daily'],
         ['url' => route('affiliates.public.register'), 'priority' => '0.6', 'changefreq' => 'monthly'],

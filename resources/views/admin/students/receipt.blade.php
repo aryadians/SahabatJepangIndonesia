@@ -31,11 +31,11 @@
 
     <!-- Top Action Bar (No-Print) -->
     <div class="max-w-3xl mx-auto mb-6 flex items-center justify-between no-print">
-        <a href="{{ route('admin.students.index') }}" class="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition flex items-center gap-1.5 shadow-xs">
-            &larr; Kembali ke Data Siswa
+        <a href="{{ auth()->check() ? route('admin.students.index') : route('student.portal') }}" class="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition flex items-center gap-1.5 shadow-xs">
+            &larr; {{ auth()->check() ? 'Kembali ke Data Siswa' : 'Kembali ke Portal Siswa' }}
         </a>
         <div class="flex items-center gap-2">
-            <a href="{{ route('admin.students.invoice', $student->id) }}" class="px-4 py-2 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold hover:bg-blue-100 transition">
+            <a href="{{ auth()->check() ? route('admin.students.invoice', $student->id) : route('student.public.invoice', $student->nis) }}" class="px-4 py-2 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold hover:bg-blue-100 transition">
                 Cetak Invoice Tagihan
             </a>
             <button onclick="window.print()" class="px-5 py-2 rounded-xl bg-red-600 text-white text-xs font-bold hover:bg-red-700 transition shadow-md flex items-center gap-2">

@@ -173,6 +173,19 @@
                                 </div>
                             </a>
 
+                            <a href="{{ route('student.portal') }}" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 transition">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold flex-shrink-0">
+                                    <i data-lucide="shield-check" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                                        <span>Cek Status Siswa</span>
+                                        <span class="px-1.5 py-0.2 rounded bg-emerald-200 text-emerald-900 text-[9px] font-black">Portal</span>
+                                    </p>
+                                    <p class="text-[10px] text-slate-400">Tracking berkas & kwitansi mandiri</p>
+                                </div>
+                            </a>
+
                             <a href="{{ route('articles.index') }}" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-red-50 text-slate-700 hover:text-japan-700 transition">
                                 <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold flex-shrink-0">
                                     <i data-lucide="newspaper" class="w-4 h-4"></i>
@@ -262,6 +275,13 @@
             <a href="{{ route('alumni.map') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
                 <i data-lucide="map-pin" class="w-4 h-4 text-japan-600"></i>
                 <span>Peta Sebaran Alumni di Jepang</span>
+            </a>
+            <a href="{{ route('student.portal') }}" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 transition">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+                    <span>Cek Status Siswa & Kwitansi</span>
+                </div>
+                <span class="px-1.5 py-0.5 rounded bg-emerald-200 text-emerald-900 text-[9px] font-black uppercase">Portal</span>
             </a>
             <a href="{{ route('affiliates.public.register') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 transition">
                 <i data-lucide="handshake" class="w-4 h-4 text-emerald-600"></i>

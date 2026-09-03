@@ -47,6 +47,7 @@
                 <ul class="space-y-2 text-xs sm:text-sm text-slate-400">
                     <li><a href="{{ route('home') }}#program" class="hover:text-red-400 transition">Tokutei Ginou (SSW)</a></li>
                     <li><a href="{{ route('home') }}#program" class="hover:text-red-400 transition">Magang (Jisshusei)</a></li>
+                    <li><a href="{{ route('student.portal') }}" class="hover:text-emerald-400 transition flex items-center gap-1 font-bold text-emerald-400"><span>Portal Cek Status Siswa</span> <span class="px-1 py-0.2 rounded bg-emerald-600 text-white text-[8px]">Kwitansi</span></a></li>
                     <li><a href="{{ route('exam.simulator') }}" class="hover:text-red-400 transition flex items-center gap-1 font-bold text-slate-300"><span>Tryout JLPT CBT</span> <span class="px-1 py-0.2 rounded bg-japan-600 text-white text-[8px]">Gratis</span></a></li>
                     <li><a href="{{ route('alumni.map') }}" class="hover:text-red-400 transition">Peta Sebaran Alumni</a></li>
                     <li><a href="{{ route('affiliates.public.register') }}" class="hover:text-red-400 transition text-emerald-400 font-bold">Kemitraan SMK / BKK</a></li>
