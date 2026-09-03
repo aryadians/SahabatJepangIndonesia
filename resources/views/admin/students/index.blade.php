@@ -6,83 +6,91 @@
 @section('content')
 <div class="space-y-6">
 
-    <!-- 1. Top KPI Summary Cards -->
+    <!-- 1. Top KPI Summary Cards (Real-Time Live Synced) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         <!-- Total Siswa -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
-                <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+        <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-slate-300 transition">
+            <div class="flex items-center justify-between">
+                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Siswa Terdata</p>
+                <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
+                    <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                </div>
             </div>
-            <div>
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Siswa</p>
-                <h3 class="text-2xl font-black text-slate-900 mt-0.5">{{ number_format($stats['total_students']) }}</h3>
-            </div>
+            <p data-admin-stat="students_total" class="text-2xl sm:text-3xl font-black text-slate-900 mt-2">{{ number_format($stats['total_students']) }}</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">Keseluruhan siswa & alumni</p>
         </div>
 
-        <!-- Siswa Aktif -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                <i data-lucide="book-open" class="w-6 h-6"></i>
+        <!-- Siswa Aktif Belajar -->
+        <div class="p-5 rounded-2xl bg-white border border-emerald-200 shadow-xs hover:border-emerald-300 transition">
+            <div class="flex items-center justify-between">
+                <p class="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Aktif Belajar / Seleksi</p>
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                </div>
             </div>
-            <div>
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Aktif Belajar</p>
-                <h3 class="text-2xl font-black text-emerald-600 mt-0.5">{{ number_format($stats['active_students']) }}</h3>
-            </div>
+            <p data-admin-stat="students_active" class="text-2xl sm:text-3xl font-black text-emerald-600 mt-2">{{ number_format($stats['active_students']) }}</p>
+            <p class="text-[11px] text-emerald-700/80 mt-0.5 font-medium">Tahap pelatihan intensif</p>
         </div>
 
         <!-- Sudah di Jepang -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
-                <i data-lucide="plane" class="w-6 h-6"></i>
+        <div class="p-5 rounded-2xl bg-white border border-rose-200 shadow-xs hover:border-rose-300 transition">
+            <div class="flex items-center justify-between">
+                <p class="text-[11px] font-bold text-japan-600 uppercase tracking-wider">Sudah Berada di Jepang</p>
+                <div class="w-9 h-9 rounded-xl bg-rose-50 text-japan-600 flex items-center justify-center font-bold">
+                    <i data-lucide="plane" class="w-4 h-4"></i>
+                </div>
             </div>
-            <div>
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Sudah di Jepang</p>
-                <h3 class="text-2xl font-black text-japan-600 mt-0.5">{{ number_format($stats['departed_students']) }}</h3>
-            </div>
+            <p data-admin-stat="students_departed" class="text-2xl sm:text-3xl font-black text-japan-600 mt-2">{{ number_format($stats['departed_students']) }}</p>
+            <p class="text-[11px] text-rose-700/80 mt-0.5 font-medium">Bekerja resmi di kaisha</p>
         </div>
 
         <!-- Total Tanggungan Belum Lunas -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-                <i data-lucide="wallet" class="w-6 h-6"></i>
+        <div class="p-5 rounded-2xl bg-white border border-amber-200 shadow-xs hover:border-amber-300 transition">
+            <div class="flex items-center justify-between">
+                <p class="text-[11px] font-bold text-amber-600 uppercase tracking-wider">Sisa Tanggungan Biaya</p>
+                <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                    <i data-lucide="wallet" class="w-4 h-4"></i>
+                </div>
             </div>
-            <div>
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Sisa Tanggungan</p>
-                <h3 class="text-base sm:text-lg font-black text-amber-600 mt-0.5">Rp {{ number_format($stats['total_receivables'], 0, ',', '.') }}</h3>
-            </div>
+            <p data-admin-stat="receivables" class="text-xl sm:text-2xl font-black text-amber-600 mt-2">Rp {{ number_format($stats['total_receivables'], 0, ',', '.') }}</p>
+            <p class="text-[11px] text-amber-700/80 mt-0.5 font-medium">Belum lunas / proses cicilan</p>
         </div>
 
     </div>
 
-    <!-- 2. Action & Filter Bar -->
-    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <!-- 2. Action & Filter Bar (2-Tier Clean Layout) -->
+    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs space-y-4">
+        
+        <!-- Tier 1: Search and Dropdown Filters (Full Width) -->
+        <form action="{{ route('admin.students.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
             
-            <!-- Search & Filters Form -->
-            <form action="{{ route('admin.students.index') }}" method="GET" class="flex flex-wrap items-center gap-2.5 flex-1">
-                <div class="relative min-w-[200px] flex-1">
-                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-                    <input 
-                        type="text" 
-                        name="q" 
-                        value="{{ request('q') }}" 
-                        placeholder="Cari NIS, Nama, NIK, No WA, Kaisha..." 
-                        class="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600"
-                    >
-                </div>
+            <!-- Search Input (Span 4) -->
+            <div class="sm:col-span-4 relative">
+                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                <input 
+                    type="text" 
+                    name="q" 
+                    value="{{ request('q') }}" 
+                    placeholder="Cari NIS, Nama, NIK, No WA, Kaisha..." 
+                    class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition"
+                >
+            </div>
 
-                <!-- Filter Program -->
-                <select name="program" class="px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-japan-600">
+            <!-- Filter Program (Span 3) -->
+            <div class="sm:col-span-3">
+                <select name="program" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition">
                     <option value="all">Semua Program</option>
                     <option value="Tokutei Ginou (SSW)" {{ request('program') === 'Tokutei Ginou (SSW)' ? 'selected' : '' }}>Tokutei Ginou (SSW)</option>
                     <option value="Ginou Jisshusei (Magang)" {{ request('program') === 'Ginou Jisshusei (Magang)' ? 'selected' : '' }}>Magang (Jisshusei)</option>
                     <option value="Engineer & Profesional" {{ request('program') === 'Engineer & Profesional' ? 'selected' : '' }}>Engineer / Pro</option>
                     <option value="Kursus Bahasa Jepang" {{ request('program') === 'Kursus Bahasa Jepang' ? 'selected' : '' }}>Kursus Bahasa</option>
                 </select>
+            </div>
 
-                <!-- Filter Status -->
-                <select name="status" class="px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-japan-600">
+            <!-- Filter Status (Span 2) -->
+            <div class="sm:col-span-2">
+                <select name="status" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition">
                     <option value="all">Semua Status</option>
                     <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Aktif Belajar</option>
                     <option value="interview" {{ request('status') === 'interview' ? 'selected' : '' }}>Wawancara</option>
@@ -91,33 +99,53 @@
                     <option value="graduated" {{ request('status') === 'graduated' ? 'selected' : '' }}>Alumni</option>
                     <option value="dropout" {{ request('status') === 'dropout' ? 'selected' : '' }}>Keluar / DO</option>
                 </select>
+            </div>
 
-                <!-- Filter Pembayaran -->
-                <select name="payment_status" class="px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-japan-600">
+            <!-- Filter Pembayaran (Span 2) -->
+            <div class="sm:col-span-2">
+                <select name="payment_status" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition">
                     <option value="all">Semua Bayar</option>
                     <option value="paid" {{ request('payment_status') === 'paid' ? 'selected' : '' }}>Lunas</option>
                     <option value="partial" {{ request('payment_status') === 'partial' ? 'selected' : '' }}>Ada Tanggungan</option>
                     <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>Belum Bayar</option>
                 </select>
+            </div>
 
-                <button type="submit" class="px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition">
-                    Filter
+            <!-- Filter & Reset Button (Span 1) -->
+            <div class="sm:col-span-1 flex items-center gap-1.5 justify-end">
+                <button type="submit" class="btn-red-primary px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs flex items-center justify-center gap-1 w-full" title="Terapkan Filter">
+                    <i data-lucide="filter" class="w-3.5 h-3.5"></i>
+                    <span>Filter</span>
                 </button>
-
                 @if(request()->anyFilled(['q', 'program', 'status', 'payment_status']))
-                    <a href="{{ route('admin.students.index') }}" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold" title="Reset Filter">
-                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    <a href="{{ route('admin.students.index') }}" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition flex-shrink-0" title="Reset Filter">
+                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
                     </a>
                 @endif
-            </form>
+            </div>
+
+        </form>
+
+        <!-- Tier 2: Quick Actions & Batch Tools Bar -->
+        <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+            
+            <div class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold text-[11px]">
+                    <i data-lucide="database" class="w-3.5 h-3.5 text-japan-600"></i>
+                    <span>Total Data: <b>{{ number_format($students->total()) }}</b> Siswa</span>
+                </span>
+                @if(request()->anyFilled(['q', 'program', 'status', 'payment_status']))
+                    <span class="text-[11px] text-japan-600 font-semibold">(Hasil Pencarian)</span>
+                @endif
+            </div>
 
             <!-- Action Buttons (Import, Template, Export, Tambah) -->
-            <div class="flex flex-wrap items-center gap-2 flex-shrink-0">
+            <div class="flex flex-wrap items-center gap-2">
                 <!-- Import CSV Button -->
                 <button 
                     type="button"
                     onclick="openModal('importCsvModal')" 
-                    class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5"
+                    class="px-3.5 py-2 rounded-xl border border-blue-200 bg-blue-50/60 hover:bg-blue-100/80 text-blue-800 text-xs font-bold transition flex items-center gap-1.5 shadow-2xs"
                     title="Import Data Siswa Massal dari file CSV / Excel"
                 >
                     <i data-lucide="upload-cloud" class="w-4 h-4 text-blue-600"></i>
@@ -127,7 +155,7 @@
                 <!-- Download Template CSV -->
                 <a 
                     href="{{ route('admin.students.template') }}" 
-                    class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5"
+                    class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 shadow-2xs"
                     title="Unduh Template Format CSV Siap Isi"
                 >
                     <i data-lucide="download" class="w-4 h-4 text-slate-500"></i>
@@ -137,7 +165,7 @@
                 <!-- Export Database CSV -->
                 <a 
                     href="{{ route('admin.students.export') }}" 
-                    class="px-3.5 py-2 rounded-xl border border-emerald-200 bg-emerald-50/50 hover:bg-emerald-50 text-emerald-800 text-xs font-bold transition flex items-center gap-1.5"
+                    class="px-3.5 py-2 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold transition flex items-center gap-1.5 shadow-2xs"
                     title="Export Seluruh Database Siswa ke File CSV / Excel"
                 >
                     <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600"></i>
@@ -155,6 +183,7 @@
             </div>
 
         </div>
+
     </div>
 
     <!-- 3. Students Table (Clean & Aligned) -->
