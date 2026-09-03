@@ -232,7 +232,8 @@
                     <div class="flex items-center gap-1.5">
                         <button 
                             type="button" 
-                            onclick="openEditGalleryModal({{ $item->id }}, '{{ addslashes($item->title) }}', '{{ addslashes($item->institution ?? '') }}', '{{ addslashes($item->program_tag) }}', '{{ addslashes($item->badge_text ?? '') }}', '{{ addslashes($item->description ?? '') }}', '{{ addslashes($item->sub_text_left ?? '') }}', '{{ addslashes($item->sub_text_right ?? '') }}', '{{ addslashes($item->image) }}', {{ $item->order }}, {{ $item->is_active ? 1 : 0 }})"
+                            data-gallery='@json($item)'
+                            onclick="openEditGalleryFromBtn(this)"
                             class="p-2 rounded-xl text-blue-600 bg-blue-50 hover:bg-blue-100 transition" 
                             title="Edit Foto & Keterangan"
                         >
@@ -342,10 +343,16 @@
 
             <!-- Upload File Gambar atau URL -->
             <div class="space-y-2 pt-1 border-t border-slate-100">
+                <!-- Preview Gambar Baru -->
+                <div id="addPreviewBox" class="h-32 rounded-2xl bg-slate-900 overflow-hidden relative hidden">
+                    <img id="addImagePreview" src="" alt="Pratinjau" class="w-full h-full object-cover">
+                    <span class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-slate-950/80 text-[10px] text-white font-mono">Pratinjau Foto Baru</span>
+                </div>
+
                 <label class="block text-xs font-bold text-slate-700">Upload File Foto (Maks. 10MB)</label>
-                <input type="file" name="image_file" accept=".png,.jpg,.jpeg,.webp" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-japan-700 hover:file:bg-red-100">
+                <input type="file" name="image_file" accept=".png,.jpg,.jpeg,.webp" onchange="previewImageFile(this, 'addImagePreview', 'addPreviewBox')" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-japan-700 hover:file:bg-red-100 cursor-pointer">
                 <p class="text-[10px] text-slate-400">Atau gunakan URL gambar jika foto sudah di-host online:</p>
-                <input type="text" name="image_url" placeholder="https://..." class="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-mono focus:outline-none focus:border-japan-600">
+                <input type="text" name="image_url" placeholder="https://..." oninput="previewUrlImage(this, 'addImagePreview', 'addPreviewBox')" class="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-mono focus:outline-none focus:border-japan-600">
             </div>
 
             <!-- Urutan Tampil & Status -->
@@ -399,9 +406,9 @@
             @method('PUT')
 
             <!-- Preview Gambar Saat Ini -->
-            <div class="h-32 rounded-2xl bg-slate-900 overflow-hidden relative">
+            <div class="h-36 rounded-2xl bg-slate-900 overflow-hidden relative">
                 <img id="editImagePreview" src="" alt="Preview" class="w-full h-full object-cover">
-                <span class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-slate-950/80 text-[10px] text-white font-mono">Foto Saat Ini</span>
+                <span class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-slate-950/80 text-[10px] text-white font-mono">Foto Dokumentasi</span>
             </div>
 
             <!-- Judul Kegiatan -->
@@ -455,8 +462,8 @@
             <!-- Ganti Gambar -->
             <div class="space-y-2 pt-1 border-t border-slate-100">
                 <label class="block text-xs font-bold text-slate-700">Ganti File Foto (Opsional)</label>
-                <input type="file" name="image_file" accept=".png,.jpg,.jpeg,.webp" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                <input type="text" id="editImageUrl" name="image_url" placeholder="Atau ganti URL gambar: https://..." class="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-mono focus:outline-none focus:border-japan-600">
+                <input type="file" name="image_file" accept=".png,.jpg,.jpeg,.webp" onchange="previewImageFile(this, 'editImagePreview')" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                <input type="text" id="editImageUrl" name="image_url" placeholder="Atau ganti URL gambar: https://..." oninput="previewUrlImage(this, 'editImagePreview')" class="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-mono focus:outline-none focus:border-japan-600">
             </div>
 
             <!-- Urutan Tampil & Status -->
@@ -485,20 +492,52 @@
 </div>
 
 <script>
-    function openEditGalleryModal(id, title, institution, programTag, badge, desc, subLeft, subRight, image, order, isActive) {
-        document.getElementById('editGalleryForm').action = '/admin/campus-galleries/' + id;
-        document.getElementById('editTitle').value = title;
-        document.getElementById('editInstitution').value = institution || '';
-        document.getElementById('editProgramTag').value = programTag;
-        document.getElementById('editBadgeText').value = badge || '';
-        document.getElementById('editDescription').value = desc || '';
-        document.getElementById('editSubTextLeft').value = subLeft || '';
-        document.getElementById('editSubTextRight').value = subRight || '';
-        document.getElementById('editImagePreview').src = image;
-        document.getElementById('editImageUrl').value = image.startsWith('data:') ? '' : image;
-        document.getElementById('editOrder').value = order;
-        document.getElementById('editIsActive').checked = isActive === 1;
-        openModal('editGalleryModal');
+    function openEditGalleryFromBtn(btn) {
+        try {
+            const data = JSON.parse(btn.getAttribute('data-gallery'));
+            document.getElementById('editGalleryForm').action = '/admin/campus-galleries/' + data.id;
+            document.getElementById('editTitle').value = data.title || '';
+            document.getElementById('editInstitution').value = data.institution || '';
+            document.getElementById('editProgramTag').value = data.program_tag || 'MoU Kampus';
+            document.getElementById('editBadgeText').value = data.badge_text || '';
+            document.getElementById('editDescription').value = data.description || '';
+            document.getElementById('editSubTextLeft').value = data.sub_text_left || '';
+            document.getElementById('editSubTextRight').value = data.sub_text_right || '';
+            document.getElementById('editImagePreview').src = data.image || '';
+            document.getElementById('editImageUrl').value = (data.image && !data.image.startsWith('data:')) ? data.image : '';
+            document.getElementById('editOrder').value = data.order !== undefined ? data.order : 0;
+            document.getElementById('editIsActive').checked = Boolean(data.is_active);
+            openModal('editGalleryModal');
+        } catch (e) {
+            console.error('Failed to parse gallery item:', e);
+        }
+    }
+
+    function previewImageFile(input, imgId, boxId) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById(imgId);
+                if (img) img.src = e.target.result;
+                if (boxId) {
+                    const box = document.getElementById(boxId);
+                    if (box) box.classList.remove('hidden');
+                }
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function previewUrlImage(input, imgId, boxId) {
+        const url = (input.value || '').trim();
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            const img = document.getElementById(imgId);
+            if (img) img.src = url;
+            if (boxId) {
+                const box = document.getElementById(boxId);
+                if (box) box.classList.remove('hidden');
+            }
+        }
     }
 
     // Client-side Instant Filter

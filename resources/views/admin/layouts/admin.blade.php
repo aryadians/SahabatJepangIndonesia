@@ -478,6 +478,8 @@
             const modal = document.getElementById(id);
             if (modal) {
                 modal.classList.add('active');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
             }
         }
 
@@ -485,6 +487,8 @@
             const modal = document.getElementById(id);
             if (modal) {
                 modal.classList.remove('active');
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
             }
         }
 

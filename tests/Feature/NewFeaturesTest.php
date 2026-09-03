@@ -203,9 +203,30 @@ class NewFeaturesTest extends TestCase
         $updateResponse->assertRedirect('/admin/campus-galleries');
         $this->assertEquals('MoU Poltekkes Kemenkes Surabaya Updated', $gallery->fresh()->title);
 
-        // 5. Admin deletes
-        $deleteResponse = $this->actingAs($this->admin)->delete("/admin/campus-galleries/{$gallery->id}");
+        // 5. Admin creates with uploaded file
+        $file = \Illuminate\Http\UploadedFile::fake()->image('mou_campus.jpg', 600, 400);
+        $filePostResponse = $this->actingAs($this->admin)->post('/admin/campus-galleries', [
+            'title' => 'MoU Poltekkes Semarang Gelombang 5',
+            'institution' => 'Poltekkes Semarang',
+            'program_tag' => 'SMILE Project',
+            'badge_text' => 'MoU Baru',
+            'image_file' => $file,
+            'is_active' => 1,
+        ]);
+        $filePostResponse->assertRedirect('/admin/campus-galleries');
+
+        $uploadedGallery = \App\Models\CampusGallery::where('title', 'MoU Poltekkes Semarang Gelombang 5')->first();
+        $this->assertNotNull($uploadedGallery);
+        $this->assertStringStartsWith('data:image/', $uploadedGallery->image);
+
+        // 6. Verify it appears on homepage carousel
+        $homeResponse = $this->get('/');
+        $homeResponse->assertStatus(200);
+        $homeResponse->assertSee('MoU Poltekkes Semarang Gelombang 5');
+
+        // 7. Admin deletes
+        $deleteResponse = $this->actingAs($this->admin)->delete("/admin/campus-galleries/{$uploadedGallery->id}");
         $deleteResponse->assertRedirect('/admin/campus-galleries');
-        $this->assertNull(\App\Models\CampusGallery::find($gallery->id));
+        $this->assertNull(\App\Models\CampusGallery::find($uploadedGallery->id));
     }
 }
