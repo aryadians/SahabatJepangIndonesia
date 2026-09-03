@@ -62,78 +62,95 @@
     <!-- 2. Action & Filter Bar (2-Tier Clean Layout) -->
     <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs space-y-4">
         
-        <!-- Tier 1: Search and Dropdown Filters (Full Width) -->
-        <form action="{{ route('admin.students.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+        <!-- Tier 1: Search and Dropdown Filters (Structured 2-Row Form) -->
+        <form action="{{ route('admin.students.index') }}" method="GET" class="space-y-3">
             
-            <!-- Search Bar (Span 3) -->
-            <div class="sm:col-span-3 relative">
-                <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                <input 
-                    type="text" 
-                    name="q" 
-                    value="{{ request('q') }}" 
-                    placeholder="Cari NIS, Nama, NIK, No. HP, Kaisha, CoE..." 
-                    class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition"
-                >
+            <!-- Row 1: Search Bar (Main) + Program + Jalur Siswa -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
+                
+                <!-- Search Bar (Span 5 on Desktop) -->
+                <div class="sm:col-span-2 lg:col-span-5 relative">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input 
+                        type="text" 
+                        name="q" 
+                        value="{{ request('q') }}" 
+                        placeholder="Cari NIS, Nama Siswa, NIK, No. HP, Kaisha, atau No. CoE..." 
+                        class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-japan-600 bg-slate-50/70 focus:bg-white transition"
+                    >
+                </div>
+
+                <!-- Filter Program (Span 3 on Desktop) -->
+                <div class="sm:col-span-1 lg:col-span-3">
+                    <select name="program" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50/70 focus:bg-white transition">
+                        <option value="all">Semua Program</option>
+                        <option value="Tokutei Ginou (SSW)" {{ request('program') === 'Tokutei Ginou (SSW)' ? 'selected' : '' }}>Tokutei Ginou (SSW)</option>
+                        <option value="Ginou Jisshusei (Magang)" {{ request('program') === 'Ginou Jisshusei (Magang)' ? 'selected' : '' }}>Ginou Jisshusei (Magang)</option>
+                        <option value="Engineer & Profesional" {{ request('program') === 'Engineer & Profesional' ? 'selected' : '' }}>Engineer & Profesional</option>
+                        <option value="Kursus Bahasa Jepang" {{ request('program') === 'Kursus Bahasa Jepang' ? 'selected' : '' }}>Kursus Bahasa Jepang</option>
+                    </select>
+                </div>
+
+                <!-- Filter Jalur / Kategori Siswa (Span 4 on Desktop) -->
+                <div class="sm:col-span-1 lg:col-span-4">
+                    <select name="registration_category" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50/70 focus:bg-white transition">
+                        <option value="all">Semua Jalur Pendaftaran</option>
+                        <option value="smk_go_japan" {{ request('registration_category') === 'smk_go_japan' ? 'selected' : '' }}>Program Pemerintah: SMK Go Japan</option>
+                        <option value="smile_project" {{ in_array(request('registration_category'), ['smile_project', 'kemenkes_kaigo']) ? 'selected' : '' }}>Program Pemerintah: SMILE Project (Kemenkes)</option>
+                        <option value="umum" {{ request('registration_category') === 'umum' ? 'selected' : '' }}>Jalur Reguler / Umum</option>
+                        <option value="bkk_smk" {{ request('registration_category') === 'bkk_smk' ? 'selected' : '' }}>Kemitraan BKK SMK</option>
+                        <option value="poltekkes_kampus" {{ request('registration_category') === 'poltekkes_kampus' ? 'selected' : '' }}>Kemitraan Poltekkes & STIKes</option>
+                    </select>
+                </div>
+
             </div>
 
-            <!-- Filter Program (Span 2) -->
-            <div class="sm:col-span-2">
-                <select name="program" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition">
-                    <option value="all">Semua Program</option>
-                    <option value="Tokutei Ginou (SSW)" {{ request('program') === 'Tokutei Ginou (SSW)' ? 'selected' : '' }}>SSW</option>
-                    <option value="Ginou Jisshusei (Magang)" {{ request('program') === 'Ginou Jisshusei (Magang)' ? 'selected' : '' }}>Magang</option>
-                    <option value="Engineer & Profesional" {{ request('program') === 'Engineer & Profesional' ? 'selected' : '' }}>Engineer</option>
-                    <option value="Kursus Bahasa Jepang" {{ request('program') === 'Kursus Bahasa Jepang' ? 'selected' : '' }}>Bahasa</option>
-                </select>
-            </div>
+            <!-- Row 2: Secondary Status Filters + Submit & Reset -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center pt-2 border-t border-slate-100">
+                
+                <!-- Status Pelatihan (Span 4 on Desktop) -->
+                <div class="sm:col-span-1 lg:col-span-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[11px] font-bold text-slate-400 whitespace-nowrap hidden lg:inline">Status:</span>
+                        <select name="status" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50/70 focus:bg-white transition">
+                            <option value="all">Semua Status Pelatihan</option>
+                            <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Aktif Belajar</option>
+                            <option value="interview" {{ request('status') === 'interview' ? 'selected' : '' }}>Wawancara User (Kaisha)</option>
+                            <option value="passed_interview" {{ request('status') === 'passed_interview' ? 'selected' : '' }}>Lolos User (Tunggu CoE/Visa)</option>
+                            <option value="departed" {{ request('status') === 'departed' ? 'selected' : '' }}>Sudah Terbang / Di Jepang</option>
+                            <option value="graduated" {{ request('status') === 'graduated' ? 'selected' : '' }}>Alumni Selesai Kontrak</option>
+                            <option value="dropout" {{ request('status') === 'dropout' ? 'selected' : '' }}>Keluar / DO</option>
+                        </select>
+                    </div>
+                </div>
 
-            <!-- Filter Jalur / Kategori Siswa (Span 2) -->
-            <div class="sm:col-span-2">
-                <select name="registration_category" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition">
-                    <option value="all">Semua Jalur Siswa</option>
-                    <option value="smk_go_japan" {{ request('registration_category') === 'smk_go_japan' ? 'selected' : '' }}>SMK Go Japan (Pemerintah)</option>
-                    <option value="smile_project" {{ in_array(request('registration_category'), ['smile_project', 'kemenkes_kaigo']) ? 'selected' : '' }}>SMILE Project (Kemenkes)</option>
-                    <option value="umum" {{ request('registration_category') === 'umum' ? 'selected' : '' }}>Jalur Reguler / Umum</option>
-                    <option value="bkk_smk" {{ request('registration_category') === 'bkk_smk' ? 'selected' : '' }}>Mitra BKK SMK</option>
-                    <option value="poltekkes_kampus" {{ request('registration_category') === 'poltekkes_kampus' ? 'selected' : '' }}>Mitra Poltekkes / STIKes</option>
-                </select>
-            </div>
+                <!-- Status Pembayaran (Span 4 on Desktop) -->
+                <div class="sm:col-span-1 lg:col-span-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[11px] font-bold text-slate-400 whitespace-nowrap hidden lg:inline">Biaya:</span>
+                        <select name="payment_status" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50/70 focus:bg-white transition">
+                            <option value="all">Semua Status Pembayaran</option>
+                            <option value="paid" {{ request('payment_status') === 'paid' ? 'selected' : '' }}>Lunas (Rp 0 Sisa)</option>
+                            <option value="partial" {{ request('payment_status') === 'partial' ? 'selected' : '' }}>Ada Tanggungan Biaya</option>
+                            <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>Belum Ada Pembayaran</option>
+                        </select>
+                    </div>
+                </div>
 
-            <!-- Filter Status Pelatihan (Span 2) -->
-            <div class="sm:col-span-2">
-                <select name="status" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition">
-                    <option value="all">Semua Status</option>
-                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Aktif Belajar</option>
-                    <option value="interview" {{ request('status') === 'interview' ? 'selected' : '' }}>Wawancara</option>
-                    <option value="passed_interview" {{ request('status') === 'passed_interview' ? 'selected' : '' }}>Lolos User</option>
-                    <option value="departed" {{ request('status') === 'departed' ? 'selected' : '' }}>Di Jepang</option>
-                    <option value="graduated" {{ request('status') === 'graduated' ? 'selected' : '' }}>Alumni</option>
-                    <option value="dropout" {{ request('status') === 'dropout' ? 'selected' : '' }}>Keluar / DO</option>
-                </select>
-            </div>
+                <!-- Tombol Aksi (Span 4 on Desktop) -->
+                <div class="sm:col-span-2 lg:col-span-4 flex items-center gap-2 justify-end">
+                    <button type="submit" class="flex-1 lg:flex-none px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-xs">
+                        <i data-lucide="filter" class="w-3.5 h-3.5"></i>
+                        <span>Terapkan Filter</span>
+                    </button>
+                    @if(request()->anyFilled(['q', 'program', 'status', 'payment_status', 'registration_category']))
+                        <a href="{{ route('admin.students.index') }}" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition flex items-center gap-1.5" title="Reset Semua Filter">
+                            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                            <span class="hidden sm:inline">Reset</span>
+                        </a>
+                    @endif
+                </div>
 
-            <!-- Filter Pembayaran (Span 2) -->
-            <div class="sm:col-span-2">
-                <select name="payment_status" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition">
-                    <option value="all">Semua Bayar</option>
-                    <option value="paid" {{ request('payment_status') === 'paid' ? 'selected' : '' }}>Lunas</option>
-                    <option value="partial" {{ request('payment_status') === 'partial' ? 'selected' : '' }}>Tanggungan</option>
-                    <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>Belum Bayar</option>
-                </select>
-            </div>
-
-            <!-- Filter & Reset Button (Span 1) -->
-            <div class="sm:col-span-1 flex items-center gap-1.5 justify-end">
-                <button type="submit" class="btn-red-primary px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-xs flex items-center justify-center gap-1 w-full" title="Terapkan Filter">
-                    <i data-lucide="filter" class="w-3.5 h-3.5"></i>
-                    <span>Filter</span>
-                </button>
-                @if(request()->anyFilled(['q', 'program', 'status', 'payment_status', 'registration_category']))
-                    <a href="{{ route('admin.students.index') }}" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition flex-shrink-0" title="Reset Filter">
-                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-                    </a>
-                @endif
             </div>
 
         </form>
@@ -142,12 +159,12 @@
         <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
             
             <div class="flex items-center gap-2 text-xs text-slate-500 font-medium">
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold text-[11px]">
+                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-slate-100 text-slate-700 font-bold text-[11px]">
                     <i data-lucide="database" class="w-3.5 h-3.5 text-japan-600"></i>
                     <span>Total Data: <b>{{ number_format($students->total()) }}</b> Siswa</span>
                 </span>
-                @if(request()->anyFilled(['q', 'program', 'status', 'payment_status']))
-                    <span class="text-[11px] text-japan-600 font-semibold">(Hasil Pencarian)</span>
+                @if(request()->anyFilled(['q', 'program', 'status', 'payment_status', 'registration_category']))
+                    <span class="text-[11px] text-japan-600 font-semibold">(Filter Diterapkan)</span>
                 @endif
             </div>
 
@@ -198,46 +215,46 @@
 
     </div>
 
-    <!-- 3. Students Table (Clean & Aligned) -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <!-- 3. Students Table (Clean, Aligned & Non-wrapping) -->
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
                 <thead>
-                    <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 text-[11px] uppercase font-bold">
-                        <th class="py-3 px-4">Siswa & NIS</th>
-                        <th class="py-3 px-4">Program & Sektor</th>
-                        <th class="py-3 px-4">Penempatan Jepang</th>
-                        <th class="py-3 px-4">Masuk / Terbang</th>
-                        <th class="py-3 px-4">Bahasa & Medikal</th>
-                        <th class="py-3 px-4">Keuangan</th>
-                        <th class="py-3 px-4">Status</th>
-                        <th class="py-3 px-4 text-center">Aksi</th>
+                    <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-[10px] uppercase font-black tracking-wider">
+                        <th class="py-3.5 px-4 whitespace-nowrap min-w-[190px]">Siswa & NIS</th>
+                        <th class="py-3.5 px-4 min-w-[200px]">Program & Sektor</th>
+                        <th class="py-3.5 px-4 min-w-[160px]">Penempatan Jepang</th>
+                        <th class="py-3.5 px-4 whitespace-nowrap min-w-[120px]">Masuk / Terbang</th>
+                        <th class="py-3.5 px-4 whitespace-nowrap min-w-[140px]">Bahasa & Medikal</th>
+                        <th class="py-3.5 px-4 whitespace-nowrap min-w-[130px]">Keuangan</th>
+                        <th class="py-3.5 px-4 text-center whitespace-nowrap min-w-[110px]">Status</th>
+                        <th class="py-3.5 px-4 text-center whitespace-nowrap min-w-[190px]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse($students as $st)
-                        <tr class="hover:bg-slate-50/80 transition">
+                        <tr class="hover:bg-slate-50/70 transition">
                             
-                            <!-- Foto & Siswa Info -->
-                            <td class="py-3 px-4">
+                            <!-- Foto & Siswa Info (NIS will NEVER wrap) -->
+                            <td class="py-3.5 px-4 whitespace-nowrap">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                                    <div class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
                                         @if($st->photo)
                                             <img src="{{ $st->photo }}" alt="{{ $st->name }}" class="w-full h-full object-cover">
                                         @else
-                                            <i data-lucide="user" class="w-4 h-4 text-slate-400"></i>
+                                            <i data-lucide="user" class="w-5 h-5 text-slate-400"></i>
                                         @endif
                                     </div>
-                                    <div>
+                                    <div class="min-w-0">
                                         <button 
                                             type="button" 
                                             onclick="openStudentDetailModal({{ $st->id }})" 
-                                            class="font-bold text-slate-900 hover:text-japan-600 transition text-left leading-tight block group"
+                                            class="font-black text-slate-900 hover:text-japan-600 transition text-left text-xs leading-snug block group truncate max-w-[150px]"
                                             title="Klik untuk melihat profil lengkap & berkas"
                                         >
                                             <span class="group-hover:underline">{{ $st->name }}</span>
                                         </button>
-                                        <span class="inline-block text-[10px] font-mono text-slate-500">
+                                        <span class="inline-block text-[11px] font-mono font-bold text-slate-500 whitespace-nowrap mt-0.5">
                                             {{ $st->nis }}
                                         </span>
                                     </div>
@@ -245,45 +262,45 @@
                             </td>
 
                             <!-- Program, Sektor & Jalur Pendaftaran -->
-                            <td class="py-3 px-4">
-                                <p class="font-bold text-slate-900">{{ $st->program }}</p>
-                                <p class="text-[11px] text-japan-600">{{ $st->sector ?: 'Umum' }}</p>
+                            <td class="py-3.5 px-4 min-w-[200px]">
+                                <p class="font-extrabold text-slate-900 text-xs leading-snug">{{ $st->program }}</p>
+                                <p class="text-[11px] text-japan-600 font-semibold leading-tight mt-0.5">{{ $st->sector ?: 'Umum' }}</p>
                                 @if($st->registration_category && $st->registration_category !== 'umum')
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-black border {{ $st->registration_category_badge['bg'] }} mt-1 whitespace-nowrap shadow-xs">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-black border {{ $st->registration_category_badge['bg'] }} mt-1 whitespace-nowrap shadow-2xs">
                                         ★ {{ $st->registration_category_badge['label'] }}
                                     </span>
                                 @endif
                             </td>
 
                             <!-- Penempatan Kaisha -->
-                            <td class="py-3 px-4">
-                                <p class="font-bold text-slate-800">{{ $st->destination_company ?: '-' }}</p>
-                                <p class="text-[10px] text-slate-500">{{ $st->destination_prefecture ?: '-' }}</p>
+                            <td class="py-3.5 px-4 min-w-[160px]">
+                                <p class="font-bold text-slate-800 text-xs leading-snug">{{ $st->destination_company ?: '-' }}</p>
+                                <p class="text-[11px] text-slate-400 font-medium mt-0.5">{{ $st->destination_prefecture ?: '-' }}</p>
                             </td>
 
                             <!-- Tanggal Masuk / Terbang -->
-                            <td class="py-3 px-4 text-slate-600">
-                                <p>In: <span class="font-semibold text-slate-800">{{ $st->entry_date ? $st->entry_date->format('d/m/Y') : '-' }}</span></p>
-                                <p class="text-[10px] text-japan-600 font-bold">Fly: {{ $st->departure_date ? $st->departure_date->format('d/m/Y') : '-' }}</p>
+                            <td class="py-3.5 px-4 whitespace-nowrap text-xs">
+                                <p class="text-slate-600 font-medium">In: <span class="font-bold text-slate-800">{{ $st->entry_date ? $st->entry_date->format('d/m/Y') : '-' }}</span></p>
+                                <p class="text-[11px] text-japan-600 font-bold mt-0.5">Fly: {{ $st->departure_date ? $st->departure_date->format('d/m/Y') : '-' }}</p>
                             </td>
 
                             <!-- Bahasa & Medikal / CoE -->
-                            <td class="py-3 px-4">
+                            <td class="py-3.5 px-4 whitespace-nowrap">
                                 <div class="space-y-1">
-                                    <span class="px-2 py-0.5 rounded-md bg-red-50 text-japan-700 font-bold text-[11px] inline-block">
+                                    <span class="px-2 py-0.5 rounded-md bg-rose-50 border border-rose-200 text-japan-700 font-bold text-[10px] inline-block whitespace-nowrap">
                                         {{ $st->japanese_level ?: '-' }}
                                     </span>
                                     @if($st->mcu_result === 'fit')
-                                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 block w-max">MCU: Fit</span>
+                                        <span class="px-2 py-0.5 rounded text-[9px] font-black bg-emerald-100 text-emerald-800 block w-max whitespace-nowrap">MCU: Fit</span>
                                     @elseif($st->mcu_result === 'unfit')
-                                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 block w-max">MCU: Unfit</span>
+                                        <span class="px-2 py-0.5 rounded text-[9px] font-black bg-rose-100 text-rose-800 block w-max whitespace-nowrap">MCU: Unfit</span>
                                     @elseif($st->mcu_result === 'follow_up')
-                                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 block w-max">MCU: Follow-up</span>
+                                        <span class="px-2 py-0.5 rounded text-[9px] font-black bg-amber-100 text-amber-800 block w-max whitespace-nowrap">MCU: Follow-up</span>
                                     @elseif($st->mcu_result === 'pending')
-                                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 block w-max">MCU: Pending</span>
+                                        <span class="px-2 py-0.5 rounded text-[9px] font-black bg-slate-100 text-slate-600 block w-max whitespace-nowrap">MCU: Pending</span>
                                     @endif
                                     @if($st->coe_number)
-                                        <span class="text-[9px] font-mono text-slate-500 block truncate max-w-[110px]" title="CoE: {{ $st->coe_number }}">
+                                        <span class="text-[9px] font-mono text-slate-400 block truncate max-w-[130px] whitespace-nowrap" title="CoE: {{ $st->coe_number }}">
                                             CoE: {{ $st->coe_number }}
                                         </span>
                                     @endif
@@ -291,39 +308,39 @@
                             </td>
 
                             <!-- Keuangan & Tanggungan -->
-                            <td class="py-3 px-4">
+                            <td class="py-3.5 px-4 whitespace-nowrap font-mono text-xs">
                                 <div class="space-y-0.5">
                                     <p class="font-bold text-emerald-600">{{ $st->formatted_paid_amount }}</p>
                                     @if($st->remaining_balance > 0)
-                                        <p class="text-[10px] text-rose-600 font-black">Sisa: {{ $st->formatted_remaining_balance }}</p>
+                                        <p class="text-[10px] text-rose-600 font-black mt-0.5">Sisa: {{ $st->formatted_remaining_balance }}</p>
                                     @else
-                                        <span class="text-[10px] text-emerald-600 font-bold">Lunas</span>
+                                        <span class="text-[10px] text-emerald-600 font-bold font-sans">Lunas</span>
                                     @endif
                                 </div>
                             </td>
 
-                            <!-- Status Pelatihan -->
-                            <td class="py-3 px-4">
+                            <!-- Status Pelatihan (With whitespace-nowrap - NO broken lines!) -->
+                            <td class="py-3.5 px-4 text-center whitespace-nowrap">
                                 @if($st->status === 'active')
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800">Aktif</span>
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black bg-blue-50 text-blue-700 border border-blue-200 whitespace-nowrap">Aktif</span>
                                 @elseif($st->status === 'interview')
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800">Interview</span>
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black bg-purple-50 text-purple-700 border border-purple-200 whitespace-nowrap">Interview</span>
                                 @elseif($st->status === 'passed_interview')
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">Lolos User</span>
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-50 text-amber-800 border border-amber-200 whitespace-nowrap">Lolos User</span>
                                 @elseif($st->status === 'departed')
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Di Jepang</span>
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap">Di Jepang</span>
                                 @elseif($st->status === 'graduated')
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">Alumni</span>
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black bg-slate-100 text-slate-700 border border-slate-200 whitespace-nowrap">Alumni</span>
                                 @else
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700">DO</span>
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-50 text-rose-700 border border-rose-200 whitespace-nowrap">DO</span>
                                 @endif
                             </td>
 
-                            <!-- Aksi Aligned Buttons -->
-                            <td class="py-3 px-4 text-center whitespace-nowrap">
-                                <div class="inline-flex items-center gap-1.5 justify-center">
+                            <!-- Aksi (Sleek Compact Toolbar) -->
+                            <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                                <div class="inline-flex items-center gap-2 justify-center">
                                     
-                                    <!-- Catat Pembayaran -->
+                                    <!-- Catat Pembayaran (Primary Action) -->
                                     <button 
                                         type="button" 
                                         data-id="{{ $st->id }}"
@@ -331,60 +348,65 @@
                                         data-total="{{ (float)$st->total_cost }}"
                                         data-paid="{{ (float)$st->paid_amount }}"
                                         onclick="openQuickPaymentFromBtn(this)" 
-                                        class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-bold hover:bg-emerald-100 text-[11px] flex items-center gap-1 transition" 
-                                        title="Catat Pembayaran"
+                                        class="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-xs flex items-center gap-1.5 transition shadow-2xs whitespace-nowrap" 
+                                        title="Catat Pembayaran Masuk"
                                     >
                                         <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
                                         <span>Bayar</span>
                                     </button>
 
-                                    <!-- Quick Detail Modal -->
-                                    <button 
-                                        type="button" 
-                                        onclick="openStudentDetailModal({{ $st->id }})" 
-                                        class="p-1.5 rounded-lg text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 transition" 
-                                        title="Lihat Detail Profil & Berkas Siswa"
-                                    >
-                                        <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                                    </button>
-
-                                    <!-- Cetak Lembar Profil -->
-                                    <a 
-                                        href="{{ route('admin.students.print', $st->id) }}" 
-                                        target="_blank" 
-                                        class="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition" 
-                                        title="Cetak Lembar Profil (PDF)"
-                                    >
-                                        <i data-lucide="printer" class="w-3.5 h-3.5"></i>
-                                    </a>
-
-                                    <!-- Cetak Kwitansi Resmi -->
-                                    <a 
-                                        href="{{ route('admin.students.receipt', $st->id) }}" 
-                                        target="_blank" 
-                                        class="p-1.5 rounded-lg text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 transition" 
-                                        title="Cetak Kwitansi Pembayaran Resmi (PDF)"
-                                    >
-                                        <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
-                                    </a>
-
-                                    <!-- Edit -->
-                                    <a 
-                                        href="{{ route('admin.students.edit', $st->id) }}" 
-                                        class="p-1.5 rounded-lg text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 transition" 
-                                        title="Edit Lengkap"
-                                    >
-                                        <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
-                                    </a>
-
-                                    <!-- Delete -->
-                                    <form action="{{ route('admin.students.destroy', $st->id) }}" method="POST" class="inline" onsubmit="return confirm('Hapus data siswa {{ $st->name }}?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 transition" title="Hapus">
-                                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                    <!-- Toolbar Icons Group -->
+                                    <div class="inline-flex items-center rounded-xl bg-slate-100/90 p-1 border border-slate-200/80 gap-1 shadow-2xs">
+                                        
+                                        <!-- Quick Detail Modal -->
+                                        <button 
+                                            type="button" 
+                                            onclick="openStudentDetailModal({{ $st->id }})" 
+                                            class="w-7 h-7 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-white flex items-center justify-center transition" 
+                                            title="Lihat Detail Profil & Berkas Siswa"
+                                        >
+                                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
                                         </button>
-                                    </form>
+
+                                        <!-- Cetak Lembar Profil -->
+                                        <a 
+                                            href="{{ route('admin.students.print', $st->id) }}" 
+                                            target="_blank" 
+                                            class="w-7 h-7 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-white flex items-center justify-center transition" 
+                                            title="Cetak Lembar Profil (PDF)"
+                                        >
+                                            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                                        </a>
+
+                                        <!-- Cetak Kwitansi Resmi -->
+                                        <a 
+                                            href="{{ route('admin.students.receipt', $st->id) }}" 
+                                            target="_blank" 
+                                            class="w-7 h-7 rounded-lg text-slate-500 hover:text-emerald-700 hover:bg-white flex items-center justify-center transition" 
+                                            title="Cetak Kwitansi Pembayaran Resmi (PDF)"
+                                        >
+                                            <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
+                                        </a>
+
+                                        <!-- Edit Data Siswa -->
+                                        <a 
+                                            href="{{ route('admin.students.edit', $st->id) }}" 
+                                            class="w-7 h-7 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-white flex items-center justify-center transition" 
+                                            title="Edit Lengkap"
+                                        >
+                                            <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
+                                        </a>
+
+                                        <!-- Hapus Siswa -->
+                                        <form action="{{ route('admin.students.destroy', $st->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data siswa {{ addslashes($st->name) }}?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="w-7 h-7 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-white flex items-center justify-center transition" title="Hapus">
+                                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                            </button>
+                                        </form>
+
+                                    </div>
 
                                 </div>
                             </td>
