@@ -388,6 +388,16 @@
                                             <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
                                         </a>
 
+                                        <!-- Buka Portal Mandiri Siswa -->
+                                        <a 
+                                            href="{{ route('student.portal', ['keyword' => $st->nis]) }}" 
+                                            target="_blank" 
+                                            class="w-7 h-7 rounded-lg text-slate-500 hover:text-purple-600 hover:bg-white flex items-center justify-center transition" 
+                                            title="Buka Portal Cek Status Siswa (Tampilan Siswa/Wali)"
+                                        >
+                                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                                        </a>
+
                                         <!-- Edit Data Siswa -->
                                         <a 
                                             href="{{ route('admin.students.edit', $st->id) }}" 
@@ -707,6 +717,17 @@
                                     <p class="text-[10px] text-slate-500 group-hover:text-purple-100 truncate">Pemberitahuan kelulusan izin tinggal Jepang</p>
                                 </div>
                             </button>
+                            <button 
+                                type="button" 
+                                onclick="sendStudentQuickWa('portal')" 
+                                class="p-2.5 rounded-xl bg-white hover:bg-emerald-600 hover:text-white border border-emerald-200 text-left transition font-semibold flex items-center gap-2 shadow-xs group col-span-1 sm:col-span-2"
+                            >
+                                <span class="p-1.5 rounded-lg bg-emerald-100 text-emerald-700 group-hover:bg-white group-hover:text-emerald-700">📱</span>
+                                <div>
+                                    <p class="font-bold text-[11px]">Kirim Link Portal Tracking & Kwitansi Siswa</p>
+                                    <p class="text-[10px] text-slate-500 group-hover:text-emerald-100 truncate">Kirim tautan portal mandiri agar siswa & orang tua bisa cek status dan cetak kwitansi</p>
+                                </div>
+                            </button>
                         </div>
                     </div>
                     <div>
@@ -918,6 +939,16 @@
                     <span>Invoice</span>
                 </a>
                 <a 
+                    id="detailPortalBtn" 
+                    href="#" 
+                    target="_blank" 
+                    class="px-3 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold transition flex items-center gap-1.5"
+                    title="Buka Halaman Cek Status Siswa (Tampilan Siswa/Wali)"
+                >
+                    <i data-lucide="external-link" class="w-4 h-4 text-purple-600"></i>
+                    <span>Portal Siswa</span>
+                </a>
+                <a 
                     id="detailEditBtn" 
                     href="#" 
                     class="btn-red-primary px-4 py-2 rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5"
@@ -1105,6 +1136,7 @@
             document.getElementById('detailPrintBtn').href = `/admin/students/${s.id}/print`;
             document.getElementById('detailReceiptBtn').href = `/admin/students/${s.id}/receipt`;
             document.getElementById('detailInvoiceBtn').href = `/admin/students/${s.id}/invoice`;
+            document.getElementById('detailPortalBtn').href = `/cek-status?keyword=${encodeURIComponent(s.nis)}`;
             document.getElementById('detailEditBtn').href = `/admin/students/${s.id}/edit`;
             
             const payBtn = document.getElementById('detailPaymentBtn');
@@ -1162,6 +1194,9 @@
             msg = `Halo Sdr/i *${s.name}*,\n\nPemberitahuan dari Divisi Penempatan LPK Sahabat Jepang Indonesia 🌸\n\nJadwal wawancara kerja Anda dengan pihak user di Jepang telah ditetapkan:\n• Perusahaan (Kaisha): *${s.destination_company || 'Perusahaan Mitra Jepang'}*\n• Prefektur: *${s.destination_prefecture || 'Jepang'}*\n• Bidang Pekerjaan: *${s.sector || s.program}*\n\nHarap mempersiapkan *Jikoshoukai* (perkenalan diri dalam bahasa Jepang), mengenakan seragam kemeja putih rapi berkerah, dan hadir 30 menit sebelum sesi dimulai. Ganbatte kudasai!`;
         } else if (type === 'coe') {
             msg = `Omedetou gozaimasu Sdr/i *${s.name}*! 🎉🇯🇵\n\nKabar gembira dari LPK Sahabat Jepang Indonesia!\nDokumen *Certificate of Eligibility (CoE)* Anda dari Imigrasi Jepang telah terbit resmi${s.coe_number ? ' dengan nomor: *' + s.coe_number + '*' : ''}.\n\nTim kami saat ini sedang mempersiapkan pengajuan Visa Kerja ke Kedutaan Besar Jepang. Harap pastikan paspor asli Anda masih aktif. Selamat melangkah menuju karir di Jepang!`;
+        } else if (type === 'portal') {
+            const portalUrl = `${window.location.origin}/cek-status?keyword=${encodeURIComponent(s.nis)}`;
+            msg = `Halo Sdr/i *${s.name}* (NIS: ${s.nis}) & Keluarga,\n\nSalam hangat dari LPK Sahabat Jepang Indonesia 🌸\n\nUntuk memudahkan Anda dan keluarga memantau progres berkas, hasil MCU, jadwal wawancara Kaisha, penerbitan CoE/Visa, serta mengunduh kwitansi pembayaran resmi secara mandiri, silakan akses portal tracking resmi berikut:\n\n👉 *${portalUrl}*\n\nData pada tautan ini tersinkronisasi langsung dengan sistem administrasi LPK. Terima kasih!`;
         }
 
         const waUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(msg)}`;
