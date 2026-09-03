@@ -228,16 +228,35 @@
 
                 </div>
 
-                <!-- Dana Talangan Highlight Banner -->
+                <!-- Special Government Scholarships Banner (SMILE Project & SMK Go Japan) -->
+                <div class="p-6 rounded-3xl bg-gradient-to-br from-emerald-950 via-slate-900 to-slate-950 text-white border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+                    <div class="space-y-2 text-center sm:text-left">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-black text-xs border border-emerald-400/30">
+                            <i data-lucide="award" class="w-3.5 h-3.5 text-emerald-400"></i>
+                            <span>Jalur Beasiswa Pemerintah RI (100% Bebas Biaya)</span>
+                        </div>
+                        <h4 class="text-lg sm:text-xl font-black text-white">SMILE Project (Kemenkes & Poltekkes Kaigo) — Sukses 4 Gelombang</h4>
+                        <p class="text-xs sm:text-sm text-emerald-100/80 max-w-xl">
+                            Khusus lulusan Poltekkes Kemenkes & STIKes kesehatan se-Indonesia, seluruh biaya pelatihan bahasa, asrama, sertifikasi Kaigo, CoE, visa, hingga tiket pesawat <b>100% dibiayai negara (Gratis)</b>. Juga tersedia jalur vokasi industri <b>SMK Go Japan</b> khusus anak SMK.
+                        </p>
+                    </div>
+
+                    <a href="{{ route('brochure.index') }}" class="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-lg flex-shrink-0 transition flex items-center gap-2">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        <span>Unduh Brosur Beasiswa</span>
+                    </a>
+                </div>
+
+                <!-- Dana Talangan Highlight Banner (Jalur Reguler Umum) -->
                 <div class="p-6 rounded-2xl bg-gradient-to-r from-japan-900 to-japan-700 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
                     <div class="space-y-2 text-center sm:text-left">
                         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-xs">
                             <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
-                            <span>Skema Dana Talangan Resmi</span>
+                            <span>Skema Dana Talangan Resmi (Jalur Reguler)</span>
                         </div>
                         <h4 class="text-lg sm:text-xl font-black text-white">Bisa Berangkat Dahulu, Cicil Setelah Bergaji di Jepang</h4>
                         <p class="text-xs sm:text-sm text-red-100/90 max-w-xl">
-                            Untuk siswa berprestasi yang terkendala biaya, LPK menyediakan fasilitas talangan kerjasama lembaga perbankan resmi yang dapat dicicil ringan dari gaji bulanan di Jepang.
+                            Untuk siswa jalur umum yang terkendala biaya, LPK menyediakan fasilitas talangan kerjasama perbankan resmi yang dapat dicicil ringan dari gaji bulanan di Jepang.
                         </p>
                     </div>
 
