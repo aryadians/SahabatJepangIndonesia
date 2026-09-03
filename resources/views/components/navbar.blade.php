@@ -295,6 +295,15 @@
             <div class="pt-3 border-t border-slate-100 space-y-2">
                 <button 
                     type="button" 
+                    onclick="triggerPwaInstall(); showPwaBanner();" 
+                    class="w-full py-2.5 rounded-xl bg-japan-50 border border-red-200 text-japan-700 text-xs font-black flex items-center justify-center gap-2 shadow-2xs hover:bg-red-100 transition"
+                >
+                    <i data-lucide="smartphone" class="w-4 h-4 text-japan-600"></i>
+                    <span>Pasang Aplikasi di Layar HP (PWA)</span>
+                </button>
+
+                <button 
+                    type="button" 
                     onclick="openModal('quizModal')" 
                     class="w-full py-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold flex items-center justify-center gap-2 shadow-xs"
                 >

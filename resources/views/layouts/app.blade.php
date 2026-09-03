@@ -39,7 +39,17 @@
 
     <!-- Favicon (SVG Torii / Kanji Japanese Emblem) & Mobile Touch Icon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23DC2626'/><circle cx='50' cy='50' r='38' fill='white'/><text x='50' y='66' font-size='46' font-weight='900' font-family='sans-serif' text-anchor='middle' fill='%23DC2626'>友</text></svg>">
-    <link rel="apple-touch-icon" href="{{ asset('images/og-share-banner.jpg') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/icons/icon-192x192.png') }}">
+
+    <!-- Progressive Web App (PWA) Manifest & Mobile App Capabilities -->
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LPK SJI">
+    <meta name="application-name" content="LPK SJI">
+    <meta name="msapplication-TileColor" content="#DC2626">
+    <meta name="msapplication-TileImage" content="{{ asset('images/icons/icon-192x192.png') }}">
 
 
     <!-- Google Fonts -->
@@ -161,6 +171,7 @@
     @include('components.facility-modal')
     @include('components.quiz-modal')
     @include('components.success-modal')
+    @include('components.pwa-install-banner')
 
     <!-- Custom App Script -->
     <script src="{{ asset('js/app.js') }}"></script>
