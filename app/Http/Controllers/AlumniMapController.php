@@ -82,9 +82,12 @@ class AlumniMapController extends Controller
         }
         $testimonials = $testimonialsQuery->orderBy('order')->get();
 
-        $studentsQuery = Student::whereIn('status', ['terbang', 'matching', 'pelatihan']);
+        $studentsQuery = Student::whereIn('status', ['departed', 'graduated', 'passed_interview']);
         if ($selectedSector) {
             $studentsQuery->where('sector', 'like', "%{$selectedSector}%");
+        }
+        if ($selectedRegion && isset($regions[$selectedRegion])) {
+            $studentsQuery->whereIn('destination_prefecture', $regions[$selectedRegion]['prefectures']);
         }
         $departedStudents = $studentsQuery->latest()->take(12)->get();
 

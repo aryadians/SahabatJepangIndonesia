@@ -135,6 +135,72 @@
             </div>
         </div>
 
+        <!-- Live Database Feed: Alumni & Siswa Penempatan Terkini -->
+        @if($departedStudents->count() > 0)
+            <div class="space-y-6 pt-4">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2.5">
+                            <i data-lucide="plane-takeoff" class="w-6 h-6 text-red-500"></i>
+                            <span>Data Siswa & Alumni Penempatan Terkini</span>
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Daftar siswa terverifikasi di database resmi LPK SJI yang telah lolos dan bertugas di Jepang</p>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span>Sinkronisasi Database Aktif</span>
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    @foreach($departedStudents as $st)
+                        <div class="p-5 rounded-3xl bg-slate-900/90 border border-slate-800 hover:border-japan-500 transition shadow-lg group space-y-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-2xl bg-slate-800 border-2 border-slate-700 overflow-hidden flex-shrink-0">
+                                    @if($st->photo)
+                                        <img src="{{ $st->photo }}" alt="{{ $st->name }}" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center text-slate-400 font-bold font-japanese">友</div>
+                                    @endif
+                                </div>
+                                <div class="overflow-hidden">
+                                    <h4 class="font-black text-white text-sm truncate leading-tight group-hover:text-red-400 transition">{{ $st->name }}</h4>
+                                    <p class="text-[11px] text-japan-400 font-japanese truncate">{{ $st->japanese_name ?: '-' }}</p>
+                                    <span class="text-[9px] font-mono text-slate-400 block">{{ $st->nis }}</span>
+                                </div>
+                            </div>
+
+                            <div class="p-3 rounded-2xl bg-slate-800/80 border border-slate-700/60 text-xs space-y-1.5">
+                                <div class="flex justify-between items-center text-slate-400">
+                                    <span class="text-[11px]">Penempatan:</span>
+                                    <span class="font-bold text-white text-[11px] truncate max-w-[120px]">{{ $st->destination_prefecture ?: 'Jepang' }}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-slate-400">
+                                    <span class="text-[11px]">Kaisha:</span>
+                                    <span class="font-bold text-japan-300 text-[11px] truncate max-w-[120px]">{{ $st->destination_company ?: '-' }}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-slate-400 border-t border-slate-700/60 pt-1.5">
+                                    <span class="text-[11px]">Program:</span>
+                                    <span class="font-bold text-emerald-400 text-[11px] truncate max-w-[120px]">{{ $st->sector ?: $st->program }}</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between text-[11px] pt-1 text-slate-400">
+                                <span>Status:</span>
+                                @if($st->status === 'departed')
+                                    <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-[10px]">Di Jepang</span>
+                                @elseif($st->status === 'passed_interview')
+                                    <span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-bold text-[10px]">Lolos User</span>
+                                @else
+                                    <span class="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-bold text-[10px]">{{ ucfirst($st->status) }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         <!-- Real Alumni Stories & Verified Kaisha Placements -->
         <div class="space-y-6 pt-4">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
