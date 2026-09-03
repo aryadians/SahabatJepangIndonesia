@@ -414,21 +414,35 @@
         <script>
             let currentCampusSlide = 0;
             const totalCampusSlides = {{ max($dynamicCampusGalleries->count(), 1) }};
+            let campusAutoplayTimer = null;
+
+            function getSlideShiftPercent() {
+                const width = window.innerWidth;
+                if (width >= 1024) return 33.3333;
+                if (width >= 640) return 50.0;
+                return 100.0;
+            }
+
+            function getVisibleCount() {
+                const width = window.innerWidth;
+                if (width >= 1024) return 3;
+                if (width >= 640) return 2;
+                return 1;
+            }
 
             function slideCampusCarousel(direction) {
                 const track = document.getElementById('campusCarouselTrack');
                 if (!track) return;
                 
-                // Determine slides in view based on screen width
-                const width = window.innerWidth;
-                const visibleCount = width >= 1024 ? 3 : (width >= 640 ? 2 : 1);
+                const visibleCount = getVisibleCount();
                 const maxIndex = Math.max(0, totalCampusSlides - visibleCount);
 
                 currentCampusSlide += direction;
-                if (currentCampusSlide < 0) currentCampusSlide = 0;
-                if (currentCampusSlide > maxIndex) currentCampusSlide = maxIndex;
+                if (currentCampusSlide < 0) currentCampusSlide = maxIndex;
+                if (currentCampusSlide > maxIndex) currentCampusSlide = 0;
 
-                track.style.transform = `translateX(-${currentCampusSlide * 34}%)`;
+                const shiftPercent = getSlideShiftPercent();
+                track.style.transform = `translateX(-${currentCampusSlide * shiftPercent}%)`;
 
                 // Update dots
                 const dots = document.getElementById('campusCarouselDots');
@@ -443,6 +457,30 @@
                     }
                 }
             }
+
+            // Auto-play every 4.5 seconds with pause on hover
+            function startCampusAutoplay() {
+                stopCampusAutoplay();
+                campusAutoplayTimer = setInterval(() => {
+                    slideCampusCarousel(1);
+                }, 4500);
+            }
+
+            function stopCampusAutoplay() {
+                if (campusAutoplayTimer) {
+                    clearInterval(campusAutoplayTimer);
+                    campusAutoplayTimer = null;
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const carouselContainer = document.getElementById('campusCarouselTrack')?.parentElement;
+                if (carouselContainer) {
+                    carouselContainer.addEventListener('mouseenter', stopCampusAutoplay);
+                    carouselContainer.addEventListener('mouseleave', startCampusAutoplay);
+                }
+                startCampusAutoplay();
+            });
         </script>
 
         <!-- Kaisha & Kumiai Partners Running Marquee -->
