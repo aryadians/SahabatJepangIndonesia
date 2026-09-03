@@ -101,6 +101,8 @@
 
                 <select name="program" class="px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition">
                     <option value="all" {{ request('program') === 'all' ? 'selected' : '' }}>Semua Program</option>
+                    <option value="SMILE Project" {{ request('program') === 'SMILE Project' ? 'selected' : '' }}>★ SMILE Project (Kemenkes Kaigo)</option>
+                    <option value="SMK Go Japan" {{ request('program') === 'SMK Go Japan' ? 'selected' : '' }}>★ SMK Go Japan (Vokasi SMK)</option>
                     <option value="Tokutei Ginou" {{ request('program') === 'Tokutei Ginou' ? 'selected' : '' }}>Tokutei Ginou (SSW)</option>
                     <option value="Magang" {{ request('program') === 'Magang' ? 'selected' : '' }}>Ginou Jisshusei (Magang)</option>
                     <option value="Kursus" {{ request('program') === 'Kursus' ? 'selected' : '' }}>Kursus Bahasa Jepang</option>
@@ -189,9 +191,19 @@
 
                             <!-- Program Minat -->
                             <td class="py-3.5 px-4">
-                                <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-50 text-japan-700 border border-red-100 inline-block">
-                                    {{ $lead->program }}
-                                </span>
+                                @if(str_contains(strtolower($lead->program), 'smile'))
+                                    <span class="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-50 text-emerald-800 border border-emerald-200 inline-block shadow-2xs">
+                                        ★ {{ $lead->program }}
+                                    </span>
+                                @elseif(str_contains(strtolower($lead->program), 'smk'))
+                                    <span class="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-blue-50 text-blue-800 border border-blue-200 inline-block shadow-2xs">
+                                        ★ {{ $lead->program }}
+                                    </span>
+                                @else
+                                    <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-50 text-japan-700 border border-red-100 inline-block">
+                                        {{ $lead->program }}
+                                    </span>
+                                @endif
                             </td>
 
                             <!-- Profil & Asal -->

@@ -70,11 +70,17 @@
                     Pilihan Program Minat <span class="text-red-500">*</span>
                 </label>
                 <select id="consultProgramSelect" name="program" required class="w-full px-3.5 py-2 rounded-xl text-xs text-slate-900 bg-slate-50 border border-slate-200 focus:bg-white focus:border-japan-600 focus:outline-none font-bold text-japan-700">
-                    <option value="Tokutei Ginou (SSW)">Tokutei Ginou (Specified Skilled Worker / SSW)</option>
-                    <option value="Ginou Jisshusei (Magang Kerja)">Ginou Jisshusei (Magang Praktik Kerja)</option>
-                    <option value="Kursus Intensif Bahasa & Budaya">Kursus Intensif Bahasa Jepang (N5, N4, N3)</option>
-                    <option value="Engineer & Professional Career">Engineer & Profesional (IT / Teknik)</option>
-                    <option value="Belum Tahu / Ingin Konsultasi Dulu">Ingin Konsultasi Pilihan Program Dulu</option>
+                    <optgroup label="Program Resmi Pemerintah (Unggulan)">
+                        <option value="Program Pemerintah: SMILE Project (Kemenkes Kaigo 100% Gratis)">★ SMILE Project (Beasiswa Kemenkes & Poltekkes Kaigo 100% Gratis)</option>
+                        <option value="Program Pemerintah: SMK Go Japan (Vokasi Industri)">★ SMK Go Japan (Khusus Siswa & Alumni SMK)</option>
+                    </optgroup>
+                    <optgroup label="Jalur Reguler & Karir Jepang">
+                        <option value="Tokutei Ginou (SSW)" selected>Tokutei Ginou (Specified Skilled Worker / SSW)</option>
+                        <option value="Ginou Jisshusei (Magang Kerja)">Ginou Jisshusei (Magang Praktik Kerja)</option>
+                        <option value="Kursus Intensif Bahasa & Budaya">Kursus Intensif Bahasa Jepang (N5, N4, N3)</option>
+                        <option value="Engineer & Professional Career">Engineer & Profesional (IT / Teknik)</option>
+                        <option value="Belum Tahu / Ingin Konsultasi Dulu">Ingin Konsultasi Pilihan Program Dulu</option>
+                    </optgroup>
                 </select>
             </div>
 
