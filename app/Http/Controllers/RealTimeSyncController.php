@@ -103,6 +103,12 @@ class RealTimeSyncController extends Controller
             'passed' => \App\Models\InterviewCandidate::where('result', 'passed')->count(),
         ];
 
+        $brochuresKpi = [
+            'total' => \App\Models\Brochure::count(),
+            'downloads' => (int) \App\Models\Brochure::sum('download_count'),
+            'active' => \App\Models\Brochure::where('is_active', true)->count(),
+        ];
+
         return response()->json([
             'status' => 'success',
             'server_time' => now()->format('H:i:s'),
@@ -125,6 +131,7 @@ class RealTimeSyncController extends Controller
                 'formatted_receivables' => 'Rp ' . number_format($totalReceivables, 0, ',', '.'),
             ],
             'interviews_kpi' => $interviewsKpi,
+            'brochures_kpi' => $brochuresKpi,
         ]);
     }
 }

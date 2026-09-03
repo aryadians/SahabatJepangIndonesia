@@ -58,6 +58,7 @@ Route::get('/api/realtime-sync/guest', [RealTimeSyncController::class, 'guestSyn
 // 5. Unduh Brosur Resmi Kurikulum & Panduan Biaya Transparan (Publik)
 Route::get('/brosur', [BrochureController::class, 'index'])->name('brochure.index');
 Route::post('/brosur/download', [BrochureController::class, 'download'])->name('brochure.download')->middleware('throttle:10,1');
+Route::get('/brosur/file/{id}', [BrochureController::class, 'downloadFile'])->name('brochure.download.file');
 Route::get('/biaya', fn() => redirect()->route('brochure.index'));
 
 /*
@@ -121,6 +122,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
     // 9. Articles / Blog CMS
     Route::resource('articles', AdminArticleController::class)->except(['show']);
+
+    // 9b. Brochures & Downloadable Curriculum CMS
+    Route::resource('brochures', \App\Http\Controllers\Admin\BrochureAdminController::class)->except(['create', 'show', 'edit']);
 
     // 10. Batch Schedules CMS
     Route::resource('schedules', BatchScheduleController::class)->except(['create', 'show', 'edit']);

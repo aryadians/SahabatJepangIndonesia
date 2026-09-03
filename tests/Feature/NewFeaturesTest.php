@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Brochure;
 use App\Models\Consultation;
 use App\Models\InterviewCandidate;
 use App\Models\JobInterview;
@@ -27,28 +28,60 @@ class NewFeaturesTest extends TestCase
 
     public function test_guest_can_access_brochure_page(): void
     {
+        Brochure::create([
+            'title' => 'Brosur Tokutei Ginou Kaigo 2026',
+            'program' => 'Tokutei Ginou (SSW)',
+            'badge_text' => 'Populer',
+            'description' => 'Panduan lengkap visa SSW Kaigo',
+        ]);
+
         $response = $this->get('/brosur');
         $response->assertStatus(200);
-        $response->assertSee('Brosur Resmi');
+        $response->assertSee('Brosur Tokutei Ginou Kaigo 2026');
     }
 
-    public function test_guest_submitting_brochure_creates_lead_and_unlocks_brochure(): void
+    public function test_admin_can_manage_brochures_and_guest_downloads_selected(): void
     {
+        // 1. Admin creates a new brochure
+        $adminPost = $this->actingAs($this->admin)->post('/admin/brochures', [
+            'title' => 'Silabus Magang Manufaktur 3 Tahun',
+            'program' => 'Ginou Jisshusei (Magang)',
+            'badge_text' => 'Kelas Baru',
+            'description' => 'Silabus lengkap magang industri',
+            'is_active' => 1,
+        ]);
+        $adminPost->assertRedirect('/admin/brochures');
+
+        $brochure = Brochure::where('title', 'Silabus Magang Manufaktur 3 Tahun')->first();
+        $this->assertNotNull($brochure);
+        $this->assertEquals(0, $brochure->download_count);
+
+        // 2. Guest submits lead to download this specific brochure
         $payload = [
             'name' => 'Aditya Pratama',
             'phone' => '081234567890',
-            'program' => 'Tokutei Ginou (SSW)',
+            'brochure_id' => $brochure->id,
             'city' => 'Semarang',
         ];
 
         $response = $this->post('/brosur/download', $payload);
-        $response->assertRedirect('/brosur?unlocked=true');
+        $response->assertRedirect('/brosur?unlocked=true&brochure_id=' . $brochure->id);
 
+        // Verify consultation lead recorded with brochure title
         $this->assertDatabaseHas('consultations', [
             'name' => 'Aditya Pratama',
             'phone' => '081234567890',
+            'program' => 'Ginou Jisshusei (Magang)',
             'status' => 'pending',
         ]);
+
+        // Verify brochure download count incremented
+        $this->assertEquals(1, $brochure->fresh()->download_count);
+
+        // 3. Guest can also hit the download file endpoint
+        $fileResponse = $this->get('/brosur/file/' . $brochure->id);
+        $fileResponse->assertStatus(302); // Redirects to preview because no physical binary was attached
+        $this->assertEquals(2, $brochure->fresh()->download_count);
     }
 
     public function test_admin_can_view_student_receipt_and_invoice(): void

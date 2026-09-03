@@ -262,6 +262,14 @@
                     <i data-lucide="newspaper" class="w-4 h-4"></i>
                     <span>Artikel & Berita</span>
                 </a>
+
+                <a 
+                    href="{{ route('admin.brochures.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.brochures.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                    <span>Brosur & Materi</span>
+                </a>
             @endif
 
             <div class="px-3 pt-3 pb-1 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
@@ -717,6 +725,25 @@
                     'interviews_scheduled': data.interviews_kpi.scheduled,
                     'interviews_candidates': data.interviews_kpi.candidates,
                     'interviews_passed': data.interviews_kpi.passed,
+                };
+                Object.keys(map).forEach(key => {
+                    const val = map[key];
+                    if (val !== undefined) {
+                        document.querySelectorAll(`[data-admin-stat="${key}"]`).forEach(el => {
+                            const suffix = el.getAttribute('data-suffix') || '';
+                            const prefix = el.getAttribute('data-prefix') || '';
+                            el.textContent = prefix + Number(val).toLocaleString('id-ID') + suffix;
+                        });
+                    }
+                });
+            }
+
+            // Brochures KPIs
+            if (data.brochures_kpi) {
+                const map = {
+                    'brochures_total': data.brochures_kpi.total,
+                    'brochures_downloads': data.brochures_kpi.downloads,
+                    'brochures_active': data.brochures_kpi.active,
                 };
                 Object.keys(map).forEach(key => {
                     const val = map[key];
