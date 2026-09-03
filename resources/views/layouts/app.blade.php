@@ -6,29 +6,41 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     
     <!-- Primary Meta Tags -->
-    <title>@yield('title', 'LPK Sahabat Jepang Indonesia - Lembaga Penyalur & Pelatihan Kerja Resmi ke Jepang')</title>
-    <meta name="title" content="LPK Sahabat Jepang Indonesia - Lembaga Penyalur & Pelatihan Kerja Resmi ke Jepang">
-    <meta name="description" content="LPK Sahabat Jepang Indonesia adalah Lembaga Pelatihan Kerja dan Sending Organization (SO) resmi Kemenaker RI untuk program Tokutei Ginou (SSW), Magang Kerja (Ginou Jisshusei), dan Kursus Bahasa Jepang.">
-    <meta name="keywords" content="LPK Jepang, kerja di jepang, magang jepang, tokutei ginou, ssw jepang, sending organization jepang, kursus bahasa jepang, sahabat jepang indonesia, gaji kerja di jepang">
-    <meta name="author" content="LPK Sahabat Jepang Indonesia">
-    <meta name="robots" content="index, follow">
+    <title>@yield('title', ($settings['site_name'] ?? 'LPK Sahabat Jepang Indonesia') . ' - Penyalur Resmi & Pelatihan Kerja ke Jepang')</title>
+    <meta name="title" content="@yield('title', ($settings['site_name'] ?? 'LPK Sahabat Jepang Indonesia') . ' - Penyalur Resmi & Pelatihan Kerja ke Jepang')">
+    <meta name="description" content="@yield('meta_description', ($settings['site_tagline'] ?? 'Sending Organization Resmi Kemnaker RI Izin KEP.224/LATTAS/XII/2023') . '. Program Tokutei Ginou (SSW), Magang Kerja (Ginou Jisshusei), Beasiswa Kemenkes SMILE Project 100% Gratis, dan SMK Go Japan.')">
+    <meta name="keywords" content="@yield('meta_keywords', 'LPK Jepang resmi, magang jepang kemenaker, tokutei ginou ssw, beasiswa kemenkes kaigo smile project, smk go japan vokasi, kursus bahasa jepang n4 n3, sending organization jepang, gaji kerja di jepang, sahabat jepang indonesia')">
+    <meta name="author" content="{{ $settings['site_name'] ?? 'LPK Sahabat Jepang Indonesia' }}">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="theme-color" content="#DC2626">
+    <link rel="canonical" href="{{ url()->current() }}">
 
-    <!-- Open Graph / Facebook / WhatsApp -->
-    <meta property="og:type" content="website">
+    <!-- Open Graph / Facebook / WhatsApp Rich Share Card -->
+    <meta property="og:site_name" content="{{ $settings['site_name'] ?? 'LPK Sahabat Jepang Indonesia' }}">
+    <meta property="og:type" content="@yield('meta_type', 'website')">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('title', 'LPK Sahabat Jepang Indonesia - Karir Gemilang di Negeri Sakura')">
-    <meta property="og:description" content="Raih impian bekerja di Jepang dengan gaji puluhan juta rupiah. Terakreditasi resmi Kemenaker RI & Izin SO Resmi.">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80">
+    <meta property="og:title" content="@yield('title', ($settings['site_name'] ?? 'LPK Sahabat Jepang Indonesia') . ' - Karir Gemilang di Negeri Sakura')">
+    <meta property="og:description" content="@yield('meta_description', 'Lembaga Pelatihan Kerja & Sending Organization (SO) Resmi Kemnaker RI. Penyaluran resmi Tokutei Ginou (SSW), Magang Kaigo, SMILE Project 100% Gratis, & SMK Go Japan.')">
+    <meta property="og:image" content="@yield('meta_image', asset('images/og-share-banner.jpg'))">
+    <meta property="og:image:secure_url" content="@yield('meta_image', asset('images/og-share-banner.jpg'))">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ $settings['site_name'] ?? 'LPK Sahabat Jepang Indonesia' }} - Official Banner">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:locale:alternate" content="ja_JP">
 
-    <!-- Twitter Meta Tags -->
+    <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ url()->current() }}">
     <meta name="twitter:title" content="@yield('title', 'LPK Sahabat Jepang Indonesia')">
-    <meta name="twitter:description" content="Lembaga Pelatihan Kerja & Penyaluran Resmi ke Jepang berizin SO Kemenaker RI.">
-    <meta name="twitter:image" content="https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80">
+    <meta name="twitter:description" content="@yield('meta_description', 'Lembaga Pelatihan Kerja & Penyaluran Resmi ke Jepang berizin SO Kemenaker RI.')">
+    <meta name="twitter:image" content="@yield('meta_image', asset('images/og-share-banner.jpg'))">
 
-    <!-- Favicon (SVG Torii / Kanji Japanese Emblem) -->
+    <!-- Favicon (SVG Torii / Kanji Japanese Emblem) & Mobile Touch Icon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23DC2626'/><circle cx='50' cy='50' r='38' fill='white'/><text x='50' y='66' font-size='46' font-weight='900' font-family='sans-serif' text-anchor='middle' fill='%23DC2626'>友</text></svg>">
+    <link rel="apple-touch-icon" href="{{ asset('images/og-share-banner.jpg') }}">
+
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -92,15 +104,16 @@
     {
       "@@context": "https://schema.org",
       "@@type": "EducationalOrganization",
-      "name": "LPK Sahabat Jepang Indonesia",
+      "name": "{{ $settings['site_name'] ?? 'LPK Sahabat Jepang Indonesia' }}",
       "alternateName": "友好日本インドネシア",
       "url": "{{ url('/') }}",
-      "logo": "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=300&q=80",
-      "description": "Lembaga Pelatihan Kerja & Penyaluran Tenaga Kerja Resmi ke Jepang (Sending Organization Kemenaker RI).",
+      "logo": "{{ asset('images/og-share-banner.jpg') }}",
+      "image": "{{ asset('images/og-share-banner.jpg') }}",
+      "description": "Lembaga Pelatihan Kerja (LPK) & Sending Organization (SO) resmi Kemenaker RI Izin No: KEP.224/LATTAS/XII/2023. Program Tokutei Ginou SSW, Magang Kaigo, SMILE Project Kemenkes 100% Gratis, dan SMK Go Japan.",
       "address": {
         "@@type": "PostalAddress",
         "streetAddress": "Jl. Sakura Raya No. 88, Pusat Karir Jepang",
-        "addressLocality": "Jakarta",
+        "addressLocality": "Jakarta Selatan",
         "addressCountry": "ID"
       },
       "contactPoint": {

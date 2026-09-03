@@ -61,6 +61,45 @@ Route::post('/brosur/download', [BrochureController::class, 'download'])->name('
 Route::get('/brosur/file/{id}', [BrochureController::class, 'downloadFile'])->name('brochure.download.file');
 Route::get('/biaya', fn() => redirect()->route('brochure.index'));
 
+// 6. Dynamic XML Sitemap for SEO & Search Engine Crawlers
+Route::get('/sitemap.xml', function () {
+    $articles = \App\Models\Article::where('is_published', true)->latest()->get();
+    
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+    $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+    
+    $staticRoutes = [
+        ['url' => url('/'), 'priority' => '1.0', 'changefreq' => 'daily'],
+        ['url' => route('brochure.index'), 'priority' => '0.9', 'changefreq' => 'daily'],
+        ['url' => route('exam.simulator'), 'priority' => '0.9', 'changefreq' => 'weekly'],
+        ['url' => route('alumni.map'), 'priority' => '0.8', 'changefreq' => 'weekly'],
+        ['url' => route('articles.index'), 'priority' => '0.8', 'changefreq' => 'daily'],
+        ['url' => route('affiliates.public.register'), 'priority' => '0.6', 'changefreq' => 'monthly'],
+    ];
+
+    foreach ($staticRoutes as $r) {
+        $xml .= '<url>';
+        $xml .= '<loc>' . htmlspecialchars($r['url']) . '</loc>';
+        $xml .= '<lastmod>' . now()->toAtomString() . '</lastmod>';
+        $xml .= '<changefreq>' . $r['changefreq'] . '</changefreq>';
+        $xml .= '<priority>' . $r['priority'] . '</priority>';
+        $xml .= '</url>';
+    }
+
+    foreach ($articles as $a) {
+        $xml .= '<url>';
+        $xml .= '<loc>' . htmlspecialchars(route('articles.show', $a->slug)) . '</loc>';
+        $xml .= '<lastmod>' . ($a->updated_at ? $a->updated_at->toAtomString() : now()->toAtomString()) . '</lastmod>';
+        $xml .= '<changefreq>weekly</changefreq>';
+        $xml .= '<priority>0.7</priority>';
+        $xml .= '</url>';
+    }
+
+    $xml .= '</urlset>';
+
+    return response($xml, 200)->header('Content-Type', 'application/xml');
+})->name('seo.sitemap');
+
 /*
 |--------------------------------------------------------------------------
 | Admin & Sensei Authentication Routes (With Anti-Brute Force Throttle)

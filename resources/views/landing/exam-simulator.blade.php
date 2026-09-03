@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Simulasi Ujian JLPT & JFT-Basic CBT Online - LPK Sahabat Jepang Indonesia')
+@section('title', 'Simulasi Ujian JLPT & JFT-Basic CBT Online (100 Soal) - LPK Sahabat Jepang Indonesia')
+@section('meta_description', 'Latihan tryout ujian JLPT N5, N4, N3, dan JFT-Basic CBT Online gratis. 100 soal interaktif lengkap dengan skoring otomatis dan kunci pembahasan.')
+@section('meta_keywords', 'simulasi ujian jlpt online, tryout jlpt n5 n4 n3 cbt, simulasi jft basic gratis, latihan soal bahasa jepang cbt, sahabat jepang indonesia tryout')
 
 @section('content')
 <div class="bg-slate-950 text-white min-h-screen py-8 sm:py-12 relative overflow-hidden">

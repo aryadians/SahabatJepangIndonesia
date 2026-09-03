@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('title', 'LPK Sahabat Jepang Indonesia - Lembaga Penyalur & Pelatihan Kerja Resmi ke Jepang')
+@section('meta_description', 'Lembaga Pelatihan Kerja (LPK) dan Sending Organization (SO) resmi Kemenaker RI (Izin No: KEP.224/LATTAS/XII/2023). Penyaluran kerja Tokutei Ginou (SSW), Magang 3 Tahun, Beasiswa Kemenkes SMILE Project 100% Gratis, dan SMK Go Japan.')
+@section('meta_keywords', 'LPK Jepang resmi, magang jepang kemenaker, tokutei ginou ssw, smile project kemenkes kaigo gratis, smk go japan vokasi, kursus bahasa jepang n4 n3, sending organization jepang, sahabat jepang indonesia')
 
 @section('content')
     <!-- 1. Hero Section (3D Animated Canvas & Counters) -->

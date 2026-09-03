@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('title', $article->title . ' - LPK Sahabat Jepang Indonesia')
+@section('meta_description', Str::limit(strip_tags($article->excerpt ?: $article->content), 160))
+@section('meta_image', $article->image ? asset($article->image) : asset('images/og-share-banner.jpg'))
+@section('meta_type', 'article')
 
 @section('content')
 <!-- Article Detail Header -->
