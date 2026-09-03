@@ -51,7 +51,7 @@
                 <input type="number" name="order" value="1" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600">
             </div>
 
-            <div class="flex items-end justify-end">
+            <div class="sm:col-span-2 pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
                 <button type="submit" class="btn-red-primary px-6 py-2.5 rounded-xl text-xs font-bold shadow-md flex items-center gap-2">
                     <i data-lucide="plus" class="w-4 h-4"></i>
                     <span>Tambah Fasilitas</span>

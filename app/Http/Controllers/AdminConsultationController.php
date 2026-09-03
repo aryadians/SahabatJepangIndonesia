@@ -61,6 +61,15 @@ class AdminConsultationController extends Controller
         $consultation = Consultation::findOrFail($id);
         $consultation->update($validated);
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Status {$consultation->name} berhasil diubah menjadi " . ucfirst($consultation->status),
+                'status' => $consultation->status,
+                'consultation' => $consultation,
+            ]);
+        }
+
         return back()->with('success', "Data follow-up {$consultation->name} berhasil diperbarui.");
     }
 
