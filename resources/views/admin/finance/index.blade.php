@@ -214,8 +214,10 @@
                             <td class="py-3.5 px-4 text-emerald-600 font-bold font-mono">Rp {{ number_format($s->paid_amount) }}</td>
                             <td class="py-3.5 px-4 text-japan-600 font-black font-mono">Rp {{ number_format($s->remaining_balance) }}</td>
                             <td class="py-3.5 px-4">
-                                @if($s->payment_status === 'sebagian')
+                                @if(in_array($s->payment_status, ['partial', 'sebagian']))
                                     <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-black text-[10px]">Cicilan</span>
+                                @elseif(in_array($s->payment_status, ['paid', 'lunas']))
+                                    <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-black text-[10px]">Lunas</span>
                                 @else
                                     <span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-black text-[10px]">Belum Bayar</span>
                                 @endif
