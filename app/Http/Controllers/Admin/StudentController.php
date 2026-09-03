@@ -51,10 +51,15 @@ class StudentController extends Controller
             $query->where('mcu_result', $request->mcu_result);
         }
 
+        // 5b. Filter Kategori / Jalur Pendaftaran (Umum, Kemenkes, SMK Go Japan, BKK, Kampus)
+        if ($request->filled('registration_category') && $request->registration_category !== 'all') {
+            $query->where('registration_category', $request->registration_category);
+        }
+
         // 6. Select light columns for list performance (exclude heavy base64 strings)
         $students = $query->select([
             'id', 'nis', 'name', 'japanese_name', 'phone', 'gender', 'batch',
-            'program', 'sector', 'status', 'entry_date', 'departure_date',
+            'program', 'registration_category', 'sector', 'status', 'entry_date', 'departure_date',
             'destination_company', 'destination_prefecture', 'japanese_level',
             'total_cost', 'paid_amount', 'payment_status', 'payment_scheme', 'photo',
             'mcu_result', 'coe_number', 'visa_number', 'exam_score'
@@ -69,6 +74,8 @@ class StudentController extends Controller
             'active_students' => Student::whereIn('status', ['active', 'interview', 'passed_interview'])->count(),
             'departed_students' => Student::where('status', 'departed')->count(),
             'total_receivables' => Student::selectRaw('SUM(total_cost - paid_amount) as total_unpaid')->value('total_unpaid') ?? 0,
+            'kemenkes_count' => Student::where('registration_category', 'kemenkes_kaigo')->count(),
+            'smk_go_japan_count' => Student::where('registration_category', 'smk_go_japan')->count(),
         ];
 
         return view('admin.students.index', compact('students', 'stats'));
@@ -84,6 +91,8 @@ class StudentController extends Controller
         if (request()->wantsJson() || request()->ajax() || request('format') === 'json') {
             return response()->json([
                 'student' => $student,
+                'registration_category_label' => $student->registration_category_label,
+                'registration_category_badge' => $student->registration_category_badge,
                 'remaining_balance' => $student->remaining_balance,
                 'formatted_total_cost' => $student->formatted_total_cost,
                 'formatted_paid_amount' => $student->formatted_paid_amount,
@@ -134,6 +143,7 @@ class StudentController extends Controller
             'emergency_contact_phone' => 'nullable|string|max:30',
             'batch' => 'nullable|string|max:100',
             'program' => 'required|string|max:100',
+            'registration_category' => 'nullable|string|max:50',
             'sector' => 'nullable|string|max:100',
             'entry_date' => 'nullable|date',
             'departure_date' => 'nullable|date',
@@ -250,6 +260,7 @@ class StudentController extends Controller
             'emergency_contact_phone' => 'nullable|string|max:30',
             'batch' => 'nullable|string|max:100',
             'program' => 'required|string|max:100',
+            'registration_category' => 'nullable|string|max:50',
             'sector' => 'nullable|string|max:100',
             'entry_date' => 'nullable|date',
             'departure_date' => 'nullable|date',

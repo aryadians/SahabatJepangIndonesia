@@ -26,6 +26,7 @@ class Student extends Model
         'emergency_contact_phone',
         'batch',
         'program',
+        'registration_category',
         'sector',
         'entry_date',
         'departure_date',
@@ -155,5 +156,53 @@ class Student extends Model
         return $this->belongsToMany(JobInterview::class, 'interview_candidates')
                     ->withPivot(['id', 'result', 'interview_score', 'interviewer_feedback'])
                     ->withTimestamps();
+    }
+
+    /**
+     * Label Kategori / Jalur Pendaftaran Siswa
+     */
+    public function getRegistrationCategoryLabelAttribute(): string
+    {
+        return match($this->registration_category) {
+            'kemenkes_kaigo' => 'Beasiswa Kemenkes RI (Kaigo)',
+            'smk_go_japan' => 'Program SMK Go Japan',
+            'bkk_smk' => 'Kemitraan BKK SMK',
+            'poltekkes_kampus' => 'Kemitraan Poltekkes & STIKes',
+            default => 'Jalur Reguler / Umum',
+        };
+    }
+
+    /**
+     * Badge Style Kategori Siswa
+     */
+    public function getRegistrationCategoryBadgeAttribute(): array
+    {
+        return match($this->registration_category) {
+            'kemenkes_kaigo' => [
+                'bg' => 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                'label' => 'Beasiswa Kemenkes (Kaigo)',
+                'icon' => 'award',
+            ],
+            'smk_go_japan' => [
+                'bg' => 'bg-blue-100 text-blue-800 border-blue-300',
+                'label' => 'SMK Go Japan',
+                'icon' => 'flag',
+            ],
+            'bkk_smk' => [
+                'bg' => 'bg-indigo-100 text-indigo-800 border-indigo-300',
+                'label' => 'Mitra BKK SMK',
+                'icon' => 'handshake',
+            ],
+            'poltekkes_kampus' => [
+                'bg' => 'bg-teal-100 text-teal-800 border-teal-300',
+                'label' => 'Poltekkes / STIKes',
+                'icon' => 'building-2',
+            ],
+            default => [
+                'bg' => 'bg-slate-100 text-slate-700 border-slate-200',
+                'label' => 'Reguler / Umum',
+                'icon' => 'user',
+            ],
+        };
     }
 }

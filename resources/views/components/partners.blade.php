@@ -163,18 +163,20 @@
                 </div>
             </div>
 
+        </div> <!-- /End 3 Pillars Grid (Properly Closed) -->
+
         <!-- Highlight Spesial: MoU Poltekkes & STIKes Se-Indonesia & Program Kaigo Kemenkes 100% Gratis -->
-        <div class="rounded-3xl bg-gradient-to-br from-slate-900 via-japan-950 to-slate-900 text-white p-6 sm:p-10 border-2 border-red-500/40 shadow-2xl relative overflow-hidden space-y-8">
+        <div class="w-full rounded-3xl bg-gradient-to-br from-slate-900 via-japan-950 to-slate-900 text-white p-6 sm:p-10 lg:p-12 border-2 border-red-500/40 shadow-2xl relative overflow-hidden space-y-10">
             
             <!-- Ambient Japanese Pattern Background -->
-            <div class="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-red-600/20 blur-[90px] pointer-events-none"></div>
-            <div class="absolute top-0 right-10 text-9xl font-black text-white/[0.03] select-none font-japanese pointer-events-none">
+            <div class="absolute -right-16 -bottom-16 w-96 h-96 rounded-full bg-red-600/20 blur-[100px] pointer-events-none"></div>
+            <div class="absolute top-2 right-8 text-9xl font-black text-white/[0.04] select-none font-japanese pointer-events-none">
                 介護
             </div>
 
             <!-- Header Showcase -->
             <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-                <div class="space-y-3 max-w-2xl">
+                <div class="space-y-3 max-w-3xl">
                     <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-red-600 text-white text-[11px] font-black uppercase tracking-wider shadow-md">
                         <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
                         <span>Program Pemerintah Kemenkes RI • 100% GRATIS</span>
@@ -267,7 +269,219 @@
                 </div>
             </div>
 
-        </div>
+            <!-- =========================================================================
+                 CAROUSEL DOKUMENTASI KUNJUNGAN KAMPUS & BURSA KERJA KEMENKES
+                 ========================================================================= -->
+            <div class="relative z-10 space-y-4 pt-6 border-t border-white/10">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <div class="inline-flex items-center gap-2 text-xs font-bold text-red-400 uppercase tracking-wider">
+                            <i data-lucide="camera" class="w-4 h-4"></i>
+                            <span>Dokumentasi Kunjungan & Bursa Kerja Kampus</span>
+                        </div>
+                        <h4 class="text-lg sm:text-xl font-extrabold text-white mt-0.5">
+                            Galeri Kegiatan MoU & Seleksi Wawancara di Kampus Kesehatan
+                        </h4>
+                    </div>
+
+                    <!-- Carousel Controls -->
+                    <div class="flex items-center gap-2 self-end sm:self-auto">
+                        <button 
+                            type="button" 
+                            id="prevCampusBtn" 
+                            onclick="slideCampusCarousel(-1)"
+                            class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition border border-white/15" 
+                            title="Sebelumnya"
+                        >
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        </button>
+                        <button 
+                            type="button" 
+                            id="nextCampusBtn" 
+                            onclick="slideCampusCarousel(1)"
+                            class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition border border-white/15" 
+                            title="Berikutnya"
+                        >
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Carousel Track Container -->
+                <div class="relative overflow-hidden rounded-2xl">
+                    <div id="campusCarouselTrack" class="flex transition-transform duration-500 ease-out gap-4 sm:gap-6">
+                        
+                        <!-- Slide 1: MoU Poltekkes Semarang -->
+                        <div class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] flex-shrink-0 bg-white/5 border border-white/10 rounded-2xl overflow-hidden group hover:border-red-500/50 transition flex flex-col justify-between">
+                            <div class="h-44 relative bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center overflow-hidden">
+                                <div class="absolute inset-0 bg-cover bg-center opacity-60 group-hover:scale-105 transition duration-500" style="background-image: url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80');"></div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+                                <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-red-600/90 text-white text-[10px] font-black uppercase tracking-wider backdrop-blur-xs">
+                                    Penandatanganan MoU
+                                </span>
+                                <span class="absolute bottom-3 right-3 text-[11px] font-mono text-slate-300">
+                                    Poltekkes Semarang
+                                </span>
+                            </div>
+                            <div class="p-4 space-y-1.5 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <h5 class="text-sm font-bold text-white group-hover:text-red-300 transition">MoU Kerjasama Penyaluran Lulusan Keperawatan</h5>
+                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Penandatanganan nota kesepahaman resmi antara Direktur LPK SJI dan pimpinan Poltekkes Kemenkes.</p>
+                                </div>
+                                <div class="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
+                                    <span>Program Beasiswa Kemenkes</span>
+                                    <span class="text-emerald-400 font-bold">Resmi Terverifikasi</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 2: Bursa Kerja Khusus (Campus Recruitment) Poltekkes Jakarta -->
+                        <div class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] flex-shrink-0 bg-white/5 border border-white/10 rounded-2xl overflow-hidden group hover:border-red-500/50 transition flex flex-col justify-between">
+                            <div class="h-44 relative bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center overflow-hidden">
+                                <div class="absolute inset-0 bg-cover bg-center opacity-60 group-hover:scale-105 transition duration-500" style="background-image: url('https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&w=800&q=80');"></div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+                                <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-blue-600/90 text-white text-[10px] font-black uppercase tracking-wider backdrop-blur-xs">
+                                    Campus Job Fair
+                                </span>
+                                <span class="absolute bottom-3 right-3 text-[11px] font-mono text-slate-300">
+                                    Poltekkes Jakarta
+                                </span>
+                            </div>
+                            <div class="p-4 space-y-1.5 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <h5 class="text-sm font-bold text-white group-hover:text-red-300 transition">Bursa Kerja Khusus & Rekrutmen Langsung</h5>
+                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Pelaksanaan seleksi fisik, psikotes, dan wawancara awal bagi alumni perawat di auditorium kampus.</p>
+                                </div>
+                                <div class="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
+                                    <span>Auditorium Kampus</span>
+                                    <span class="text-blue-400 font-bold">120+ Peserta Seleksi</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 3: Sosialisasi Kaigo di STIKes Mitra -->
+                        <div class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] flex-shrink-0 bg-white/5 border border-white/10 rounded-2xl overflow-hidden group hover:border-red-500/50 transition flex flex-col justify-between">
+                            <div class="h-44 relative bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center overflow-hidden">
+                                <div class="absolute inset-0 bg-cover bg-center opacity-60 group-hover:scale-105 transition duration-500" style="background-image: url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80');"></div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+                                <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-emerald-600/90 text-white text-[10px] font-black uppercase tracking-wider backdrop-blur-xs">
+                                    Sosialisasi Karir
+                                </span>
+                                <span class="absolute bottom-3 right-3 text-[11px] font-mono text-slate-300">
+                                    STIKes Mitra Se-Indonesia
+                                </span>
+                            </div>
+                            <div class="p-4 space-y-1.5 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <h5 class="text-sm font-bold text-white group-hover:text-red-300 transition">Seminar Peluang Gaji Rp 22-27 Juta Caregiver</h5>
+                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Edukasi skema Tokutei Ginou Kaigo, tunjangan perumahan, dan pembiayaan 100% gratis dari Kemenkes RI.</p>
+                                </div>
+                                <div class="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
+                                    <span>Mahasiswa Akhir D3/S1</span>
+                                    <span class="text-emerald-400 font-bold">Beasiswa Kemenkes</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 4: Simulasi Wawancara Kaisha di Poltekkes Surabaya -->
+                        <div class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] flex-shrink-0 bg-white/5 border border-white/10 rounded-2xl overflow-hidden group hover:border-red-500/50 transition flex flex-col justify-between">
+                            <div class="h-44 relative bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center overflow-hidden">
+                                <div class="absolute inset-0 bg-cover bg-center opacity-60 group-hover:scale-105 transition duration-500" style="background-image: url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=800&q=80');"></div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+                                <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-amber-600/90 text-white text-[10px] font-black uppercase tracking-wider backdrop-blur-xs">
+                                    Simulasi Wawancara
+                                </span>
+                                <span class="absolute bottom-3 right-3 text-[11px] font-mono text-slate-300">
+                                    Poltekkes Surabaya
+                                </span>
+                            </div>
+                            <div class="p-4 space-y-1.5 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <h5 class="text-sm font-bold text-white group-hover:text-red-300 transition">Simulasi Mensetsu Langsung dengan User Jepang</h5>
+                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Pelatihan tata krama wawancara kerja rumah sakit Jepang di laboratorium bahasa kampus mitra.</p>
+                                </div>
+                                <div class="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
+                                    <span>Lab Bahasa Kampus</span>
+                                    <span class="text-amber-400 font-bold">Standar JFT A2 & Kaigo</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 5: Pelepasan Alumni Gelombang 4 -->
+                        <div class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] flex-shrink-0 bg-white/5 border border-white/10 rounded-2xl overflow-hidden group hover:border-red-500/50 transition flex flex-col justify-between">
+                            <div class="h-44 relative bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center overflow-hidden">
+                                <div class="absolute inset-0 bg-cover bg-center opacity-60 group-hover:scale-105 transition duration-500" style="background-image: url('https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=800&q=80');"></div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+                                <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-purple-600/90 text-white text-[10px] font-black uppercase tracking-wider backdrop-blur-xs">
+                                    Pelepasan Terbang
+                                </span>
+                                <span class="absolute bottom-3 right-3 text-[11px] font-mono text-slate-300">
+                                    Gelombang 4 Sukses
+                                </span>
+                            </div>
+                            <div class="p-4 space-y-1.5 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <h5 class="text-sm font-bold text-white group-hover:text-red-300 transition">Pelepasan Alumni Program Kemenkes ke Jepang</h5>
+                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Upacara pelepasan kontingen tenaga perawat yang telah mengantongi CoE, visa, dan tiket penerbangan ke Tokyo.</p>
+                                </div>
+                                <div class="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
+                                    <span>Bandara Soekarno-Hatta</span>
+                                    <span class="text-purple-300 font-bold">100% Siap Kerja</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Carousel Dots Indicator -->
+                <div class="flex items-center justify-center gap-1.5 pt-2" id="campusCarouselDots">
+                    <span class="w-6 h-1.5 rounded-full bg-red-500 transition-all"></span>
+                    <span class="w-2 h-1.5 rounded-full bg-white/20 transition-all"></span>
+                    <span class="w-2 h-1.5 rounded-full bg-white/20 transition-all"></span>
+                </div>
+
+            </div>
+
+        </div> <!-- /End Highlight Spesial Section (Full Width) -->
+
+        <!-- Client Script for Campus Carousel -->
+        <script>
+            let currentCampusSlide = 0;
+            const totalCampusSlides = 5;
+
+            function slideCampusCarousel(direction) {
+                const track = document.getElementById('campusCarouselTrack');
+                if (!track) return;
+                
+                // Determine slides in view based on screen width
+                const width = window.innerWidth;
+                const visibleCount = width >= 1024 ? 3 : (width >= 640 ? 2 : 1);
+                const maxIndex = totalCampusSlides - visibleCount;
+
+                currentCampusSlide += direction;
+                if (currentCampusSlide < 0) currentCampusSlide = 0;
+                if (currentCampusSlide > maxIndex) currentCampusSlide = maxIndex;
+
+                const itemWidthPercent = 100 / visibleCount;
+                const offset = currentCampusSlide * (itemWidthPercent + 2); // 2% for gap compensation
+                track.style.transform = `translateX(-${currentCampusSlide * 34}%)`;
+
+                // Update dots
+                const dots = document.getElementById('campusCarouselDots');
+                if (dots) {
+                    const children = dots.children;
+                    for (let i = 0; i < children.length; i++) {
+                        if (i === currentCampusSlide) {
+                            children[i].className = 'w-6 h-1.5 rounded-full bg-red-500 transition-all';
+                        } else {
+                            children[i].className = 'w-2 h-1.5 rounded-full bg-white/20 transition-all';
+                        }
+                    }
+                }
+            }
+        </script>
 
         <!-- Kaisha & Kumiai Partners Running Marquee -->
         <div class="space-y-4 pt-4">

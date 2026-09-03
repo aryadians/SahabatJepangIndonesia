@@ -65,32 +65,44 @@
         <!-- Tier 1: Search and Dropdown Filters (Full Width) -->
         <form action="{{ route('admin.students.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
             
-            <!-- Search Input (Span 4) -->
-            <div class="sm:col-span-4 relative">
-                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <!-- Search Bar (Span 3) -->
+            <div class="sm:col-span-3 relative">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
                 <input 
                     type="text" 
                     name="q" 
                     value="{{ request('q') }}" 
-                    placeholder="Cari NIS, Nama, NIK, No WA, Kaisha..." 
-                    class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition"
+                    placeholder="Cari NIS, Nama, NIK, No. HP, Kaisha, CoE..." 
+                    class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition"
                 >
             </div>
 
-            <!-- Filter Program (Span 3) -->
-            <div class="sm:col-span-3">
-                <select name="program" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition">
+            <!-- Filter Program (Span 2) -->
+            <div class="sm:col-span-2">
+                <select name="program" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition">
                     <option value="all">Semua Program</option>
-                    <option value="Tokutei Ginou (SSW)" {{ request('program') === 'Tokutei Ginou (SSW)' ? 'selected' : '' }}>Tokutei Ginou (SSW)</option>
-                    <option value="Ginou Jisshusei (Magang)" {{ request('program') === 'Ginou Jisshusei (Magang)' ? 'selected' : '' }}>Magang (Jisshusei)</option>
-                    <option value="Engineer & Profesional" {{ request('program') === 'Engineer & Profesional' ? 'selected' : '' }}>Engineer / Pro</option>
-                    <option value="Kursus Bahasa Jepang" {{ request('program') === 'Kursus Bahasa Jepang' ? 'selected' : '' }}>Kursus Bahasa</option>
+                    <option value="Tokutei Ginou (SSW)" {{ request('program') === 'Tokutei Ginou (SSW)' ? 'selected' : '' }}>SSW</option>
+                    <option value="Ginou Jisshusei (Magang)" {{ request('program') === 'Ginou Jisshusei (Magang)' ? 'selected' : '' }}>Magang</option>
+                    <option value="Engineer & Profesional" {{ request('program') === 'Engineer & Profesional' ? 'selected' : '' }}>Engineer</option>
+                    <option value="Kursus Bahasa Jepang" {{ request('program') === 'Kursus Bahasa Jepang' ? 'selected' : '' }}>Bahasa</option>
                 </select>
             </div>
 
-            <!-- Filter Status (Span 2) -->
+            <!-- Filter Jalur / Kategori Siswa (Span 2) -->
             <div class="sm:col-span-2">
-                <select name="status" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition">
+                <select name="registration_category" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition">
+                    <option value="all">Semua Jalur Siswa</option>
+                    <option value="umum" {{ request('registration_category') === 'umum' ? 'selected' : '' }}>Jalur Reguler</option>
+                    <option value="kemenkes_kaigo" {{ request('registration_category') === 'kemenkes_kaigo' ? 'selected' : '' }}>Beasiswa Kemenkes</option>
+                    <option value="smk_go_japan" {{ request('registration_category') === 'smk_go_japan' ? 'selected' : '' }}>SMK Go Japan</option>
+                    <option value="bkk_smk" {{ request('registration_category') === 'bkk_smk' ? 'selected' : '' }}>Mitra BKK SMK</option>
+                    <option value="poltekkes_kampus" {{ request('registration_category') === 'poltekkes_kampus' ? 'selected' : '' }}>Mitra Poltekkes</option>
+                </select>
+            </div>
+
+            <!-- Filter Status Pelatihan (Span 2) -->
+            <div class="sm:col-span-2">
+                <select name="status" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition">
                     <option value="all">Semua Status</option>
                     <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Aktif Belajar</option>
                     <option value="interview" {{ request('status') === 'interview' ? 'selected' : '' }}>Wawancara</option>
@@ -103,10 +115,10 @@
 
             <!-- Filter Pembayaran (Span 2) -->
             <div class="sm:col-span-2">
-                <select name="payment_status" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition">
+                <select name="payment_status" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition">
                     <option value="all">Semua Bayar</option>
                     <option value="paid" {{ request('payment_status') === 'paid' ? 'selected' : '' }}>Lunas</option>
-                    <option value="partial" {{ request('payment_status') === 'partial' ? 'selected' : '' }}>Ada Tanggungan</option>
+                    <option value="partial" {{ request('payment_status') === 'partial' ? 'selected' : '' }}>Tanggungan</option>
                     <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>Belum Bayar</option>
                 </select>
             </div>
@@ -117,7 +129,7 @@
                     <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                     <span>Filter</span>
                 </button>
-                @if(request()->anyFilled(['q', 'program', 'status', 'payment_status']))
+                @if(request()->anyFilled(['q', 'program', 'status', 'payment_status', 'registration_category']))
                     <a href="{{ route('admin.students.index') }}" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition flex-shrink-0" title="Reset Filter">
                         <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
                     </a>
@@ -232,10 +244,15 @@
                                 </div>
                             </td>
 
-                            <!-- Program & Sektor -->
+                            <!-- Program, Sektor & Jalur Pendaftaran -->
                             <td class="py-3 px-4">
                                 <p class="font-bold text-slate-900">{{ $st->program }}</p>
                                 <p class="text-[11px] text-japan-600">{{ $st->sector ?: 'Umum' }}</p>
+                                @if($st->registration_category && $st->registration_category !== 'umum')
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-black border {{ $st->registration_category_badge['bg'] }} mt-1 whitespace-nowrap shadow-xs">
+                                        ★ {{ $st->registration_category_badge['label'] }}
+                                    </span>
+                                @endif
                             </td>
 
                             <!-- Penempatan Kaisha -->
@@ -559,7 +576,8 @@
                     <p id="detailJapaneseName" class="text-xs text-japan-300 font-japanese mt-0.5">-</p>
                     <p class="text-[11px] text-slate-300 font-mono mt-1">
                         NIS: <span id="detailNis" class="font-bold text-white">-</span> • 
-                        Program: <span id="detailProgram" class="font-bold text-white">-</span>
+                        Program: <span id="detailProgram" class="font-bold text-white">-</span> • 
+                        Jalur: <span id="detailRegistrationCategory" class="font-bold text-amber-300">-</span>
                     </p>
                 </div>
             </div>
@@ -974,6 +992,7 @@
             document.getElementById('detailJapaneseName').textContent = s.japanese_name || '-';
             document.getElementById('detailNis').textContent = s.nis;
             document.getElementById('detailProgram').textContent = s.program;
+            document.getElementById('detailRegistrationCategory').textContent = data.registration_category_label || 'Jalur Reguler';
             document.getElementById('detailStatusBadge').textContent = s.status.toUpperCase();
             document.getElementById('detailNik').textContent = s.nik || '-';
             document.getElementById('detailGender').textContent = s.gender;

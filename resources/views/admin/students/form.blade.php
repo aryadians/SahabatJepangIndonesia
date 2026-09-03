@@ -264,6 +264,18 @@
                             </select>
                         </div>
 
+                        <!-- Kategori / Jalur Pendaftaran Siswa -->
+                        <div class="space-y-1">
+                            <label class="block text-xs font-bold text-slate-700">Kategori / Jalur Pendaftaran</label>
+                            <select name="registration_category" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-japan-600">
+                                <option value="umum" {{ old('registration_category', $student->registration_category) === 'umum' ? 'selected' : '' }}>Jalur Reguler / Umum</option>
+                                <option value="kemenkes_kaigo" {{ old('registration_category', $student->registration_category) === 'kemenkes_kaigo' ? 'selected' : '' }}>Beasiswa Kemenkes RI (Kaigo / Caregiver)</option>
+                                <option value="smk_go_japan" {{ old('registration_category', $student->registration_category) === 'smk_go_japan' ? 'selected' : '' }}>Program Pemerintah: SMK Go Japan</option>
+                                <option value="bkk_smk" {{ old('registration_category', $student->registration_category) === 'bkk_smk' ? 'selected' : '' }}>Kemitraan BKK SMK</option>
+                                <option value="poltekkes_kampus" {{ old('registration_category', $student->registration_category) === 'poltekkes_kampus' ? 'selected' : '' }}>Kemitraan Poltekkes / STIKes</option>
+                            </select>
+                        </div>
+
                         <!-- Sektor Kerja -->
                         <div class="space-y-1">
                             <label class="block text-xs font-bold text-slate-700">Sektor / Bidang Pekerjaan</label>
