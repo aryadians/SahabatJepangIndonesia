@@ -258,6 +258,34 @@
         @else
 
             <!-- ========================================================
+                 GOVERNMENT PROGRAMS SPECIAL HIGHLIGHT BANNER
+                 ======================================================== -->
+            <div class="mb-8 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-emerald-950/70 via-slate-900 to-slate-900 border border-emerald-500/30 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="space-y-2 text-center md:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-black uppercase tracking-wider border border-emerald-500/30">
+                        <i data-lucide="award" class="w-3.5 h-3.5"></i>
+                        <span>Program Resmi Pemerintah RI & Kemitraan Kampus</span>
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-black text-white">
+                        SMILE Project (Beasiswa Kemenkes 100% Gratis) & SMK Go Japan
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+                        LPK SJI telah menuntaskan 4 gelombang keberangkatan Kaigo beasiswa Kemenkes dari Poltekkes & STIKes se-Indonesia serta program kemitraan BKK SMK. Unduh silabus dan petunjuk teknis resminya di bawah ini.
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-3 flex-shrink-0">
+                    <a href="{{ route('brochure.index', ['program' => 'Tokutei Ginou (SSW)']) }}" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs transition flex items-center gap-1.5 shadow-lg shadow-emerald-900/30">
+                        <i data-lucide="award" class="w-4 h-4"></i>
+                        <span>Brosur SMILE Project</span>
+                    </a>
+                    <a href="{{ route('brochure.index', ['program' => 'Ginou Jisshusei (Magang)']) }}" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs transition flex items-center gap-1.5 shadow-lg shadow-blue-900/30">
+                        <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                        <span>Brosur SMK Go Japan</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- ========================================================
                  BROCHURE CATALOG GRID WITH MODAL DOWNLOAD TRIGGER
                  ======================================================== -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -343,7 +371,7 @@
 <!-- ==============================================================
      MODAL: INSTANT UNLOCK & DOWNLOAD FORM
      ============================================================== -->
-<div id="guestBrochureModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+<div id="guestBrochureModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
     <div class="bg-white text-slate-900 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-100 space-y-6">
         
         <div class="flex items-center justify-between border-b border-slate-100 pb-4">
