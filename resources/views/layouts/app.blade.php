@@ -154,6 +154,54 @@
     <script>
         // Initialize Lucide Icons
         lucide.createIcons();
+
+        // Guest Live Real-Time Synchronization
+        (function initGuestRealTimeSync() {
+            function syncGuestData() {
+                fetch('{{ route("realtime.guest") }}', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status !== 'success') return;
+
+                    // Update live statistics counters
+                    document.querySelectorAll('[data-live-stat="total_alumni"]').forEach(el => {
+                        el.textContent = data.stats.total_alumni + '+';
+                    });
+                    document.querySelectorAll('[data-live-stat="active_students"]').forEach(el => {
+                        el.textContent = data.stats.active_students;
+                    });
+                    document.querySelectorAll('[data-live-stat="departed_students"]').forEach(el => {
+                        el.textContent = data.stats.departed_students;
+                    });
+
+                    // Update live batch seats
+                    if (data.batches) {
+                        data.batches.forEach(b => {
+                            document.querySelectorAll(`[data-live-batch-seats="${b.id}"]`).forEach(el => {
+                                el.textContent = b.remaining_seats;
+                            });
+                        });
+                    }
+                })
+                .catch(() => {});
+            }
+
+            // Initial sync & recurring interval
+            syncGuestData();
+            setInterval(syncGuestData, 25000);
+
+            // Re-sync when user returns to tab
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    syncGuestData();
+                }
+            });
+        })();
     </script>
 </body>
 </html>

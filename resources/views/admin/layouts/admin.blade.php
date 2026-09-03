@@ -315,6 +315,63 @@
             </div>
 
             <div class="flex items-center gap-3">
+                <!-- Real-Time Sync Indicator -->
+                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-[11px] font-bold text-emerald-700 shadow-xs" title="Sistem tersinkronisasi langsung dengan pendaftaran guest">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span class="tracking-tight">Live Sync Aktif</span>
+                </div>
+
+                <!-- Live Notification Bell Dropdown -->
+                <div class="relative" id="realtimeNotificationWrapper">
+                    <button 
+                        type="button" 
+                        id="notifBellBtn" 
+                        onclick="toggleNotificationDropdown()" 
+                        class="relative p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"
+                        title="Notifikasi Pendaftaran Siswa & Leads Baru"
+                    >
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span 
+                            id="notifBadge" 
+                            class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-red-600 text-white rounded-full text-[10px] font-black flex items-center justify-center shadow-md hidden"
+                        >
+                            0
+                        </span>
+                    </button>
+
+                    <!-- Notification Dropdown Menu -->
+                    <div 
+                        id="notifDropdown" 
+                        class="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50 hidden"
+                    >
+                        <div class="p-3.5 bg-slate-900 text-white flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="bell-ring" class="w-4 h-4 text-japan-400"></i>
+                                <span class="text-xs font-bold">Pendaftaran Masuk (Live)</span>
+                            </div>
+                            <span id="notifDropdownBadge" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-red-600 text-white">0 Baru</span>
+                        </div>
+
+                        <div id="notifList" class="max-h-72 overflow-y-auto divide-y divide-slate-100 p-1 text-xs">
+                            <div class="py-8 text-center text-slate-400">
+                                <i data-lucide="inbox" class="w-6 h-6 mx-auto mb-1 opacity-50"></i>
+                                <p class="text-xs font-semibold">Tidak ada pendaftar baru</p>
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                            <a href="{{ route('admin.consultations.index') }}" class="text-[11px] font-bold text-japan-600 hover:underline flex items-center gap-1">
+                                <span>Buka Seluruh Leads</span>
+                                <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                            </a>
+                            <span id="liveSyncClock" class="text-[10px] font-mono text-slate-400">-</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="text-right hidden sm:block">
                     <div class="flex items-center justify-end gap-1.5">
                         <p class="text-xs font-bold text-slate-900">{{ auth()->user()->name ?? 'Administrator' }}</p>
@@ -398,6 +455,193 @@
                 modal.classList.remove('active');
             }
         }
+
+        // ==========================================
+        // REAL-TIME SYNC & NOTIFICATION ENGINE
+        // ==========================================
+        let lastKnownMaxLeadId = null;
+        let isFirstSync = true;
+
+        function toggleNotificationDropdown() {
+            const dd = document.getElementById('notifDropdown');
+            if (!dd) return;
+            dd.classList.toggle('hidden');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const wrapper = document.getElementById('realtimeNotificationWrapper');
+            const dd = document.getElementById('notifDropdown');
+            if (wrapper && dd && !wrapper.contains(e.target)) {
+                dd.classList.add('hidden');
+            }
+        });
+
+        // Web Audio API Soft Chime
+        function playChimeSound() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                if (ctx.state === 'suspended') {
+                    ctx.resume();
+                }
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12); // A5
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.35);
+            } catch(e) {
+                // Audio context may be prevented until first user gesture
+            }
+        }
+
+        // Show Floating Toast
+        function showRealTimeToast(lead) {
+            const container = document.getElementById('realtimeToastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = 'pointer-events-auto bg-slate-900/95 text-white p-4 rounded-2xl shadow-2xl border-2 border-red-500/80 flex items-start gap-3 backdrop-blur-md transform transition-all duration-300 translate-y-4 opacity-0 max-w-sm';
+            toast.innerHTML = `
+                <div class="w-10 h-10 rounded-xl bg-red-600/20 text-red-400 border border-red-500/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <i data-lucide="sparkles" class="w-5 h-5 text-japan-400"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-black uppercase tracking-wider text-red-400">Pendaftar Baru Masuk!</span>
+                        <span class="text-[9px] text-slate-400 font-mono">Baru saja</span>
+                    </div>
+                    <h5 class="text-xs font-bold text-white truncate mt-0.5">${lead.name}</h5>
+                    <p class="text-[11px] text-slate-300 truncate">${lead.program} • ${lead.city || 'Umum'}</p>
+                    <div class="flex items-center gap-2 mt-2">
+                        <a href="${lead.wa_link}" target="_blank" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] flex items-center gap-1 transition">
+                            <i data-lucide="message-circle" class="w-3 h-3"></i>
+                            <span>Chat WA</span>
+                        </a>
+                        <a href="{{ route('admin.consultations.index') }}" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-[10px] transition">
+                            Buka Leads
+                        </a>
+                    </div>
+                </div>
+                <button onclick="this.closest('.pointer-events-auto').remove()" class="text-slate-400 hover:text-white text-base leading-none p-1">
+                    &times;
+                </button>
+            `;
+
+            container.appendChild(toast);
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+            }, 50);
+
+            // Auto dismiss after 8s
+            setTimeout(() => {
+                toast.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 8000);
+        }
+
+        // Fetch Live Sync from Admin API
+        function pollAdminSync() {
+            fetch('{{ route("admin.realtime.admin") }}', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status !== 'success') return;
+
+                // Update Server Clock
+                const clockEl = document.getElementById('liveSyncClock');
+                if (clockEl) clockEl.textContent = 'Server: ' + data.server_time;
+
+                // Update Pending Leads Badge
+                const count = data.notifications.pending_leads_count;
+                const badge = document.getElementById('notifBadge');
+                const ddBadge = document.getElementById('notifDropdownBadge');
+
+                if (badge) {
+                    if (count > 0) {
+                        badge.textContent = count > 99 ? '99+' : count;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+                if (ddBadge) ddBadge.textContent = count + ' Baru';
+
+                // Populate Leads List
+                const notifList = document.getElementById('notifList');
+                if (notifList && data.notifications.latest_leads) {
+                    if (data.notifications.latest_leads.length === 0) {
+                        notifList.innerHTML = `
+                            <div class="py-8 text-center text-slate-400">
+                                <i data-lucide="inbox" class="w-6 h-6 mx-auto mb-1 opacity-50"></i>
+                                <p class="text-xs font-semibold">Tidak ada pendaftar baru</p>
+                            </div>
+                        `;
+                    } else {
+                        notifList.innerHTML = '';
+                        data.notifications.latest_leads.forEach(item => {
+                            const row = document.createElement('div');
+                            row.className = 'p-3 hover:bg-slate-50 transition flex items-start justify-between gap-2.5';
+                            row.innerHTML = `
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                                        <h6 class="font-bold text-slate-900 text-xs truncate">${item.name}</h6>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 truncate">${item.program} (${item.city || '-'})</p>
+                                    <span class="text-[9px] text-slate-400 font-mono">${item.created_at_human}</span>
+                                </div>
+                                <a href="${item.wa_link}" target="_blank" class="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold transition flex-shrink-0" title="Chat WhatsApp">
+                                    <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+                                </a>
+                            `;
+                            notifList.appendChild(row);
+                        });
+                    }
+                }
+
+                // Detect New Incoming Lead
+                if (!isFirstSync && lastKnownMaxLeadId !== null && data.max_consultation_id > lastKnownMaxLeadId) {
+                    playChimeSound();
+                    if (data.notifications.latest_leads && data.notifications.latest_leads.length > 0) {
+                        showRealTimeToast(data.notifications.latest_leads[0]);
+                    }
+                }
+
+                lastKnownMaxLeadId = data.max_consultation_id;
+                isFirstSync = false;
+
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
+            })
+            .catch(err => {
+                // Silently wait for next interval
+            });
+        }
+
+        // Start Real-Time Sync Poller
+        pollAdminSync();
+        setInterval(pollAdminSync, 8000);
     </script>
+
+    <!-- Real-Time Floating Notification Toast Container -->
+    <div id="realtimeToastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm pointer-events-none"></div>
 </body>
 </html>

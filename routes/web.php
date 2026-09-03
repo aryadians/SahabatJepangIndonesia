@@ -22,6 +22,7 @@ use App\Http\Controllers\AlumniMapController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ExamSimulatorController;
 use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\RealTimeSyncController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -47,6 +48,9 @@ Route::get('/peta-alumni', fn() => redirect()->route('alumni.map'));
 Route::get('/mitra-sekolah', [AffiliateController::class, 'publicRegister'])->name('affiliates.public.register');
 Route::post('/mitra-sekolah', [AffiliateController::class, 'storePublic'])->name('affiliates.public.store')->middleware('throttle:5,1');
 Route::get('/referral', fn() => redirect()->route('affiliates.public.register'));
+
+// 4. Real-Time Sync API untuk Guest & Halaman Publik
+Route::get('/api/realtime-sync/guest', [RealTimeSyncController::class, 'guestSync'])->name('realtime.guest');
 
 /*
 |--------------------------------------------------------------------------
@@ -79,6 +83,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // 1. Dashboard Overview
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('/api/realtime-sync', [RealTimeSyncController::class, 'adminSync'])->name('realtime.admin');
 
     // 2. Leads & Consultations Management
     Route::get('/leads', [AdminConsultationController::class, 'index'])->name('consultations.index');
