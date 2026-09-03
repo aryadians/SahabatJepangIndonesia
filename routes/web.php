@@ -62,12 +62,17 @@ Route::get('/brosur/file/{id}', [BrochureController::class, 'downloadFile'])->na
 Route::get('/biaya', fn() => redirect()->route('brochure.index'));
 
 use App\Http\Controllers\StudentPortalController;
+use App\Http\Controllers\DocumentVerificationController;
 
 // 5.5. Portal Cek Status Mandiri Siswa & Bukti Pembayaran Resmi
 Route::get('/cek-status', [StudentPortalController::class, 'index'])->name('student.portal');
 Route::get('/portal-siswa', fn() => redirect()->route('student.portal'));
 Route::get('/kwitansi/{nis}', [StudentPortalController::class, 'publicReceipt'])->name('student.public.receipt');
 Route::get('/invoice/{nis}', [StudentPortalController::class, 'publicInvoice'])->name('student.public.invoice');
+
+// 5.6. Sistem Verifikasi Publik QR Code Keaslian Dokumen Resmi
+Route::get('/verifikasi/{code?}', [DocumentVerificationController::class, 'verify'])->name('document.verify');
+Route::get('/verify/{code?}', fn($code = null) => redirect()->route('document.verify', ['code' => $code]));
 
 // 6. Dynamic XML Sitemap for SEO & Search Engine Crawlers
 Route::get('/sitemap.xml', function () {

@@ -166,8 +166,16 @@
 
         <!-- Signature Section -->
         <div class="border-t border-slate-200 pt-6 mt-6 flex items-end justify-between">
-            <div class="text-[10px] text-slate-400 max-w-sm">
-                Invoice ini sah dan diterbitkan secara digital oleh sistem keuangan LPK Sahabat Jepang Indonesia.
+            <div class="flex items-center gap-3">
+                <a href="{{ route('document.verify', ['code' => str_replace('/', '-', $invoiceNo)]) }}" target="_blank" class="block w-20 h-20 border border-slate-200 rounded-xl p-1 bg-white flex items-center justify-center hover:border-red-500 transition shadow-2xs" title="Klik untuk verifikasi keaslian invoice">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode(route('document.verify', ['code' => str_replace('/', '-', $invoiceNo)])) }}" alt="QR Verifikasi" class="w-full h-full object-contain">
+                </a>
+                <div class="text-[10px] text-slate-500 max-w-xs leading-tight">
+                    <a href="{{ route('document.verify', ['code' => str_replace('/', '-', $invoiceNo)]) }}" target="_blank" class="font-bold text-slate-800 hover:text-red-600 block">
+                        Scan / Cek Keaslian Invoice &rarr;
+                    </a>
+                    <p class="text-slate-400 mt-0.5">Invoice ini sah & terdaftar secara digital di basis data server resmi LPK Sahabat Jepang Indonesia.</p>
+                </div>
             </div>
 
             <div class="text-center w-56 space-y-1">

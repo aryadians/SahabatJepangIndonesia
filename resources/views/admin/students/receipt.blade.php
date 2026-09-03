@@ -161,10 +161,12 @@
             
             <!-- QR Code Security Stamp -->
             <div class="space-y-1.5 text-center">
-                <div class="w-24 h-24 border border-slate-200 rounded-xl p-1 bg-white mx-auto flex items-center justify-center">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode(url()->current()) }}" alt="QR Verifikasi" class="w-full h-full object-contain">
-                </div>
-                <p class="text-[9px] font-mono text-slate-400">Verifikasi Resmi LPK SJI</p>
+                <a href="{{ route('document.verify', ['code' => str_replace('/', '-', $receiptNo)]) }}" target="_blank" class="block w-24 h-24 border border-slate-200 rounded-xl p-1 bg-white mx-auto flex items-center justify-center hover:border-red-500 transition shadow-2xs" title="Klik untuk cek keaslian dokumen">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode(route('document.verify', ['code' => str_replace('/', '-', $receiptNo)])) }}" alt="QR Verifikasi" class="w-full h-full object-contain">
+                </a>
+                <a href="{{ route('document.verify', ['code' => str_replace('/', '-', $receiptNo)]) }}" target="_blank" class="text-[9px] font-mono font-bold text-slate-500 hover:text-red-600 block">
+                    Scan / Cek Keaslian &rarr;
+                </a>
             </div>
 
             <!-- Stempel & Tanda Tangan Kasir -->
