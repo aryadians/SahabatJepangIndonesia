@@ -75,6 +75,36 @@ class StudentController extends Controller
     }
 
     /**
+     * Detail Data Siswa (JSON untuk Quick Detail Modal atau View Print)
+     */
+    public function show($id)
+    {
+        $student = Student::findOrFail($id);
+
+        if (request()->wantsJson() || request()->ajax() || request('format') === 'json') {
+            return response()->json([
+                'student' => $student,
+                'remaining_balance' => $student->remaining_balance,
+                'formatted_total_cost' => $student->formatted_total_cost,
+                'formatted_paid_amount' => $student->formatted_paid_amount,
+                'formatted_remaining_balance' => $student->formatted_remaining_balance,
+                'mcu_label' => $student->mcu_label,
+                'uploaded_docs_count' => $student->uploaded_documents_count,
+                'has_ktp' => !empty($student->document_ktp),
+                'has_kk' => !empty($student->document_kk),
+                'has_ijazah' => !empty($student->document_ijazah),
+                'has_passport' => !empty($student->document_passport),
+                'has_cert' => !empty($student->document_certificate),
+                'has_ssw' => !empty($student->document_ssw),
+                'has_mcu' => !empty($student->document_mcu),
+                'has_coe' => !empty($student->document_coe_visa),
+            ]);
+        }
+
+        return view('admin.students.print', compact('student'));
+    }
+
+    /**
      * Form Tambah Siswa Baru
      */
     public function create()

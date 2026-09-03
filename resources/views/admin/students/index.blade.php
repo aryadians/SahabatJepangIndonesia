@@ -188,7 +188,14 @@
                                         @endif
                                     </div>
                                     <div>
-                                        <h4 class="font-bold text-slate-900 leading-tight">{{ $st->name }}</h4>
+                                        <button 
+                                            type="button" 
+                                            onclick="openStudentDetailModal({{ $st->id }})" 
+                                            class="font-bold text-slate-900 hover:text-japan-600 transition text-left leading-tight block group"
+                                            title="Klik untuk melihat profil lengkap & berkas"
+                                        >
+                                            <span class="group-hover:underline">{{ $st->name }}</span>
+                                        </button>
                                         <span class="inline-block text-[10px] font-mono text-slate-500">
                                             {{ $st->nis }}
                                         </span>
@@ -283,6 +290,16 @@
                                     >
                                         <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
                                         <span>Bayar</span>
+                                    </button>
+
+                                    <!-- Quick Detail Modal -->
+                                    <button 
+                                        type="button" 
+                                        onclick="openStudentDetailModal({{ $st->id }})" 
+                                        class="p-1.5 rounded-lg text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 transition" 
+                                        title="Lihat Detail Profil & Berkas Siswa"
+                                    >
+                                        <i data-lucide="eye" class="w-3.5 h-3.5"></i>
                                     </button>
 
                                     <!-- Cetak Lembar Profil -->
@@ -481,6 +498,296 @@
     </div>
 </div>
 
+<!-- Quick Detail Siswa & Berkas Modal -->
+<div id="studentDetailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 custom-modal">
+    <div class="fixed inset-0 modal-backdrop-blur" onclick="closeModal('studentDetailModal')"></div>
+    <div class="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden modal-content-box z-10 flex flex-col max-h-[90vh]">
+        
+        <!-- Header Siswa -->
+        <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-6 flex-shrink-0 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-2xl bg-white/10 border-2 border-white/20 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                    <img id="detailPhoto" src="" alt="Foto Siswa" class="w-full h-full object-cover hidden">
+                    <div id="detailNoPhoto" class="text-white/60 flex items-center justify-center">
+                        <i data-lucide="user" class="w-8 h-8"></i>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2.5">
+                        <h2 id="detailName" class="text-base sm:text-lg font-black text-white leading-tight">Nama Siswa</h2>
+                        <span id="detailStatusBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-japan-600 text-white">Status</span>
+                    </div>
+                    <p id="detailJapaneseName" class="text-xs text-japan-300 font-japanese mt-0.5">-</p>
+                    <p class="text-[11px] text-slate-300 font-mono mt-1">
+                        NIS: <span id="detailNis" class="font-bold text-white">-</span> • 
+                        Program: <span id="detailProgram" class="font-bold text-white">-</span>
+                    </p>
+                </div>
+            </div>
+            <button onclick="closeModal('studentDetailModal')" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm transition">
+                &times;
+            </button>
+        </div>
+
+        <!-- Scrollable Detail Body -->
+        <div class="p-6 overflow-y-auto space-y-6 flex-1 bg-slate-50/50">
+            
+            <!-- Grid 1: Identitas & Kontak -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+                    <i data-lucide="user" class="w-4 h-4 text-japan-600"></i>
+                    <span>Identitas Pribadi & Kontak</span>
+                </h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Nomor NIK KTP:</span>
+                        <p id="detailNik" class="font-mono font-bold text-slate-800">-</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Jenis Kelamin:</span>
+                        <p id="detailGender" class="font-bold text-slate-800">-</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Tempat & Tanggal Lahir:</span>
+                        <p id="detailBirth" class="font-bold text-slate-800">-</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Pendidikan Terakhir:</span>
+                        <p id="detailEducation" class="font-bold text-slate-800">-</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">No. WhatsApp / HP:</span>
+                        <a id="detailPhoneLink" href="#" target="_blank" class="font-bold text-emerald-600 hover:underline flex items-center gap-1">
+                            <span id="detailPhone">-</span>
+                            <i data-lucide="external-link" class="w-3 h-3"></i>
+                        </a>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Email:</span>
+                        <p id="detailEmail" class="font-bold text-slate-800">-</p>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Alamat Domisili:</span>
+                        <p id="detailAddress" class="font-medium text-slate-800">-</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Kontak Darurat (Wali):</span>
+                        <p id="detailEmergency" class="font-bold text-slate-800">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid 2: Penempatan Kerja & Pelatihan -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+                    <i data-lucide="briefcase" class="w-4 h-4 text-japan-600"></i>
+                    <span>Pelatihan & Penempatan Kerja di Jepang</span>
+                </h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Angkatan (Batch):</span>
+                        <p id="detailBatch" class="font-bold text-slate-800">-</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Sektor / Bidang:</span>
+                        <p id="detailSector" class="font-bold text-japan-700">-</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Level Bahasa Jepang:</span>
+                        <p id="detailJapaneseLevel" class="font-bold text-emerald-700">-</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Perusahaan Kaisha:</span>
+                        <p id="detailCompany" class="font-black text-slate-900">-</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Prefektur Penempatan:</span>
+                        <p id="detailPrefecture" class="font-bold text-slate-800">-</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Nomor Paspor:</span>
+                        <p id="detailPassport" class="font-mono font-bold text-slate-800">-</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Tgl Masuk Belajar:</span>
+                        <p id="detailEntryDate" class="font-bold text-slate-800">-</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Tgl / Target Terbang:</span>
+                        <p id="detailDepartureDate" class="font-bold text-japan-600">-</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Sertifikat SSW Skill:</span>
+                        <p id="detailSsw" class="font-bold text-slate-800">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid 3: Medikal (MCU) & Legalitas CoE/Visa & Akademik -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                
+                <!-- Medikal & Visa -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                    <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+                        <i data-lucide="stethoscope" class="w-4 h-4 text-blue-600"></i>
+                        <span>Medikal (MCU) & Dokumen Visa</span>
+                    </h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Status Kelayakan MCU:</span>
+                            <span id="detailMcuResult" class="font-black text-slate-900">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Klinik MCU:</span>
+                            <span id="detailMcuClinic" class="font-bold text-slate-800">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Tanggal MCU:</span>
+                            <span id="detailMcuDate" class="text-slate-800">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Nomor CoE:</span>
+                            <span id="detailCoeNumber" class="font-mono font-bold text-slate-800">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Nomor Visa:</span>
+                            <span id="detailVisaNumber" class="font-mono font-bold text-slate-800">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Akademik & Disiplin -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                    <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-2">
+                        <i data-lucide="award" class="w-4 h-4 text-amber-600"></i>
+                        <span>Evaluasi Akademik & Kehadiran</span>
+                    </h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Rata-rata Nilai Ujian:</span>
+                            <span id="detailExamScore" class="font-black text-slate-900">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Tingkat Kehadiran:</span>
+                            <span id="detailAttendance" class="font-black text-emerald-600">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Grade Kedisiplinan:</span>
+                            <span id="detailDiscipline" class="font-black text-japan-600">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Kelengkapan Berkas:</span>
+                            <span id="detailDocsCount" class="font-bold text-slate-800">-</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Grid 4: Berkas & Dokumen Digital Siswa (8 Dokumen) -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="folder-check" class="w-4 h-4 text-japan-600"></i>
+                        <span>Berkas Dokumen Pribadi (Digital Scan)</span>
+                    </h3>
+                    <span id="detailUploadedCountBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">0 / 8 Berkas</span>
+                </div>
+
+                <div id="detailDocsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+                    <!-- Dynamic Document Items populated by JS -->
+                </div>
+            </div>
+
+            <!-- Grid 5: Keuangan & Catatan Admin -->
+            <div class="p-4 rounded-2xl bg-slate-900 text-white space-y-2 text-xs">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Total Biaya:</span>
+                        <p id="detailTotalCost" class="font-black text-white text-sm">Rp 0</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Terbayar:</span>
+                        <p id="detailPaidAmount" class="font-black text-emerald-400 text-sm">Rp 0</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Sisa Tanggungan:</span>
+                        <p id="detailRemaining" class="font-black text-rose-400 text-sm">Rp 0</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Status & Skema:</span>
+                        <p id="detailPaymentStatus" class="font-bold text-amber-300 uppercase text-xs">-</p>
+                    </div>
+                </div>
+                <div id="detailAdminNotesBox" class="pt-2 border-t border-slate-800 text-[11px] text-slate-300 italic hidden">
+                    Catatan: <span id="detailAdminNotes">-</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="p-4 px-6 bg-white border-t border-slate-200 flex-shrink-0 flex items-center justify-between">
+            <button type="button" onclick="closeModal('studentDetailModal')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 transition">
+                Tutup
+            </button>
+            <div class="flex items-center gap-2">
+                <button 
+                    id="detailPaymentBtn" 
+                    type="button" 
+                    class="px-3.5 py-2 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-bold transition flex items-center gap-1.5"
+                >
+                    <i data-lucide="wallet" class="w-4 h-4"></i>
+                    <span>Catat Bayar</span>
+                </button>
+                <a 
+                    id="detailPrintBtn" 
+                    href="#" 
+                    target="_blank" 
+                    class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5"
+                >
+                    <i data-lucide="printer" class="w-4 h-4"></i>
+                    <span>Cetak Lembar Profil</span>
+                </a>
+                <a 
+                    id="detailEditBtn" 
+                    href="#" 
+                    class="btn-red-primary px-4 py-2 rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5"
+                >
+                    <i data-lucide="edit-2" class="w-4 h-4"></i>
+                    <span>Edit Lengkap</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Document Viewer Modal in Index -->
+<div id="indexDocPreviewModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 custom-modal">
+    <div class="fixed inset-0 modal-backdrop-blur" onclick="closeModal('indexDocPreviewModal')"></div>
+    <div class="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden modal-content-box z-10 flex flex-col max-h-[90vh]">
+        <div class="bg-slate-900 text-white p-4 px-6 flex items-center justify-between flex-shrink-0">
+            <div class="flex items-center gap-3">
+                <i data-lucide="file-text" class="w-5 h-5 text-japan-500"></i>
+                <h3 id="indexDocPreviewTitle" class="text-sm font-bold text-white">Preview Dokumen</h3>
+            </div>
+            <div class="flex items-center gap-2">
+                <a id="indexDocDownloadBtn" href="#" download target="_blank" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition flex items-center gap-1.5">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    <span>Download</span>
+                </a>
+                <button onclick="closeModal('indexDocPreviewModal')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm transition">
+                    &times;
+                </button>
+            </div>
+        </div>
+        <div id="indexDocContainer" class="p-4 overflow-y-auto flex items-center justify-center min-h-[350px] bg-slate-100 flex-1">
+            <!-- Dynamic Content -->
+        </div>
+    </div>
+</div>
+
 <script>
     function openQuickPaymentFromBtn(btn) {
         const studentId = btn.getAttribute('data-id');
@@ -499,6 +806,171 @@
         form.action = `/admin/students/${studentId}/payment`;
 
         openModal('quickPaymentModal');
+    }
+
+    // Open Student Quick Detail Modal
+    function openStudentDetailModal(studentId) {
+        fetch(`/admin/students/${studentId}?format=json`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            const s = data.student;
+
+            // Foto
+            const photoImg = document.getElementById('detailPhoto');
+            const noPhoto = document.getElementById('detailNoPhoto');
+            if (s.photo) {
+                photoImg.src = s.photo;
+                photoImg.classList.remove('hidden');
+                noPhoto.classList.add('hidden');
+            } else {
+                photoImg.classList.add('hidden');
+                noPhoto.classList.remove('hidden');
+            }
+
+            // Identitas
+            document.getElementById('detailName').textContent = s.name;
+            document.getElementById('detailJapaneseName').textContent = s.japanese_name || '-';
+            document.getElementById('detailNis').textContent = s.nis;
+            document.getElementById('detailProgram').textContent = s.program;
+            document.getElementById('detailStatusBadge').textContent = s.status.toUpperCase();
+            document.getElementById('detailNik').textContent = s.nik || '-';
+            document.getElementById('detailGender').textContent = s.gender;
+            document.getElementById('detailBirth').textContent = (s.birth_place || '-') + ', ' + (s.birth_date ? s.birth_date.split('T')[0] : '-');
+            document.getElementById('detailEducation').textContent = s.education || '-';
+            document.getElementById('detailPhone').textContent = s.phone || '-';
+            document.getElementById('detailPhoneLink').href = s.phone ? `https://wa.me/${s.phone.replace(/^0/, '62').replace(/[^0-9]/g, '')}` : '#';
+            document.getElementById('detailEmail').textContent = s.email || '-';
+            document.getElementById('detailAddress').textContent = (s.address || '-') + ' (' + (s.city || '-') + ')';
+            document.getElementById('detailEmergency').textContent = (s.emergency_contact_name || '-') + ' (' + (s.emergency_contact_phone || '-') + ')';
+
+            // Pelatihan
+            document.getElementById('detailBatch').textContent = s.batch || '-';
+            document.getElementById('detailSector').textContent = s.sector || '-';
+            document.getElementById('detailJapaneseLevel').textContent = s.japanese_level || '-';
+            document.getElementById('detailCompany').textContent = s.destination_company || 'Proses Penempatan';
+            document.getElementById('detailPrefecture').textContent = s.destination_prefecture || '-';
+            document.getElementById('detailPassport').textContent = s.passport_number || '-';
+            document.getElementById('detailEntryDate').textContent = s.entry_date ? s.entry_date.split('T')[0] : '-';
+            document.getElementById('detailDepartureDate').textContent = s.departure_date ? s.departure_date.split('T')[0] : '-';
+            document.getElementById('detailSsw').textContent = s.ssw_certificate || '-';
+
+            // Medikal & Visa
+            document.getElementById('detailMcuResult').textContent = data.mcu_label;
+            document.getElementById('detailMcuClinic').textContent = s.mcu_clinic || '-';
+            document.getElementById('detailMcuDate').textContent = s.mcu_date ? s.mcu_date.split('T')[0] : '-';
+            document.getElementById('detailCoeNumber').textContent = s.coe_number || '-';
+            document.getElementById('detailVisaNumber').textContent = s.visa_number || '-';
+
+            // Akademik
+            document.getElementById('detailExamScore').textContent = s.exam_score ? s.exam_score + ' / 100' : '-';
+            document.getElementById('detailAttendance').textContent = (s.attendance_percentage ?? 100) + '%';
+            document.getElementById('detailDiscipline').textContent = 'Grade ' + (s.discipline_grade || 'A');
+            document.getElementById('detailDocsCount').textContent = data.uploaded_docs_count + ' / 8 Dokumen';
+            document.getElementById('detailUploadedCountBadge').textContent = data.uploaded_docs_count + ' / 8 Dokumen';
+
+            // 8 Dokumen Digital Grid
+            const docsList = [
+                { key: 'document_ktp', label: 'e-KTP', val: s.document_ktp },
+                { key: 'document_kk', label: 'Kartu Keluarga', val: s.document_kk },
+                { key: 'document_ijazah', label: 'Ijazah Asli', val: s.document_ijazah },
+                { key: 'document_passport', label: 'Paspor RI', val: s.document_passport },
+                { key: 'document_certificate', label: 'JLPT / JFT', val: s.document_certificate },
+                { key: 'document_ssw', label: 'Skill SSW', val: s.document_ssw },
+                { key: 'document_mcu', label: 'Hasil MCU', val: s.document_mcu },
+                { key: 'document_coe_visa', label: 'CoE & Visa', val: s.document_coe_visa },
+            ];
+
+            const docsGrid = document.getElementById('detailDocsGrid');
+            docsGrid.innerHTML = '';
+            docsList.forEach(d => {
+                const hasDoc = !!d.val;
+                const div = document.createElement('div');
+                div.className = `p-2.5 rounded-xl border ${hasDoc ? 'border-emerald-200 bg-emerald-50/40' : 'border-slate-200 bg-slate-100/50'} text-xs space-y-1`;
+                div.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-slate-800 text-[11px] truncate">${d.label}</span>
+                        <span class="w-2 h-2 rounded-full ${hasDoc ? 'bg-emerald-500' : 'bg-slate-300'}"></span>
+                    </div>
+                    ${hasDoc ? `
+                        <button type="button" onclick="viewDocFromDetailModal('${d.label}', '${d.val}')" class="w-full mt-1 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] flex items-center justify-center gap-1 transition">
+                            <i data-lucide="eye" class="w-3 h-3"></i>
+                            <span>Buka</span>
+                        </button>
+                    ` : `
+                        <span class="block text-[10px] text-slate-400 italic">Belum ada</span>
+                    `}
+                `;
+                docsGrid.appendChild(div);
+            });
+
+            // Keuangan
+            document.getElementById('detailTotalCost').textContent = data.formatted_total_cost;
+            document.getElementById('detailPaidAmount').textContent = data.formatted_paid_amount;
+            document.getElementById('detailRemaining').textContent = data.formatted_remaining_balance;
+            document.getElementById('detailPaymentStatus').textContent = `${s.payment_status} (${s.payment_scheme})`;
+
+            // Catatan Admin
+            const adminNotesBox = document.getElementById('detailAdminNotesBox');
+            if (s.admin_notes) {
+                document.getElementById('detailAdminNotes').textContent = s.admin_notes;
+                adminNotesBox.classList.remove('hidden');
+            } else {
+                adminNotesBox.classList.add('hidden');
+            }
+
+            // Buttons
+            document.getElementById('detailPrintBtn').href = `/admin/students/${s.id}/print`;
+            document.getElementById('detailEditBtn').href = `/admin/students/${s.id}/edit`;
+            
+            const payBtn = document.getElementById('detailPaymentBtn');
+            payBtn.onclick = function() {
+                closeModal('studentDetailModal');
+                document.getElementById('paymentStudentName').textContent = s.name;
+                document.getElementById('paymentTotalCost').textContent = data.formatted_total_cost;
+                document.getElementById('paymentRemaining').textContent = data.formatted_remaining_balance;
+                document.getElementById('inputPaidAmount').value = s.paid_amount;
+                document.getElementById('quickPaymentForm').action = `/admin/students/${s.id}/payment`;
+                openModal('quickPaymentModal');
+            };
+
+            openModal('studentDetailModal');
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Gagal memuat detail data siswa.');
+        });
+    }
+
+    // View Doc from Detail Modal
+    function viewDocFromDetailModal(title, docUrl) {
+        document.getElementById('indexDocPreviewTitle').textContent = title;
+        const downloadBtn = document.getElementById('indexDocDownloadBtn');
+        downloadBtn.href = docUrl;
+        downloadBtn.download = title.replace(/[^a-zA-Z0-9]/g, '_');
+
+        const container = document.getElementById('indexDocContainer');
+        container.innerHTML = '';
+
+        if (!docUrl) {
+            container.innerHTML = '<p class="text-slate-400 text-sm">Tidak ada berkas yang dapat ditampilkan.</p>';
+        } else if (docUrl.includes('data:application/pdf') || docUrl.endsWith('.pdf')) {
+            container.innerHTML = `<iframe src="${docUrl}" class="w-full h-[65vh] rounded-xl border border-slate-300 shadow-sm" frameborder="0"></iframe>`;
+        } else {
+            container.innerHTML = `<img src="${docUrl}" alt="${title}" class="max-w-full max-h-[70vh] rounded-xl shadow-md object-contain border border-slate-200">`;
+        }
+
+        openModal('indexDocPreviewModal');
+        if (window.lucide) {
+            lucide.createIcons();
+        }
     }
 </script>
 @endsection
