@@ -12,13 +12,13 @@ class StudentController extends Controller
     use UploadsImage;
 
     /**
-     * Tampilkan List Siswa (High-Performance Server-Side Pagination & Filter)
+     * Tampilkan List Siswa (Server-Side Filter, Search & Pagination)
      */
     public function index(Request $request)
     {
         $query = Student::query();
 
-        // 1. Live Search (NIS, Nama, NIK, No WA)
+        // 1. Live Search (NIS, Nama, NIK, No WA, Kaisha, CoE)
         if ($request->filled('q')) {
             $q = trim($request->q);
             $query->where(function ($sub) use ($q) {
@@ -26,7 +26,8 @@ class StudentController extends Controller
                     ->orWhere('nis', 'like', "%{$q}%")
                     ->orWhere('nik', 'like', "%{$q}%")
                     ->orWhere('phone', 'like', "%{$q}%")
-                    ->orWhere('destination_company', 'like', "%{$q}%");
+                    ->orWhere('destination_company', 'like', "%{$q}%")
+                    ->orWhere('coe_number', 'like', "%{$q}%");
             });
         }
 
@@ -45,18 +46,24 @@ class StudentController extends Controller
             $query->where('payment_status', $request->payment_status);
         }
 
-        // 5. Select only lightweight columns for fast list rendering (exclude heavy base64 strings in listing)
+        // 5. Filter Status MCU
+        if ($request->filled('mcu_result') && $request->mcu_result !== 'all') {
+            $query->where('mcu_result', $request->mcu_result);
+        }
+
+        // 6. Select light columns for list performance (exclude heavy base64 strings)
         $students = $query->select([
             'id', 'nis', 'name', 'japanese_name', 'phone', 'gender', 'batch',
             'program', 'sector', 'status', 'entry_date', 'departure_date',
             'destination_company', 'destination_prefecture', 'japanese_level',
-            'total_cost', 'paid_amount', 'payment_status', 'payment_scheme', 'photo'
+            'total_cost', 'paid_amount', 'payment_status', 'payment_scheme', 'photo',
+            'mcu_result', 'coe_number', 'visa_number', 'exam_score'
         ])
         ->orderByDesc('id')
         ->paginate(15)
         ->withQueryString();
 
-        // 6. Quick KPI Metrics
+        // 7. Quick KPI Metrics
         $stats = [
             'total_students' => Student::count(),
             'active_students' => Student::whereIn('status', ['active', 'interview', 'passed_interview'])->count(),
@@ -76,7 +83,7 @@ class StudentController extends Controller
     }
 
     /**
-     * Simpan Data Siswa Baru (Base64 LONGTEXT Image Handling)
+     * Simpan Data Siswa Baru (Base64 LONGTEXT File & Dokumen Handling)
      */
     public function store(Request $request)
     {
@@ -107,18 +114,52 @@ class StudentController extends Controller
             'ssw_certificate' => 'nullable|string|max:150',
             'passport_number' => 'nullable|string|max:50',
             'passport_expiry' => 'nullable|date',
+            'mcu_date' => 'nullable|date',
+            'mcu_clinic' => 'nullable|string|max:150',
+            'mcu_result' => 'nullable|string|max:50',
+            'coe_number' => 'nullable|string|max:100',
+            'coe_date' => 'nullable|date',
+            'visa_number' => 'nullable|string|max:100',
+            'visa_expiry' => 'nullable|date',
+            'exam_score' => 'nullable|numeric|min:0|max:100',
+            'attendance_percentage' => 'nullable|integer|min:0|max:100',
+            'discipline_grade' => 'nullable|string|max:10',
             'total_cost' => 'required|numeric|min:0',
             'paid_amount' => 'required|numeric|min:0',
             'payment_scheme' => 'required|string|max:50',
             'payment_status' => 'required|string|max:50',
             'payment_notes' => 'nullable|string',
             'admin_notes' => 'nullable|string',
-            'photo_file' => 'nullable|image|max:5120',
+            'photo_file' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:10240',
+            'document_ktp_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
+            'document_kk_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
+            'document_ijazah_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
+            'document_passport_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
+            'document_certificate_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
+            'document_ssw_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
+            'document_mcu_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
+            'document_coe_visa_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
             'photo' => 'nullable|string',
+            'document_ktp' => 'nullable|string',
+            'document_kk' => 'nullable|string',
+            'document_ijazah' => 'nullable|string',
+            'document_passport' => 'nullable|string',
+            'document_certificate' => 'nullable|string',
+            'document_ssw' => 'nullable|string',
+            'document_mcu' => 'nullable|string',
+            'document_coe_visa' => 'nullable|string',
         ]);
 
-        // Upload Base64 Photo
-        $photo = $this->handleImageUpload($request, 'photo_file', 'photo');
+        // Upload Dokumen & Foto Pribadi Siswa
+        $photo = $this->handleFileUpload($request, 'photo_file', 'photo');
+        $docKtp = $this->handleFileUpload($request, 'document_ktp_file', 'document_ktp');
+        $docKk = $this->handleFileUpload($request, 'document_kk_file', 'document_kk');
+        $docIjazah = $this->handleFileUpload($request, 'document_ijazah_file', 'document_ijazah');
+        $docPassport = $this->handleFileUpload($request, 'document_passport_file', 'document_passport');
+        $docCert = $this->handleFileUpload($request, 'document_certificate_file', 'document_certificate');
+        $docSsw = $this->handleFileUpload($request, 'document_ssw_file', 'document_ssw');
+        $docMcu = $this->handleFileUpload($request, 'document_mcu_file', 'document_mcu');
+        $docCoe = $this->handleFileUpload($request, 'document_coe_visa_file', 'document_coe_visa');
 
         // Otomatis tentukan status pembayaran jika tidak dipilih manual
         $totalCost = (float)$validated['total_cost'];
@@ -132,6 +173,14 @@ class StudentController extends Controller
 
         Student::create(array_merge($validated, [
             'photo' => $photo,
+            'document_ktp' => $docKtp,
+            'document_kk' => $docKk,
+            'document_ijazah' => $docIjazah,
+            'document_passport' => $docPassport,
+            'document_certificate' => $docCert,
+            'document_ssw' => $docSsw,
+            'document_mcu' => $docMcu,
+            'document_coe_visa' => $docCoe,
             'payment_status' => $paymentStatus,
         ]));
 
@@ -181,17 +230,52 @@ class StudentController extends Controller
             'ssw_certificate' => 'nullable|string|max:150',
             'passport_number' => 'nullable|string|max:50',
             'passport_expiry' => 'nullable|date',
+            'mcu_date' => 'nullable|date',
+            'mcu_clinic' => 'nullable|string|max:150',
+            'mcu_result' => 'nullable|string|max:50',
+            'coe_number' => 'nullable|string|max:100',
+            'coe_date' => 'nullable|date',
+            'visa_number' => 'nullable|string|max:100',
+            'visa_expiry' => 'nullable|date',
+            'exam_score' => 'nullable|numeric|min:0|max:100',
+            'attendance_percentage' => 'nullable|integer|min:0|max:100',
+            'discipline_grade' => 'nullable|string|max:10',
             'total_cost' => 'required|numeric|min:0',
             'paid_amount' => 'required|numeric|min:0',
             'payment_scheme' => 'required|string|max:50',
             'payment_status' => 'required|string|max:50',
             'payment_notes' => 'nullable|string',
             'admin_notes' => 'nullable|string',
-            'photo_file' => 'nullable|image|max:5120',
+            'photo_file' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:10240',
+            'document_ktp_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
+            'document_kk_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
+            'document_ijazah_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
+            'document_passport_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
+            'document_certificate_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
+            'document_ssw_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
+            'document_mcu_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
+            'document_coe_visa_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
             'photo' => 'nullable|string',
+            'document_ktp' => 'nullable|string',
+            'document_kk' => 'nullable|string',
+            'document_ijazah' => 'nullable|string',
+            'document_passport' => 'nullable|string',
+            'document_certificate' => 'nullable|string',
+            'document_ssw' => 'nullable|string',
+            'document_mcu' => 'nullable|string',
+            'document_coe_visa' => 'nullable|string',
         ]);
 
-        $photo = $this->handleImageUpload($request, 'photo_file', 'photo', $student->photo);
+        // Upload Dokumen & Foto (jika ada file baru diunggah)
+        $photo = $this->handleFileUpload($request, 'photo_file', 'photo', $student->photo);
+        $docKtp = $this->handleFileUpload($request, 'document_ktp_file', 'document_ktp', $student->document_ktp);
+        $docKk = $this->handleFileUpload($request, 'document_kk_file', 'document_kk', $student->document_kk);
+        $docIjazah = $this->handleFileUpload($request, 'document_ijazah_file', 'document_ijazah', $student->document_ijazah);
+        $docPassport = $this->handleFileUpload($request, 'document_passport_file', 'document_passport', $student->document_passport);
+        $docCert = $this->handleFileUpload($request, 'document_certificate_file', 'document_certificate', $student->document_certificate);
+        $docSsw = $this->handleFileUpload($request, 'document_ssw_file', 'document_ssw', $student->document_ssw);
+        $docMcu = $this->handleFileUpload($request, 'document_mcu_file', 'document_mcu', $student->document_mcu);
+        $docCoe = $this->handleFileUpload($request, 'document_coe_visa_file', 'document_coe_visa', $student->document_coe_visa);
 
         $totalCost = (float)$validated['total_cost'];
         $paidAmount = (float)$validated['paid_amount'];
@@ -204,6 +288,14 @@ class StudentController extends Controller
 
         $student->update(array_merge($validated, [
             'photo' => $photo,
+            'document_ktp' => $docKtp,
+            'document_kk' => $docKk,
+            'document_ijazah' => $docIjazah,
+            'document_passport' => $docPassport,
+            'document_certificate' => $docCert,
+            'document_ssw' => $docSsw,
+            'document_mcu' => $docMcu,
+            'document_coe_visa' => $docCoe,
             'payment_status' => $paymentStatus,
         ]));
 
@@ -262,12 +354,12 @@ class StudentController extends Controller
     }
 
     /**
-     * Export Data Siswa ke CSV / Excel
+     * Export Seluruh Database Siswa ke CSV / Excel
      */
     public function exportCsv()
     {
         $students = Student::orderBy('id')->get();
-        $fileName = 'Data_Siswa_LPK_Sahabat_Jepang_' . date('Ymd_His') . '.csv';
+        $fileName = 'Database_Siswa_LPK_Sahabat_Jepang_' . date('Ymd_His') . '.csv';
 
         $headers = [
             "Content-type"        => "text/csv; charset=UTF-8",
@@ -279,41 +371,64 @@ class StudentController extends Controller
 
         $callback = function () use ($students) {
             $file = fopen('php://output', 'w');
+            // Write UTF-8 BOM
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
 
             fputcsv($file, [
                 'NIS', 'Nama Lengkap', 'Nama Katakana', 'NIK', 'WhatsApp', 'Email',
-                'Jenis Kelamin', 'Pendidikan', 'Kota Asal', 'Angkatan', 'Program',
-                'Sektor Pekerjaan', 'Tgl Masuk', 'Tgl Terbang', 'Perusahaan Jepang',
-                'Prefektur', 'Status Pelatihan', 'Level Bahasa', 'Sertifikat SSW',
-                'Total Biaya (IDR)', 'Sudah Bayar (IDR)', 'Sisa Tanggungan (IDR)', 'Status Pembayaran'
+                'Jenis Kelamin', 'Tempat Lahir', 'Tanggal Lahir', 'Pendidikan', 'Alamat', 'Kota Asal',
+                'Kontak Darurat', 'No Kontak Darurat', 'Angkatan', 'Program', 'Sektor Pekerjaan',
+                'Tgl Masuk', 'Tgl Terbang', 'Perusahaan Jepang', 'Prefektur', 'Status Pelatihan',
+                'Level Bahasa', 'Sertifikat SSW', 'Nomor Paspor', 'Masa Berlaku Paspor',
+                'Tgl MCU', 'Klinik MCU', 'Hasil MCU', 'Nomor CoE', 'Tgl Terbit CoE', 'Nomor Visa', 'Masa Berlaku Visa',
+                'Rata Rata Ujian', 'Kehadiran %', 'Grade Kedisiplinan',
+                'Total Biaya (IDR)', 'Sudah Bayar (IDR)', 'Sisa Tanggungan (IDR)', 'Skema Biaya', 'Status Pembayaran', 'Catatan Admin'
             ]);
 
             foreach ($students as $s) {
                 fputcsv($file, [
                     $s->nis,
                     $s->name,
-                    $s->japanese_name ?? '-',
-                    $s->nik ?? '-',
-                    $s->phone ?? '-',
-                    $s->email ?? '-',
+                    $s->japanese_name ?? '',
+                    $s->nik ?? '',
+                    $s->phone ?? '',
+                    $s->email ?? '',
                     $s->gender,
-                    $s->education ?? '-',
-                    $s->city ?? '-',
-                    $s->batch ?? '-',
+                    $s->birth_place ?? '',
+                    $s->birth_date ? $s->birth_date->format('Y-m-d') : '',
+                    $s->education ?? '',
+                    $s->address ?? '',
+                    $s->city ?? '',
+                    $s->emergency_contact_name ?? '',
+                    $s->emergency_contact_phone ?? '',
+                    $s->batch ?? '',
                     $s->program,
-                    $s->sector ?? '-',
-                    $s->entry_date ? $s->entry_date->format('d/m/Y') : '-',
-                    $s->departure_date ? $s->departure_date->format('d/m/Y') : '-',
-                    $s->destination_company ?? '-',
-                    $s->destination_prefecture ?? '-',
-                    strtoupper($s->status),
-                    $s->japanese_level ?? '-',
-                    $s->ssw_certificate ?? '-',
+                    $s->sector ?? '',
+                    $s->entry_date ? $s->entry_date->format('Y-m-d') : '',
+                    $s->departure_date ? $s->departure_date->format('Y-m-d') : '',
+                    $s->destination_company ?? '',
+                    $s->destination_prefecture ?? '',
+                    $s->status,
+                    $s->japanese_level ?? '',
+                    $s->ssw_certificate ?? '',
+                    $s->passport_number ?? '',
+                    $s->passport_expiry ? $s->passport_expiry->format('Y-m-d') : '',
+                    $s->mcu_date ? $s->mcu_date->format('Y-m-d') : '',
+                    $s->mcu_clinic ?? '',
+                    $s->mcu_result ?? '',
+                    $s->coe_number ?? '',
+                    $s->coe_date ? $s->coe_date->format('Y-m-d') : '',
+                    $s->visa_number ?? '',
+                    $s->visa_expiry ? $s->visa_expiry->format('Y-m-d') : '',
+                    $s->exam_score ?? '',
+                    $s->attendance_percentage ?? '',
+                    $s->discipline_grade ?? '',
                     $s->total_cost,
                     $s->paid_amount,
                     $s->remaining_balance,
-                    strtoupper($s->payment_status)
+                    $s->payment_scheme,
+                    $s->payment_status,
+                    $s->admin_notes ?? '',
                 ]);
             }
 
@@ -321,5 +436,221 @@ class StudentController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Download Template CSV untuk Import Siswa Massal
+     */
+    public function exportTemplate()
+    {
+        $fileName = 'Template_Import_Siswa_LPK_SJI.csv';
+
+        $headers = [
+            "Content-type"        => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function () {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            // Header baris 1
+            fputcsv($file, [
+                'NIS', 'Nama Lengkap', 'Nama Katakana', 'NIK', 'WhatsApp', 'Email',
+                'Jenis Kelamin', 'Tempat Lahir', 'Tanggal Lahir (YYYY-MM-DD)', 'Pendidikan', 'Kota Asal', 'Alamat',
+                'Kontak Darurat', 'No Darurat', 'Angkatan', 'Program', 'Sektor',
+                'Tgl Masuk (YYYY-MM-DD)', 'Tgl Terbang (YYYY-MM-DD)', 'Perusahaan Jepang', 'Prefektur', 'Status Pelatihan',
+                'Level Bahasa', 'Sertifikat SSW', 'Nomor Paspor', 'Tgl MCU (YYYY-MM-DD)', 'Klinik MCU', 'Hasil MCU',
+                'Nomor CoE', 'Nomor Visa', 'Nilai Ujian', 'Kehadiran (%)', 'Total Biaya', 'Sudah Bayar', 'Skema Biaya'
+            ]);
+
+            // Baris Contoh 1
+            fputcsv($file, [
+                'SJI-2026-801', 'Fajar Ramadhan', 'ファジャル・ラマダン', '3201123456780001', '081298761234', 'fajar@example.com',
+                'Laki-laki', 'Bandung', '2002-05-14', 'SMK Mesin', 'Bandung', 'Jl. Sukajadi No. 12',
+                'Bapak Ramadhan', '081299887766', 'Angkatan 45', 'Tokutei Ginou (SSW)', 'Pengolahan Makanan',
+                '2026-01-10', '2026-11-20', 'Nichirei Foods Inc.', 'Aichi', 'passed_interview',
+                'JLPT N4', 'SSW Food Processing', 'C9876543', '2026-03-15', 'RS Medistra Jakarta', 'fit',
+                'COE-2026-TYO-991', 'VISA-JPN-4421', '88.5', '96', '25000000', '15000000', 'mandiri'
+            ]);
+
+            // Baris Contoh 2
+            fputcsv($file, [
+                'SJI-2026-802', 'Siti Nurhaliza', 'シティ・ヌルハリザ', '3302123456780002', '081377881122', 'siti@example.com',
+                'Perempuan', 'Semarang', '2003-08-22', 'D3 Keperawatan', 'Semarang', 'Jl. Pandanaran No. 45',
+                'Ibu Nur', '081366554433', 'Angkatan 46', 'Tokutei Ginou (SSW)', 'Kaigo (Caregiver)',
+                '2026-02-01', '', 'Sun City Care Group', 'Tokyo', 'active',
+                'JFT-Basic A2', 'SSW Kaigo Certified', '', '', '', 'pending',
+                '', '', '92.0', '100', '28000000', '10000000', 'talangan'
+            ]);
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Import Data Siswa Massal dari File CSV
+     */
+    public function importCsv(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|max:10240',
+        ]);
+
+        $file = $request->file('csv_file');
+        $path = $file->getRealPath();
+
+        $handle = fopen($path, 'r');
+        if (!$handle) {
+            return back()->with('error', 'Gagal membuka file CSV yang diunggah.');
+        }
+
+        // Handle UTF-8 BOM
+        $bom = fread($handle, 3);
+        if ($bom !== "\xEF\xBB\xBF") {
+            rewind($handle);
+        }
+
+        $header = fgetcsv($handle, 10000, ',');
+        if (!$header) {
+            fclose($handle);
+            return back()->with('error', 'File CSV kosong atau format baris tidak valid.');
+        }
+
+        // Normalisasi header (lowercase, buang spasi dan simbol khusus)
+        $cleanHeaders = array_map(function ($h) {
+            $clean = strtolower(trim($h));
+            $clean = str_replace(['(', ')', '-', '/', '%'], '', $clean);
+            $clean = preg_replace('/\s+/', '_', $clean);
+            return $clean;
+        }, $header);
+
+        $createdCount = 0;
+        $updatedCount = 0;
+        $rowNumber = 1;
+
+        while (($row = fgetcsv($handle, 10000, ',')) !== false) {
+            $rowNumber++;
+            if (empty(array_filter($row))) {
+                continue; // Skip baris kosong
+            }
+
+            // Map baris dengan header
+            $data = [];
+            foreach ($cleanHeaders as $index => $colName) {
+                $data[$colName] = isset($row[$index]) ? trim($row[$index]) : null;
+            }
+
+            // Temukan atau generate NIS unik
+            $nis = $data['nis'] ?? null;
+            if (empty($nis)) {
+                $nis = 'SJI-' . date('Y') . '-' . str_pad(rand(1, 99999), 5, '0', STR_PAD_LEFT);
+            }
+
+            // Temukan Nama Lengkap
+            $name = $data['nama_lengkap'] ?? $data['nama'] ?? $data['name'] ?? null;
+            if (empty($name)) {
+                continue; // Nama wajib ada
+            }
+
+            // Gender normalisasi
+            $gender = 'Laki-laki';
+            $genderInput = strtolower($data['jenis_kelamin'] ?? $data['gender'] ?? '');
+            if (str_contains($genderInput, 'perempuan') || str_contains($genderInput, 'wanita') || $genderInput === 'f' || $genderInput === 'p') {
+                $gender = 'Perempuan';
+            }
+
+            // Program
+            $program = $data['program'] ?? 'Tokutei Ginou (SSW)';
+
+            // Status
+            $status = strtolower($data['status_pelatihan'] ?? $data['status'] ?? 'active');
+            if (!in_array($status, ['active', 'interview', 'passed_interview', 'departed', 'graduated', 'dropout'])) {
+                $status = 'active';
+            }
+
+            // Keuangan
+            $totalCost = (float)($data['total_biaya'] ?? 25000000);
+            $paidAmount = (float)($data['sudah_bayar'] ?? 0);
+            $paymentScheme = strtolower($data['skema_biaya'] ?? $data['skema_pembiayaan'] ?? 'mandiri');
+            if (!in_array($paymentScheme, ['mandiri', 'talangan', 'beasiswa'])) {
+                $paymentScheme = 'mandiri';
+            }
+
+            $paymentStatus = 'unpaid';
+            if ($paidAmount >= $totalCost && $totalCost > 0) {
+                $paymentStatus = 'paid';
+            } elseif ($paidAmount > 0) {
+                $paymentStatus = 'partial';
+            }
+
+            // Dates helper
+            $parseDate = function ($val) {
+                if (empty($val) || $val === '-') return null;
+                $timestamp = strtotime($val);
+                return $timestamp ? date('Y-m-d', $timestamp) : null;
+            };
+
+            $studentPayload = [
+                'nis' => $nis,
+                'name' => $name,
+                'japanese_name' => $data['nama_katakana'] ?? $data['japanese_name'] ?? null,
+                'nik' => $data['nik'] ?? null,
+                'phone' => $data['whatsapp'] ?? $data['phone'] ?? null,
+                'email' => $data['email'] ?? null,
+                'gender' => $gender,
+                'birth_place' => $data['tempat_lahir'] ?? null,
+                'birth_date' => $parseDate($data['tanggal_lahir_yyyymmdd'] ?? $data['tanggal_lahir'] ?? null),
+                'education' => $data['pendidikan'] ?? null,
+                'address' => $data['alamat'] ?? null,
+                'city' => $data['kota_asal'] ?? $data['kota'] ?? null,
+                'emergency_contact_name' => $data['kontak_darurat'] ?? null,
+                'emergency_contact_phone' => $data['no_darurat'] ?? $data['no_kontak_darurat'] ?? null,
+                'batch' => $data['angkatan'] ?? $data['batch'] ?? null,
+                'program' => $program,
+                'sector' => $data['sektor'] ?? $data['sektor_pekerjaan'] ?? null,
+                'entry_date' => $parseDate($data['tgl_masuk_yyyymmdd'] ?? $data['tgl_masuk'] ?? null),
+                'departure_date' => $parseDate($data['tgl_terbang_yyyymmdd'] ?? $data['tgl_terbang'] ?? null),
+                'destination_company' => $data['perusahaan_jepang'] ?? $data['kaisha'] ?? null,
+                'destination_prefecture' => $data['prefektur'] ?? null,
+                'status' => $status,
+                'japanese_level' => $data['level_bahasa'] ?? null,
+                'ssw_certificate' => $data['sertifikat_ssw'] ?? null,
+                'passport_number' => $data['nomor_paspor'] ?? null,
+                'mcu_date' => $parseDate($data['tgl_mcu_yyyymmdd'] ?? $data['tgl_mcu'] ?? null),
+                'mcu_clinic' => $data['klinik_mcu'] ?? null,
+                'mcu_result' => strtolower($data['hasil_mcu'] ?? 'pending'),
+                'coe_number' => $data['nomor_coe'] ?? null,
+                'visa_number' => $data['nomor_visa'] ?? null,
+                'exam_score' => !empty($data['nilai_ujian']) ? (float)$data['nilai_ujian'] : null,
+                'attendance_percentage' => !empty($data['kehadiran']) ? (int)$data['kehadiran'] : null,
+                'total_cost' => $totalCost,
+                'paid_amount' => $paidAmount,
+                'payment_scheme' => $paymentScheme,
+                'payment_status' => $paymentStatus,
+            ];
+
+            // Cek apakah NIS sudah ada
+            $existing = Student::where('nis', $nis)->first();
+            if ($existing) {
+                $existing->update($studentPayload);
+                $updatedCount++;
+            } else {
+                Student::create($studentPayload);
+                $createdCount++;
+            }
+        }
+
+        fclose($handle);
+
+        return redirect()->route('admin.students.index')->with(
+            'success',
+            "Proses import CSV selesai: {$createdCount} siswa baru berhasil ditambahkan, {$updatedCount} data siswa diperbarui."
+        );
     }
 }

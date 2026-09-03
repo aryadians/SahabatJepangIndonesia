@@ -111,16 +111,40 @@
                 @endif
             </form>
 
-            <!-- Action Buttons -->
-            <div class="flex items-center gap-2 flex-shrink-0">
+            <!-- Action Buttons (Import, Template, Export, Tambah) -->
+            <div class="flex flex-wrap items-center gap-2 flex-shrink-0">
+                <!-- Import CSV Button -->
+                <button 
+                    type="button"
+                    onclick="openModal('importCsvModal')" 
+                    class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5"
+                    title="Import Data Siswa Massal dari file CSV / Excel"
+                >
+                    <i data-lucide="upload-cloud" class="w-4 h-4 text-blue-600"></i>
+                    <span>Import CSV</span>
+                </button>
+
+                <!-- Download Template CSV -->
+                <a 
+                    href="{{ route('admin.students.template') }}" 
+                    class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5"
+                    title="Unduh Template Format CSV Siap Isi"
+                >
+                    <i data-lucide="download" class="w-4 h-4 text-slate-500"></i>
+                    <span>Template</span>
+                </a>
+
+                <!-- Export Database CSV -->
                 <a 
                     href="{{ route('admin.students.export') }}" 
-                    class="px-3.5 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition flex items-center gap-1.5"
+                    class="px-3.5 py-2 rounded-xl border border-emerald-200 bg-emerald-50/50 hover:bg-emerald-50 text-emerald-800 text-xs font-bold transition flex items-center gap-1.5"
+                    title="Export Seluruh Database Siswa ke File CSV / Excel"
                 >
                     <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600"></i>
                     <span>Export CSV</span>
                 </a>
 
+                <!-- Tambah Siswa Baru -->
                 <a 
                     href="{{ route('admin.students.create') }}" 
                     class="btn-red-primary px-4 py-2 rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5"
@@ -139,11 +163,11 @@
             <table class="w-full text-left text-xs">
                 <thead>
                     <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 text-[11px] uppercase font-bold">
-                        <th class="py-3 px-4">Siswa</th>
-                        <th class="py-3 px-4">Program</th>
-                        <th class="py-3 px-4">Penempatan</th>
+                        <th class="py-3 px-4">Siswa & NIS</th>
+                        <th class="py-3 px-4">Program & Sektor</th>
+                        <th class="py-3 px-4">Penempatan Jepang</th>
                         <th class="py-3 px-4">Masuk / Terbang</th>
-                        <th class="py-3 px-4">Level</th>
+                        <th class="py-3 px-4">Bahasa & Medikal</th>
                         <th class="py-3 px-4">Keuangan</th>
                         <th class="py-3 px-4">Status</th>
                         <th class="py-3 px-4 text-center">Aksi</th>
@@ -190,11 +214,27 @@
                                 <p class="text-[10px] text-japan-600 font-bold">Fly: {{ $st->departure_date ? $st->departure_date->format('d/m/Y') : '-' }}</p>
                             </td>
 
-                            <!-- Level Bahasa -->
+                            <!-- Bahasa & Medikal / CoE -->
                             <td class="py-3 px-4">
-                                <span class="px-2 py-0.5 rounded-md bg-red-50 text-japan-700 font-bold text-[11px]">
-                                    {{ $st->japanese_level ?: '-' }}
-                                </span>
+                                <div class="space-y-1">
+                                    <span class="px-2 py-0.5 rounded-md bg-red-50 text-japan-700 font-bold text-[11px] inline-block">
+                                        {{ $st->japanese_level ?: '-' }}
+                                    </span>
+                                    @if($st->mcu_result === 'fit')
+                                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 block w-max">MCU: Fit</span>
+                                    @elseif($st->mcu_result === 'unfit')
+                                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 block w-max">MCU: Unfit</span>
+                                    @elseif($st->mcu_result === 'follow_up')
+                                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 block w-max">MCU: Follow-up</span>
+                                    @elseif($st->mcu_result === 'pending')
+                                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 block w-max">MCU: Pending</span>
+                                    @endif
+                                    @if($st->coe_number)
+                                        <span class="text-[9px] font-mono text-slate-500 block truncate max-w-[110px]" title="CoE: {{ $st->coe_number }}">
+                                            CoE: {{ $st->coe_number }}
+                                        </span>
+                                    @endif
+                                </div>
                             </td>
 
                             <!-- Keuangan & Tanggungan -->
@@ -352,6 +392,88 @@
                 <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md flex items-center gap-1.5">
                     <i data-lucide="check" class="w-4 h-4"></i>
                     <span>Simpan Pembayaran</span>
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<!-- Import CSV Modal -->
+<div id="importCsvModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 custom-modal">
+    <div class="fixed inset-0 modal-backdrop-blur" onclick="closeModal('importCsvModal')"></div>
+    <div class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden modal-content-box z-10">
+        
+        <div class="bg-gradient-to-r from-blue-900 to-slate-900 text-white p-6 flex items-center justify-between">
+            <div class="flex items-center gap-3.5">
+                <div class="w-10 h-10 rounded-2xl bg-white/10 text-white flex items-center justify-center font-bold">
+                    <i data-lucide="upload-cloud" class="w-5 h-5 text-blue-400"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-black text-white">Import Database Siswa (CSV)</h3>
+                    <p class="text-xs text-slate-300">Upload data massal dari file Excel/CSV</p>
+                </div>
+            </div>
+            <button onclick="closeModal('importCsvModal')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm transition">
+                &times;
+            </button>
+        </div>
+
+        <form action="{{ route('admin.students.import') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-5">
+            @csrf
+            
+            <!-- Step Instructions & Template Download Link -->
+            <div class="p-4 rounded-2xl bg-blue-50/80 border border-blue-100 space-y-2.5">
+                <div class="flex items-start gap-2.5 text-xs text-blue-900">
+                    <i data-lucide="info" class="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5"></i>
+                    <div>
+                        <p class="font-bold">Panduan Import Data Siswa:</p>
+                        <ol class="list-decimal list-inside space-y-1 mt-1 text-slate-600 text-[11px]">
+                            <li>Gunakan format kolom template resmi LPK.</li>
+                            <li>Jika kolom <strong>NIS</strong> dikosongkan, sistem akan membuatkan nomor NIS otomatis.</li>
+                            <li>Jika NIS sudah ada, data siswa tersebut akan diperbarui (update otomatis).</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-blue-200/60 flex items-center justify-between">
+                    <span class="text-[11px] font-bold text-blue-800">Belum punya template CSV?</span>
+                    <a 
+                        href="{{ route('admin.students.template') }}" 
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white text-blue-700 hover:text-blue-900 border border-blue-200 font-bold text-xs shadow-xs hover:bg-blue-50 transition"
+                    >
+                        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                        <span>Unduh Template CSV</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- File Input Drag-and-Drop styled -->
+            <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700">Pilih File CSV (.csv) <span class="text-rose-500">*</span></label>
+                <div class="p-4 border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-2xl bg-slate-50 text-center transition cursor-pointer relative">
+                    <input 
+                        type="file" 
+                        name="csv_file" 
+                        accept=".csv,text/csv,text/plain" 
+                        required 
+                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        onchange="document.getElementById('selectedFileName').textContent = this.files[0] ? this.files[0].name : 'Belum ada file dipilih'"
+                    >
+                    <i data-lucide="file-spreadsheet" class="w-8 h-8 mx-auto text-blue-600 mb-1.5"></i>
+                    <p class="text-xs font-bold text-slate-800">Klik untuk memilih file CSV atau drag & drop ke sini</p>
+                    <p id="selectedFileName" class="text-[11px] text-slate-500 mt-1 font-mono font-semibold">Format: .csv (Maksimal 10MB)</p>
+                </div>
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+                <button type="button" onclick="closeModal('importCsvModal')" class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">
+                    Batal
+                </button>
+                <button type="submit" class="btn-red-primary px-5 py-2.5 rounded-xl text-xs font-bold shadow-md flex items-center gap-2">
+                    <i data-lucide="upload" class="w-4 h-4"></i>
+                    <span>Mulai Proses Import</span>
                 </button>
             </div>
         </form>

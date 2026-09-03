@@ -138,10 +138,10 @@
 
         </div>
 
-        <!-- Training & Placement Info -->
+        <!-- Training, Placement & Qualification Info -->
         <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
             <h3 class="font-black text-slate-900 uppercase text-[11px] border-b border-slate-200 pb-1">
-                Data Program, Penempatan & Sertifikasi Jepang
+                Data Program, Penempatan & Kualifikasi Jepang
             </h3>
             <div class="grid grid-cols-2 gap-x-6 gap-y-2">
                 <div>
@@ -179,6 +179,98 @@
             </div>
         </div>
 
+        <!-- Medical MCU, CoE & Visa & Evaluasi Akademik -->
+        <div class="grid grid-cols-2 gap-4 text-xs">
+            <!-- Medikal & Legalitas Keberangkatan -->
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                <h3 class="font-black text-slate-900 uppercase text-[11px] border-b border-slate-200 pb-1">
+                    Rekam Medis (MCU) & Visa
+                </h3>
+                <div class="space-y-1.5">
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Hasil MCU:</span>
+                        <span class="font-bold {{ $student->mcu_result === 'fit' ? 'text-emerald-700' : 'text-slate-800' }}">
+                            {{ $student->mcu_label }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Klinik / Tgl MCU:</span>
+                        <span class="text-slate-800">{{ $student->mcu_clinic ?: '-' }} ({{ $student->mcu_date ? $student->mcu_date->format('d/m/Y') : '-' }})</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Nomor Paspor:</span>
+                        <span class="font-mono font-bold text-slate-800">{{ $student->passport_number ?: '-' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Nomor CoE:</span>
+                        <span class="font-mono text-slate-800">{{ $student->coe_number ?: '-' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Nomor Visa:</span>
+                        <span class="font-mono text-slate-800">{{ $student->visa_number ?: '-' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Evaluasi Akademik & Sikap -->
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                <h3 class="font-black text-slate-900 uppercase text-[11px] border-b border-slate-200 pb-1">
+                    Evaluasi Akademik & Disiplin
+                </h3>
+                <div class="space-y-1.5">
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Rata-rata Nilai Ujian:</span>
+                        <span class="font-black text-slate-900">{{ $student->exam_score ? $student->exam_score . ' / 100' : '-' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Tingkat Kehadiran:</span>
+                        <span class="font-bold text-emerald-700">{{ $student->attendance_percentage ?? 100 }}%</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Grade Kedisiplinan:</span>
+                        <span class="font-black text-japan-600">Grade {{ $student->discipline_grade ?? 'A' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Kelengkapan Berkas:</span>
+                        <span class="font-bold text-slate-800">{{ $student->uploaded_documents_count }} dari 8 Dokumen</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checklist Dokumen Fisik / Digital -->
+        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1.5">
+            <h3 class="font-black text-slate-900 uppercase text-[10px]">
+                Status Arsip Berkas Dokumen Pribadi:
+            </h3>
+            <div class="grid grid-cols-4 gap-2 text-[10px]">
+                <div class="flex items-center gap-1.5">
+                    <span class="{{ !empty($student->document_ktp) ? 'text-emerald-600 font-bold' : 'text-slate-400' }}">{{ !empty($student->document_ktp) ? '✓' : '✗' }} e-KTP</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="{{ !empty($student->document_kk) ? 'text-emerald-600 font-bold' : 'text-slate-400' }}">{{ !empty($student->document_kk) ? '✓' : '✗' }} Kartu Keluarga</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="{{ !empty($student->document_ijazah) ? 'text-emerald-600 font-bold' : 'text-slate-400' }}">{{ !empty($student->document_ijazah) ? '✓' : '✗' }} Ijazah Asli</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="{{ !empty($student->document_passport) ? 'text-emerald-600 font-bold' : 'text-slate-400' }}">{{ !empty($student->document_passport) ? '✓' : '✗' }} Paspor RI</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="{{ !empty($student->document_certificate) ? 'text-emerald-600 font-bold' : 'text-slate-400' }}">{{ !empty($student->document_certificate) ? '✓' : '✗' }} JLPT / JFT</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="{{ !empty($student->document_ssw) ? 'text-emerald-600 font-bold' : 'text-slate-400' }}">{{ !empty($student->document_ssw) ? '✓' : '✗' }} Skill SSW</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="{{ !empty($student->document_mcu) ? 'text-emerald-600 font-bold' : 'text-slate-400' }}">{{ !empty($student->document_mcu) ? '✓' : '✗' }} Hasil MCU</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="{{ !empty($student->document_coe_visa) ? 'text-emerald-600 font-bold' : 'text-slate-400' }}">{{ !empty($student->document_coe_visa) ? '✓' : '✗' }} CoE & Visa</span>
+                </div>
+            </div>
+        </div>
+
         <!-- Financial Status -->
         <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
             <h3 class="font-black text-slate-900 uppercase text-[11px] border-b border-slate-200 pb-1">
@@ -207,7 +299,7 @@
         <!-- Catatan Evaluasi -->
         @if($student->admin_notes)
             <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
-                <span class="font-bold text-slate-700 uppercase text-[10px]">Catatan Evaluasi Akademik & Karakter:</span>
+                <span class="font-bold text-slate-700 uppercase text-[10px]">Catatan Evaluasi Sensei / Admin:</span>
                 <p class="text-slate-700 italic mt-0.5">{{ $student->admin_notes }}</p>
             </div>
         @endif

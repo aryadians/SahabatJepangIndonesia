@@ -114,6 +114,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
     // 11. Data Diri Siswa & Keuangan LPK
     Route::get('/students/export', [StudentController::class, 'exportCsv'])->name('students.export');
+    Route::get('/students/template', [StudentController::class, 'exportTemplate'])->name('students.template');
+    Route::post('/students/import', [StudentController::class, 'importCsv'])->name('students.import');
     Route::get('/students/{id}/print', [StudentController::class, 'printDossier'])->name('students.print');
     Route::post('/students/{id}/payment', [StudentController::class, 'updatePayment'])->name('students.payment');
     Route::resource('students', StudentController::class)->except(['show']);

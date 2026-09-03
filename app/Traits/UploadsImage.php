@@ -34,4 +34,12 @@ trait UploadsImage
         // 3. Kembalikan nilai gambar lama jika tidak diubah
         return $oldValue;
     }
+
+    /**
+     * Alias untuk upload dokumen umum (PDF / Gambar)
+     */
+    public function handleFileUpload(Request $request, string $fileField, string $urlField, ?string $oldValue = null): ?string
+    {
+        return $this->handleImageUpload($request, $fileField, $urlField, $oldValue);
+    }
 }
