@@ -162,4 +162,50 @@ class NewFeaturesTest extends TestCase
         $this->assertEquals('Tokyo Caregiver Corp', $freshStudent->destination_company);
         $this->assertEquals('Tokyo', $freshStudent->destination_prefecture);
     }
+
+    public function test_admin_can_manage_campus_galleries(): void
+    {
+        // 1. Admin views index
+        $indexResponse = $this->actingAs($this->admin)->get('/admin/campus-galleries');
+        $indexResponse->assertStatus(200);
+
+        // 2. Admin creates a photo slide
+        $postResponse = $this->actingAs($this->admin)->post('/admin/campus-galleries', [
+            'title' => 'MoU Poltekkes Kemenkes Surabaya 2026',
+            'institution' => 'Poltekkes Surabaya',
+            'program_tag' => 'SMILE Project',
+            'badge_text' => 'MoU Resmi',
+            'description' => 'Penandatanganan kerjasama penyaluran perawat Kaigo',
+            'sub_text_left' => 'Poltekkes Surabaya',
+            'sub_text_right' => '100% Gratis',
+            'image_url' => 'https://example.com/photo.jpg',
+            'order' => 1,
+            'is_active' => 1,
+        ]);
+        $postResponse->assertRedirect('/admin/campus-galleries');
+
+        $gallery = \App\Models\CampusGallery::where('title', 'MoU Poltekkes Kemenkes Surabaya 2026')->first();
+        $this->assertNotNull($gallery);
+        $this->assertTrue($gallery->is_active);
+
+        // 3. Admin toggles active
+        $toggleResponse = $this->actingAs($this->admin)->post("/admin/campus-galleries/{$gallery->id}/toggle-active");
+        $this->assertFalse($gallery->fresh()->is_active);
+
+        // 4. Admin updates
+        $updateResponse = $this->actingAs($this->admin)->put("/admin/campus-galleries/{$gallery->id}", [
+            'title' => 'MoU Poltekkes Kemenkes Surabaya Updated',
+            'institution' => 'Poltekkes Surabaya Kampus Utama',
+            'program_tag' => 'SMILE Project',
+            'order' => 2,
+            'is_active' => 1,
+        ]);
+        $updateResponse->assertRedirect('/admin/campus-galleries');
+        $this->assertEquals('MoU Poltekkes Kemenkes Surabaya Updated', $gallery->fresh()->title);
+
+        // 5. Admin deletes
+        $deleteResponse = $this->actingAs($this->admin)->delete("/admin/campus-galleries/{$gallery->id}");
+        $deleteResponse->assertRedirect('/admin/campus-galleries');
+        $this->assertNull(\App\Models\CampusGallery::find($gallery->id));
+    }
 }

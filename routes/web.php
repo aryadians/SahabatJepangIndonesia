@@ -126,6 +126,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // 9b. Brochures & Downloadable Curriculum CMS
     Route::resource('brochures', \App\Http\Controllers\Admin\BrochureAdminController::class)->except(['create', 'show', 'edit']);
 
+    // 9c. Campus & Government Program Galleries CMS
+    Route::post('campus-galleries/{id}/toggle-active', [\App\Http\Controllers\Admin\CampusGalleryController::class, 'toggleActive'])->name('campus-galleries.toggle');
+    Route::resource('campus-galleries', \App\Http\Controllers\Admin\CampusGalleryController::class)->except(['create', 'show', 'edit']);
+
     // 10. Batch Schedules CMS
     Route::resource('schedules', BatchScheduleController::class)->except(['create', 'show', 'edit']);
 

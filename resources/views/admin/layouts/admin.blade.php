@@ -270,6 +270,14 @@
                     <i data-lucide="book-open" class="w-4 h-4"></i>
                     <span>Brosur & Materi</span>
                 </a>
+
+                <a 
+                    href="{{ route('admin.campus-galleries.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.campus-galleries.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="camera" class="w-4 h-4"></i>
+                    <span>Galeri Kampus & Program</span>
+                </a>
             @endif
 
             <div class="px-3 pt-3 pb-1 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">

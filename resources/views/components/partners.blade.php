@@ -362,135 +362,48 @@
                 <!-- Carousel Track Container -->
                 <div class="relative overflow-hidden rounded-2xl">
                     <div id="campusCarouselTrack" class="flex transition-transform duration-500 ease-out gap-4 sm:gap-6">
+                        @php
+                            $dynamicCampusGalleries = \App\Models\CampusGallery::where('is_active', true)->orderBy('order', 'asc')->orderBy('id', 'asc')->get();
+                        @endphp
                         
-                        <!-- Slide 1: MoU Poltekkes Semarang -->
-                        <div class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] flex-shrink-0 bg-white/5 border border-white/10 rounded-2xl overflow-hidden group hover:border-red-500/50 transition flex flex-col justify-between">
-                            <div class="h-44 relative bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center overflow-hidden">
-                                <div class="absolute inset-0 bg-cover bg-center opacity-60 group-hover:scale-105 transition duration-500" style="background-image: url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80');"></div>
-                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
-                                <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-red-600/90 text-white text-[10px] font-black uppercase tracking-wider backdrop-blur-xs">
-                                    Penandatanganan MoU
-                                </span>
-                                <span class="absolute bottom-3 right-3 text-[11px] font-mono text-slate-300">
-                                    Poltekkes Semarang
-                                </span>
-                            </div>
-                            <div class="p-4 space-y-1.5 flex-1 flex flex-col justify-between">
-                                <div>
-                                    <h5 class="text-sm font-bold text-white group-hover:text-red-300 transition">MoU Kerjasama Penyaluran Lulusan Keperawatan</h5>
-                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Penandatanganan nota kesepahaman resmi antara Direktur LPK SJI dan pimpinan Poltekkes Kemenkes.</p>
+                        @forelse($dynamicCampusGalleries as $g)
+                            <!-- Dynamic Slide from Database / Admin Panel -->
+                            <div class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] flex-shrink-0 bg-white/5 border border-white/10 rounded-2xl overflow-hidden group hover:border-red-500/50 transition flex flex-col justify-between">
+                                <div class="h-44 relative bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center overflow-hidden">
+                                    <div class="absolute inset-0 bg-cover bg-center opacity-60 group-hover:scale-105 transition duration-500" style="background-image: url('{{ $g->image }}');"></div>
+                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+                                    <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg text-white text-[10px] font-black uppercase tracking-wider backdrop-blur-xs {{ $g->tag_badge['badge_color'] }}">
+                                        {{ $g->badge_text ?: $g->program_tag }}
+                                    </span>
+                                    <span class="absolute bottom-3 right-3 text-[11px] font-mono text-slate-300">
+                                        {{ $g->institution ?: 'LPK SJI' }}
+                                    </span>
                                 </div>
-                                <div class="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
-                                    <span>Program Beasiswa Kemenkes</span>
-                                    <span class="text-emerald-400 font-bold">Resmi Terverifikasi</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Slide 2: Bursa Kerja Khusus (Campus Recruitment) Poltekkes Jakarta -->
-                        <div class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] flex-shrink-0 bg-white/5 border border-white/10 rounded-2xl overflow-hidden group hover:border-red-500/50 transition flex flex-col justify-between">
-                            <div class="h-44 relative bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center overflow-hidden">
-                                <div class="absolute inset-0 bg-cover bg-center opacity-60 group-hover:scale-105 transition duration-500" style="background-image: url('https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&w=800&q=80');"></div>
-                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
-                                <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-blue-600/90 text-white text-[10px] font-black uppercase tracking-wider backdrop-blur-xs">
-                                    Campus Job Fair
-                                </span>
-                                <span class="absolute bottom-3 right-3 text-[11px] font-mono text-slate-300">
-                                    Poltekkes Jakarta
-                                </span>
-                            </div>
-                            <div class="p-4 space-y-1.5 flex-1 flex flex-col justify-between">
-                                <div>
-                                    <h5 class="text-sm font-bold text-white group-hover:text-red-300 transition">Bursa Kerja Khusus & Rekrutmen Langsung</h5>
-                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Pelaksanaan seleksi fisik, psikotes, dan wawancara awal bagi alumni perawat di auditorium kampus.</p>
-                                </div>
-                                <div class="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
-                                    <span>Auditorium Kampus</span>
-                                    <span class="text-blue-400 font-bold">120+ Peserta Seleksi</span>
+                                <div class="p-4 space-y-1.5 flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <h5 class="text-sm font-bold text-white group-hover:text-red-300 transition leading-snug">{{ $g->title }}</h5>
+                                        <p class="text-xs text-slate-400 mt-1 leading-relaxed line-clamp-2">{{ $g->description ?: 'Dokumentasi kegiatan resmi LPK Sahabat Jepang Indonesia.' }}</p>
+                                    </div>
+                                    <div class="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
+                                        <span>{{ $g->sub_text_left ?: 'Program Pemerintah' }}</span>
+                                        <span class="text-emerald-400 font-bold">{{ $g->sub_text_right ?: 'Resmi Terverifikasi' }}</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Slide 3: Sosialisasi Kaigo di STIKes Mitra -->
-                        <div class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] flex-shrink-0 bg-white/5 border border-white/10 rounded-2xl overflow-hidden group hover:border-red-500/50 transition flex flex-col justify-between">
-                            <div class="h-44 relative bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center overflow-hidden">
-                                <div class="absolute inset-0 bg-cover bg-center opacity-60 group-hover:scale-105 transition duration-500" style="background-image: url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80');"></div>
-                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
-                                <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-emerald-600/90 text-white text-[10px] font-black uppercase tracking-wider backdrop-blur-xs">
-                                    Sosialisasi Karir
-                                </span>
-                                <span class="absolute bottom-3 right-3 text-[11px] font-mono text-slate-300">
-                                    STIKes Mitra Se-Indonesia
-                                </span>
+                        @empty
+                            <div class="p-8 text-center text-slate-400 text-xs w-full">
+                                Belum ada foto dokumentasi aktif.
                             </div>
-                            <div class="p-4 space-y-1.5 flex-1 flex flex-col justify-between">
-                                <div>
-                                    <h5 class="text-sm font-bold text-white group-hover:text-red-300 transition">Seminar Peluang Gaji Rp 22-27 Juta Caregiver</h5>
-                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Edukasi skema Tokutei Ginou Kaigo, tunjangan perumahan, dan pembiayaan 100% gratis dari Kemenkes RI.</p>
-                                </div>
-                                <div class="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
-                                    <span>Mahasiswa Akhir D3/S1</span>
-                                    <span class="text-emerald-400 font-bold">Beasiswa Kemenkes</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Slide 4: Simulasi Wawancara Kaisha di Poltekkes Surabaya -->
-                        <div class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] flex-shrink-0 bg-white/5 border border-white/10 rounded-2xl overflow-hidden group hover:border-red-500/50 transition flex flex-col justify-between">
-                            <div class="h-44 relative bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center overflow-hidden">
-                                <div class="absolute inset-0 bg-cover bg-center opacity-60 group-hover:scale-105 transition duration-500" style="background-image: url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=800&q=80');"></div>
-                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
-                                <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-amber-600/90 text-white text-[10px] font-black uppercase tracking-wider backdrop-blur-xs">
-                                    Simulasi Wawancara
-                                </span>
-                                <span class="absolute bottom-3 right-3 text-[11px] font-mono text-slate-300">
-                                    Poltekkes Surabaya
-                                </span>
-                            </div>
-                            <div class="p-4 space-y-1.5 flex-1 flex flex-col justify-between">
-                                <div>
-                                    <h5 class="text-sm font-bold text-white group-hover:text-red-300 transition">Simulasi Mensetsu Langsung dengan User Jepang</h5>
-                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Pelatihan tata krama wawancara kerja rumah sakit Jepang di laboratorium bahasa kampus mitra.</p>
-                                </div>
-                                <div class="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
-                                    <span>Lab Bahasa Kampus</span>
-                                    <span class="text-amber-400 font-bold">Standar JFT A2 & Kaigo</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Slide 5: Pelepasan Alumni Gelombang 4 -->
-                        <div class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] flex-shrink-0 bg-white/5 border border-white/10 rounded-2xl overflow-hidden group hover:border-red-500/50 transition flex flex-col justify-between">
-                            <div class="h-44 relative bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center overflow-hidden">
-                                <div class="absolute inset-0 bg-cover bg-center opacity-60 group-hover:scale-105 transition duration-500" style="background-image: url('https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=800&q=80');"></div>
-                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
-                                <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-purple-600/90 text-white text-[10px] font-black uppercase tracking-wider backdrop-blur-xs">
-                                    Pelepasan Terbang
-                                </span>
-                                <span class="absolute bottom-3 right-3 text-[11px] font-mono text-slate-300">
-                                    Gelombang 4 Sukses
-                                </span>
-                            </div>
-                            <div class="p-4 space-y-1.5 flex-1 flex flex-col justify-between">
-                                <div>
-                                    <h5 class="text-sm font-bold text-white group-hover:text-red-300 transition">Pelepasan Alumni Program Kemenkes ke Jepang</h5>
-                                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">Upacara pelepasan kontingen tenaga perawat yang telah mengantongi CoE, visa, dan tiket penerbangan ke Tokyo.</p>
-                                </div>
-                                <div class="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
-                                    <span>Bandara Soekarno-Hatta</span>
-                                    <span class="text-purple-300 font-bold">100% Siap Kerja</span>
-                                </div>
-                            </div>
-                        </div>
+                        @endforelse
 
                     </div>
                 </div>
 
                 <!-- Carousel Dots Indicator -->
                 <div class="flex items-center justify-center gap-1.5 pt-2" id="campusCarouselDots">
-                    <span class="w-6 h-1.5 rounded-full bg-red-500 transition-all"></span>
-                    <span class="w-2 h-1.5 rounded-full bg-white/20 transition-all"></span>
-                    <span class="w-2 h-1.5 rounded-full bg-white/20 transition-all"></span>
+                    @for($i = 0; $i < $dynamicCampusGalleries->count(); $i++)
+                        <span class="{{ $i === 0 ? 'w-6 h-1.5 bg-red-500' : 'w-2 h-1.5 bg-white/20' }} rounded-full transition-all"></span>
+                    @endfor
                 </div>
 
             </div>
@@ -500,7 +413,7 @@
         <!-- Client Script for Campus Carousel -->
         <script>
             let currentCampusSlide = 0;
-            const totalCampusSlides = 5;
+            const totalCampusSlides = {{ max($dynamicCampusGalleries->count(), 1) }};
 
             function slideCampusCarousel(direction) {
                 const track = document.getElementById('campusCarouselTrack');
@@ -509,14 +422,12 @@
                 // Determine slides in view based on screen width
                 const width = window.innerWidth;
                 const visibleCount = width >= 1024 ? 3 : (width >= 640 ? 2 : 1);
-                const maxIndex = totalCampusSlides - visibleCount;
+                const maxIndex = Math.max(0, totalCampusSlides - visibleCount);
 
                 currentCampusSlide += direction;
                 if (currentCampusSlide < 0) currentCampusSlide = 0;
                 if (currentCampusSlide > maxIndex) currentCampusSlide = maxIndex;
 
-                const itemWidthPercent = 100 / visibleCount;
-                const offset = currentCampusSlide * (itemWidthPercent + 2); // 2% for gap compensation
                 track.style.transform = `translateX(-${currentCampusSlide * 34}%)`;
 
                 // Update dots
