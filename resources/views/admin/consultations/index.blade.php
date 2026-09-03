@@ -6,6 +6,23 @@
 @section('content')
 <div class="space-y-6">
 
+    <!-- Live Influx Alert (Shown dynamically when a new lead enters) -->
+    <div id="newLeadAlertBanner" class="hidden p-4 rounded-2xl bg-gradient-to-r from-red-600 via-japan-600 to-rose-700 text-white shadow-xl flex items-center justify-between animate-pulse">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="sparkles" class="w-5 h-5 text-amber-200"></i>
+            </div>
+            <div>
+                <h5 class="text-xs font-bold leading-tight">Pendaftar Baru Baru Saja Masuk!</h5>
+                <p class="text-[11px] text-red-100">Data calon siswa baru telah tercatat dan siap untuk dihubungi.</p>
+            </div>
+        </div>
+        <button onclick="window.location.reload()" class="px-4 py-2 rounded-xl bg-white text-slate-900 font-extrabold text-xs hover:bg-red-50 transition shadow-md flex items-center gap-1.5">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            <span>Muat Ulang Halaman</span>
+        </button>
+    </div>
+
     <!-- KPI Metrics Summary Cards -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         

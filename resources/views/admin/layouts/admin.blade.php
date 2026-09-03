@@ -622,6 +622,10 @@
                     if (data.notifications.latest_leads && data.notifications.latest_leads.length > 0) {
                         showRealTimeToast(data.notifications.latest_leads[0]);
                     }
+                    const alertBanner = document.getElementById('newLeadAlertBanner');
+                    if (alertBanner) {
+                        alertBanner.classList.remove('hidden');
+                    }
                 }
 
                 lastKnownMaxLeadId = data.max_consultation_id;

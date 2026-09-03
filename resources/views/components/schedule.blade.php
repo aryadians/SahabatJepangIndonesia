@@ -43,7 +43,7 @@
                                 {{ $sch->status === 'limited' ? '⚡ Kuota Terbatas' : ($sch->status === 'open' ? '🟢 Pendaftaran Buka' : '🔴 Ditutup') }}
                             </span>
                             <span class="text-[11px] font-black text-japan-400">
-                                Sisa {{ $remainingVal }} Kursi
+                                Sisa <span data-live-batch-seats="{{ $sch->id }}">{{ $remainingVal }}</span> Kursi
                             </span>
                         </div>
 

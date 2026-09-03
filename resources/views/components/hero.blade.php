@@ -144,7 +144,7 @@
         <div class="mt-16 sm:mt-20 pt-8 border-t border-slate-200/80 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 reveal-on-scroll delay-400">
             
             <div class="text-center p-4 rounded-2xl bg-white/60 backdrop-blur-sm border border-slate-100 hover:border-red-200 transition">
-                <p class="text-3xl sm:text-4xl lg:text-5xl font-black text-japan-700 tracking-tight" data-counter="{{ $settings['stat_alumni_count'] ?? '500' }}" data-suffix="{{ $settings['stat_alumni_suffix'] ?? '+' }}">0{{ $settings['stat_alumni_suffix'] ?? '+' }}</p>
+                <p class="text-3xl sm:text-4xl lg:text-5xl font-black text-japan-700 tracking-tight" data-counter="{{ $settings['stat_alumni_count'] ?? '500' }}" data-suffix="{{ $settings['stat_alumni_suffix'] ?? '+' }}" data-live-stat="total_alumni">0{{ $settings['stat_alumni_suffix'] ?? '+' }}</p>
                 <p class="text-xs sm:text-sm font-bold text-slate-800 mt-1">Alumni Diberangkatkan</p>
                 <p class="text-[11px] text-slate-500">Bekerja aktif di Jepang</p>
             </div>
