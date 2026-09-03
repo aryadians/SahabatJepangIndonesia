@@ -202,6 +202,98 @@
                 }
             });
         })();
+
+        // Japanese Aesthetic Universal Toast Alert for Public Guests
+        window.showJapaneseAlert = function(type, title, message) {
+            let container = document.getElementById('guestAlertContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'guestAlertContainer';
+                container.className = 'fixed top-5 right-5 z-[9999] flex flex-col gap-2.5 max-w-sm pointer-events-none';
+                document.body.appendChild(container);
+            }
+
+            const toast = document.createElement('div');
+            const typeConfig = {
+                success: {
+                    border: 'border-emerald-200 bg-white/95 shadow-emerald-500/15',
+                    iconBg: 'bg-emerald-50 text-emerald-600',
+                    icon: 'check-circle-2',
+                    badge: 'bg-emerald-100 text-emerald-800',
+                    bar: 'bg-emerald-500',
+                    tag: 'Berhasil'
+                },
+                error: {
+                    border: 'border-rose-200 bg-white/95 shadow-rose-500/15',
+                    iconBg: 'bg-rose-50 text-japan-600',
+                    icon: 'alert-circle',
+                    badge: 'bg-rose-100 text-japan-700',
+                    bar: 'bg-japan-600',
+                    tag: 'Perhatian'
+                },
+                info: {
+                    border: 'border-red-200 bg-white/95 shadow-red-500/15',
+                    iconBg: 'bg-red-50 text-japan-600',
+                    icon: 'sparkles',
+                    badge: 'bg-red-100 text-japan-700',
+                    bar: 'bg-japan-600',
+                    tag: 'Info LPK'
+                }
+            }[type || 'info'];
+
+            toast.className = `pointer-events-auto ${typeConfig.border} text-slate-900 p-4 rounded-2xl shadow-2xl border flex items-start gap-3 backdrop-blur-md transform transition-all duration-300 -translate-y-3 opacity-0 max-w-sm relative overflow-hidden`;
+            toast.innerHTML = `
+                <div class="w-9 h-9 rounded-xl ${typeConfig.iconBg} flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs font-bold">
+                    <i data-lucide="${typeConfig.icon}" class="w-5 h-5"></i>
+                </div>
+                <div class="flex-1 min-w-0 pr-2">
+                    <div class="flex items-center gap-1.5 mb-0.5">
+                        <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider ${typeConfig.badge}">
+                            ${typeConfig.tag}
+                        </span>
+                        <h5 class="text-xs font-black text-slate-900 truncate">${title}</h5>
+                    </div>
+                    <p class="text-[11px] text-slate-600 leading-relaxed font-medium">${message}</p>
+                </div>
+                <button onclick="this.closest('.pointer-events-auto').remove()" class="text-slate-400 hover:text-slate-700 text-base leading-none p-1">
+                    &times;
+                </button>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-slate-100">
+                    <div class="h-full ${typeConfig.bar} transition-all duration-[4500ms] ease-linear w-full guest-progress-bar"></div>
+                </div>
+            `;
+
+            container.appendChild(toast);
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+
+            setTimeout(() => {
+                toast.classList.remove('-translate-y-3', 'opacity-0');
+                const pBar = toast.querySelector('.guest-progress-bar');
+                if (pBar) pBar.style.width = '0%';
+            }, 50);
+
+            setTimeout(() => {
+                toast.classList.add('-translate-y-3', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        };
     </script>
+
+    @if(session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                window.showJapaneseAlert('success', 'Berhasil', '{{ addslashes(session('success')) }}');
+            });
+        </script>
+    @endif
+    @if(session('error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                window.showJapaneseAlert('error', 'Pemberitahuan', '{{ addslashes(session('error')) }}');
+            });
+        </script>
+    @endif
 </body>
 </html>

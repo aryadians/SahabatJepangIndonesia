@@ -96,6 +96,13 @@ class RealTimeSyncController extends Controller
         $maxConsultationId = Consultation::max('id') ?? 0;
         $maxStudentId = Student::max('id') ?? 0;
 
+        $interviewsKpi = [
+            'total' => \App\Models\JobInterview::count(),
+            'scheduled' => \App\Models\JobInterview::where('status', 'scheduled')->count(),
+            'candidates' => \App\Models\InterviewCandidate::count(),
+            'passed' => \App\Models\InterviewCandidate::where('result', 'passed')->count(),
+        ];
+
         return response()->json([
             'status' => 'success',
             'server_time' => now()->format('H:i:s'),
@@ -117,6 +124,7 @@ class RealTimeSyncController extends Controller
                 'receivables' => (float) $totalReceivables,
                 'formatted_receivables' => 'Rp ' . number_format($totalReceivables, 0, ',', '.'),
             ],
+            'interviews_kpi' => $interviewsKpi,
         ]);
     }
 }

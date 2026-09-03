@@ -709,6 +709,115 @@
                     el.textContent = data.financial_kpi.formatted_receivables;
                 });
             }
+
+            // Interviews KPIs
+            if (data.interviews_kpi) {
+                const map = {
+                    'interviews_total': data.interviews_kpi.total,
+                    'interviews_scheduled': data.interviews_kpi.scheduled,
+                    'interviews_candidates': data.interviews_kpi.candidates,
+                    'interviews_passed': data.interviews_kpi.passed,
+                };
+                Object.keys(map).forEach(key => {
+                    const val = map[key];
+                    if (val !== undefined) {
+                        document.querySelectorAll(`[data-admin-stat="${key}"]`).forEach(el => {
+                            const suffix = el.getAttribute('data-suffix') || '';
+                            const prefix = el.getAttribute('data-prefix') || '';
+                            el.textContent = prefix + Number(val).toLocaleString('id-ID') + suffix;
+                        });
+                    }
+                });
+            }
+        };
+
+        // Japanese Aesthetic Universal Toast Alert Function
+        window.showJapaneseAlert = function(type, title, message) {
+            const container = document.getElementById('appAlertContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            const typeConfig = {
+                success: {
+                    border: 'border-emerald-200 bg-white/95 shadow-emerald-500/15',
+                    iconBg: 'bg-emerald-50 text-emerald-600',
+                    icon: 'check-circle-2',
+                    badge: 'bg-emerald-100 text-emerald-800',
+                    bar: 'bg-emerald-500',
+                    tag: 'Berhasil'
+                },
+                error: {
+                    border: 'border-rose-200 bg-white/95 shadow-rose-500/15',
+                    iconBg: 'bg-rose-50 text-japan-600',
+                    icon: 'alert-circle',
+                    badge: 'bg-rose-100 text-japan-700',
+                    bar: 'bg-japan-600',
+                    tag: 'Gagal'
+                },
+                warning: {
+                    border: 'border-amber-200 bg-white/95 shadow-amber-500/15',
+                    iconBg: 'bg-amber-50 text-amber-600',
+                    icon: 'alert-triangle',
+                    badge: 'bg-amber-100 text-amber-800',
+                    bar: 'bg-amber-500',
+                    tag: 'Perhatian'
+                },
+                info: {
+                    border: 'border-red-200 bg-white/95 shadow-red-500/15',
+                    iconBg: 'bg-red-50 text-japan-600',
+                    icon: 'sparkles',
+                    badge: 'bg-red-100 text-japan-700',
+                    bar: 'bg-japan-600',
+                    tag: 'Informasi'
+                }
+            }[type || 'info'] || {
+                border: 'border-slate-200 bg-white/95',
+                iconBg: 'bg-slate-100 text-slate-700',
+                icon: 'bell',
+                badge: 'bg-slate-100 text-slate-800',
+                bar: 'bg-japan-600',
+                tag: 'Notifikasi'
+            };
+
+            toast.className = `pointer-events-auto ${typeConfig.border} text-slate-900 p-4 rounded-2xl shadow-xl border flex items-start gap-3 backdrop-blur-md transform transition-all duration-300 -translate-y-3 opacity-0 max-w-sm relative overflow-hidden`;
+            toast.innerHTML = `
+                <div class="w-9 h-9 rounded-xl ${typeConfig.iconBg} flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs font-bold">
+                    <i data-lucide="${typeConfig.icon}" class="w-5 h-5"></i>
+                </div>
+                <div class="flex-1 min-w-0 pr-2">
+                    <div class="flex items-center gap-1.5 mb-0.5">
+                        <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider ${typeConfig.badge}">
+                            ${typeConfig.tag}
+                        </span>
+                        <h5 class="text-xs font-black text-slate-900 truncate">${title}</h5>
+                    </div>
+                    <p class="text-[11px] text-slate-600 leading-relaxed font-medium">${message}</p>
+                </div>
+                <button onclick="this.closest('.pointer-events-auto').remove()" class="text-slate-400 hover:text-slate-700 text-base leading-none p-1">
+                    &times;
+                </button>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-slate-100">
+                    <div class="h-full ${typeConfig.bar} transition-all duration-[4500ms] ease-linear w-full toast-progress-bar"></div>
+                </div>
+            `;
+
+            container.appendChild(toast);
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+
+            // Animate in & play chime
+            setTimeout(() => {
+                toast.classList.remove('-translate-y-3', 'opacity-0');
+                const pBar = toast.querySelector('.toast-progress-bar');
+                if (pBar) pBar.style.width = '0%';
+            }, 50);
+
+            // Auto dismiss after 5s
+            setTimeout(() => {
+                toast.classList.add('-translate-y-3', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
         };
 
         // Start Real-Time Sync Poller
@@ -716,7 +825,24 @@
         setInterval(pollAdminSync, 8000);
     </script>
 
-    <!-- Real-Time Floating Notification Toast Container -->
+    <!-- Auto Flash Messages from Laravel Session -->
+    @if(session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                window.showJapaneseAlert('success', 'Berhasil Disimpan', '{{ addslashes(session('success')) }}');
+            });
+        </script>
+    @endif
+    @if(session('error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                window.showJapaneseAlert('error', 'Terjadi Kesalahan', '{{ addslashes(session('error')) }}');
+            });
+        </script>
+    @endif
+
+    <!-- Universal Alert & Toast Containers -->
+    <div id="appAlertContainer" class="fixed top-5 right-5 z-[9999] flex flex-col gap-2.5 max-w-sm pointer-events-none"></div>
     <div id="realtimeToastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm pointer-events-none"></div>
 </body>
 </html>

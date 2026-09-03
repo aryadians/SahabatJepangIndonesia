@@ -17,7 +17,7 @@
                     <i data-lucide="calendar" class="w-4 h-4"></i>
                 </div>
             </div>
-            <p class="text-2xl sm:text-3xl font-black text-slate-900 mt-2">{{ number_format($stats['total_interviews']) }}</p>
+            <p data-admin-stat="interviews_total" class="text-2xl sm:text-3xl font-black text-slate-900 mt-2">{{ number_format($stats['total_interviews']) }}</p>
             <p class="text-[11px] text-slate-400 mt-0.5">Seluruh sesi wawancara user</p>
         </div>
 
@@ -29,7 +29,7 @@
                     <i data-lucide="clock" class="w-4 h-4"></i>
                 </div>
             </div>
-            <p class="text-2xl sm:text-3xl font-black text-blue-600 mt-2">{{ number_format($stats['scheduled']) }}</p>
+            <p data-admin-stat="interviews_scheduled" class="text-2xl sm:text-3xl font-black text-blue-600 mt-2">{{ number_format($stats['scheduled']) }}</p>
             <p class="text-[11px] text-blue-700/80 mt-0.5 font-medium">Sesi siap dilaksanakan</p>
         </div>
 
@@ -41,7 +41,7 @@
                     <i data-lucide="users" class="w-4 h-4"></i>
                 </div>
             </div>
-            <p class="text-2xl sm:text-3xl font-black text-purple-600 mt-2">{{ number_format($stats['total_candidates']) }}</p>
+            <p data-admin-stat="interviews_candidates" class="text-2xl sm:text-3xl font-black text-purple-600 mt-2">{{ number_format($stats['total_candidates']) }}</p>
             <p class="text-[11px] text-purple-700/80 mt-0.5 font-medium">Siswa terdaftar wawancara</p>
         </div>
 
@@ -53,7 +53,7 @@
                     <i data-lucide="check-circle" class="w-4 h-4"></i>
                 </div>
             </div>
-            <p class="text-2xl sm:text-3xl font-black text-emerald-600 mt-2">{{ number_format($stats['passed_candidates']) }}</p>
+            <p data-admin-stat="interviews_passed" class="text-2xl sm:text-3xl font-black text-emerald-600 mt-2">{{ number_format($stats['passed_candidates']) }}</p>
             <p class="text-[11px] text-emerald-700/80 mt-0.5 font-medium">Siap proses CoE & Visa</p>
         </div>
 
