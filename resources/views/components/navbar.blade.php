@@ -1,27 +1,27 @@
 <!-- Navigation Bar Component -->
 <header id="mainNavbar" class="sticky top-0 z-40 w-full transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-red-100 shadow-sm">
     <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10">
-        <div class="flex items-center justify-between h-20 gap-6">
+        <div class="flex items-center justify-between h-20 gap-2 sm:gap-4 xl:gap-6">
             
             <!-- Brand Logo (Left) -->
-            <a href="{{ route('home') }}" class="flex items-center gap-3 group flex-shrink-0">
+            <a href="{{ route('home') }}" class="flex items-center gap-2.5 sm:gap-3 group flex-shrink-0">
                 @if(!empty($settings['site_logo']))
-                    <img src="{{ $settings['site_logo'] }}" alt="{{ $settings['site_name'] ?? 'LPK Sahabat Jepang' }}" class="h-10 w-auto object-contain max-w-[150px] rounded-lg">
+                    <img src="{{ $settings['site_logo'] }}" alt="{{ $settings['site_name'] ?? 'LPK Sahabat Jepang' }}" class="h-9 sm:h-10 w-auto object-contain max-w-[140px] rounded-lg">
                 @else
-                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-japan-600 to-red-700 text-white flex items-center justify-center font-japanese font-black text-2xl shadow-md shadow-red-600/30 group-hover:scale-105 group-hover:rotate-3 transition duration-200 flex-shrink-0">
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-br from-japan-600 to-red-700 text-white flex items-center justify-center font-japanese font-black text-xl sm:text-2xl shadow-md shadow-red-600/30 group-hover:scale-105 group-hover:rotate-3 transition duration-200 flex-shrink-0">
                         友
                     </div>
                 @endif
                 <div class="flex flex-col justify-center">
-                    <div class="flex items-center gap-2">
-                        <span class="font-black text-base xl:text-lg text-slate-900 tracking-tight leading-none uppercase whitespace-nowrap">
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <span class="font-black text-sm sm:text-base xl:text-lg text-slate-900 tracking-tight leading-none uppercase whitespace-nowrap">
                             {{ $settings['site_name'] ?? 'LPK SAHABAT JEPANG INDONESIA' }}
                         </span>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-red-100 text-japan-700 border border-red-200 uppercase tracking-wider whitespace-nowrap">
+                        <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black bg-red-100 text-japan-700 border border-red-200 uppercase tracking-wider whitespace-nowrap">
                             LPK & SO
                         </span>
                     </div>
-                    <p class="text-[11px] text-slate-500 font-medium flex items-center gap-1.5 mt-1.5 leading-none whitespace-nowrap">
+                    <p class="text-[10px] sm:text-[11px] text-slate-500 font-medium flex items-center gap-1 sm:gap-1.5 mt-1 leading-none whitespace-nowrap">
                         <span class="font-japanese text-xs text-japan-600 font-bold">友好日本</span>
                         <span class="text-slate-300">•</span>
                         <span>{{ $settings['site_tagline'] ?? 'Sending Organization Resmi Kemnaker RI' }}</span>
@@ -29,26 +29,91 @@
                 </div>
             </a>
 
-            <!-- Desktop Nav Links (Center - Extended & Balanced Across Full Width) -->
-            <nav class="hidden lg:flex items-center justify-center gap-6 xl:gap-8 flex-1 mx-2">
-                <a href="{{ route('home') }}#beranda" class="text-sm font-bold text-slate-700 hover:text-japan-600 transition whitespace-nowrap py-1">
+            <!-- Desktop Nav Links (Center - Balanced & No-Wrap) -->
+            <nav class="hidden lg:flex items-center justify-center gap-4 xl:gap-6 flex-1 mx-1 xl:mx-3">
+                <a href="{{ route('home') }}#beranda" class="text-xs xl:text-sm font-bold text-slate-700 hover:text-japan-600 transition whitespace-nowrap py-1">
                     Beranda
                 </a>
-                
-                <a href="{{ route('home') }}#program" class="text-sm font-bold text-slate-700 hover:text-japan-600 transition whitespace-nowrap py-1">
-                    Program Karir
-                </a>
 
-                <a href="{{ route('home') }}#kemitraan" class="text-sm font-bold text-slate-700 hover:text-japan-600 transition whitespace-nowrap py-1 flex items-center gap-1.5">
-                    <span>Program Pemerintah</span>
-                    <span class="px-1.5 py-0.5 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-800 border border-emerald-200 uppercase">MoU & Gratis</span>
-                </a>
+                <!-- Dropdown Menu "Program & Beasiswa" -->
+                <div class="relative group">
+                    <button 
+                        type="button" 
+                        class="flex items-center gap-1.5 text-xs xl:text-sm font-bold text-slate-700 group-hover:text-japan-600 transition whitespace-nowrap py-1"
+                    >
+                        <span>Program & Beasiswa</span>
+                        <span class="px-1.5 py-0.5 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-800 border border-emerald-200 uppercase">Resmi</span>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 group-hover:text-japan-600 group-hover:rotate-180 transition-transform duration-200"></i>
+                    </button>
+
+                    <!-- Mega Dropdown Box (Two Categorized Columns) -->
+                    <div class="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-50 pointer-events-none group-hover:pointer-events-auto">
+                        <div class="w-[520px] bg-white rounded-3xl shadow-2xl border border-red-100 p-4 ring-1 ring-black/5 grid grid-cols-2 gap-3">
+                            
+                            <!-- Col 1: Program Pemerintah Unggulan (Beasiswa) -->
+                            <div class="space-y-2 p-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-100/80">
+                                <div class="flex items-center gap-1.5 text-[10px] font-black text-emerald-800 uppercase tracking-wider pb-1 border-b border-emerald-100">
+                                    <i data-lucide="award" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                    <span>Program Pemerintah RI</span>
+                                </div>
+
+                                <a href="{{ route('home') }}#kemitraan" class="block p-2 rounded-xl hover:bg-white text-slate-800 transition">
+                                    <p class="text-xs font-black text-slate-900 flex items-center justify-between">
+                                        <span>SMILE Project</span>
+                                        <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[9px] font-black">100% GRATIS</span>
+                                    </p>
+                                    <p class="text-[10px] text-slate-500 mt-0.5 leading-tight">Beasiswa Kemenkes & Poltekkes Kaigo</p>
+                                </a>
+
+                                <a href="{{ route('home') }}#kemitraan" class="block p-2 rounded-xl hover:bg-white text-slate-800 transition">
+                                    <p class="text-xs font-black text-slate-900 flex items-center justify-between">
+                                        <span>SMK Go Japan</span>
+                                        <span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 text-[9px] font-black">VOKASI</span>
+                                    </p>
+                                    <p class="text-[10px] text-slate-500 mt-0.5 leading-tight">Khusus siswa & alumni SMK seluruh RI</p>
+                                </a>
+
+                                <a href="{{ route('home') }}#kemitraan" class="block p-2 rounded-xl hover:bg-white text-slate-800 transition">
+                                    <p class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                        <i data-lucide="image" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                        <span>Galeri MoU Kampus</span>
+                                    </p>
+                                    <p class="text-[10px] text-slate-500 mt-0.5 leading-tight">Dokumentasi 4 gelombang keberangkatan</p>
+                                </a>
+                            </div>
+
+                            <!-- Col 2: Jalur Karir Reguler -->
+                            <div class="space-y-2 p-3.5 rounded-2xl bg-slate-50/70 border border-slate-100">
+                                <div class="flex items-center gap-1.5 text-[10px] font-black text-slate-600 uppercase tracking-wider pb-1 border-b border-slate-200/60">
+                                    <i data-lucide="briefcase" class="w-3.5 h-3.5 text-japan-600"></i>
+                                    <span>Jalur Karir Reguler</span>
+                                </div>
+
+                                <a href="{{ route('home') }}#program" class="block p-2 rounded-xl hover:bg-white text-slate-800 transition">
+                                    <p class="text-xs font-bold text-slate-900">Tokutei Ginou (SSW)</p>
+                                    <p class="text-[10px] text-slate-500 mt-0.5 leading-tight">Kaigo, Manufaktur, Makanan & Konstruksi</p>
+                                </a>
+
+                                <a href="{{ route('home') }}#program" class="block p-2 rounded-xl hover:bg-white text-slate-800 transition">
+                                    <p class="text-xs font-bold text-slate-900">Ginou Jisshusei (Magang)</p>
+                                    <p class="text-[10px] text-slate-500 mt-0.5 leading-tight">Praktik kerja resmi 3 tahun di Jepang</p>
+                                </a>
+
+                                <a href="{{ route('home') }}#program" class="block p-2 rounded-xl hover:bg-white text-slate-800 transition">
+                                    <p class="text-xs font-bold text-slate-900">Engineer & Kursus Bahasa</p>
+                                    <p class="text-[10px] text-slate-500 mt-0.5 leading-tight">Lulusan D3/S1 & intensif N5, N4, N3</p>
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
                 
-                <a href="{{ route('home') }}#kalkulator" class="text-sm font-bold text-slate-700 hover:text-japan-600 transition whitespace-nowrap py-1">
+                <a href="{{ route('home') }}#kalkulator" class="text-xs xl:text-sm font-bold text-slate-700 hover:text-japan-600 transition whitespace-nowrap py-1">
                     Simulasi Gaji
                 </a>
                 
-                <a href="{{ route('articles.index') }}" class="text-sm font-bold text-slate-700 hover:text-japan-600 transition whitespace-nowrap py-1">
+                <a href="{{ route('articles.index') }}" class="text-xs xl:text-sm font-bold text-slate-700 hover:text-japan-600 transition whitespace-nowrap py-1">
                     Artikel & Berita
                 </a>
 
@@ -56,10 +121,10 @@
                 <div class="relative group">
                     <button 
                         type="button" 
-                        class="flex items-center gap-1.5 text-sm font-bold text-slate-700 group-hover:text-japan-600 transition whitespace-nowrap py-1"
+                        class="flex items-center gap-1.5 text-xs xl:text-sm font-bold text-slate-700 group-hover:text-japan-600 transition whitespace-nowrap py-1"
                     >
                         <span>Lainnya</span>
-                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-hover:text-japan-600 group-hover:rotate-180 transition-transform duration-200"></i>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 group-hover:text-japan-600 group-hover:rotate-180 transition-transform duration-200"></i>
                     </button>
 
                     <!-- Dropdown Box -->
@@ -105,19 +170,19 @@
                                 </div>
                             </a>
 
-                            <!-- Program Pemerintah & Galeri Kampus Highlight -->
-                            <a href="{{ route('home') }}#kemitraan" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 transition">
-                                <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
-                                    <i data-lucide="award" class="w-4 h-4"></i>
+                            <!-- Tes Minat Karir -->
+                            <button type="button" onclick="openModal('quizModal')" class="w-full flex items-center gap-3 p-2.5 rounded-2xl hover:bg-amber-50 text-slate-700 hover:text-amber-900 transition text-left">
+                                <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
+                                    <i data-lucide="compass" class="w-4 h-4"></i>
                                 </div>
                                 <div>
                                     <p class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                                        <span>Program Pemerintah & MoU</span>
-                                        <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[9px] font-black uppercase">SMILE & SMK</span>
+                                        <span>Tes Minat & Karir</span>
+                                        <span class="px-1.5 py-0.5 rounded bg-amber-200 text-amber-900 text-[9px] font-black uppercase">Quiz</span>
                                     </p>
-                                    <p class="text-[11px] text-slate-400">Kerjasama Poltekkes, STIKes & Bursa Kerja SMK</p>
+                                    <p class="text-[11px] text-slate-400">Rekomendasi program sesuai potensi Anda</p>
                                 </div>
-                            </a>
+                            </button>
 
                             <!-- Kemitraan SMK & Afiliasi -->
                             <a href="{{ route('affiliates.public.register') }}" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 transition">
@@ -165,16 +230,6 @@
                                 </div>
                             </a>
 
-                            <a href="{{ route('home') }}#tentang" class="flex items-center gap-3 p-2 rounded-xl hover:bg-red-50 text-slate-700 hover:text-japan-700 transition">
-                                <div class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center">
-                                    <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
-                                </div>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-900">Tentang & Legalitas SO</p>
-                                    <p class="text-[10px] text-slate-400">Akreditasi Kemenaker RI</p>
-                                </div>
-                            </a>
-
                             <a href="{{ route('home') }}#faq" class="flex items-center gap-3 p-2 rounded-xl hover:bg-red-50 text-slate-700 hover:text-japan-700 transition">
                                 <div class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center">
                                     <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
@@ -190,37 +245,37 @@
                 </div>
             </nav>
 
-            <!-- Actions (Right - Aligned & Distinct) -->
-            <div class="flex items-center gap-3 flex-shrink-0">
+            <!-- Actions (Right - Clean, Fully Visible & Never Cut Off) -->
+            <div class="flex items-center gap-2 sm:gap-2.5 xl:gap-3 flex-shrink-0">
                 
-                <!-- Tes Minat Quiz Button (Desktop) -->
+                <!-- Tes Minat Quiz Button (Shown on 2xl screens) -->
                 <button 
                     type="button" 
                     onclick="openModal('quizModal')" 
-                    class="hidden xl:inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition shadow-xs whitespace-nowrap"
+                    class="hidden 2xl:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition shadow-2xs whitespace-nowrap"
                     title="Cek program yang cocok untuk Anda"
                 >
-                    <i data-lucide="compass" class="w-4 h-4 text-amber-600"></i>
+                    <i data-lucide="compass" class="w-3.5 h-3.5 text-amber-600"></i>
                     <span>Tes Minat</span>
                 </button>
 
-                <!-- Portal Staf / Login Admin (Desktop) -->
+                <!-- Portal Staf / Login Admin: Sleek Icon+Text on xl, Icon-only on sm/md/lg -->
                 <a 
                     href="{{ route('admin.login') }}" 
-                    class="hidden sm:inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition whitespace-nowrap"
+                    class="hidden sm:inline-flex items-center gap-1.5 px-2.5 xl:px-3 py-2 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200/80 transition whitespace-nowrap"
                     title="Login Portal Staf & Pengajar"
                 >
-                    <i data-lucide="lock" class="w-4 h-4 text-japan-600"></i>
-                    <span>Portal Staf</span>
+                    <i data-lucide="lock" class="w-3.5 h-3.5 text-japan-600"></i>
+                    <span class="hidden xl:inline">Portal Staf</span>
                 </a>
 
-                <!-- CTA Button -->
+                <!-- CTA Button (Always 100% visible with sparkling icon) -->
                 <button 
                     type="button"
                     onclick="openModal('consultationModal')" 
-                    class="btn-red-primary px-5 py-2.5 rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 shadow-md shadow-red-600/20 whitespace-nowrap"
+                    class="btn-red-primary px-3.5 sm:px-4 xl:px-5 py-2 sm:py-2.5 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 sm:gap-2 shadow-md shadow-red-600/25 whitespace-nowrap flex-shrink-0"
                 >
-                    <i data-lucide="sparkles" class="w-4 h-4 text-amber-200"></i>
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-200"></i>
                     <span>Konsultasi Gratis</span>
                 </button>
 
