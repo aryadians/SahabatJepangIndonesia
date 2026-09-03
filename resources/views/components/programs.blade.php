@@ -51,6 +51,16 @@
                             {{ $program['subtitle'] }}
                         </p>
 
+                        @if(str_contains($program['title'], 'Tokutei Ginou') || str_contains($program['title'], 'SSW'))
+                            <div class="mb-4 p-3 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-start gap-2.5">
+                                <i data-lucide="award" class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5"></i>
+                                <div>
+                                    <span class="text-[11px] font-black uppercase text-emerald-900 tracking-wider block">Jalur Beasiswa Kemenkes RI (100% Gratis)</span>
+                                    <p class="text-[11px] text-emerald-700 leading-snug">Kerjasama MoU Poltekkes & STIKes se-Indonesia. Pelatihan & penempatan Kaisha Kaigo gratis (Sukses 4 gelombang).</p>
+                                </div>
+                            </div>
+                        @endif
+
                         <!-- Salary & Duration Card Box -->
                         <div class="p-4 rounded-2xl bg-gradient-to-r from-red-50 via-white to-red-50/50 border border-red-100/80 mb-5">
                             <div class="grid grid-cols-2 gap-3">

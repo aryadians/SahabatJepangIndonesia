@@ -163,6 +163,110 @@
                 </div>
             </div>
 
+        <!-- Highlight Spesial: MoU Poltekkes & STIKes Se-Indonesia & Program Kaigo Kemenkes 100% Gratis -->
+        <div class="rounded-3xl bg-gradient-to-br from-slate-900 via-japan-950 to-slate-900 text-white p-6 sm:p-10 border-2 border-red-500/40 shadow-2xl relative overflow-hidden space-y-8">
+            
+            <!-- Ambient Japanese Pattern Background -->
+            <div class="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-red-600/20 blur-[90px] pointer-events-none"></div>
+            <div class="absolute top-0 right-10 text-9xl font-black text-white/[0.03] select-none font-japanese pointer-events-none">
+                介護
+            </div>
+
+            <!-- Header Showcase -->
+            <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                <div class="space-y-3 max-w-2xl">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-red-600 text-white text-[11px] font-black uppercase tracking-wider shadow-md">
+                        <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                        <span>Program Pemerintah Kemenkes RI • 100% GRATIS</span>
+                    </div>
+                    <h3 class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white leading-tight">
+                        MoU Poltekkes & STIKes Se-Indonesia <br class="hidden sm:inline">
+                        <span class="text-red-400">Program Kaigo Gratis Kemenkes (4 Gelombang Sukses)</span>
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                        LPK Sahabat Jepang Indonesia telah resmi menandatangani <b>Nota Kesepahaman (MoU)</b> dengan berbagai Poltekkes Kemenkes dan STIKes di seluruh Indonesia. Kami rutin menyelenggarakan <b>Bursa Kerja Khusus & Campus Recruitment</b> langsung di kampus kesehatan, serta telah sukses memberangkatkan <b>4 Gelombang</b> tenaga perawat (Kaigo) dengan pendanaan penuh dari <b>Kementerian Kesehatan Republik Indonesia</b>.
+                    </p>
+                </div>
+
+                <!-- Action Button -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto flex-shrink-0">
+                    <a 
+                        href="{{ route('brochure.index', ['program' => 'Tokutei Ginou (SSW)']) }}" 
+                        class="btn-red-primary px-6 py-3.5 rounded-2xl text-xs sm:text-sm font-black shadow-lg shadow-red-600/30 flex items-center justify-center gap-2"
+                    >
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        <span>Unduh Brosur Jalur Kemenkes</span>
+                    </a>
+                    <button 
+                        type="button" 
+                        onclick="openModal('consultationModal'); document.getElementById('consultProgramSelect').value = 'Tokutei Ginou (SSW)';" 
+                        class="px-5 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 border border-white/20"
+                    >
+                        <i data-lucide="message-circle" class="w-4 h-4 text-emerald-400"></i>
+                        <span>Konsultasi Jalur Kampus</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4 Highlight KPI Badges -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 relative z-10 pt-2 border-t border-white/10">
+                
+                <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+                    <p class="text-[10px] font-bold text-red-400 uppercase tracking-wider">Rekam Jejak</p>
+                    <p class="text-2xl sm:text-3xl font-black text-white mt-1">4 Gelombang</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Program Kemenkes sukses tuntas</p>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
+                    <p class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Biaya Pelatihan</p>
+                    <p class="text-2xl sm:text-3xl font-black text-emerald-400 mt-1">100% GRATIS</p>
+                    <p class="text-[11px] text-emerald-200/80 mt-0.5">Dibiayai penuh Kemenkes RI</p>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+                    <p class="text-[10px] font-bold text-blue-400 uppercase tracking-wider">Jejaring Kampus</p>
+                    <p class="text-xl sm:text-2xl font-black text-white mt-1">MoU Nasional</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Poltekkes & STIKes se-Indonesia</p>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-white/5 border border-white/10">
+                    <p class="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Aktivitas Kampus</p>
+                    <p class="text-xl sm:text-2xl font-black text-white mt-1">Bursa Kerja</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Campus Hiring langsung di kampus</p>
+                </div>
+
+            </div>
+
+            <!-- Partnered Health Universities / Poltekkes Pills -->
+            <div class="relative z-10 space-y-2.5 pt-2">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <i data-lucide="building-2" class="w-4 h-4 text-red-400"></i>
+                    <span>Sebaran Mitra Poltekkes Kemenkes & STIKes Kesehatan:</span>
+                </p>
+                <div class="flex flex-wrap gap-2">
+                    @php
+                        $healthInstitutions = [
+                            'Poltekkes Kemenkes Jakarta',
+                            'Poltekkes Kemenkes Semarang',
+                            'Poltekkes Kemenkes Surabaya',
+                            'Poltekkes Kemenkes Bandung',
+                            'Poltekkes Kemenkes Yogyakarta',
+                            'Poltekkes Kemenkes Medan',
+                            'Poltekkes Kemenkes Makassar',
+                            'Poltekkes Kemenkes Surakarta',
+                            'Poltekkes Kemenkes Malang',
+                            'STIKes Mitra se-Indonesia',
+                        ];
+                    @endphp
+                    @foreach($healthInstitutions as $inst)
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 border border-white/15 text-white text-xs font-semibold hover:bg-white/20 transition">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            <span>{{ $inst }}</span>
+                        </span>
+                    @endforeach
+                </div>
+            </div>
+
         </div>
 
         <!-- Kaisha & Kumiai Partners Running Marquee -->
