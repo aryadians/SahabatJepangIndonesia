@@ -60,6 +60,9 @@ Route::get('/brosur', [BrochureController::class, 'index'])->name('brochure.inde
 Route::post('/brosur/download', [BrochureController::class, 'download'])->name('brochure.download')->middleware('throttle:10,1');
 Route::get('/brosur/file/{id}', [BrochureController::class, 'downloadFile'])->name('brochure.download.file');
 Route::get('/biaya', fn() => redirect()->route('brochure.index'));
+Route::get('/simulasi-gaji', fn() => redirect('/#kalkulator'));
+Route::get('/remitansi', fn() => redirect('/#kalkulator'));
+Route::get('/nenkin', fn() => redirect('/#kalkulator'));
 
 use App\Http\Controllers\StudentPortalController;
 use App\Http\Controllers\DocumentVerificationController;

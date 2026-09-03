@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initStatsCounter();
     initNavbarScroll();
     initSalaryCalculator();
+    initRemittanceCalculator();
     initModals();
     initLazyLoading();
     initConsultationForm();
@@ -351,6 +352,85 @@ function initSalaryCalculator() {
 
     // Initial calculation
     calculate();
+}
+
+/* ==========================================================================
+   5.5. INTERACTIVE REMITTANCE & NENKIN CLAIM CALCULATOR
+   ========================================================================== */
+function initRemittanceCalculator() {
+    const remitAmountRange = document.getElementById('remitYenAmount');
+    const remitDisplay = document.getElementById('remitYenDisplay');
+    const remitProviderSelect = document.getElementById('remitProvider');
+    const remitRateInput = document.getElementById('remitRate');
+    const contractDurationRadios = document.querySelectorAll('input[name="contractDuration"]');
+
+    const netMonthlyIdrEl = document.getElementById('remitNetMonthlyIdr');
+    const calcTextEl = document.getElementById('remitNetMonthlyCalcText');
+    const total1YearEl = document.getElementById('remitTotal1YearIdr');
+    const totalContractEl = document.getElementById('remitTotalContractIdr');
+    const contractYearsDisplay = document.getElementById('remitContractYearsDisplay');
+    const nenkinEstimateEl = document.getElementById('remitNenkinEstimate');
+
+    if (!remitAmountRange || !netMonthlyIdrEl) return;
+
+    function calculateRemittance() {
+        const sendYen = parseInt(remitAmountRange.value, 10) || 100000;
+        const providerFee = parseInt(remitProviderSelect ? remitProviderSelect.value : 1000, 10) || 1000;
+        const rate = parseFloat(remitRateInput ? remitRateInput.value : 106.5) || 106.5;
+
+        let contractYears = 3;
+        contractDurationRadios.forEach(r => {
+            if (r.checked) contractYears = parseInt(r.value, 10) || 3;
+        });
+
+        // Update Slider Display
+        if (remitDisplay) {
+            remitDisplay.textContent = `¥ ${sendYen.toLocaleString('id-ID')} / bln`;
+        }
+
+        // Net Received = (sendYen - providerFee) * rate
+        const netYen = Math.max(0, sendYen - providerFee);
+        const netIdrMonthly = Math.round(netYen * rate);
+
+        const total1YearIdr = netIdrMonthly * 12;
+        const totalContractIdr = netIdrMonthly * (contractYears * 12);
+
+        // Format outputs
+        netMonthlyIdrEl.textContent = `Rp ${netIdrMonthly.toLocaleString('id-ID')}`;
+        if (calcTextEl) {
+            calcTextEl.textContent = `(¥ ${sendYen.toLocaleString('id-ID')} - ¥ ${providerFee.toLocaleString('id-ID')} biaya kirim) × Rp ${rate.toLocaleString('id-ID')}`;
+        }
+
+        if (total1YearEl) {
+            total1YearEl.textContent = `Rp ${total1YearIdr.toLocaleString('id-ID')}`;
+        }
+        if (totalContractEl) {
+            totalContractEl.textContent = `Rp ${totalContractIdr.toLocaleString('id-ID')}`;
+        }
+        if (contractYearsDisplay) {
+            contractYearsDisplay.textContent = contractYears;
+        }
+
+        // Nenkin Estimation
+        if (nenkinEstimateEl) {
+            if (contractYears === 5) {
+                const minNenkin = Math.round(750000 * rate);
+                const maxNenkin = Math.round(950000 * rate);
+                nenkinEstimateEl.textContent = `± Rp ${Math.round(minNenkin / 1000000)} Jt - Rp ${Math.round(maxNenkin / 1000000)} Juta`;
+            } else {
+                const minNenkin = Math.round(450000 * rate);
+                const maxNenkin = Math.round(550000 * rate);
+                nenkinEstimateEl.textContent = `± Rp ${Math.round(minNenkin / 1000000)} Jt - Rp ${Math.round(maxNenkin / 1000000)} Juta`;
+            }
+        }
+    }
+
+    remitAmountRange.addEventListener('input', calculateRemittance);
+    if (remitProviderSelect) remitProviderSelect.addEventListener('change', calculateRemittance);
+    if (remitRateInput) remitRateInput.addEventListener('input', calculateRemittance);
+    contractDurationRadios.forEach(r => r.addEventListener('change', calculateRemittance));
+
+    calculateRemittance();
 }
 
 /* ==========================================================================

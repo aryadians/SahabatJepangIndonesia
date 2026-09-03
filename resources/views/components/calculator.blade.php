@@ -39,6 +39,14 @@
                     >
                         📋 Transparansi Biaya & Dana Talangan
                     </button>
+                    <button 
+                        type="button" 
+                        id="tabRemittanceBtn" 
+                        onclick="switchCalcTab('remittance')" 
+                        class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition"
+                    >
+                        💴 Remitansi & Klaim Nenkin
+                    </button>
                 </div>
             </div>
         </div>
@@ -268,6 +276,174 @@
             </div>
         </div>
 
+        <!-- TAB 3: REMITTANCE & NENKIN CLAIM CALCULATOR -->
+        <div id="remittanceTabContent" class="hidden max-w-5xl mx-auto rounded-3xl bg-gradient-to-br from-white via-emerald-50/20 to-white border border-emerald-200/80 shadow-2xl p-6 sm:p-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                
+                <!-- Left: Remittance Controls -->
+                <div class="lg:col-span-6 space-y-6">
+                    <div class="space-y-1">
+                        <span class="text-[10px] font-black uppercase tracking-wider text-emerald-600 flex items-center gap-1.5 font-mono">
+                            <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                            <span>Kirim Uang ke Indonesia</span>
+                        </span>
+                        <h4 class="text-xl font-black text-slate-900 tracking-tight">Simulasi Remitansi & Devisa Keluarga</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed">Hitung berapa Rupiah bersih yang diterima orang tua di kampung halaman setiap bulan.</p>
+                    </div>
+
+                    <!-- Nominal Kirim Yen Slider -->
+                    <div class="space-y-3 p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
+                        <div class="flex items-center justify-between">
+                            <label for="remitYenAmount" class="text-xs sm:text-sm font-bold text-slate-800">
+                                Uang yang Ingin Dikirim per Bulan
+                            </label>
+                            <span id="remitYenDisplay" class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black font-mono">
+                                ¥ 100.000 / bln
+                            </span>
+                        </div>
+                        <input 
+                            type="range" 
+                            id="remitYenAmount" 
+                            min="30000" 
+                            max="200000" 
+                            step="5000" 
+                            value="100000" 
+                            class="w-full h-2 bg-slate-200 rounded-lg cursor-pointer accent-emerald-600"
+                        >
+                        <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                            <span>¥ 30.000</span>
+                            <span>¥ 100.000 (Rata-rata)</span>
+                            <span>¥ 200.000</span>
+                        </div>
+                    </div>
+
+                    <!-- Provider & Exchange Rate Row -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label for="remitProvider" class="block text-xs font-bold text-slate-800">
+                                Layanan Remitansi Resmi
+                            </label>
+                            <select id="remitProvider" class="w-full px-3 py-2.5 rounded-xl bg-white text-slate-800 text-xs font-semibold focus:ring-2 focus:ring-emerald-500 border border-slate-200">
+                                <option value="1000" selected>BNI Tokyo (Biaya: ¥1.000)</option>
+                                <option value="1000">Bank Mandiri Tokyo (Biaya: ¥1.000)</option>
+                                <option value="1200">BCA Remittance (Biaya: ¥1.200)</option>
+                                <option value="880">Smiles / Brastel (Biaya: ¥880)</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label for="remitRate" class="block text-xs font-bold text-slate-800">
+                                Kurs Acuan (1 JPY ke IDR)
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
+                                <input 
+                                    type="number" 
+                                    id="remitRate" 
+                                    step="0.5" 
+                                    min="80" 
+                                    max="200" 
+                                    value="106.5" 
+                                    class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white text-slate-800 text-xs font-bold font-mono focus:ring-2 focus:ring-emerald-500 border border-slate-200"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contract Duration Switcher -->
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-slate-800">Durasi Kontrak Kerja di Jepang:</label>
+                        <div class="grid grid-cols-2 gap-3 text-xs font-bold">
+                            <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 bg-white cursor-pointer hover:border-emerald-500 transition">
+                                <input type="radio" name="contractDuration" value="3" checked class="accent-emerald-600">
+                                <span>3 Tahun (Magang / SSW)</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 bg-white cursor-pointer hover:border-emerald-500 transition">
+                                <input type="radio" name="contractDuration" value="5" class="accent-emerald-600">
+                                <span>5 Tahun (SSW Penuh)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-start gap-2.5">
+                        <i data-lucide="shield-check" class="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5"></i>
+                        <span>Transfer remitansi legal langsung masuk ke buku tabungan orang tua di Indonesia (BCA, BRI, Mandiri, BNI, BSI) tanpa potongan liar.</span>
+                    </div>
+
+                </div>
+
+                <!-- Right: Result Card (Zen Dark Luxury) -->
+                <div class="lg:col-span-6 rounded-3xl bg-slate-900 text-white p-6 sm:p-8 shadow-xl relative overflow-hidden border border-slate-800 space-y-6">
+                    
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                        <div>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Hasil Remitansi Bersih</span>
+                            <h3 class="text-lg font-extrabold text-white">Diterima Keluarga di RI</h3>
+                        </div>
+                        <span class="font-japanese text-sm font-bold text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-800/50">
+                            海外送金
+                        </span>
+                    </div>
+
+                    <!-- Main Highlight: Net Received per Month -->
+                    <div class="space-y-1">
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                            <i data-lucide="check-circle" class="w-4 h-4"></i>
+                            <span>Diterima Orang Tua Tiap Bulan</span>
+                        </span>
+                        <h2 id="remitNetMonthlyIdr" class="text-3xl sm:text-4xl font-black text-emerald-400 font-mono">
+                            Rp 10.543.500
+                        </h2>
+                        <p id="remitNetMonthlyCalcText" class="text-xs text-slate-400">
+                            (¥ 100.000 - ¥ 1.000 biaya kirim) × Rp 106,5
+                        </p>
+                    </div>
+
+                    <!-- Accumulated Savings Over Contract -->
+                    <div class="p-4 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-3">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-slate-400">Total Terkirim 1 Tahun (12 bln)</span>
+                            <span id="remitTotal1YearIdr" class="font-mono font-bold text-white">Rp 126.522.000</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs pt-2 border-t border-slate-700/50">
+                            <span class="text-emerald-400 font-bold">Total Terkirim Kontrak (<span id="remitContractYearsDisplay">3</span> Tahun)</span>
+                            <span id="remitTotalContractIdr" class="font-mono font-black text-sm text-emerald-400">Rp 379.566.000</span>
+                        </div>
+                    </div>
+
+                    <!-- Nenkin Lump-sum Claim Box (Highlight Emas) -->
+                    <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-950/40 via-slate-900 to-amber-950/20 border border-amber-500/30 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-amber-400 flex items-center gap-1">
+                                <i data-lucide="gift" class="w-3.5 h-3.5"></i>
+                                <span>Klaim Uang Pensiun Jepang (Nenkin Refund)</span>
+                            </span>
+                            <span class="px-2 py-0.5 rounded text-[9px] font-black bg-amber-400/20 text-amber-300 font-mono">脱退一時金</span>
+                        </div>
+                        <div class="flex items-baseline justify-between">
+                            <span class="text-xs text-slate-300">Estimasi Cair Saat Pulang ke RI:</span>
+                            <span id="remitNenkinEstimate" class="text-base sm:text-lg font-black text-amber-400 font-mono">
+                                ± Rp 45.000.000 - Rp 55.000.000
+                            </span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 leading-tight">
+                            *100% uang asuransi pensiun yang Anda bayar di Jepang akan dicairkan kembali ke rekening Indonesia Anda dengan pendampingan resmi LPK SJI.
+                        </p>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="pt-2">
+                        <button onclick="openModal('consultationModal')" class="w-full btn-red-primary py-3 rounded-xl font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-red-900/40">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i>
+                            <span>Daftar Sekarang & Mulai Karir di Jepang</span>
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
     </div>
 </section>
 
@@ -275,21 +451,39 @@
     function switchCalcTab(tab) {
         const salaryContent = document.getElementById('salaryTabContent');
         const costContent = document.getElementById('costTabContent');
+        const remitContent = document.getElementById('remittanceTabContent');
+        
         const salaryBtn = document.getElementById('tabSalaryBtn');
         const costBtn = document.getElementById('tabCostBtn');
+        const remitBtn = document.getElementById('tabRemittanceBtn');
+
+        const activeClass = 'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-white text-japan-700 shadow-sm transition';
+        const inactiveClass = 'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition';
 
         if (tab === 'salary') {
             salaryContent.classList.remove('hidden');
             costContent.classList.add('hidden');
+            if (remitContent) remitContent.classList.add('hidden');
             
-            salaryBtn.className = 'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-white text-japan-700 shadow-sm transition';
-            costBtn.className = 'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition';
-        } else {
+            salaryBtn.className = activeClass;
+            costBtn.className = inactiveClass;
+            if (remitBtn) remitBtn.className = inactiveClass;
+        } else if (tab === 'cost') {
             salaryContent.classList.add('hidden');
             costContent.classList.remove('hidden');
+            if (remitContent) remitContent.classList.add('hidden');
 
-            costBtn.className = 'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-white text-japan-700 shadow-sm transition';
-            salaryBtn.className = 'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition';
+            costBtn.className = activeClass;
+            salaryBtn.className = inactiveClass;
+            if (remitBtn) remitBtn.className = inactiveClass;
+        } else if (tab === 'remittance') {
+            salaryContent.classList.add('hidden');
+            costContent.classList.add('hidden');
+            if (remitContent) remitContent.classList.remove('hidden');
+
+            if (remitBtn) remitBtn.className = activeClass;
+            salaryBtn.className = inactiveClass;
+            costBtn.className = inactiveClass;
         }
     }
 </script>
