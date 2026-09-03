@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <em>Izin Resmi Kementerian Ketenagakerjaan RI: <strong>KEP.224/LATTAS/XII/2023</strong></em>
+  <em>Izin Resmi Kementerian Ketenagakerjaan RI: <strong>KEP.224/LATTAS/XII/2023</strong> • Akreditasi Lembaga: <strong>LA-LPK A</strong></em>
 </p>
 
 <p align="center">
@@ -20,8 +20,10 @@
   <img src="https://img.shields.io/badge/PHP-%5E8.2-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP 8.2">
   <img src="https://img.shields.io/badge/Tailwind_CSS-3.4+-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
   <img src="https://img.shields.io/badge/Database-MySQL%20%2F%20SQLite-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL / SQLite">
-  <img src="https://img.shields.io/badge/Tests-19%20Passed%20%7C%20118%20Assertions-success?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Tests 100% Passing">
+  <img src="https://img.shields.io/badge/PWA-Ready%20%7C%20Offline%20Cache-8A2BE2?style=for-the-badge&logo=pwa&logoColor=white" alt="PWA Ready">
+  <img src="https://img.shields.io/badge/Tests-29%20Passed%20%7C%20156%20Assertions-success?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Tests 100% Passing">
   <img src="https://img.shields.io/badge/Design-Japanese_Zen_Luxury-DC2626?style=for-the-badge&logo=affinitydesigner&logoColor=white" alt="Japanese Zen Luxury">
+  <img src="https://img.shields.io/badge/SEO-OpenGraph%20%7C%20WhatsApp%20Card-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" alt="WhatsApp Card Optimized">
   <img src="https://img.shields.io/badge/License-MIT-F59E0B?style=for-the-badge" alt="License MIT">
 </p>
 
@@ -32,14 +34,19 @@
 1. [Tentang Platform](#-tentang-platform)
 2. [Fitur Unggulan Guest (Portal Publik)](#-fitur-unggulan-guest-portal-publik)
 3. [Fitur Lengkap Panel Admin (ERP Backoffice)](#-fitur-lengkap-panel-admin-erp-backoffice)
-4. [Integrasi Program Unggulan Pemerintah RI](#-integrasi-program-unggulan-pemerintah-ri)
-5. [Generator Kwitansi & Invoice Resmi (Hanko 判子)](#-generator-kwitansi--invoice-resmi-hanko-)
-6. [Arsitektur Real-Time Polling & Sinkronisasi Data](#-arsitektur-real-time-polling--sinkronisasi-data)
-7. [Teknologi & Dependensi (Tech Stack)](#-teknologi--dependensi-tech-stack)
-8. [Panduan Instalasi & Menjalankan Lokal](#-panduan-instalasi--menjalankan-lokal)
-9. [Uji Otomatis (Automated Testing)](#-uji-otomatis-automated-testing)
-10. [Struktur Direktori Proyek](#-struktur-direktori-proyek)
-11. [Kepatuhan Hukum & Regulasi RI - Jepang](#-kepatuhan-hukum--regulasi-ri---jepang)
+4. [📱 Progressive Web App (PWA & Offline Mode)](#-progressive-web-app-pwa--offline-mode)
+5. [🔍 Portal Cek Status Mandiri Siswa & Bukti Pembayaran](#-portal-cek-status-mandiri-siswa--bukti-pembayaran)
+6. [🛡️ Sistem Verifikasi Publik QR Code Dokumen (Anti-Fraud)](#-sistem-verifikasi-publik-qr-code-dokumen-anti-fraud)
+7. [💴 Kalkulator Remitansi Devisa & Klaim Nenkin Refund](#-kalkulator-remitansi-devisa--klaim-nenkin-refund)
+8. [🤝 Integrasi Program Unggulan Pemerintah RI (MoU Kampus)](#-integrasi-program-unggulan-pemerintah-ri-mou-kampus)
+9. [🧾 Generator Kwitansi & Invoice Berstempel Hanko (判子)](#-generator-kwitansi--invoice-berstempel-hanko-)
+10. [🌐 Optimalisasi SEO, WhatsApp Rich Share & Dynamic Sitemap](#-optimalisasi-seo-whatsapp-rich-share--dynamic-sitemap)
+11. [⚡ Arsitektur Real-Time Polling & Sinkronisasi Data](#-arsitektur-real-time-polling--sinkronisasi-data)
+12. [🛠️ Teknologi & Dependensi (Tech Stack)](#-teknologi--dependensi-tech-stack)
+13. [🚀 Panduan Instalasi & Menjalankan Lokal](#-panduan-instalasi--menjalankan-lokal)
+14. [🧪 Uji Otomatis (Automated Testing Suite)](#-uji-otomatis-automated-testing-suite)
+15. [📁 Struktur Direktori Proyek](#-struktur-direktori-proyek)
+16. [🔒 Kepatuhan Hukum & Regulasi RI - Jepang](#-kepatuhan-hukum--regulasi-ri---jepang)
 
 ---
 
@@ -49,7 +56,9 @@
 
 Website ini menggabungkan:
 1. **Front-Facing Web Portal berestetika *Japanese Zen Luxury***: Tampilan mewah, bersih, responsif, dan kaya interaksi (animasi modern, tipografi seimbang, skema warna *Japan Red `#DC2626`*, *Sakura `#FFF1F2`*, dan *Slate `#0B0F19`*).
-2. **Backoffice ERP Admin yang Komprehensif**: Mengatur manajemen siswa, kurikulum 6 bulan, penagihan & pembayaran transparan, pencocokan wawancara kerja (*Job Matching Kaisha*), galeri MoU kampus kesehatan se-Indonesia, hingga unduhan brosur terverifikasi.
+2. **Backoffice ERP Admin yang Komprehensif**: Mengatur siklus manajemen siswa, kurikulum bahasa 6 bulan, penagihan & pembayaran transparan, pencocokan wawancara kerja (*Job Matching Kaisha*), galeri MoU kampus kesehatan se-Indonesia, hingga unduhan brosur terverifikasi.
+3. **PWA Mobile First**: Dapat dipasang layaknya aplikasi native di layar HP Android/iOS tanpa perlu membuka browser.
+4. **Ekosistem Verifikasi & Dokumen Digital**: Kwitansi dan invoice resmi dilengkapi stempel merah digital (*Hanko*) dan QR Code yang dapat diverifikasi keabsahannya secara instan.
 
 ---
 
@@ -57,16 +66,19 @@ Website ini menggabungkan:
 
 | Fitur | Deskripsi | Halaman / Rute |
 | :--- | :--- | :--- |
-| **⛩️ Navbar Zen Minimalis** | Navigasi simetris, dropdown terstruktur rapi (Program Karir, Program Pemerintah, Biaya, Brosur, CBT), dengan CTA utama *✨ Konsultasi Gratis*. | `components/navbar.blade.php` |
+| **⛩️ Navbar Zen Minimalis** | Navigasi simetris, dropdown terstruktur rapi (Program Karir, Program Pemerintah, Biaya, Brosur, CBT, Portal Siswa), dengan CTA utama *✨ Konsultasi Gratis*. | `components/navbar.blade.php` |
+| **📱 Progressive Web App (PWA)** | Tombol instalasi instan di layar utama HP dengan icon resolusi tinggi, splash screen, dan kemampuan offline caching. | Banner & Menu Mobile |
+| **🔍 Portal Cek Status Siswa** | Siswa & orang tua dapat melacak progres berkas (6 tahapan Road to Japan), status MCU, jadwal wawancara, serta unduh kwitansi mandiri menggunakan NIS/No HP. | `/cek-status` |
+| **🛡️ Verifikasi Dokumen QR** | Pindai QR code pada kwitansi/invoice fisik untuk melihat sertifikat keabsahan digital resmi berizin SO Kemnaker RI. | `/verifikasi/{code}` |
+| **💴 Kalkulator Remitansi & Nenkin** | Simulasi pengiriman uang Yen ke Rupiah (BNI Tokyo, Mandiri, BCA, Smiles) dan perhitungan uang pensiun Nenkin yang dapat dicairkan saat pulang (± Rp 45jt - Rp 95jt). | `/#kalkulator` & `/remitansi` |
 | **💼 Program Karir Jepang** | Informasi silabus lengkap untuk jalur **Tokutei Ginou (SSW)**, **Ginou Jisshusei (Magang 3 Tahun)**, **Engineer & IT Pro**, serta **Kursus Intensif N5–N3**. | `/#program` |
 | **🏛️ Program Pemerintah MoU** | Showcase kerja sama resmi dengan Kemenkes RI (**SMILE Project**) dan Kemendikbudristek (**SMK Go Japan**) lengkap dengan rekam jejak **4 Gelombang Keberangkatan**. | `/#kemitraan` |
 | **🎠 Carousel Kunjungan Kampus** | Galeri foto dinamis dokumentasi MoU, seminar, dan bursa kerja (*Campus Hiring*) di Poltekkes & STIKes seluruh Indonesia dengan fitur *infinite loop* dan *smart autoplay pause-on-hover*. | `/#kemitraan` |
-| **💰 Kalkulator & Simulasi Gaji** | Simulasi transparansi biaya, penghitungan estimasi gaji bersih di Jepang dalam Yen (¥) dan Rupiah (Rp), simulasi biaya hidup, serta proyeksi tabungan bulanan. | `/#kalkulator` |
-| **📝 Simulasi Ujian JLPT CBT** | Aplikasi simulator Computer-Based Test (CBT) interaktif dengan bank 100 soal bahasa Jepang (Moji, Goi, Bunpou, Dokkai) lengkap dengan skoring otomatis tanpa perlu registrasi. | `/tryout-cbt` |
-| **🗺️ Peta Alumni di 47 Prefektur** | Peta interaktif sebaran alumni LPK SJI yang telah aktif bekerja di prefektur Tokyo, Osaka, Aichi, Kanagawa, Fukuoka, Hokkaido, dll. | `/peta-alumni` |
-| **📥 Katalog Brosur Resmi** | Unduhan brosur kurikulum & biaya resmi 2026. Calon siswa dapat mengisi kontak singkat untuk membuka kunci file asli (PDF) dengan penghitung unduhan *real-time*. | `/brosur` |
-| **🤝 Kemitraan SMK & Guru BK** | Portal pendaftaran afiliasi khusus guru BKK SMK dengan perhitungan komisi referral transparan. | `/afiliasi/daftar` |
-| **💬 Modal Konsultasi Cepat** | Formulir pendaftaran calon siswa dengan integrasi pemilihan program reguler maupun beasiswa pemerintah, auto-redirect ke WhatsApp Konsultan. | Global Pop-up Modal |
+| **💰 Simulasi Gaji & Tabungan** | Transparansi penghitungan gaji kotor, lembur (*zangyou*), potongan pajak, dan proyeksi sisa tabungan bulanan. | `/#kalkulator` |
+| **📝 Simulasi Ujian JLPT CBT** | Aplikasi simulator Computer-Based Test (CBT) interaktif dengan bank 100 soal bahasa Jepang (Moji, Goi, Bunpou, Dokkai) lengkap dengan skoring instan gratis. | `/simulasi-ujian` |
+| **🗺️ Peta Alumni 47 Prefektur** | Peta interaktif sebaran alumni LPK SJI yang telah aktif bekerja di Tokyo, Osaka, Aichi, Kanagawa, Fukuoka, Hokkaido, dll. | `/sebaran-alumni` |
+| **📥 Katalog Brosur Resmi** | Unduhan brosur kurikulum & biaya resmi 2026 dengan penghitung unduhan *real-time* dan highlight beasiswa Kemenkes. | `/brosur` |
+| **🤝 Kemitraan SMK & Guru BK** | Portal pendaftaran kemitraan khusus guru BKK SMK dengan perhitungan komisi referral transparan. | `/mitra-sekolah` |
 
 ---
 
@@ -80,170 +92,202 @@ Panel Admin aman dan dilindungi autentikasi session multi-role:
 2. **Database Siswa & Master Data (`/admin/students`)**:
    - Manajemen siklus hidup siswa (*Pendaftaran -> Pelatihan -> Medical -> Matching User -> Paspor/CoE -> Terbang ke Jepang*).
    - **Filter 2-Tier Cepat**: Filter berdasarkan Program, Angkatan (*Batch*), Status Medikal (*Fit / Unfit*), Status Biaya (*Lunas / Talangan / Cicilan*), serta **Kategori Pendaftaran Khusus (SMILE Project Kemenkes / SMK Go Japan / Reguler)**.
-   - **Dossier Digital Siswa (Rirekisho 履歴書)**: Cetak profil biodata lengkap siswa format Jepang siap serah ke perusahaan penerima (*Kaisha*).
+   - **Tombol Pintas Portal Siswa**: Admin dapat mengklik satu tombol untuk melihat tampilan tracking mandiri siswa.
+   - **Template WhatsApp Pintar**: Kirim rincian biaya, jadwal MCU, jadwal wawancara, kabar CoE terbit, atau tautan portal tracking langsung via WhatsApp ke nomor siswa/orang tua.
    - **Export & Import CSV Massal**: Template CSV standar untuk import ratusan siswa dalam sekali klik.
 3. **Manajemen Jadwal Wawancara Kaisha (`/admin/interviews`)**:
-   - Jadwal temu wawancara kerja daring/luring dengan perwakilan perusahaan Jepang.
+   - Jadwal temu wawancara kerja daring/luring dengan perwakilan perusahaan Jepang (*Kaisha*).
    - Penugasan kandidat siswa, pencatatan nilai wawancara, dan otomatisasi update status siswa menjadi *Lolos User*.
 4. **Manajemen Brosur Resmi (`/admin/brochures`)**:
    - Unggah berkas brosur PDF resmi atau tautan unduhan eksternal.
    - Tentukan badge edisi (*Edisi 2026 / Gratis / Beasiswa*), program studi target, dan lacak statistik jumlah unduhan.
 5. **Manajemen Galeri Kampus & MoU (`/admin/campus-galleries`)**:
    - CRUD dokumentasi kunjungan kampus kesehatan dan bursa kerja.
-   - Fitur upload file gambar atau URL eksternal dengan *live image preview* instan.
-   - Switch tombol aktivasi instan yang langsung tersinkron ke Carousel Beranda.
-6. **Integrasi WhatsApp Blast Template (`/admin/whatsapp`)**:
+   - Fitur upload file gambar dengan *live image preview* instan yang langsung tersinkron ke Carousel Beranda.
+6. **Integrasi WhatsApp Quick Templates**:
    - Template pesan dinamis dengan tag otomatis `{nama}`, `{nis}`, `{program}`, `{sisa_biaya}` untuk follow-up cepat via WhatsApp Web / API.
 
 ---
 
-## 🤝 Integrasi Program Unggulan Pemerintah RI
+## 📱 Progressive Web App (PWA & Offline Mode)
 
-Sistem ini mendukung secara penuh dan membedakan skema penanganan dua program kerja sama strategis pemerintah:
-
-```
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                           PROGRAM STRATEGIS PEMERINTAH                          │
-├────────────────────────────────────────┬────────────────────────────────────────┤
-│ 1. SMILE PROJECT (KEMENKES RI)         │ 2. SMK GO JAPAN (VOKASI)               │
-├────────────────────────────────────────┼────────────────────────────────────────┤
-│ • Khusus alumni Poltekkes & STIKes     │ • Khusus siswa tingkat akhir & alumni  │
-│   jurusan Keperawatan / Kebidanan.     │   SMK jurusan Teknik, Mesin & Otomotif.│
-│ • Rekam Jejak: Sukses 4 Gelombang.     │ • Bekerja sama dengan 45+ jejaring BKK │
-│ • Biaya Pelatihan: 100% GRATIS         │   sekolah vokasi di Indonesia.         │
-│   (Dibiayai negara via Kemenkes).      │ • Fasilitas dana talangan 0% DP kerja  │
-│ • Bidang Kerja: Kaigo (Caregiver).     │   sama perbankan (BNI, Mandiri, BCA).  │
-└────────────────────────────────────────┴────────────────────────────────────────┘
-```
-
-Kedua program ini tersinkronisasi di:
-- **Formulir Konsultasi**: Calon siswa dapat memilih peminatan program beasiswa ini.
-- **Database Siswa Admin**: Ditandai badge khusus warna *emerald* dan *blue*.
-- **Filter Pencarian**: Admin dapat memilah laporan siswa berdasarkan program pemerintah dalam 1 klik.
-- **Kalkulator Biaya**: Menampilkan info bebas biaya pendaftaran dan beasiswa penuh.
+Website ini telah memenuhi standar Progressive Web App (PWA) modern:
+- **`manifest.json`**: Mengatur nama aplikasi (*LPK Sahabat Jepang Indonesia*), tema warna *Japan Red `#DC2626`*, orientasi layar, serta 4 pintasan cepat (*Brosur, Tryout CBT, Peta Alumni, Konsultasi*).
+- **Multi-Size App Icons**: Ikon emblem resmi kanji `友` (Tomodachi) tersedia dalam ukuran `96x96`, `192x192`, `512x512`, dan `maskable` untuk kompatibilitas penuh Android 13+ dan iOS.
+- **Service Worker (`sw.js`)**: Strategi *Network-First with Cache Fallback* yang meng-cache aset inti sehingga aplikasi tetap dapat dibuka saat offline.
+- **Prompt Instalasi Cerdas**: Mendeteksi event `beforeinstallprompt` dan menampilkan banner mengambang elegan di HP, serta panduan khusus iOS Safari (*"Add to Home Screen"*).
 
 ---
 
-## 📑 Generator Kwitansi & Invoice Resmi (Hanko 判子)
+## 🔍 Portal Cek Status Mandiri Siswa & Bukti Pembayaran
 
-Setiap data siswa yang tersimpan di sistem dapat langsung dicetak bukti tagihan atau bukti pembayarannya dengan standar dokumen administrasi Jepang:
+Rute: **[`/cek-status`](http://127.0.0.1:8000/cek-status)**
 
-- **Kwitansi Pembayaran Resmi (`/admin/students/{id}/receipt`)**:
-  - Nomor seri kwitansi otomatis (format: `KW-SJI-YYYYMMDD-XXXX`).
-  - Cap stempel merah resmi Jepang (*Hanko / Inkan 判子*) bertuliskan kanji resmi `友好日本`.
-  - Terbilang nominal otomatis dalam Rupiah.
-  - Barcode verifikasi keabsahan dokumen.
-- **Faktur Tagihan / Invoice Resmi (`/admin/students/{id}/invoice`)**:
-  - Rincian item biaya kursus, modul buku, asrama, asuransi, dan visa.
-  - Rekapitulasi pembayaran: Total Biaya, Jumlah Telah Dibayar, dan Sisa Saldo (*Remaining Balance*).
-  - Instruksi rekening transfer bank resmi atas nama yayasan LPK.
+Fitur self-service yang meringankan beban tim administrasi menjawab pertanyaan berulang:
+1. **Multi-Identitas**: Siswa/wali dapat mencari berdasarkan **NIS**, **NIK KTP**, atau **Nomor WhatsApp**.
+2. **Visual Road to Japan Timeline (6 Tahapan)**:
+   - Tahap 01: Pendaftaran & Seleksi Berkas
+   - Tahap 02: Pelatihan Bahasa & Budaya (JLPT N5/N4 & Kehadiran Kelas)
+   - Tahap 03: Medical Check-Up (MCU Fit/Unfit & Klinik Rekanan)
+   - Tahap 04: Matching Kaisha (Nama Perusahaan Jepang & Prefektur)
+   - Tahap 05: CoE & Visa Kerja Kedutaan Jepang
+   - Tahap 06: Keberangkatan & Tiket Terbang
+3. **Transparansi Finansial**: Rincian total biaya, nominal telah dibayar, dan sisa tagihan.
+4. **Unduh Langsung Dokumen Resmi**:
+   - Cetak Kwitansi Resmi: `/kwitansi/{nis}`
+   - Cetak Invoice Tagihan: `/invoice/{nis}`
+
+---
+
+## 🛡️ Sistem Verifikasi Publik QR Code Dokumen (Anti-Fraud)
+
+Rute: **[`/verifikasi/{code}`](http://127.0.0.1:8000/verifikasi)**
+
+Mencegah pemalsuan kwitansi, invoice, dan sertifikat pelatihan:
+- **QR Code Interaktif pada Dokumen Cetak**: Setiap lembaran kwitansi dan invoice dilengkapi QR Code unik yang terhubung ke `/verifikasi/{nomor_dokumen}`.
+- **Sertifikat Keabsahan Digital**: Saat dipindai kamera HP, sistem menampilkan perisai hijau zamrud *"DOKUMEN RESMI TERVERIFIKASI"* lengkap dengan nomor izin Kemnaker RI, stempel *Hanko*, nama siswa, nomor registrasi, dan nominal yang tercatat resmi di database.
+- **Peringatan Dokumen Palsu**: Jika kode tidak ditemukan, sistem memberikan notifikasi waspada indikasi pemalsuan dan opsi kontak cepat ke admin.
+
+---
+
+## 💴 Kalkulator Remitansi Devisa & Klaim Nenkin Refund
+
+Rute: **[`/#kalkulator`](http://127.0.0.1:8000/#kalkulator)** *(Tab ke-3) & [`/remitansi`](http://127.0.0.1:8000/remitansi)*
+
+Membantu calon siswa dan orang tua memproyeksikan devisa masa depan:
+- **Kalkulator Kirim Uang ke RI**: Menghitung nominal bersih Rupiah yang diterima orang tua setiap bulan setelah dipotong biaya admin bank mitra (BNI Tokyo, Mandiri Tokyo, BCA, Smiles).
+- **Proyeksi Akumulasi Devisa**: Menghitung total uang yang terkirim dalam 1 tahun, 3 tahun (± Rp 379 Juta), dan 5 tahun (± Rp 632 Juta).
+- **Simulasi Pencairan Uang Pensiun Jepang (*Nenkin Refund 脱退一時金*)**: Menjelaskan hak klaim pengembalian uang pensiun hingga **Rp 45.000.000 - Rp 95.000.000** saat siswa menyelesaikan kontrak dan pulang ke tanah air.
+
+---
+
+## 🤝 Integrasi Program Unggulan Pemerintah RI (MoU Kampus)
+
+LPK Sahabat Jepang Indonesia dipercaya menyelenggarakan program strategis pemerintah:
+
+1. **🏥 SMILE Project (Kemenkes RI)**:
+   - Program penempatan tenaga kesehatan perawat lansia (*Kaigo / Caregiver*) ke Jepang.
+   - **MoU Poltekkes & STIKes Se-Indonesia**: Telah sukses memberangkatkan **4 Gelombang Lulusan** ke rumah sakit dan panti lansia modern di Tokyo, Osaka, dan Nagoya.
+   - **Biaya 100% Ditanggung Pemerintah (Gratis)**: Pelatihan bahasa intensif, asrama, sertifikasi SSW Prometric, paspor, visa, medical check-up, hingga tiket pesawat.
+2. **🏫 SMK Go Japan**:
+   - Jalur percepatan vokasi industri manufaktur, permesinan, dan otomotif bagi lulusan SMK berprestasi.
+   - Fasilitas dana talangan cicilan ringan setelah siswa mulai bergaji di Jepang.
+
+---
+
+## 🧾 Generator Kwitansi & Invoice Berstempel Hanko (判子)
+
+Format cetak standar A4 siap cetak / PDF:
+- **Kwitansi Pembayaran Resmi (`/kwitansi/{nis}`)**:
+  - Nomor registrasi unik (`KW-SJI/YYYYMM/0001`).
+  - Rincian penerimaan uang dengan **penulisan terbilang kata Rupiah otomatis**.
+  - **Stempel Merah Digital Jepang (*Hanko 判子*)** dan tanda tangan kasir resmi LPK.
+  - QR Code verifikasi keaslian ke server pusat.
+- **Invoice Tagihan Resmi (`/invoice/{nis}`)**:
+  - Nomor invoice resmi (`INV-SJI/YYYYMM/0001`).
+  - Rincian paket biaya pelatihan, realisasi pembayaran, sisa tagihan, dan nomor rekening resmi (Bank Mandiri & BCA).
+  - QR Code verifikasi keaslian ke server pusat.
+
+---
+
+## 🌐 Optimalisasi SEO, WhatsApp Rich Share & Dynamic Sitemap
+
+- **Banner Pratinjau WhatsApp Eksklusif (`og:image`)**: Resolusi 1200x630 format JPEG standar resmi OpenGraph (`public/images/og-share-banner.jpg`). Saat link dibagikan di WhatsApp/Telegram/Medsos, langsung muncul kartu pratinjau besar beresolusi tajam.
+- **Dynamic Meta Tags Tiap Halaman**: Judul, deskripsi meta, kata kunci, dan canonical URL dinamis pada halaman Beranda, Brosur, Simulasi Ujian CBT, Peta Alumni, dan Artikel Berita.
+- **Peta Situs Dinamis (`/sitemap.xml`)**: Otomatis mengindeks seluruh halaman publik dan setiap artikel aktif lengkap dengan atribut `lastmod` dan `priority` untuk Google Search Console.
+- **Konfigurasi Mesin Pencari (`robots.txt`)**: Mengizinkan perayapan halaman publik dan memproteksi rute privat panel admin.
+- **Schema.org JSON-LD Structured Data**: Metadata format `EducationalOrganization` dan `WebSite` agar Google Rich Snippets mengenali profil akreditasi dan lokasi kantor resmi.
 
 ---
 
 ## ⚡ Arsitektur Real-Time Polling & Sinkronisasi Data
 
-Untuk menjamin kenyamanan pengguna tanpa konfigurasi WebSocket server yang rumit, aplikasi menggunakan **Adaptive Polling Engine**:
-
-```
-[ Portal Tamu (Guest) ] ──────────────► GET /api/sync/guest (Interval 15s)
-                                             │
-                                             ├─► Update counter unduh brosur
-                                             └─► Update kuota kelas tersedia
-
-[ Panel Admin ] ──────────────────────► GET /api/sync/admin (Interval 10s)
-                                             │
-                                             ├─► Deteksi lead/konsultasi baru
-                                             ├─► Bunyikan audio notifikasi bel
-                                             ├─► Update Live KPI dashboard
-                                             └─► Perbarui metrik tanpa reload
-```
+Sistem menerapkan arsitektur *dual-mode real-time sync*:
+- **Sisi Tamu (Guest)**: Berjalan secara *passive-interval (25 detik)* melalui endpoint ringan `/api/realtime-sync/guest`. Memperbarui counter total alumni (1.250+), siswa aktif, sisa kuota batch kelas, dan statistik unduhan brosur secara otomatis tanpa me-reload browser.
+- **Sisi Admin (Backoffice)**: Berjalan aktif memantau perubahan leads, status pembayaran, dan pendaftaran siswa baru secara instan.
 
 ---
 
 ## 🛠️ Teknologi & Dependensi (Tech Stack)
 
-### Core Backend & Framework
-- **[PHP 8.2+](https://php.net)**: Bahasa pemrograman backend utama dengan *typed properties* dan *strict types*.
-- **[Laravel 11.x](https://laravel.com)**: Framework MVC modern dengan Eloquent ORM, Blade templating, dan Form Request Validation.
-- **[MySQL](https://www.mysql.com/) / [SQLite](https://www.sqlite.org/)**: Database relasional dengan skema migrasi dan relasi data terindeks.
-
-### Frontend & Desain
-- **[Tailwind CSS](https://tailwindcss.com)**: Framework utility-first CSS dengan custom palet warna bertema Jepang (*japan-50 s/d japan-900*).
-- **[Vanilla JavaScript (ES6+)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)**: Logika modal pop-up, carousel dinamis, kalkulator biaya, dan polling AJAX tanpa dependensi library eksternal yang berat.
-- **[Lucide Icons](https://lucide.dev/)**: Ikon SVG modern, bersih, dan tajam di layar Retina.
-- **[Google Fonts](https://fonts.google.com/)**: Tipografi elegan menggunakan kombinasi *Plus Jakarta Sans*, *Outfit*, dan font kanji Jepang *Noto Sans JP*.
+- **Backend Framework**: [Laravel 11.x](https://laravel.com)
+- **Runtime & Bahasa**: [PHP ^8.2](https://php.net) (dengan ekstensi `pdo`, `mbstring`, `gd`, `sqlite3`, `curl`)
+- **Frontend & Styling**: Vanilla Blade Views + [Tailwind CSS 3.4+](https://tailwindcss.com) (Skema Warna Zen Red)
+- **Icons**: [Lucide Icons](https://lucide.dev)
+- **PWA & Offline Engine**: Web App Manifest & Service Worker Cache API
+- **Basis Data**: MySQL (Produksi) / SQLite Memory (Pengujian Otomatis)
+- **Keamanan**: CSRF Protection, Anti-Brute Force Rate Limiting, Sanitasi Input
 
 ---
 
 ## 🚀 Panduan Instalasi & Menjalankan Lokal
 
-Pastikan komputer Anda telah terinstal:
-- **PHP >= 8.2** (ekstensi: `pdo_mysql`, `pdo_sqlite`, `mbstring`, `openssl`, `curl`, `gd`)
-- **Composer** (versi 2.x)
-- **Node.js & NPM** (opsional untuk *asset bundling*)
-
-### Langkah-langkah:
-
+### 1. Kloning Repositori & Masuk Direktori
 ```bash
-# 1. Clone repository
 git clone https://github.com/aryadians/SahabatJepangIndonesia.git
 cd SahabatJepangIndonesia
-
-# 2. Install dependensi Composer
-composer install
-
-# 3. Buat file konfigurasi Environment
-cp .env.example .env
-
-# 4. Generate Application Encryption Key
-php artisan key:generate
-
-# 5. Konfigurasi Database pada file .env
-# (Default menggunakan SQLite atau MySQL sesuai preferensi Anda)
-# Untuk SQLite:
-touch database/database.sqlite
-# Pastikan DB_CONNECTION=sqlite pada file .env
-
-# 6. Jalankan Migrasi Database & Seeder Data Awal
-php artisan migrate:fresh --seed
-
-# 7. Hubungkan Storage Link (untuk upload foto & dokumen)
-php artisan storage:link
-
-# 8. Bersihkan & Optimalkan Cache View
-php artisan optimize:clear
-
-# 9. Jalankan Server Pengembangan Lokal
-php artisan serve
 ```
 
-Aplikasi siap diakses melalui browser:
-- **Portal Tamu / Landing Page**: [http://127.0.0.1:8000](http://127.0.0.1:8000)
-- **Katalog Unduh Brosur**: [http://127.0.0.1:8000/brosur](http://127.0.0.1:8000/brosur)
-- **Panel Admin / ERP**: [http://127.0.0.1:8000/login](http://127.0.0.1:8000/login)
+### 2. Instal Dependensi Composer
+```bash
+composer install
+```
 
-### Kredensial Akun Administrator Default:
-- **Email**: `admin@sahabatjepangindonesia.com` *(atau sesuai database seeder)*
-- **Password**: `password` *(atau `admin123`)*
+### 3. Konfigurasi Environment (`.env`)
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Pastikan konfigurasi database di `.env` sesuai (default menggunakan MySQL atau SQLite):
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=sahabat_jepang
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 4. Jalankan Migrasi & Seeder Database
+```bash
+php artisan migrate --seed
+```
+
+### 5. Jalankan Server Pengembangan Lokal
+```bash
+php artisan serve
+```
+Aplikasi siap diakses di: **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
 
 ---
 
-## 🧪 Uji Otomatis (Automated Testing)
+## 🧪 Uji Otomatis (Automated Testing Suite)
 
-Platform ini memiliki cakupan pengujian otomatis (*Feature & Unit Testing*) yang komprehensif untuk memastikan seluruh alur bisnis berjalan 100% bebas dari bug:
+Sistem dilengkapi rangkaian pengujian unit dan fitur komprehensif menggunakan PHPUnit:
 
 ```bash
-# Menjalankan seluruh test suite
 php artisan test
 ```
 
-### Hasil Test Suite Terverifikasi:
+### Hasil Eksekusi Uji Otomatis (100% Green):
 ```text
    PASS  Tests\Unit\ExampleTest
   ✓ that true is true
 
-   PASS  Tests\Feature\ExampleTest
-  ✓ the application returns a successful response
+   PASS  Tests\Feature\DocumentVerificationTest
+  ✓ guest can access verification page without code
+  ✓ guest can verify valid receipt code
+  ✓ guest can verify document by student nis
+  ✓ guest verifying invalid or fake code shows unverified alert
+
+   PASS  Tests\Feature\StudentPortalTest
+  ✓ guest can access student portal page
+  ✓ guest can search student by nis
+  ✓ guest can search student by phone
+  ✓ guest searching non existent student shows not found message
+  ✓ guest can view official public receipt by nis
+  ✓ guest can view official public invoice by nis
 
    PASS  Tests\Feature\NewFeaturesTest
   ✓ guest can access brochure page
@@ -268,8 +312,11 @@ php artisan test
   ✓ admin can import students csv
   ✓ admin can filter students by government programs and view badges
 
-  Tests:    19 passed (118 assertions)
-  Duration: ~3.0s (100% Green)
+   PASS  Tests\Feature\ExampleTest
+  ✓ the application returns a successful response
+
+  Tests:    29 passed (156 assertions)
+  Duration: ~3.5s (100% Green)
 ```
 
 ---
@@ -282,32 +329,38 @@ SahabatJepangIndonesia/
 │   ├── Http/
 │   │   ├── Controllers/
 │   │   │   ├── Admin/
-│   │   │   │   ├── CampusGalleryController.php  # CRUD Galeri Kunjungan Kampus
-│   │   │   │   ├── BrochureManagerController.php # Kelola Brosur Resmi Admin
-│   │   │   │   ├── StudentController.php        # Database Siswa, Kwitansi & Invoice
-│   │   │   │   ├── InterviewController.php      # Jadwal Wawancara Kaisha
-│   │   │   │   └── SyncController.php           # Endpoint Polling Real-time Admin
-│   │   │   ├── BrochureController.php           # Portal Unduh Brosur Guest
-│   │   │   ├── ExamSimulatorController.php      # CBT Tryout JLPT Simulator
-│   │   │   └── HomeController.php               # Landing Page & Lead Capture
-│   │   └── Requests/                            # Validasi Form Request
-│   └── Models/                                  # Eloquent Models (Student, Brochure, dll)
+│   │   │   │   ├── CampusGalleryController.php    # CRUD Dokumentasi Kunjungan Kampus
+│   │   │   │   ├── BrochureManagerController.php   # Manajemen Brosur Resmi
+│   │   │   │   ├── StudentController.php          # Database Siswa, Kwitansi & Invoice
+│   │   │   │   ├── InterviewController.php        # Jadwal Wawancara Kaisha
+│   │   │   │   └── SyncController.php             # Endpoint Polling Real-Time Admin
+│   │   │   ├── StudentPortalController.php        # Portal Cek Status Siswa & Kwitansi
+│   │   │   ├── DocumentVerificationController.php # Sistem Verifikasi Keaslian QR Code
+│   │   │   ├── BrochureController.php             # Unduh Brosur Guest & Download Counter
+│   │   │   ├── ExamSimulatorController.php        # CBT Simulator Tryout JLPT 100 Soal
+│   │   │   └── HomeController.php                 # Beranda & Lead Capture
+│   └── Models/                                    # Student, Brochure, CampusGallery, Lead, User
 ├── database/
-│   ├── migrations/                              # Skema Tabel Database
-│   └── seeders/                                 # Data Awal Dummy & Pengaturan Default
+│   ├── migrations/                                # Skema Tabel Database
+│   └── seeders/                                   # Data Awal Dummy & Settings Default
 ├── public/
-│   ├── css/style.css                            # Styling Khusus & Animasi Zen
-│   └── js/app.js                                # Script Global Modal & Polling
+│   ├── css/style.css                              # Styling Khusus & Animasi Zen
+│   ├── js/app.js                                  # Script Global, Kalkulator & PWA
+│   ├── manifest.json                              # Web App Manifest PWA
+│   ├── sw.js                                      # Service Worker Offline Cache
+│   └── images/
+│       ├── og-share-banner.jpg                    # Marketing Banner WhatsApp 1200x630
+│       └── icons/                                 # PWA Icons 96x96, 192x192, 512x512
 ├── resources/
 │   └── views/
-│       ├── admin/                               # Blade Views Panel ERP Admin
-│       ├── components/                          # Reusable Blade Components (Navbar, Carousel)
-│       └── landing/                             # Blade Views Halaman Publik Tamu
+│       ├── admin/                                 # Blade Views Panel ERP Admin
+│       ├── components/                            # Reusable Blade (Navbar, Calculator, PWA)
+│       └── landing/                               # Views (Portal Siswa, Verify, Brosur, CBT)
 ├── routes/
-│   ├── web.php                                  # Rute Web Tamu & Panel Admin
-│   └── api.php                                  # Rute Endpoint API Sync
+│   ├── web.php                                    # Rute Web Tamu, Admin & Sitemap.xml
+│   └── api.php                                    # Rute Real-Time Sync
 └── tests/
-    └── Feature/                                 # 19 Automated Feature Tests
+    └── Feature/                                   # 29 Automated Feature Tests
 ```
 
 ---
@@ -315,9 +368,9 @@ SahabatJepangIndonesia/
 ## 🔒 Kepatuhan Hukum & Regulasi RI - Jepang
 
 Platform **LPK Sahabat Jepang Indonesia** dirancang dengan standar kepatuhan hukum ketat:
-1. **Penyalur Resmi Kemenaker RI**: Seluruh alur pendaftaran siswa mematuhi peraturan pengiriman tenaga kerja ke luar negeri skema TITP (*Technical Intern Training Program*) dan SSW (*Specified Skilled Worker*).
-2. **Zero Hidden Fees (Anti-Pungli)**: Menampilkan rincian biaya pelatihan, asrama, dan ujian sertifikasi secara transparan kepada calon siswa dan orang tua.
-3. **Privasi & Keamanan Data**: Data calon siswa dan pelamar dilindungi dan tidak disebarluaskan kepada pihak ketiga yang tidak terafiliasi.
+1. **Penyalur Resmi Kemenaker RI**: Izin SO resmi nomor `KEP.224/LATTAS/XII/2023` skema TITP (*Technical Intern Training Program*) dan SSW (*Specified Skilled Worker*).
+2. **Zero Hidden Fees (Anti-Pungli)**: Menampilkan rincian biaya pelatihan, asrama, sertifikasi, dan skema beasiswa secara transparan kepada calon siswa dan orang tua.
+3. **Privasi & Keamanan Data**: Data siswa, kontak wali, dan dokumen identitas dilindungi dengan enkripsi dan autentikasi berlapis.
 
 ---
 
