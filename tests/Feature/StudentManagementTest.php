@@ -105,4 +105,51 @@ class StudentManagementTest extends TestCase
         Student::where('nis', 'SJI-IMPORT-099')->delete();
         @unlink($tempPath);
     }
+
+    public function test_admin_can_filter_students_by_government_programs_and_view_badges(): void
+    {
+        // 1. Create a SMILE Project student
+        $smileStudent = Student::create([
+            'nis' => 'SJI-SMILE-001',
+            'name' => 'Nurul Hidayah Kaigo',
+            'program' => 'Tokutei Ginou (SSW)',
+            'gender' => 'Perempuan',
+            'status' => 'active',
+            'registration_category' => 'smile_project',
+            'total_cost' => 0,
+            'paid_amount' => 0,
+            'payment_scheme' => 'dana_talangan',
+            'payment_status' => 'paid',
+        ]);
+
+        // 2. Create an SMK Go Japan student
+        $smkStudent = Student::create([
+            'nis' => 'SJI-SMK-001',
+            'name' => 'Bagus Prayoga SMK',
+            'program' => 'Ginou Jisshusei (Magang)',
+            'gender' => 'Laki-laki',
+            'status' => 'interview',
+            'registration_category' => 'smk_go_japan',
+            'total_cost' => 15000000,
+            'paid_amount' => 15000000,
+            'payment_scheme' => 'mandiri',
+            'payment_status' => 'paid',
+        ]);
+
+        // 3. Verify badge attributes
+        $this->assertEquals('SMILE Project (Kemenkes)', $smileStudent->registration_category_badge['label']);
+        $this->assertEquals('SMK Go Japan', $smkStudent->registration_category_badge['label']);
+
+        // 4. Test filtering by SMILE Project
+        $filterSmile = $this->actingAs($this->admin)->get('/admin/students?registration_category=smile_project');
+        $filterSmile->assertStatus(200);
+        $filterSmile->assertSee('Nurul Hidayah Kaigo');
+        $filterSmile->assertDontSee('Bagus Prayoga SMK');
+
+        // 5. Test filtering by SMK Go Japan
+        $filterSmk = $this->actingAs($this->admin)->get('/admin/students?registration_category=smk_go_japan');
+        $filterSmk->assertStatus(200);
+        $filterSmk->assertSee('Bagus Prayoga SMK');
+        $filterSmk->assertDontSee('Nurul Hidayah Kaigo');
+    }
 }
