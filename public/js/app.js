@@ -360,6 +360,8 @@ window.openModal = function (modalId) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
     modal.classList.add('active');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
     document.body.style.overflow = 'hidden';
 };
 
@@ -367,6 +369,8 @@ window.closeModal = function (modalId) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
     modal.classList.remove('active');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
     document.body.style.overflow = '';
 };
 
