@@ -86,6 +86,20 @@
                                 </div>
                             </a>
 
+                            <!-- Unduh Brosur Resmi Highlight -->
+                            <a href="{{ route('brochure.index') }}" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-red-50 text-slate-700 hover:text-japan-700 transition">
+                                <div class="w-9 h-9 rounded-xl bg-japan-50 text-japan-600 flex items-center justify-center font-bold">
+                                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                                        <span>Brosur & Biaya Resmi</span>
+                                        <span class="px-1.5 py-0.5 rounded bg-japan-100 text-japan-700 text-[9px] font-black uppercase">2026</span>
+                                    </p>
+                                    <p class="text-[11px] text-slate-400">Kurikulum & rincian biaya transparan</p>
+                                </div>
+                            </a>
+
                             <!-- Kemitraan SMK & Afiliasi -->
                             <a href="{{ route('affiliates.public.register') }}" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 transition">
                                 <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
@@ -212,6 +226,10 @@
             <a href="{{ route('exam.simulator') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-japan-600 bg-red-50/60 hover:bg-red-50 transition">
                 <i data-lucide="file-check" class="w-4 h-4 text-japan-600"></i>
                 <span>Simulasi Ujian JLPT & JFT (CBT 100 Soal)</span>
+            </a>
+            <a href="{{ route('brochure.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
+                <i data-lucide="book-open" class="w-4 h-4 text-japan-600"></i>
+                <span>Brosur Resmi Kurikulum & Biaya Transparan</span>
             </a>
             <a href="{{ route('alumni.map') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
                 <i data-lucide="map-pin" class="w-4 h-4 text-japan-600"></i>

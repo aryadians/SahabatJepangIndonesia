@@ -149,4 +149,11 @@ class Student extends Model
             default => 'Belum MCU',
         };
     }
+
+    public function interviews()
+    {
+        return $this->belongsToMany(JobInterview::class, 'interview_candidates')
+                    ->withPivot(['id', 'result', 'interview_score', 'interviewer_feedback'])
+                    ->withTimestamps();
+    }
 }

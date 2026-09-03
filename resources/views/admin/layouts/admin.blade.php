@@ -143,6 +143,22 @@
             </a>
 
             <a 
+                href="{{ route('admin.interviews.index') }}" 
+                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.interviews.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+            >
+                <i data-lucide="video" class="w-4 h-4"></i>
+                <span>Wawancara Kaisha</span>
+                @php
+                    $schedCount = \App\Models\JobInterview::where('status', 'scheduled')->count();
+                @endphp
+                @if($schedCount > 0)
+                    <span class="ml-auto px-2 py-0.5 rounded-full bg-blue-500 text-white font-black text-[10px]">
+                        {{ $schedCount }}
+                    </span>
+                @endif
+            </a>
+
+            <a 
                 href="{{ route('admin.teachers.index') }}" 
                 class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.teachers.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
             >

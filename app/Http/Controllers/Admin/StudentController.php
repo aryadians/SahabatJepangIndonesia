@@ -683,4 +683,58 @@ class StudentController extends Controller
             "Proses import CSV selesai: {$createdCount} siswa baru berhasil ditambahkan, {$updatedCount} data siswa diperbarui."
         );
     }
+
+    /**
+     * Cetak Kwitansi Pembayaran Resmi Digital
+     */
+    public function receipt($id)
+    {
+        $student = Student::findOrFail($id);
+        $settings = \App\Models\SiteSetting::allCached();
+        $receiptNo = 'KW-SJI/' . date('Ym') . '/' . str_pad($student->id, 4, '0', STR_PAD_LEFT);
+        $terbilang = trim($this->terbilang((int)$student->paid_amount)) . ' Rupiah';
+
+        return view('admin.students.receipt', compact('student', 'settings', 'receiptNo', 'terbilang'));
+    }
+
+    /**
+     * Cetak Invoice Tagihan Biaya Pelatihan
+     */
+    public function invoice($id)
+    {
+        $student = Student::findOrFail($id);
+        $settings = \App\Models\SiteSetting::allCached();
+        $invoiceNo = 'INV-SJI/' . date('Ym') . '/' . str_pad($student->id, 4, '0', STR_PAD_LEFT);
+        $terbilangRemaining = trim($this->terbilang((int)$student->remaining_balance)) . ' Rupiah';
+
+        return view('admin.students.invoice', compact('student', 'settings', 'invoiceNo', 'terbilangRemaining'));
+    }
+
+    /**
+     * Konversi Angka ke Kata Terbilang Rupiah
+     */
+    private function terbilang($number)
+    {
+        $number = abs((int)$number);
+        $bilang = ['', 'Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam', 'Tujuh', 'Delapan', 'Sembilan', 'Sepuluh', 'Sebelas'];
+        
+        if ($number < 12) {
+            return $bilang[$number];
+        } elseif ($number < 20) {
+            return $this->terbilang($number - 10) . ' Belas';
+        } elseif ($number < 100) {
+            return $this->terbilang((int)($number / 10)) . ' Puluh ' . $this->terbilang($number % 10);
+        } elseif ($number < 200) {
+            return 'Seratus ' . $this->terbilang($number - 100);
+        } elseif ($number < 1000) {
+            return $this->terbilang((int)($number / 100)) . ' Ratus ' . $this->terbilang($number % 100);
+        } elseif ($number < 2000) {
+            return 'Seribu ' . $this->terbilang($number - 1000);
+        } elseif ($number < 1000000) {
+            return $this->terbilang((int)($number / 1000)) . ' Ribu ' . $this->terbilang($number % 1000);
+        } elseif ($number < 1000000000) {
+            return $this->terbilang((int)($number / 1000000)) . ' Juta ' . $this->terbilang($number % 1000000);
+        }
+        return (string)$number;
+    }
 }

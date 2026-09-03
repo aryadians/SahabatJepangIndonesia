@@ -341,6 +341,16 @@
                                         <i data-lucide="printer" class="w-3.5 h-3.5"></i>
                                     </a>
 
+                                    <!-- Cetak Kwitansi Resmi -->
+                                    <a 
+                                        href="{{ route('admin.students.receipt', $st->id) }}" 
+                                        target="_blank" 
+                                        class="p-1.5 rounded-lg text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 transition" 
+                                        title="Cetak Kwitansi Pembayaran Resmi (PDF)"
+                                    >
+                                        <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
+                                    </a>
+
                                     <!-- Edit -->
                                     <a 
                                         href="{{ route('admin.students.edit', $st->id) }}" 
@@ -841,10 +851,31 @@
                     id="detailPrintBtn" 
                     href="#" 
                     target="_blank" 
-                    class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5"
+                    class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5"
+                    title="Cetak Lembar Profil Siswa (PDF)"
                 >
-                    <i data-lucide="printer" class="w-4 h-4"></i>
-                    <span>Cetak Lembar Profil</span>
+                    <i data-lucide="printer" class="w-4 h-4 text-slate-600"></i>
+                    <span>Lembar Profil</span>
+                </a>
+                <a 
+                    id="detailReceiptBtn" 
+                    href="#" 
+                    target="_blank" 
+                    class="px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold transition flex items-center gap-1.5"
+                    title="Cetak Kwitansi Pembayaran Resmi"
+                >
+                    <i data-lucide="receipt" class="w-4 h-4 text-emerald-600"></i>
+                    <span>Kwitansi</span>
+                </a>
+                <a 
+                    id="detailInvoiceBtn" 
+                    href="#" 
+                    target="_blank" 
+                    class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5"
+                    title="Cetak Invoice Tagihan Biaya"
+                >
+                    <i data-lucide="file-text" class="w-4 h-4 text-slate-500"></i>
+                    <span>Invoice</span>
                 </a>
                 <a 
                     id="detailEditBtn" 
@@ -1031,6 +1062,8 @@
 
             // Buttons
             document.getElementById('detailPrintBtn').href = `/admin/students/${s.id}/print`;
+            document.getElementById('detailReceiptBtn').href = `/admin/students/${s.id}/receipt`;
+            document.getElementById('detailInvoiceBtn').href = `/admin/students/${s.id}/invoice`;
             document.getElementById('detailEditBtn').href = `/admin/students/${s.id}/edit`;
             
             const payBtn = document.getElementById('detailPaymentBtn');

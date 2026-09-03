@@ -49,8 +49,16 @@ Route::get('/mitra-sekolah', [AffiliateController::class, 'publicRegister'])->na
 Route::post('/mitra-sekolah', [AffiliateController::class, 'storePublic'])->name('affiliates.public.store')->middleware('throttle:5,1');
 Route::get('/referral', fn() => redirect()->route('affiliates.public.register'));
 
+use App\Http\Controllers\BrochureController;
+use App\Http\Controllers\Admin\JobInterviewController;
+
 // 4. Real-Time Sync API untuk Guest & Halaman Publik
 Route::get('/api/realtime-sync/guest', [RealTimeSyncController::class, 'guestSync'])->name('realtime.guest');
+
+// 5. Unduh Brosur Resmi Kurikulum & Panduan Biaya Transparan (Publik)
+Route::get('/brosur', [BrochureController::class, 'index'])->name('brochure.index');
+Route::post('/brosur/download', [BrochureController::class, 'download'])->name('brochure.download')->middleware('throttle:10,1');
+Route::get('/biaya', fn() => redirect()->route('brochure.index'));
 
 /*
 |--------------------------------------------------------------------------
@@ -122,6 +130,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/students/template', [StudentController::class, 'exportTemplate'])->name('students.template');
     Route::post('/students/import', [StudentController::class, 'importCsv'])->name('students.import');
     Route::get('/students/{id}/print', [StudentController::class, 'printDossier'])->name('students.print');
+    Route::get('/students/{id}/receipt', [StudentController::class, 'receipt'])->name('students.receipt');
+    Route::get('/students/{id}/invoice', [StudentController::class, 'invoice'])->name('students.invoice');
     Route::post('/students/{id}/payment', [StudentController::class, 'updatePayment'])->name('students.payment');
     Route::resource('students', StudentController::class);
 
@@ -142,7 +152,12 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // 16. User Management & RBAC Roles
     Route::resource('users', UserController::class)->except(['create', 'show', 'edit']);
 
-    // 17. Admin Profile & Password
+    // 17. Kalender Wawancara Kerja & Matching Kaisha
+    Route::post('/interviews/{id}/candidates', [JobInterviewController::class, 'assignCandidates'])->name('interviews.candidates.assign');
+    Route::post('/interviews/{interviewId}/candidates/{studentId}', [JobInterviewController::class, 'updateCandidateResult'])->name('interviews.candidates.result');
+    Route::resource('interviews', JobInterviewController::class)->except(['create', 'show', 'edit']);
+
+    // 18. Admin Profile & Password
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
@@ -162,4 +177,6 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/schedule', fn() => redirect()->route('admin.schedules.index'));
     Route::get('/keuangan', fn() => redirect()->route('admin.finance.index'));
     Route::get('/affiliate', fn() => redirect()->route('admin.affiliates.index'));
+    Route::get('/interview', fn() => redirect()->route('admin.interviews.index'));
+    Route::get('/wawancara', fn() => redirect()->route('admin.interviews.index'));
 });
