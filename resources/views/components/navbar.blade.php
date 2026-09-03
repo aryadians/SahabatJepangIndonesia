@@ -38,6 +38,11 @@
                 <a href="{{ route('home') }}#program" class="text-sm font-bold text-slate-700 hover:text-japan-600 transition whitespace-nowrap py-1">
                     Program Karir
                 </a>
+
+                <a href="{{ route('home') }}#kemitraan" class="text-sm font-bold text-slate-700 hover:text-japan-600 transition whitespace-nowrap py-1 flex items-center gap-1.5">
+                    <span>Program Pemerintah</span>
+                    <span class="px-1.5 py-0.5 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-800 border border-emerald-200 uppercase">MoU & Gratis</span>
+                </a>
                 
                 <a href="{{ route('home') }}#kalkulator" class="text-sm font-bold text-slate-700 hover:text-japan-600 transition whitespace-nowrap py-1">
                     Simulasi Gaji
@@ -97,6 +102,20 @@
                                         <span class="px-1.5 py-0.5 rounded bg-japan-100 text-japan-700 text-[9px] font-black uppercase">2026</span>
                                     </p>
                                     <p class="text-[11px] text-slate-400">Kurikulum & rincian biaya transparan</p>
+                                </div>
+                            </a>
+
+                            <!-- Program Pemerintah & Galeri Kampus Highlight -->
+                            <a href="{{ route('home') }}#kemitraan" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 transition">
+                                <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                                    <i data-lucide="award" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                                        <span>Program Pemerintah & MoU</span>
+                                        <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[9px] font-black uppercase">SMILE & SMK</span>
+                                    </p>
+                                    <p class="text-[11px] text-slate-400">Kerjasama Poltekkes, STIKes & Bursa Kerja SMK</p>
                                 </div>
                             </a>
 
@@ -242,6 +261,13 @@
             <a href="{{ route('home') }}#program" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
                 <i data-lucide="briefcase" class="w-4 h-4 text-japan-600"></i>
                 <span>Program Karir (SSW & Magang)</span>
+            </a>
+            <a href="{{ route('home') }}#kemitraan" class="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold text-emerald-800 bg-emerald-50/70 hover:bg-emerald-100 transition">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="award" class="w-4 h-4 text-emerald-600"></i>
+                    <span>Program Pemerintah (SMILE & SMK)</span>
+                </div>
+                <span class="px-1.5 py-0.5 rounded bg-emerald-200/80 text-emerald-900 text-[9px] font-black uppercase">100% Gratis</span>
             </a>
             <a href="{{ route('home') }}#jadwal" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
                 <i data-lucide="calendar" class="w-4 h-4 text-japan-600"></i>
