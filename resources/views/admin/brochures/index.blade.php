@@ -10,157 +10,232 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         <!-- Total Brosur -->
-        <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-slate-300 transition">
+        <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-slate-300 transition flex flex-col justify-between">
             <div class="flex items-center justify-between">
-                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Brosur Terdata</p>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Brosur</span>
                 <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
                     <i data-lucide="book-open" class="w-4 h-4"></i>
                 </div>
             </div>
-            <p data-admin-stat="brochures_total" class="text-2xl sm:text-3xl font-black text-slate-900 mt-2">{{ number_format($stats['total_brochures']) }}</p>
-            <p class="text-[11px] text-slate-400 mt-0.5">Katalog materi publik</p>
+            <div class="mt-3">
+                <p data-admin-stat="brochures_total" class="text-2xl sm:text-3xl font-black text-slate-900 leading-none">{{ number_format($stats['total_brochures']) }}</p>
+                <p class="text-[11px] text-slate-400 mt-1 font-medium">Katalog materi publik</p>
+            </div>
         </div>
 
         <!-- Total Diunduh Guest -->
-        <div class="p-5 rounded-2xl bg-white border border-emerald-200 shadow-xs hover:border-emerald-300 transition">
+        <div class="p-5 rounded-2xl bg-white border border-emerald-200 shadow-xs hover:border-emerald-300 transition flex flex-col justify-between">
             <div class="flex items-center justify-between">
-                <p class="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Total Diunduh Tamu</p>
+                <span class="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Total Diunduh Tamu</span>
                 <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
                     <i data-lucide="download-cloud" class="w-4 h-4"></i>
                 </div>
             </div>
-            <p data-admin-stat="brochures_downloads" class="text-2xl sm:text-3xl font-black text-emerald-600 mt-2">{{ number_format($stats['total_downloads']) }}</p>
-            <p class="text-[11px] text-emerald-700/80 mt-0.5 font-medium">Akumulasi unduhan pengunjung</p>
+            <div class="mt-3">
+                <p data-admin-stat="brochures_downloads" class="text-2xl sm:text-3xl font-black text-emerald-600 leading-none">{{ number_format($stats['total_downloads']) }}</p>
+                <p class="text-[11px] text-emerald-700/80 mt-1 font-medium">Akumulasi unduhan pengunjung</p>
+            </div>
         </div>
 
         <!-- Brosur Aktif -->
-        <div class="p-5 rounded-2xl bg-white border border-blue-200 shadow-xs hover:border-blue-300 transition">
+        <div class="p-5 rounded-2xl bg-white border border-blue-200 shadow-xs hover:border-blue-300 transition flex flex-col justify-between">
             <div class="flex items-center justify-between">
-                <p class="text-[11px] font-bold text-blue-600 uppercase tracking-wider">Brosur Aktif Tampil</p>
+                <span class="text-[11px] font-bold text-blue-600 uppercase tracking-wider">Brosur Aktif</span>
                 <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-                    <i data-lucide="eye" class="w-4 h-4"></i>
+                    <i data-lucide="check-circle-2" class="w-4 h-4"></i>
                 </div>
             </div>
-            <p data-admin-stat="brochures_active" class="text-2xl sm:text-3xl font-black text-blue-600 mt-2">{{ number_format($stats['active_brochures']) }}</p>
-            <p class="text-[11px] text-blue-700/80 mt-0.5 font-medium">Tersedia di halaman /brosur</p>
+            <div class="mt-3">
+                <p data-admin-stat="brochures_active" class="text-2xl sm:text-3xl font-black text-blue-600 leading-none">{{ number_format($stats['active_brochures']) }}</p>
+                <p class="text-[11px] text-blue-700/80 mt-1 font-medium">Tersedia di halaman /brosur</p>
+            </div>
         </div>
 
         <!-- Leads Terkumpul -->
-        <div class="p-5 rounded-2xl bg-white border border-rose-200 shadow-xs hover:border-rose-300 transition">
+        <div class="p-5 rounded-2xl bg-white border border-rose-200 shadow-xs hover:border-rose-300 transition flex flex-col justify-between">
             <div class="flex items-center justify-between">
-                <p class="text-[11px] font-bold text-japan-600 uppercase tracking-wider">Pendaftar Dari Brosur</p>
+                <span class="text-[11px] font-bold text-japan-600 uppercase tracking-wider">Pendaftar Dari Brosur</span>
                 <div class="w-9 h-9 rounded-xl bg-rose-50 text-japan-600 flex items-center justify-center font-bold">
                     <i data-lucide="users" class="w-4 h-4"></i>
                 </div>
             </div>
-            <p class="text-2xl sm:text-3xl font-black text-japan-600 mt-2">{{ number_format($stats['leads_from_brochures']) }}</p>
-            <p class="text-[11px] text-rose-700/80 mt-0.5 font-medium">Konversi lead magnet</p>
+            <div class="mt-3">
+                <p class="text-2xl sm:text-3xl font-black text-japan-600 leading-none">{{ number_format($stats['leads_from_brochures']) }}</p>
+                <p class="text-[11px] text-rose-700/80 mt-1 font-medium">Konversi lead magnet</p>
+            </div>
         </div>
 
     </div>
 
-    <!-- 2. Action & Filter Bar -->
-    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-4">
+    <!-- 2. Structured 2-Tier Filter & Action Architecture -->
+    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs space-y-4">
         
-        <!-- Filter Form -->
-        <form action="{{ route('admin.brochures.index') }}" method="GET" class="flex flex-wrap items-center gap-2.5">
-            <select name="program" class="px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 bg-slate-50 focus:bg-white focus:outline-none focus:border-japan-600">
-                <option value="all">Semua Program / Kelas</option>
-                <option value="Tokutei Ginou (SSW)" {{ $program === 'Tokutei Ginou (SSW)' ? 'selected' : '' }}>Tokutei Ginou (SSW)</option>
-                <option value="Ginou Jisshusei (Magang)" {{ $program === 'Ginou Jisshusei (Magang)' ? 'selected' : '' }}>Magang (Jisshusei)</option>
-                <option value="Engineer & Profesional" {{ $program === 'Engineer & Profesional' ? 'selected' : '' }}>Engineer / Pro</option>
-                <option value="Kursus Bahasa Jepang" {{ $program === 'Kursus Bahasa Jepang' ? 'selected' : '' }}>Kursus Bahasa</option>
-                <option value="Panduan Biaya & Umum" {{ $program === 'Panduan Biaya & Umum' ? 'selected' : '' }}>Panduan Biaya & Umum</option>
-            </select>
+        <!-- TIER 1: Search & Filtering Row -->
+        <form action="{{ route('admin.brochures.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+            
+            <!-- Live Search Bar (Span 5) -->
+            <div class="md:col-span-5 relative">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input 
+                    type="text" 
+                    id="brochureTableSearch" 
+                    placeholder="Cari judul brosur, materi, atau nama file..." 
+                    oninput="filterBrochuresLive()" 
+                    class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-japan-600 bg-slate-50/70 focus:bg-white transition"
+                >
+            </div>
 
-            <button type="submit" class="px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition">
-                Filter
-            </button>
+            <!-- Program Filter Dropdown (Span 4) -->
+            <div class="md:col-span-4">
+                <select 
+                    name="program" 
+                    id="brochureProgramSelect" 
+                    onchange="this.form.submit()" 
+                    class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 bg-slate-50/70 focus:bg-white focus:outline-none focus:border-japan-600 transition"
+                >
+                    <option value="all">Semua Program & Kelas</option>
+                    <option value="Tokutei Ginou (SSW)" {{ $program === 'Tokutei Ginou (SSW)' ? 'selected' : '' }}>Tokutei Ginou (SSW)</option>
+                    <option value="Ginou Jisshusei (Magang)" {{ $program === 'Ginou Jisshusei (Magang)' ? 'selected' : '' }}>Magang (Jisshusei)</option>
+                    <option value="Engineer & Profesional" {{ $program === 'Engineer & Profesional' ? 'selected' : '' }}>Engineer & Profesional</option>
+                    <option value="Kursus Bahasa Jepang" {{ $program === 'Kursus Bahasa Jepang' ? 'selected' : '' }}>Kursus Bahasa Jepang</option>
+                    <option value="Panduan Biaya & Umum" {{ $program === 'Panduan Biaya & Umum' ? 'selected' : '' }}>Panduan Biaya & Umum</option>
+                </select>
+            </div>
 
-            @if($program !== 'all')
-                <a href="{{ route('admin.brochures.index') }}" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold" title="Reset Filter">
-                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                </a>
-            @endif
+            <!-- Buttons (Span 3) -->
+            <div class="md:col-span-3 flex items-center gap-2">
+                <button type="submit" class="flex-1 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition flex items-center justify-center gap-1.5">
+                    <i data-lucide="filter" class="w-3.5 h-3.5"></i>
+                    <span>Terapkan</span>
+                </button>
+                @if($program !== 'all')
+                    <a href="{{ route('admin.brochures.index') }}" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition" title="Reset Filter">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    </a>
+                @endif
+            </div>
+
         </form>
 
-        <!-- Tambah / Import Brosur Button -->
-        <div class="flex items-center gap-2">
-            <a href="{{ route('brochure.index') }}" target="_blank" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5" title="Lihat Tampilan Publik Brosur">
-                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                <span>Lihat Halaman Publik</span>
-            </a>
-            <button 
-                type="button" 
-                onclick="openModal('uploadBrochureModal')" 
-                class="btn-red-primary px-4 py-2 rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5"
-            >
-                <i data-lucide="upload" class="w-4 h-4"></i>
-                <span>Upload / Buat Brosur Baru</span>
-            </button>
+        <!-- TIER 2: Live Counter & Action Toolbar -->
+        <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+            
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">
+                    <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-500"></i>
+                    <span>Menampilkan: <b id="displayedBrochureCount" class="text-slate-900">{{ $brochures->count() }}</b> dari {{ $brochures->total() }} Brosur</span>
+                </span>
+            </div>
+
+            <div class="flex items-center gap-2.5">
+                <a 
+                    href="{{ route('brochure.index') }}" 
+                    target="_blank" 
+                    class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5" 
+                    title="Lihat Tampilan Publik Brosur"
+                >
+                    <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-500"></i>
+                    <span>Lihat Halaman Tamu</span>
+                </a>
+                
+                <button 
+                    type="button" 
+                    onclick="openModal('uploadBrochureModal')" 
+                    class="btn-red-primary px-4 py-2 rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5"
+                >
+                    <i data-lucide="upload" class="w-4 h-4"></i>
+                    <span>Upload / Buat Brosur Baru</span>
+                </button>
+            </div>
+
         </div>
 
     </div>
 
-    <!-- 3. Brochures Table -->
+    <!-- 3. Brochures Table (Clean, Structured, No Awkward Wrap) -->
     <div class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
-        <div class="p-6 border-b border-slate-100 flex items-center justify-between">
-            <div>
-                <h3 class="font-black text-slate-900 text-base">Daftar Brosur & Materi Siap Unduh</h3>
-                <p class="text-xs text-slate-400">Pengunjung akan mengunduh brosur sesuai kategori dan program yang dipilih</p>
-            </div>
-            <span class="text-xs text-slate-500 font-bold">Total: {{ $brochures->total() }} Brosur</span>
-        </div>
-
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs sm:text-sm">
+            <table class="w-full text-left text-xs sm:text-sm" id="brochuresTable">
                 <thead>
-                    <tr class="bg-slate-50 border-b border-slate-100 text-slate-400 text-[10px] uppercase font-bold">
-                        <th class="py-3.5 px-4">Judul Brosur / Materi</th>
-                        <th class="py-3.5 px-4">Program / Kategori</th>
-                        <th class="py-3.5 px-4">File Fisik</th>
-                        <th class="py-3.5 px-4 text-center">Diunduh</th>
-                        <th class="py-3.5 px-4 text-center">Status</th>
-                        <th class="py-3.5 px-4 text-center">Aksi</th>
+                    <tr class="bg-slate-50/80 border-b border-slate-100 text-slate-400 text-[10px] uppercase font-bold tracking-wider">
+                        <th class="py-3.5 px-5 w-[34%]">Judul Brosur & Materi</th>
+                        <th class="py-3.5 px-4 w-[24%]">Program & Kelas</th>
+                        <th class="py-3.5 px-4 w-[22%]">File Fisik Dokumen</th>
+                        <th class="py-3.5 px-3 w-[8%] text-center">Diunduh</th>
+                        <th class="py-3.5 px-3 w-[6%] text-center">Status</th>
+                        <th class="py-3.5 px-4 w-[6%] text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody class="divide-y divide-slate-100" id="brochuresTableBody">
                     @forelse($brochures as $b)
-                        <tr class="hover:bg-slate-50/80 transition">
-                            <td class="py-3.5 px-4">
-                                <div class="font-bold text-slate-900">{{ $b->title }}</div>
-                                <div class="text-[11px] text-slate-400 max-w-md truncate">{{ $b->description ?: '-' }}</div>
+                        <tr class="hover:bg-slate-50/80 transition brochure-row" data-title="{{ strtolower($b->title) }}" data-desc="{{ strtolower($b->description) }}" data-file="{{ strtolower($b->file_name) }}" data-program="{{ strtolower($b->program) }}">
+                            
+                            <!-- 1. Judul Brosur & Deskripsi -->
+                            <td class="py-4 px-5">
+                                <div class="space-y-1">
+                                    <h4 class="font-bold text-slate-900 text-xs sm:text-sm leading-snug">{{ $b->title }}</h4>
+                                    <p class="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">{{ $b->description ?: '-' }}</p>
+                                </div>
                             </td>
-                            <td class="py-3.5 px-4">
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black border {{ $b->theme['badge_bg'] }}">
-                                    {{ $b->program }}
+
+                            <!-- 2. Program / Kategori (Stacked Vertically to Prevent Awkward Word Wrap) -->
+                            <td class="py-4 px-4 align-top">
+                                <div class="flex flex-col items-start gap-1.5">
+                                    <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black border whitespace-nowrap {{ $b->theme['badge_bg'] }}">
+                                        {{ $b->program }}
+                                    </span>
+                                    @if($b->badge_text)
+                                        <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-amber-50 text-amber-800 border border-amber-200 whitespace-nowrap">
+                                            ★ {{ $b->badge_text }}
+                                        </span>
+                                    @endif
+                                </div>
+                            </td>
+
+                            <!-- 3. File Fisik & Ukuran (Neat Pill Badge) -->
+                            <td class="py-4 px-4 whitespace-nowrap align-middle">
+                                <div class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200">
+                                    <div class="w-7 h-7 rounded-lg bg-red-100 text-japan-600 flex items-center justify-center font-bold flex-shrink-0">
+                                        <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                    <div class="flex flex-col min-w-0 pr-1">
+                                        <span class="font-mono font-bold text-[11px] text-slate-800 truncate max-w-[140px]" title="{{ $b->file_name ?: 'Brosur-Resmi.pdf' }}">
+                                            {{ $b->file_name ?: 'Brosur-Resmi.pdf' }}
+                                        </span>
+                                        <span class="text-[10px] text-slate-400 font-sans">
+                                            {{ $b->file_size ?: '2.5 MB' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- 4. Counter Diunduh -->
+                            <td class="py-4 px-3 text-center whitespace-nowrap align-middle">
+                                <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-black text-xs font-mono inline-block">
+                                    {{ number_format($b->download_count) }}x
                                 </span>
-                                @if($b->badge_text)
-                                    <span class="ml-1 px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-100 text-amber-800">
-                                        {{ $b->badge_text }}
+                            </td>
+
+                            <!-- 5. Status Aktif -->
+                            <td class="py-4 px-3 text-center whitespace-nowrap align-middle">
+                                @if($b->is_active)
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                                        <span>Aktif</span>
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold text-[10px]">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                        <span>Draft</span>
                                     </span>
                                 @endif
                             </td>
-                            <td class="py-3.5 px-4">
-                                <div class="flex items-center gap-1.5 font-mono text-[11px] text-slate-700">
-                                    <i data-lucide="file-text" class="w-3.5 h-3.5 text-japan-600"></i>
-                                    <span class="truncate max-w-[150px]">{{ $b->file_name ?: 'Brosur-Resmi.pdf' }}</span>
-                                    <span class="text-[10px] text-slate-400">({{ $b->file_size ?: '2 MB' }})</span>
-                                </div>
-                            </td>
-                            <td class="py-3.5 px-4 text-center font-black text-emerald-600 font-mono">
-                                {{ number_format($b->download_count) }}x
-                            </td>
-                            <td class="py-3.5 px-4 text-center">
-                                @if($b->is_active)
-                                    <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">Aktif</span>
-                                @else
-                                    <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold text-[10px]">Draft</span>
-                                @endif
-                            </td>
-                            <td class="py-3.5 px-4 text-center whitespace-nowrap">
-                                <div class="inline-flex items-center gap-1.5">
-                                    <!-- Unduh / Test File -->
+
+                            <!-- 6. Aksi Buttons -->
+                            <td class="py-4 px-4 text-center whitespace-nowrap align-middle">
+                                <div class="inline-flex items-center gap-1.5 justify-center">
+                                    
+                                    <!-- Unduh File Asli -->
                                     <a 
                                         href="{{ route('brochure.download.file', $b->id) }}" 
                                         class="p-1.5 rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition" 
@@ -180,19 +255,25 @@
                                     </button>
 
                                     <!-- Hapus -->
-                                    <form action="{{ route('admin.brochures.destroy', $b->id) }}" method="POST" onsubmit="return confirm('Hapus brosur ini?')">
+                                    <form action="{{ route('admin.brochures.destroy', $b->id) }}" method="POST" onsubmit="return confirm('Hapus brosur {{ addslashes($b->title) }}?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition" title="Hapus">
                                             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                         </button>
                                     </form>
+
                                 </div>
                             </td>
+
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="6" class="py-8 text-center text-slate-400 text-xs">Belum ada data brosur yang diunggah.</td>
+                        <tr id="noDataRow">
+                            <td colspan="6" class="py-12 text-center text-slate-400 text-xs">
+                                <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+                                <p class="font-bold text-slate-600">Belum ada brosur untuk kategori ini</p>
+                                <p class="text-[11px] text-slate-400 mt-0.5">Klik tombol "Upload / Buat Brosur Baru" untuk menambahkan materi kurikulum.</p>
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -266,13 +347,13 @@
             <div class="space-y-1">
                 <label class="block text-xs font-bold text-slate-700">Unggah File Brosur (PDF / Dokumen)</label>
                 <input type="file" name="brochure_file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-japan-700 hover:file:bg-red-100">
-                <p class="text-[10px] text-slate-400">Format PDF disarankan (maks. 20MB). Jika tidak diunggah, sistem akan menggunakan template standar resmi.</p>
+                <p class="text-[10px] text-slate-400">Format PDF disarankan (maks. 20MB). Jika tidak diunggah, sistem akan menggunakan file format standar resmi.</p>
             </div>
 
             <!-- Status Tampil -->
             <div class="flex items-center gap-2 pt-2">
                 <input type="checkbox" name="is_active" id="isActiveCheck" value="1" checked class="rounded text-japan-600 focus:ring-0">
-                <label for="isActiveCheck" class="text-xs font-bold text-slate-700 cursor-pointer">Aktifkan dan tampilkan langsung di halaman publik</label>
+                <label for="isActiveCheck" class="text-xs font-bold text-slate-700 cursor-pointer">Aktifkan dan tampilkan langsung di katalog publik tamu</label>
             </div>
 
             <div class="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">
@@ -371,6 +452,31 @@
         document.getElementById('editDescription').value = desc || '';
         document.getElementById('editIsActive').checked = isActive === 1;
         openModal('editBrochureModal');
+    }
+
+    // Client-side Instant Filter
+    function filterBrochuresLive() {
+        const query = (document.getElementById('brochureTableSearch').value || '').toLowerCase().trim();
+        const rows = document.querySelectorAll('.brochure-row');
+        let count = 0;
+
+        rows.forEach(row => {
+            const title = row.getAttribute('data-title') || '';
+            const desc = row.getAttribute('data-desc') || '';
+            const file = row.getAttribute('data-file') || '';
+            const prog = row.getAttribute('data-program') || '';
+
+            const match = !query || title.includes(query) || desc.includes(query) || file.includes(query) || prog.includes(query);
+            if (match) {
+                row.style.display = '';
+                count++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        const countEl = document.getElementById('displayedBrochureCount');
+        if (countEl) countEl.textContent = count;
     }
 </script>
 @endsection

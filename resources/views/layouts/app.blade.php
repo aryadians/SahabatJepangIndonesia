@@ -187,6 +187,15 @@
                             });
                         });
                     }
+
+                    // Update live brochure download counters
+                    if (data.brochures) {
+                        data.brochures.forEach(br => {
+                            document.querySelectorAll(`[data-live-brochure-downloads="${br.id}"]`).forEach(el => {
+                                el.textContent = Number(br.download_count).toLocaleString('id-ID') + ' diunduh';
+                            });
+                        });
+                    }
                 })
                 .catch(() => {});
             }

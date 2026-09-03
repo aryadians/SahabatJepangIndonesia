@@ -33,6 +33,10 @@ class RealTimeSyncController extends Controller
             ->take(5)
             ->get(['id', 'batch_name', 'program_type', 'quota', 'remaining_seats', 'registration_deadline']);
 
+        // Brosur aktif terkini untuk sinkronisasi halaman guest
+        $activeBrochures = \App\Models\Brochure::active()
+            ->get(['id', 'title', 'program', 'badge_text', 'download_count', 'file_name', 'file_size', 'updated_at']);
+
         return response()->json([
             'status' => 'success',
             'timestamp' => now()->toIso8601String(),
@@ -44,6 +48,7 @@ class RealTimeSyncController extends Controller
             ],
             'latest_departed' => $latestDeparted,
             'batches' => $batches,
+            'brochures' => $activeBrochures,
         ]);
     }
 

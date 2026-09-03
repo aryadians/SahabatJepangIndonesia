@@ -281,7 +281,7 @@
                                 </div>
                                 <div class="flex items-center gap-1.5 text-emerald-400">
                                     <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                                    <span>{{ number_format($b->download_count) }} diunduh</span>
+                                    <span data-live-brochure-downloads="{{ $b->id }}">{{ number_format($b->download_count) }} diunduh</span>
                                 </div>
                             </div>
 
