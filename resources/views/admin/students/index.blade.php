@@ -557,10 +557,78 @@
                     </div>
                     <div>
                         <span class="text-slate-400 text-[10px] uppercase font-bold block">No. WhatsApp / HP:</span>
-                        <a id="detailPhoneLink" href="#" target="_blank" class="font-bold text-emerald-600 hover:underline flex items-center gap-1">
-                            <span id="detailPhone">-</span>
-                            <i data-lucide="external-link" class="w-3 h-3"></i>
-                        </a>
+                        <div class="flex items-center gap-2">
+                            <a id="detailPhoneLink" href="#" target="_blank" class="font-bold text-emerald-600 hover:underline flex items-center gap-1">
+                                <span id="detailPhone">-</span>
+                                <i data-lucide="external-link" class="w-3 h-3"></i>
+                            </a>
+                            <button 
+                                type="button" 
+                                onclick="toggleStudentWaBox()" 
+                                class="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-extrabold text-[10px] flex items-center gap-1 transition"
+                                title="Buka Template Pesan WhatsApp Cepat"
+                            >
+                                <i data-lucide="message-circle" class="w-3 h-3"></i>
+                                <span>Template WA</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- WhatsApp Templates Accordion Box -->
+                    <div id="studentWaBox" class="col-span-2 sm:col-span-3 bg-emerald-50/70 border border-emerald-200/80 p-3 rounded-2xl hidden space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-black text-emerald-800 flex items-center gap-1.5">
+                                <i data-lucide="send" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                <span>Pilih Template Pesan WhatsApp Cepat:</span>
+                            </span>
+                            <button type="button" onclick="toggleStudentWaBox()" class="text-slate-400 hover:text-slate-700 text-xs">&times;</button>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <button 
+                                type="button" 
+                                onclick="sendStudentQuickWa('billing')" 
+                                class="p-2.5 rounded-xl bg-white hover:bg-emerald-600 hover:text-white border border-emerald-200 text-left transition font-semibold flex items-center gap-2 shadow-xs group"
+                            >
+                                <span class="p-1.5 rounded-lg bg-emerald-100 text-emerald-700 group-hover:bg-white group-hover:text-emerald-700">💸</span>
+                                <div>
+                                    <p class="font-bold text-[11px]">Pengingat Tagihan Sisa Biaya</p>
+                                    <p class="text-[10px] text-slate-500 group-hover:text-emerald-100 truncate">Rincian sisa biaya & rekening resmi LPK</p>
+                                </div>
+                            </button>
+                            <button 
+                                type="button" 
+                                onclick="sendStudentQuickWa('mcu')" 
+                                class="p-2.5 rounded-xl bg-white hover:bg-blue-600 hover:text-white border border-blue-200 text-left transition font-semibold flex items-center gap-2 shadow-xs group"
+                            >
+                                <span class="p-1.5 rounded-lg bg-blue-100 text-blue-700 group-hover:bg-white group-hover:text-blue-700">🏥</span>
+                                <div>
+                                    <p class="font-bold text-[11px]">Panggilan Medical Check-Up (MCU)</p>
+                                    <p class="text-[10px] text-slate-500 group-hover:text-blue-100 truncate">Jadwal & panduan puasa sebelum MCU</p>
+                                </div>
+                            </button>
+                            <button 
+                                type="button" 
+                                onclick="sendStudentQuickWa('interview')" 
+                                class="p-2.5 rounded-xl bg-white hover:bg-amber-600 hover:text-white border border-amber-200 text-left transition font-semibold flex items-center gap-2 shadow-xs group"
+                            >
+                                <span class="p-1.5 rounded-lg bg-amber-100 text-amber-700 group-hover:bg-white group-hover:text-amber-700">🏢</span>
+                                <div>
+                                    <p class="font-bold text-[11px]">Jadwal Wawancara Kaisha</p>
+                                    <p class="text-[10px] text-slate-500 group-hover:text-amber-100 truncate">Panggilan wawancara user di Jepang</p>
+                                </div>
+                            </button>
+                            <button 
+                                type="button" 
+                                onclick="sendStudentQuickWa('coe')" 
+                                class="p-2.5 rounded-xl bg-white hover:bg-purple-600 hover:text-white border border-purple-200 text-left transition font-semibold flex items-center gap-2 shadow-xs group"
+                            >
+                                <span class="p-1.5 rounded-lg bg-purple-100 text-purple-700 group-hover:bg-white group-hover:text-purple-700">✈️</span>
+                                <div>
+                                    <p class="font-bold text-[11px]">Kabar Baik CoE & Visa Terbit</p>
+                                    <p class="text-[10px] text-slate-500 group-hover:text-purple-100 truncate">Pemberitahuan kelulusan izin tinggal Jepang</p>
+                                </div>
+                            </button>
+                        </div>
                     </div>
                     <div>
                         <span class="text-slate-400 text-[10px] uppercase font-bold block">Email:</span>
@@ -808,6 +876,9 @@
         openModal('quickPaymentModal');
     }
 
+    let currentStudentObj = null;
+    let currentStudentFinancialObj = null;
+
     // Open Student Quick Detail Modal
     function openStudentDetailModal(studentId) {
         fetch(`/admin/students/${studentId}?format=json`, {
@@ -819,6 +890,12 @@
         .then(res => res.json())
         .then(data => {
             const s = data.student;
+            currentStudentObj = s;
+            currentStudentFinancialObj = data;
+
+            // Reset WhatsApp template accordion
+            const waBox = document.getElementById('studentWaBox');
+            if (waBox) waBox.classList.add('hidden');
 
             // Foto
             const photoImg = document.getElementById('detailPhoto');
@@ -947,6 +1024,45 @@
             console.error(err);
             alert('Gagal memuat detail data siswa.');
         });
+    }
+
+    // Toggle Student WhatsApp Template Accordion
+    function toggleStudentWaBox() {
+        const box = document.getElementById('studentWaBox');
+        if (box) {
+            box.classList.toggle('hidden');
+        }
+    }
+
+    // Send Quick WhatsApp to Student using Pre-Formatted Templates
+    function sendStudentQuickWa(type) {
+        if (!currentStudentObj) return;
+        const s = currentStudentObj;
+        const fin = currentStudentFinancialObj;
+
+        let cleanPhone = (s.phone || '').replace(/[^0-9]/g, '');
+        if (cleanPhone.startsWith('0')) {
+            cleanPhone = '62' + cleanPhone.substring(1);
+        }
+
+        if (!cleanPhone) {
+            alert('Nomor WhatsApp siswa belum terdaftar.');
+            return;
+        }
+
+        let msg = '';
+        if (type === 'billing') {
+            msg = `Halo Sdr/i *${s.name}* (NIS: ${s.nis}),\n\nSalam hangat dari Bagian Keuangan LPK Sahabat Jepang Indonesia 🌸\n\nKami menginformasikan status rincian biaya program *${s.program}* Anda saat ini:\n• Total Biaya: ${fin ? fin.formatted_total_cost : 'Rp -'}\n• Sudah Terbayar: ${fin ? fin.formatted_paid_amount : 'Rp -'}\n• Sisa Tanggungan: *${fin ? fin.formatted_remaining_balance : 'Rp -'}*\n\nMohon untuk menyelesaikan sisa pembayaran sebelum jadwal keberangkatan ke Jepang. Pembayaran dapat ditransfer ke rekening resmi LPK SJI. Terima kasih atas kerjasamanya.`;
+        } else if (type === 'mcu') {
+            msg = `Halo Sdr/i *${s.name}* (NIS: ${s.nis}),\n\nSalam dari Tim Keberangkatan LPK Sahabat Jepang Indonesia 🌸\n\nTahap persiapan kerja Anda ke Jepang telah memasuki jadwal *Medical Check-Up (MCU)*.\n• Klinik/RS Rekanan: *${s.mcu_clinic || 'RS / Klinik Rekanan LPK'}*\n• Tanggal Pelaksanaan: *${s.mcu_date ? s.mcu_date.split('T')[0] : 'Sesuai Jadwal'}*\n\n*Panduan Sebelum MCU:*\n1. Berpuasa 10-12 jam sebelum pemeriksaan darah (hanya boleh minum air putih).\n2. Istirahat cukup dan hindari begadang.\n3. Membawa e-KTP asli dan pasfoto 3x4.\n\nSemoga hasil MCU Fit dan lancar ya!`;
+        } else if (type === 'interview') {
+            msg = `Halo Sdr/i *${s.name}*,\n\nPemberitahuan dari Divisi Penempatan LPK Sahabat Jepang Indonesia 🌸\n\nJadwal wawancara kerja Anda dengan pihak user di Jepang telah ditetapkan:\n• Perusahaan (Kaisha): *${s.destination_company || 'Perusahaan Mitra Jepang'}*\n• Prefektur: *${s.destination_prefecture || 'Jepang'}*\n• Bidang Pekerjaan: *${s.sector || s.program}*\n\nHarap mempersiapkan *Jikoshoukai* (perkenalan diri dalam bahasa Jepang), mengenakan seragam kemeja putih rapi berkerah, dan hadir 30 menit sebelum sesi dimulai. Ganbatte kudasai!`;
+        } else if (type === 'coe') {
+            msg = `Omedetou gozaimasu Sdr/i *${s.name}*! 🎉🇯🇵\n\nKabar gembira dari LPK Sahabat Jepang Indonesia!\nDokumen *Certificate of Eligibility (CoE)* Anda dari Imigrasi Jepang telah terbit resmi${s.coe_number ? ' dengan nomor: *' + s.coe_number + '*' : ''}.\n\nTim kami saat ini sedang mempersiapkan pengajuan Visa Kerja ke Kedutaan Besar Jepang. Harap pastikan paspor asli Anda masih aktif. Selamat melangkah menuju karir di Jepang!`;
+        }
+
+        const waUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(msg)}`;
+        window.open(waUrl, '_blank');
     }
 
     // View Doc from Detail Modal
