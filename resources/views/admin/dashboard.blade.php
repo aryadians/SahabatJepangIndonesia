@@ -50,7 +50,7 @@
             </div>
             <div>
                 <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Siswa Terdata</p>
-                <h3 class="text-2xl font-black text-slate-900 mt-0.5">{{ number_format($counts['students']) }}</h3>
+                <h3 data-admin-stat="students_total" class="text-2xl font-black text-slate-900 mt-0.5">{{ number_format($counts['students']) }}</h3>
                 <a href="{{ route('admin.students.index') }}" class="text-[11px] font-bold text-japan-600 hover:underline">Kelola Data &rarr;</a>
             </div>
         </div>
@@ -62,7 +62,7 @@
             </div>
             <div>
                 <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Aktif Belajar / Wawancara</p>
-                <h3 class="text-2xl font-black text-blue-600 mt-0.5">{{ number_format($counts['students_active']) }}</h3>
+                <h3 data-admin-stat="students_active" class="text-2xl font-black text-blue-600 mt-0.5">{{ number_format($counts['students_active']) }}</h3>
                 <span class="text-[11px] text-slate-400">Tahap persiapan</span>
             </div>
         </div>
@@ -74,7 +74,7 @@
             </div>
             <div>
                 <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Sudah Berada di Jepang</p>
-                <h3 class="text-2xl font-black text-emerald-600 mt-0.5">{{ number_format($counts['students_departed']) }}</h3>
+                <h3 data-admin-stat="students_departed" class="text-2xl font-black text-emerald-600 mt-0.5">{{ number_format($counts['students_departed']) }}</h3>
                 <span class="text-[11px] text-slate-400">Resmi bekerja</span>
             </div>
         </div>
@@ -86,7 +86,7 @@
             </div>
             <div>
                 <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Sisa Tanggungan Biaya</p>
-                <h3 class="text-base sm:text-lg font-black text-amber-600 mt-0.5">Rp {{ number_format($counts['receivables'], 0, ',', '.') }}</h3>
+                <h3 data-admin-stat="receivables" class="text-base sm:text-lg font-black text-amber-600 mt-0.5">Rp {{ number_format($counts['receivables'], 0, ',', '.') }}</h3>
                 <span class="text-[11px] text-slate-400">Belum lunas</span>
             </div>
         </div>
@@ -99,7 +99,7 @@
         <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
             <div>
                 <p class="text-[11px] font-bold text-slate-400 uppercase">Leads Pendaftar</p>
-                <h4 class="text-xl font-black text-slate-900 mt-0.5">{{ $counts['leads_total'] }} Orang</h4>
+                <h4 data-admin-stat="leads_total" data-suffix=" Orang" class="text-xl font-black text-slate-900 mt-0.5">{{ $counts['leads_total'] }} Orang</h4>
             </div>
             <a href="{{ route('admin.consultations.index') }}" class="p-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200" title="Buka Leads">
                 <i data-lucide="users" class="w-4 h-4"></i>
@@ -109,7 +109,7 @@
         <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
             <div>
                 <p class="text-[11px] font-bold text-amber-500 uppercase">Perlu Dihubungi</p>
-                <h4 class="text-xl font-black text-amber-600 mt-0.5">{{ $counts['leads_pending'] }} Leads</h4>
+                <h4 data-admin-stat="leads_pending" data-suffix=" Leads" class="text-xl font-black text-amber-600 mt-0.5">{{ $counts['leads_pending'] }} Leads</h4>
             </div>
             <span class="w-3 h-3 rounded-full bg-amber-500 animate-ping"></span>
         </div>

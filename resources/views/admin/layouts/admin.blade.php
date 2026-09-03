@@ -616,6 +616,9 @@
                     }
                 }
 
+                // Global Dashboard KPI Metrics Sync
+                window.updateAdminStatsDom(data);
+
                 // Detect New Incoming Lead
                 if (!isFirstSync && lastKnownMaxLeadId !== null && data.max_consultation_id > lastKnownMaxLeadId) {
                     playChimeSound();
@@ -639,6 +642,58 @@
                 // Silently wait for next interval
             });
         }
+
+        // Global function to sync all data-admin-stat elements across any admin page
+        window.updateAdminStatsDom = function(data) {
+            if (!data) return;
+
+            // Leads KPIs
+            if (data.leads_kpi) {
+                const map = {
+                    'leads_total': data.leads_kpi.total,
+                    'leads_pending': data.leads_kpi.pending,
+                    'leads_contacted': data.leads_kpi.contacted,
+                    'leads_registered': data.leads_kpi.registered,
+                    'leads_cancelled': data.leads_kpi.cancelled,
+                };
+                Object.keys(map).forEach(key => {
+                    const val = map[key];
+                    if (val !== undefined) {
+                        document.querySelectorAll(`[data-admin-stat="${key}"]`).forEach(el => {
+                            const suffix = el.getAttribute('data-suffix') || '';
+                            const prefix = el.getAttribute('data-prefix') || '';
+                            el.textContent = prefix + Number(val).toLocaleString('id-ID') + suffix;
+                        });
+                    }
+                });
+            }
+
+            // Students KPIs
+            if (data.students_kpi) {
+                const map = {
+                    'students_total': data.students_kpi.total,
+                    'students_active': data.students_kpi.active,
+                    'students_departed': data.students_kpi.departed,
+                };
+                Object.keys(map).forEach(key => {
+                    const val = map[key];
+                    if (val !== undefined) {
+                        document.querySelectorAll(`[data-admin-stat="${key}"]`).forEach(el => {
+                            const suffix = el.getAttribute('data-suffix') || '';
+                            const prefix = el.getAttribute('data-prefix') || '';
+                            el.textContent = prefix + Number(val).toLocaleString('id-ID') + suffix;
+                        });
+                    }
+                });
+            }
+
+            // Financial KPIs
+            if (data.financial_kpi && data.financial_kpi.formatted_receivables) {
+                document.querySelectorAll('[data-admin-stat="receivables"]').forEach(el => {
+                    el.textContent = data.financial_kpi.formatted_receivables;
+                });
+            }
+        };
 
         // Start Real-Time Sync Poller
         pollAdminSync();

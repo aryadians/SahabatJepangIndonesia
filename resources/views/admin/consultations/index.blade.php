@@ -33,7 +33,7 @@
                     <i data-lucide="users" class="w-4 h-4"></i>
                 </div>
             </div>
-            <p class="text-2xl sm:text-3xl font-black text-slate-900 mt-2">{{ number_format($stats['total']) }}</p>
+            <p data-admin-stat="leads_total" class="text-2xl sm:text-3xl font-black text-slate-900 mt-2">{{ number_format($stats['total']) }}</p>
             <p class="text-[11px] text-slate-400 mt-0.5">Keseluruhan calon siswa</p>
         </div>
 
@@ -44,7 +44,7 @@
                     <i data-lucide="clock" class="w-4 h-4"></i>
                 </div>
             </div>
-            <p id="kpiPendingCount" class="text-2xl sm:text-3xl font-black text-amber-600 mt-2">{{ number_format($stats['pending']) }}</p>
+            <p data-admin-stat="leads_pending" id="kpiPendingCount" class="text-2xl sm:text-3xl font-black text-amber-600 mt-2">{{ number_format($stats['pending']) }}</p>
             <p class="text-[11px] text-amber-700/80 mt-0.5 font-medium">Status: Pending</p>
         </div>
 
@@ -55,7 +55,7 @@
                     <i data-lucide="message-square" class="w-4 h-4"></i>
                 </div>
             </div>
-            <p class="text-2xl sm:text-3xl font-black text-blue-600 mt-2">{{ number_format($stats['contacted']) }}</p>
+            <p data-admin-stat="leads_contacted" class="text-2xl sm:text-3xl font-black text-blue-600 mt-2">{{ number_format($stats['contacted']) }}</p>
             <p class="text-[11px] text-blue-700/80 mt-0.5 font-medium">Tahap konsultasi berjalan</p>
         </div>
 
@@ -66,7 +66,7 @@
                     <i data-lucide="check-circle" class="w-4 h-4"></i>
                 </div>
             </div>
-            <p class="text-2xl sm:text-3xl font-black text-emerald-600 mt-2">{{ number_format($stats['registered']) }}</p>
+            <p data-admin-stat="leads_registered" class="text-2xl sm:text-3xl font-black text-emerald-600 mt-2">{{ number_format($stats['registered']) }}</p>
             <p class="text-[11px] text-emerald-700/80 mt-0.5 font-medium">Masuk kelas pelatihan</p>
         </div>
 
@@ -441,6 +441,11 @@
                     selectElement.classList.add('bg-emerald-50', 'text-emerald-800', 'border-emerald-300');
                 } else {
                     selectElement.classList.add('bg-slate-100', 'text-slate-700', 'border-slate-300');
+                }
+
+                // Sync mini dashboard immediately
+                if (data.stats && window.updateAdminStatsDom) {
+                    window.updateAdminStatsDom({ leads_kpi: data.stats });
                 }
 
                 // Show subtle toast

@@ -87,4 +87,32 @@ class RealTimeSyncTest extends TestCase
         $this->assertEquals($initCount + 1, $syncResponse->json('notifications.pending_leads_count'));
         $this->assertEquals($lead->id, $syncResponse->json('max_consultation_id'));
     }
+
+    public function test_updating_lead_status_via_ajax_returns_live_kpi_stats(): void
+    {
+        $lead = Consultation::create([
+            'name' => 'Budi Santoso Test',
+            'phone' => '081299988877',
+            'program' => 'Tokutei Ginou (SSW)',
+            'city' => 'Jakarta',
+            'status' => 'pending',
+        ]);
+
+        $response = $this->actingAs($this->admin)->postJson("/admin/leads/{$lead->id}/status", [
+            'status' => 'contacted',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'status' => 'contacted',
+        ]);
+        $this->assertEquals(0, $response->json('stats.pending'));
+        $this->assertEquals(1, $response->json('stats.contacted'));
+
+        // Verify that admin sync endpoint also reflects updated KPIs
+        $adminSync = $this->actingAs($this->admin)->getJson('/admin/api/realtime-sync');
+        $this->assertEquals(0, $adminSync->json('leads_kpi.pending'));
+        $this->assertEquals(1, $adminSync->json('leads_kpi.contacted'));
+    }
 }

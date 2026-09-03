@@ -62,11 +62,20 @@ class AdminConsultationController extends Controller
         $consultation->update($validated);
 
         if ($request->ajax() || $request->wantsJson()) {
+            $stats = [
+                'total' => Consultation::count(),
+                'pending' => Consultation::where('status', 'pending')->count(),
+                'contacted' => Consultation::where('status', 'contacted')->count(),
+                'registered' => Consultation::where('status', 'registered')->count(),
+                'cancelled' => Consultation::where('status', 'cancelled')->count(),
+            ];
+
             return response()->json([
                 'success' => true,
                 'message' => "Status {$consultation->name} berhasil diubah menjadi " . ucfirst($consultation->status),
                 'status' => $consultation->status,
                 'consultation' => $consultation,
+                'stats' => $stats,
             ]);
         }
 

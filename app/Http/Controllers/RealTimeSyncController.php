@@ -79,6 +79,19 @@ class RealTimeSyncController extends Controller
         $pendingAffiliatesCount = Affiliate::where('is_active', false)->count();
         $totalStudents = Student::count();
         $activeStudents = Student::whereIn('status', ['active', 'interview', 'passed_interview'])->count();
+        $departedStudents = Student::where('status', 'departed')->count();
+
+        $leadsKpi = [
+            'total' => Consultation::count(),
+            'pending' => $pendingLeadsCount,
+            'contacted' => Consultation::where('status', 'contacted')->count(),
+            'registered' => Consultation::where('status', 'registered')->count(),
+            'cancelled' => Consultation::where('status', 'cancelled')->count(),
+        ];
+
+        $totalReceivables = Student::where('status', '!=', 'cancelled')
+            ->selectRaw('SUM(CASE WHEN total_cost > paid_amount THEN total_cost - paid_amount ELSE 0 END) as total_receivable')
+            ->value('total_receivable') ?? 0;
 
         $maxConsultationId = Consultation::max('id') ?? 0;
         $maxStudentId = Student::max('id') ?? 0;
@@ -94,10 +107,15 @@ class RealTimeSyncController extends Controller
                 'latest_leads' => $latestLeads,
                 'pending_affiliates_count' => $pendingAffiliatesCount,
             ],
+            'leads_kpi' => $leadsKpi,
             'students_kpi' => [
                 'total' => $totalStudents,
                 'active' => $activeStudents,
-                'departed' => Student::where('status', 'departed')->count(),
+                'departed' => $departedStudents,
+            ],
+            'financial_kpi' => [
+                'receivables' => (float) $totalReceivables,
+                'formatted_receivables' => 'Rp ' . number_format($totalReceivables, 0, ',', '.'),
             ],
         ]);
     }
