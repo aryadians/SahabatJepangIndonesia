@@ -55,8 +55,8 @@
                             <div class="mb-4 p-3 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-start gap-2.5">
                                 <i data-lucide="award" class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5"></i>
                                 <div>
-                                    <span class="text-[11px] font-black uppercase text-emerald-900 tracking-wider block">Jalur Beasiswa Kemenkes RI (100% Gratis)</span>
-                                    <p class="text-[11px] text-emerald-700 leading-snug">Kerjasama MoU Poltekkes & STIKes se-Indonesia. Pelatihan & penempatan Kaisha Kaigo gratis (Sukses 4 gelombang).</p>
+                                    <span class="text-[11px] font-black uppercase text-emerald-900 tracking-wider block">SMILE Project (Khusus Poltekkes MoU Resmi - 100% Gratis)</span>
+                                    <p class="text-[11px] text-emerald-700 leading-snug">Kerjasama MoU Poltekkes Kemenkes RI se-Indonesia (Sukses 4 gelombang). Untuk non-MoU/umum, tersedia jalur Tokutei Ginou Kaigo Reguler dengan skema dana talangan.</p>
                                 </div>
                             </div>
                         @endif
@@ -136,9 +136,16 @@
                     <p class="text-xs sm:text-sm text-slate-500">Konsultasikan bakat, pendidikan, dan usia Anda dengan tim konselor kami secara gratis.</p>
                 </div>
             </div>
-            <button onclick="openModal('consultationModal')" class="btn-red-primary px-6 py-3 rounded-xl text-sm font-bold whitespace-nowrap shadow-md">
-                Konsultasi Pilihan Program &rarr;
-            </button>
+            <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto flex-shrink-0">
+                <button onclick="openModal('quizModal')" class="w-full sm:w-auto px-5 py-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-sm font-bold flex items-center justify-center gap-2 transition active:scale-95 shadow-xs">
+                    <i data-lucide="help-circle" class="w-4 h-4 text-amber-600"></i>
+                    <span>Kuis Minat 60 Detik</span>
+                </button>
+                <button onclick="openModal('consultationModal')" class="w-full sm:w-auto btn-red-primary px-6 py-3 rounded-xl text-sm font-bold whitespace-nowrap shadow-md flex items-center justify-center gap-1.5 transition active:scale-95">
+                    <span>Konsultasi Gratis</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </div>
         </div>
 
     </div>

@@ -58,16 +58,21 @@
                 </p>
 
                 <!-- Call To Actions -->
-                <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2 reveal-on-scroll delay-300">
-                    <button onclick="openModal('consultationModal')" class="w-full sm:w-auto btn-red-primary px-8 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-3 shadow-lg shadow-red-600/30 group">
+                <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2 reveal-on-scroll delay-300">
+                    <button onclick="openModal('consultationModal')" class="w-full sm:w-auto btn-red-primary px-7 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-3 shadow-lg shadow-red-600/30 group transition active:scale-95">
                         <i data-lucide="sparkles" class="w-5 h-5 text-amber-200 group-hover:rotate-12 transition-transform"></i>
                         <span>Mulai Konsultasi Gratis</span>
                         <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
                     </button>
                     
-                    <a href="#program" class="w-full sm:w-auto btn-white-outline px-7 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2">
+                    <button onclick="openModal('quizModal')" class="w-full sm:w-auto px-6 py-4 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold text-base flex items-center justify-center gap-2 transition hover:scale-105 active:scale-95 shadow-md shadow-amber-500/10">
+                        <i data-lucide="help-circle" class="w-5 h-5 text-amber-600"></i>
+                        <span>Tes Minat 60 Detik</span>
+                    </button>
+
+                    <a href="#program" class="w-full sm:w-auto btn-white-outline px-6 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition active:scale-95">
                         <i data-lucide="compass" class="w-5 h-5 text-japan-600"></i>
-                        <span>Pilihan Program Kerja</span>
+                        <span>Pilihan Program</span>
                     </a>
                 </div>
 
@@ -158,28 +163,32 @@
 
         </div>
 
-        <!-- Live Achievement Counters (4 Highlights) -->
+        <!-- Live Achievement Counters (4 Highlights) with Kanji Emblems -->
         <div class="mt-16 sm:mt-20 pt-8 border-t border-slate-200/80 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 reveal-on-scroll delay-400">
             
-            <div class="text-center p-4 rounded-2xl bg-white/60 backdrop-blur-sm border border-slate-100 hover:border-red-200 transition">
+            <div class="relative overflow-hidden text-center p-4 sm:p-5 rounded-2xl bg-white/70 backdrop-blur-md border border-slate-100 hover:border-red-200 transition-all hover:-translate-y-1 hover:shadow-lg">
+                <span class="absolute top-1 right-2 font-japanese font-black text-3xl text-red-500/10 select-none pointer-events-none">友</span>
                 <p class="text-3xl sm:text-4xl lg:text-5xl font-black text-japan-700 tracking-tight" data-counter="{{ $settings['stat_alumni_count'] ?? '500' }}" data-suffix="{{ $settings['stat_alumni_suffix'] ?? '+' }}" data-live-stat="total_alumni">0{{ $settings['stat_alumni_suffix'] ?? '+' }}</p>
                 <p class="text-xs sm:text-sm font-bold text-slate-800 mt-1">Alumni Diberangkatkan</p>
                 <p class="text-[11px] text-slate-500">Bekerja aktif di Jepang</p>
             </div>
 
-            <div class="text-center p-4 rounded-2xl bg-white/60 backdrop-blur-sm border border-slate-100 hover:border-red-200 transition">
+            <div class="relative overflow-hidden text-center p-4 sm:p-5 rounded-2xl bg-white/70 backdrop-blur-md border border-slate-100 hover:border-red-200 transition-all hover:-translate-y-1 hover:shadow-lg">
+                <span class="absolute top-1 right-2 font-japanese font-black text-3xl text-red-500/10 select-none pointer-events-none">絆</span>
                 <p class="text-3xl sm:text-4xl lg:text-5xl font-black text-japan-700 tracking-tight" data-counter="{{ $settings['stat_partners_count'] ?? '50' }}" data-suffix="{{ $settings['stat_partners_suffix'] ?? '+' }}">0{{ $settings['stat_partners_suffix'] ?? '+' }}</p>
                 <p class="text-xs sm:text-sm font-bold text-slate-800 mt-1">Mitra Kaisha & Kumiai</p>
                 <p class="text-[11px] text-slate-500">Perusahaan terverifikasi</p>
             </div>
 
-            <div class="text-center p-4 rounded-2xl bg-white/60 backdrop-blur-sm border border-slate-100 hover:border-red-200 transition">
+            <div class="relative overflow-hidden text-center p-4 sm:p-5 rounded-2xl bg-white/70 backdrop-blur-md border border-slate-100 hover:border-red-200 transition-all hover:-translate-y-1 hover:shadow-lg">
+                <span class="absolute top-1 right-2 font-japanese font-black text-3xl text-red-500/10 select-none pointer-events-none">合</span>
                 <p class="text-3xl sm:text-4xl lg:text-5xl font-black text-japan-700 tracking-tight" data-counter="{{ $settings['stat_pass_rate_count'] ?? '98' }}" data-suffix="{{ $settings['stat_pass_rate_suffix'] ?? '%' }}">0{{ $settings['stat_pass_rate_suffix'] ?? '%' }}</p>
                 <p class="text-xs sm:text-sm font-bold text-slate-800 mt-1">Tingkat Lulus Ujian</p>
                 <p class="text-[11px] text-slate-500">JLPT & JFT Basic A2</p>
             </div>
 
-            <div class="text-center p-4 rounded-2xl bg-white/60 backdrop-blur-sm border border-slate-100 hover:border-red-200 transition">
+            <div class="relative overflow-hidden text-center p-4 sm:p-5 rounded-2xl bg-white/70 backdrop-blur-md border border-slate-100 hover:border-red-200 transition-all hover:-translate-y-1 hover:shadow-lg">
+                <span class="absolute top-1 right-2 font-japanese font-black text-3xl text-red-500/10 select-none pointer-events-none">認</span>
                 <p class="text-3xl sm:text-4xl lg:text-5xl font-black text-japan-700 tracking-tight" data-counter="{{ $settings['stat_legal_count'] ?? '100' }}" data-suffix="{{ $settings['stat_legal_suffix'] ?? '%' }}">0{{ $settings['stat_legal_suffix'] ?? '%' }}</p>
                 <p class="text-xs sm:text-sm font-bold text-slate-800 mt-1">Legalitas Kemenaker</p>
                 <p class="text-[11px] text-slate-500">Sending Organization Resmi</p>

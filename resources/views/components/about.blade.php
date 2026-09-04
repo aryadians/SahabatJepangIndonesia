@@ -114,5 +114,71 @@
 
         </div>
 
+        <!-- Japanese Educational Philosophy: Shin-Gi-Tai (心・技・体) -->
+        <div class="mt-8 p-6 sm:p-8 rounded-3xl bg-slate-900 text-white shadow-xl relative overflow-hidden border border-slate-800 reveal-on-scroll">
+            <div class="absolute -right-8 -bottom-8 font-japanese font-black text-9xl text-white/5 select-none pointer-events-none">
+                心技体
+            </div>
+
+            <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-b border-slate-800 pb-6 mb-6">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-600/20 text-red-400 text-[11px] font-black uppercase tracking-wider border border-red-500/30">
+                        <span class="font-japanese">教育理念</span>
+                        <span>• Filosofi Pembinaan Karakter Siswa</span>
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-black text-white mt-2">
+                        Konsep Trilogi Pendidikan Jepang: <span class="text-red-400 font-japanese">心・技・体</span> (Shin • Gi • Tai)
+                    </h3>
+                </div>
+                <p class="text-xs text-slate-400 max-w-md leading-relaxed">
+                    Setiap siswa dididik tidak hanya untuk lulus tes bahasa, melainkan siap bertahan, berprestasi, dan dihormati oleh rekan kerja di Jepang.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+                <!-- 1. Shin (Mind & Spirit) -->
+                <div class="p-4 sm:p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-red-400/40 transition space-y-2">
+                    <div class="flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-xl bg-red-600/20 text-red-400 font-japanese font-black text-xl flex items-center justify-center border border-red-500/30">心</span>
+                        <div>
+                            <h4 class="font-black text-white text-sm">SHIN (Mental &amp; Etos)</h4>
+                            <p class="text-[11px] text-slate-400">Pembentukan Karakter</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed pt-1">
+                        Penerapan budaya kerja Jepang sejak asrama: <em>Aisatsu</em> (salam santun), <em>Hourensou</em> (lapor &amp; koordinasi), <em>5S</em>, serta kedisiplinan waktu tanpa kompromi.
+                    </p>
+                </div>
+
+                <!-- 2. Gi (Skills & Language) -->
+                <div class="p-4 sm:p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-red-400/40 transition space-y-2">
+                    <div class="flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-xl bg-blue-600/20 text-blue-400 font-japanese font-black text-xl flex items-center justify-center border border-blue-500/30">技</span>
+                        <div>
+                            <h4 class="font-black text-white text-sm">GI (Bahasa &amp; Keterampilan)</h4>
+                            <p class="text-[11px] text-slate-400">Kompetensi Teknis</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed pt-1">
+                        Metode kilat percakapan aktif (<em>Kaiwa</em>), simulasi wawancara Kaisha langsung dengan Sensei Native, persiapan JLPT/JFT N4-N3, dan sertifikasi keahlian spesifik.
+                    </p>
+                </div>
+
+                <!-- 3. Tai (Body & Health) -->
+                <div class="p-4 sm:p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-red-400/40 transition space-y-2">
+                    <div class="flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-xl bg-emerald-600/20 text-emerald-400 font-japanese font-black text-xl flex items-center justify-center border border-emerald-500/30">体</span>
+                        <div>
+                            <h4 class="font-black text-white text-sm">TAI (Fisik &amp; Stamina)</h4>
+                            <p class="text-[11px] text-slate-400">Ketahanan 4 Musim</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed pt-1">
+                        Olahraga teratur, pola hidup higienis, pemeriksaan kesehatan berkala (MCU), dan latihan ketahanan mental-fisik untuk kesiapan kerja di musim dingin maupun panas Jepang.
+                    </p>
+                </div>
+            </div>
+        </div>
+
     </div>
 </section>

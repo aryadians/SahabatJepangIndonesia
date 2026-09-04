@@ -82,6 +82,8 @@ Website ini menggabungkan:
 | **📖 Zen Article Reader** | Halaman artikel edukatif dengan indikator progres baca atas layar, pengatur ukuran teks (`A-`/`Normal`/`A+`), dan kapsul share sosial mengambang. | `/artikel/{slug}` |
 | **🔔 Live Social Proof Ticker** | Pop-up aktivitas melayang di pojok kiri bawah (CoE terbit, brosur terunduh, lolos wawancara, terbang ke Narita, simulasi CBT, MoU) yang dikonfigurasi dinamis oleh Admin. | Global Layout |
 | **🏥 SMILE Project (Poltekkes MoU)** | Program beasiswa Kaigo 100% Gratis dari Kemenkes RI **khusus mahasiswa/alumni Poltekkes Kemenkes yang telah MoU resmi**, lengkap dengan peringatan alur pintar dan input kampus asal. | `components/consultation-modal` & `components/partners` |
+| **🥋 Trilogi Pendidikan Shin-Gi-Tai** | Filosofi pembinaan karakter siswa Jepang: **心 (Shin - Mental & Etos)**, **技 (Gi - Bahasa & Keterampilan)**, dan **体 (Tai - Fisik & Ketahanan 4 Musim)**. | `components/about.blade.php` |
+| **🎯 Tes Minat Program 60 Detik** | Akses cepat kuis interaktif di Hero banner & katalog program untuk mencocokkan profil usia, pendidikan, dan sektor kerja secara instan. | `components/hero` & `components/programs` |
 | **💰 Simulasi Gaji & Tabungan** | Transparansi penghitungan gaji kotor, lembur (*zangyou*), potongan pajak, dan proyeksi sisa tabungan bulanan. | `/#kalkulator` |
 | **📝 Simulasi Ujian JLPT CBT** | Aplikasi simulator Computer-Based Test (CBT) interaktif dengan bank 100 soal bahasa Jepang (Moji, Goi, Bunpou, Dokkai) lengkap dengan skoring instan gratis. | `/simulasi-ujian` |
 | **🗺️ Peta Alumni 47 Prefektur** | Peta interaktif sebaran alumni LPK SJI yang telah aktif bekerja di Tokyo, Osaka, Aichi, Kanagawa, Fukuoka, Hokkaido, dll. | `/sebaran-alumni` |
