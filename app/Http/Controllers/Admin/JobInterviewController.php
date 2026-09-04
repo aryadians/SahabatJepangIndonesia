@@ -47,6 +47,32 @@ class JobInterviewController extends Controller
     }
 
     /**
+     * Export / Cetak Riwayat & Agenda Wawancara Kaisha ke PDF Resmi
+     */
+    public function exportPdf(Request $request)
+    {
+        $status = $request->query('status', 'all');
+        $sector = $request->query('sector', 'all');
+
+        $query = JobInterview::with(['candidates.student'])->orderBy('interview_date', 'desc');
+
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        if ($sector !== 'all') {
+            $query->where('sector', $sector);
+        }
+
+        $interviews = $query->get();
+
+        $totalCandidates = InterviewCandidate::whereIn('job_interview_id', $interviews->pluck('id'))->count();
+        $passedCandidates = InterviewCandidate::whereIn('job_interview_id', $interviews->pluck('id'))->where('result', 'passed')->count();
+
+        return view('admin.interviews.export_pdf', compact('interviews', 'totalCandidates', 'passedCandidates', 'status', 'sector'));
+    }
+
+    /**
      * Simpan Jadwal Wawancara Kaisha Baru
      */
     public function store(Request $request)

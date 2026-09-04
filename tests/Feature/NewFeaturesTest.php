@@ -278,4 +278,99 @@ class NewFeaturesTest extends TestCase
         $homeDisabled = $this->get('/');
         $homeDisabled->assertSee('enabled: false', false);
     }
+
+    public function test_admin_can_export_pdf_for_leads_finance_students_teachers_and_interviews_with_dynamic_logo(): void
+    {
+        // 1. Set dynamic custom logo in settings
+        \App\Models\SiteSetting::set('site_name', 'LPK NIPPON INDONESIA JAYA');
+        \App\Models\SiteSetting::set('site_logo', 'https://example.com/logo-lpk.png');
+
+        // Create sample records
+        \App\Models\Consultation::create([
+            'name' => 'Kandidat Lead PDF',
+            'phone' => '081299998888',
+            'program' => 'Tokutei Ginou',
+            'city' => 'Bandung',
+            'status' => 'pending',
+        ]);
+
+        $st = Student::create([
+            'nis' => 'SJI-2026-PDF01',
+            'name' => 'Siswa Roster PDF',
+            'gender' => 'Laki-laki',
+            'program' => 'Magang Jepang',
+            'status' => 'active',
+            'total_cost' => 20000000,
+            'paid_amount' => 5000000,
+            'payment_status' => 'partial',
+        ]);
+
+        \App\Models\Teacher::create([
+            'nip' => 'SENSEI-PDF-01',
+            'name' => 'Yamamoto Kenji Sensei',
+            'gender' => 'Laki-laki',
+            'jlpt_level' => 'JLPT N1 / Native',
+            'specialization' => 'Bunpou & Choukai',
+            'employment_type' => 'Tetap',
+            'status' => 'active',
+        ]);
+
+        $interview = JobInterview::create([
+            'company_name' => 'Kanto Care Home Kaisha',
+            'prefecture' => 'Kanagawa',
+            'sector' => 'Kaigo / Caregiver',
+            'interview_date' => now()->addDays(2),
+            'location_type' => 'online',
+            'quota_needed' => 2,
+            'status' => 'scheduled',
+        ]);
+
+        \App\Models\InterviewCandidate::create([
+            'job_interview_id' => $interview->id,
+            'student_id' => $st->id,
+            'result' => 'passed',
+            'interview_score' => 92.5,
+            'interviewer_feedback' => 'Bahasa sangat lancar dan etos kerja tinggi',
+        ]);
+
+        // 1. Test Leads Export PDF
+        $resLeads = $this->actingAs($this->admin)->get('/admin/leads/export-pdf');
+        $resLeads->assertStatus(200);
+        $resLeads->assertSee('LAPORAN DATA KONSULTASI');
+        $resLeads->assertSee('Kandidat Lead PDF');
+        $resLeads->assertSee('https://example.com/logo-lpk.png');
+        $resLeads->assertSee('LPK NIPPON INDONESIA JAYA');
+
+        // 2. Test Finance Analytics Export PDF
+        $resFinance = $this->actingAs($this->admin)->get('/admin/finance/export-pdf');
+        $resFinance->assertStatus(200);
+        $resFinance->assertSee('LAPORAN EKSEKUTIF KEUANGAN');
+        $resFinance->assertSee('Proyeksi 30 Hari');
+        $resFinance->assertSee('https://example.com/logo-lpk.png');
+
+        // 3. Test Student Database Export PDF
+        $resStudent = $this->actingAs($this->admin)->get('/admin/students/export-pdf');
+        $resStudent->assertStatus(200);
+        $resStudent->assertSee('REKAPITULASI BUKU INDUK SISWA');
+        $resStudent->assertSee('Siswa Roster PDF');
+        $resStudent->assertSee('SJI-2026-PDF01');
+        $resStudent->assertSee('https://example.com/logo-lpk.png');
+
+        // 4. Test Teachers Export PDF
+        $resTeachers = $this->actingAs($this->admin)->get('/admin/teachers/export-pdf');
+        $resTeachers->assertStatus(200);
+        $resTeachers->assertSee('DAFTAR RESMI DEWAN PENGAJAR');
+        $resTeachers->assertSee('Yamamoto Kenji Sensei');
+        $resTeachers->assertSee('JLPT N1 / Native');
+        $resTeachers->assertSee('https://example.com/logo-lpk.png');
+
+        // 5. Test Interview History Export PDF
+        $resInterviews = $this->actingAs($this->admin)->get('/admin/interviews/export-pdf');
+        $resInterviews->assertStatus(200);
+        $resInterviews->assertSee('LAPORAN RIWAYAT WAWANCARA KERJA');
+        $resInterviews->assertSee('Kanto Care Home Kaisha');
+        $resInterviews->assertSee('Siswa Roster PDF');
+        $resInterviews->assertSee('92.5/100');
+        $resInterviews->assertSee('https://example.com/logo-lpk.png');
+    }
 }

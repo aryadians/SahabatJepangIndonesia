@@ -49,6 +49,37 @@ class TeacherController extends Controller
     }
 
     /**
+     * Export / Cetak Daftar Dewan Pengajar & Sensei ke PDF Resmi
+     */
+    public function exportPdf(Request $request)
+    {
+        $query = Teacher::query();
+
+        if ($request->filled('q')) {
+            $q = trim($request->q);
+            $query->where(function ($sub) use ($q) {
+                $sub->where('name', 'like', "%{$q}%")
+                    ->orWhere('nip', 'like', "%{$q}%")
+                    ->orWhere('romaji_name', 'like', "%{$q}%")
+                    ->orWhere('phone', 'like', "%{$q}%")
+                    ->orWhere('specialization', 'like', "%{$q}%");
+            });
+        }
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('jlpt_level') && $request->jlpt_level !== 'all') {
+            $query->where('jlpt_level', $request->jlpt_level);
+        }
+
+        $teachers = $query->orderBy('id')->get();
+
+        return view('admin.teachers.export_pdf', compact('teachers'));
+    }
+
+    /**
      * Form Tambah Pengajar Sensei
      */
     public function create()

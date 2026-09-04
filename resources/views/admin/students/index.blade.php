@@ -203,6 +203,17 @@
                     <span>Export CSV</span>
                 </a>
 
+                <!-- Export Database PDF -->
+                <a 
+                    href="{{ route('admin.students.export.pdf', request()->all()) }}" 
+                    target="_blank"
+                    class="px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-2xs"
+                    title="Cetak Rekapitulasi Buku Induk Siswa ke PDF Resmi"
+                >
+                    <i data-lucide="printer" class="w-4 h-4"></i>
+                    <span>Export PDF</span>
+                </a>
+
                 <!-- Tambah Siswa Baru -->
                 <a 
                     href="{{ route('admin.students.create') }}" 

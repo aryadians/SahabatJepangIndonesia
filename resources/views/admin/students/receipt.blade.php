@@ -66,9 +66,15 @@
         <!-- Official Header (Kop Surat) -->
         <div class="border-b-2 border-slate-900 pb-6 flex items-start justify-between gap-6">
             <div class="flex items-start gap-4">
-                <div class="w-16 h-16 rounded-2xl bg-red-600 text-white flex items-center justify-center font-bold text-3xl shadow-md flex-shrink-0">
-                    友
-                </div>
+                @if(!empty($settings['site_logo']))
+                    <div class="h-16 w-16 rounded-2xl bg-white border border-slate-200 p-1 flex items-center justify-center shadow-xs overflow-hidden flex-shrink-0">
+                        <img src="{{ $settings['site_logo'] }}" alt="{{ $settings['site_name'] ?? 'LPK SJI' }}" class="max-h-full max-w-full object-contain">
+                    </div>
+                @else
+                    <div class="w-16 h-16 rounded-2xl bg-red-600 text-white flex items-center justify-center font-bold text-3xl shadow-md flex-shrink-0 font-japanese">
+                        友
+                    </div>
+                @endif
                 <div>
                     <h1 class="text-xl font-black tracking-tight text-slate-900 uppercase leading-none">
                         {{ $settings['site_name'] ?? 'LPK SAHABAT JEPANG INDONESIA' }}

@@ -122,14 +122,28 @@
 
             </form>
 
-            <!-- Export to Excel/CSV -->
-            <a 
-                href="{{ route('admin.consultations.export') }}" 
-                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold transition shadow-xs whitespace-nowrap"
-            >
-                <i data-lucide="download" class="w-4 h-4 text-emerald-600"></i>
-                <span>Export Excel / CSV</span>
-            </a>
+            <div class="flex items-center gap-2 flex-wrap">
+                <!-- Export to Excel/CSV -->
+                <a 
+                    href="{{ route('admin.consultations.export') }}" 
+                    class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold transition shadow-xs whitespace-nowrap"
+                    title="Export Seluruh Leads ke File CSV"
+                >
+                    <i data-lucide="download" class="w-4 h-4 text-emerald-600"></i>
+                    <span>Export CSV</span>
+                </a>
+
+                <!-- Export / Print PDF -->
+                <a 
+                    href="{{ route('admin.consultations.export.pdf', request()->all()) }}" 
+                    target="_blank"
+                    class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition shadow-xs whitespace-nowrap"
+                    title="Cetak Rekapitulasi Data Leads ke PDF Resmi"
+                >
+                    <i data-lucide="printer" class="w-4 h-4"></i>
+                    <span>Export PDF</span>
+                </a>
+            </div>
 
         </div>
 

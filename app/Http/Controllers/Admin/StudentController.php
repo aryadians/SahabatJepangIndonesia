@@ -399,6 +399,51 @@ class StudentController extends Controller
     }
 
     /**
+     * Export / Cetak Rekapitulasi Buku Induk Siswa ke PDF Resmi
+     */
+    public function exportPdf(Request $request)
+    {
+        $query = Student::query();
+
+        if ($request->filled('q')) {
+            $q = trim($request->q);
+            $query->where(function ($sub) use ($q) {
+                $sub->where('name', 'like', "%{$q}%")
+                    ->orWhere('nis', 'like', "%{$q}%")
+                    ->orWhere('japanese_name', 'like', "%{$q}%")
+                    ->orWhere('phone', 'like', "%{$q}%")
+                    ->orWhere('nik', 'like', "%{$q}%")
+                    ->orWhere('destination_company', 'like', "%{$q}%");
+            });
+        }
+
+        if ($request->filled('program') && $request->program !== 'all') {
+            $query->where('program', $request->program);
+        }
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('payment_status') && $request->payment_status !== 'all') {
+            $query->where('payment_status', $request->payment_status);
+        }
+
+        if ($request->filled('registration_category') && $request->registration_category !== 'all') {
+            $category = $request->registration_category;
+            if ($category === 'smile_project') {
+                $query->whereIn('registration_category', ['smile_project', 'kemenkes_kaigo']);
+            } else {
+                $query->where('registration_category', $category);
+            }
+        }
+
+        $students = $query->orderBy('id', 'asc')->get();
+
+        return view('admin.students.export_pdf', compact('students'));
+    }
+
+    /**
      * Export Seluruh Database Siswa ke CSV / Excel
      */
     public function exportCsv()

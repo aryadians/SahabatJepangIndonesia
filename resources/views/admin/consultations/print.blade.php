@@ -55,26 +55,12 @@
     <!-- Official Document Sheet (A4) -->
     <div class="max-w-3xl mx-auto bg-white p-8 sm:p-12 rounded-3xl shadow-xl border border-slate-200 print-page space-y-6">
         
-        <!-- Document Header (Kop Surat LPK) -->
-        <div class="flex items-center justify-between border-b-2 border-slate-900 pb-4">
-            <div class="flex items-center gap-4">
-                <div class="w-14 h-14 rounded-2xl bg-red-600 text-white flex items-center justify-center font-black text-2xl">
-                    友
-                </div>
-                <div>
-                    <h1 class="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-tight">LPK SAHABAT JEPANG INDONESIA</h1>
-                    <p class="text-xs font-bold text-red-600">友好日本インドネシア • SENDING ORGANIZATION (SO)</p>
-                    <p class="text-[10px] text-slate-500 mt-0.5">Izin Kemenaker RI No. 2/123/HK.01/V/2026 • Akreditasi Kemnaker A</p>
-                </div>
-            </div>
-
-            <div class="text-right">
-                <span class="inline-block px-3 py-1 rounded bg-slate-100 border border-slate-300 text-[10px] font-mono font-black text-slate-800">
-                    REG-SJI-{{ str_pad($consultation->id, 5, '0', STR_PAD_LEFT) }}
-                </span>
-                <p class="text-[10px] text-slate-400 mt-1">Tgl: {{ $consultation->created_at->format('d/m/Y') }}</p>
-            </div>
-        </div>
+        <!-- Document Header (Kop Surat LPK Dinamis & Logo) -->
+        @include('components.kop-surat', [
+            'code' => 'REG-SJI-' . str_pad($consultation->id, 5, '0', STR_PAD_LEFT),
+            'status' => strtoupper($consultation->status),
+            'date' => $consultation->created_at->format('d/m/Y')
+        ])
 
         <!-- Document Title -->
         <div class="text-center py-2">

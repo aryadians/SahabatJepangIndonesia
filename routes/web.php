@@ -155,6 +155,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('/leads/{id}/status', [AdminConsultationController::class, 'updateStatus'])->name('consultations.status');
     Route::delete('/leads/{id}', [AdminConsultationController::class, 'destroy'])->name('consultations.destroy');
     Route::get('/leads/export', [AdminConsultationController::class, 'exportCsv'])->name('consultations.export');
+    Route::get('/leads/export-pdf', [AdminConsultationController::class, 'exportPdf'])->name('consultations.export.pdf');
     Route::get('/leads/{id}/print', [AdminConsultationController::class, 'printForm'])->name('consultations.print');
 
     // 3. Site Settings & Hero CMS
@@ -191,6 +192,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
     // 11. Data Diri Siswa & Keuangan LPK
     Route::get('/students/export', [StudentController::class, 'exportCsv'])->name('students.export');
+    Route::get('/students/export-pdf', [StudentController::class, 'exportPdf'])->name('students.export.pdf');
     Route::get('/students/template', [StudentController::class, 'exportTemplate'])->name('students.template');
     Route::post('/students/import', [StudentController::class, 'importCsv'])->name('students.import');
     Route::get('/students/{id}/print', [StudentController::class, 'printDossier'])->name('students.print');
@@ -200,6 +202,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::resource('students', StudentController::class);
 
     // 12. Data Pengajar / Sensei
+    Route::get('/teachers/export-pdf', [TeacherController::class, 'exportPdf'])->name('teachers.export.pdf');
     Route::resource('teachers', TeacherController::class)->except(['show']);
 
     // 13. WhatsApp Gateway & CRM Automation
@@ -209,6 +212,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
     // 14. Executive Financial Analytics & Cashflow Forecasting
     Route::get('/finance', [FinancialAnalyticsController::class, 'index'])->name('finance.index');
+    Route::get('/finance/export-pdf', [FinancialAnalyticsController::class, 'exportPdf'])->name('finance.export.pdf');
 
     // 15. Program Kemitraan & Referral Afiliasi
     Route::resource('affiliates', AffiliateController::class)->except(['create', 'show', 'edit']);
@@ -217,6 +221,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::resource('users', UserController::class)->except(['create', 'show', 'edit']);
 
     // 17. Kalender Wawancara Kerja & Matching Kaisha
+    Route::get('/interviews/export-pdf', [JobInterviewController::class, 'exportPdf'])->name('interviews.export.pdf');
     Route::post('/interviews/{id}/candidates', [JobInterviewController::class, 'assignCandidates'])->name('interviews.candidates.assign');
     Route::post('/interviews/{interviewId}/candidates/{studentId}', [JobInterviewController::class, 'updateCandidateResult'])->name('interviews.candidates.result');
     Route::resource('interviews', JobInterviewController::class)->except(['create', 'show', 'edit']);

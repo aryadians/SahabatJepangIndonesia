@@ -21,7 +21,7 @@
   <img src="https://img.shields.io/badge/Tailwind_CSS-3.4+-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
   <img src="https://img.shields.io/badge/Database-MySQL%20%2F%20SQLite-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL / SQLite">
   <img src="https://img.shields.io/badge/PWA-Ready%20%7C%20Offline%20Cache-8A2BE2?style=for-the-badge&logo=pwa&logoColor=white" alt="PWA Ready">
-  <img src="https://img.shields.io/badge/Tests-30%20Passed%20%7C%20167%20Assertions-success?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Tests 100% Passing">
+  <img src="https://img.shields.io/badge/Tests-31%20Passed%20%7C%20192%20Assertions-success?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Tests 100% Passing">
   <img src="https://img.shields.io/badge/Design-Japanese_Zen_Luxury-DC2626?style=for-the-badge&logo=affinitydesigner&logoColor=white" alt="Japanese Zen Luxury">
   <img src="https://img.shields.io/badge/SEO-OpenGraph%20%7C%20WhatsApp%20Card-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" alt="WhatsApp Card Optimized">
   <img src="https://img.shields.io/badge/License-MIT-F59E0B?style=for-the-badge" alt="License MIT">
@@ -269,18 +269,22 @@ Dirancang khusus dengan prinsip *tactile interaction*, estetika *Japanese Zen Lu
    - **Slider Interaktif Potensi Insentif**: Geser jumlah siswa yang direkomendasikan (1 s/d 50 siswa) untuk memproyeksikan total reward resmi (hingga Rp 37.500.000).
    - **Hotline Presentasi Sekolah**: Akses langsung bagi kepala sekolah/guru BK untuk mengajukan seminar karir dan MoU resmi di sekolah via WhatsApp.
 
-## 🧾 Generator Kwitansi & Invoice Berstempel Hanko (判子)
+## 🧾 Generator Dokumen Resmi & Export PDF Eksekutif (Kop Surat & Logo Dinamis)
 
-Format cetak standar A4 siap cetak / PDF:
-- **Kwitansi Pembayaran Resmi (`/kwitansi/{nis}`)**:
-  - Nomor registrasi unik (`KW-SJI/YYYYMM/0001`).
-  - Rincian penerimaan uang dengan **penulisan terbilang kata Rupiah otomatis**.
-  - **Stempel Merah Digital Jepang (*Hanko 判子*)** dan tanda tangan kasir resmi LPK.
-  - QR Code verifikasi keaslian ke server pusat.
-- **Invoice Tagihan Resmi (`/invoice/{nis}`)**:
-  - Nomor invoice resmi (`INV-SJI/YYYYMM/0001`).
-  - Rincian paket biaya pelatihan, realisasi pembayaran, sisa tagihan, dan nomor rekening resmi (Bank Mandiri & BCA).
-  - QR Code verifikasi keaslian ke server pusat.
+Format cetak standar A4 siap cetak / PDF dengan **Kop Surat Terpadu & Sinkronisasi Logo Perusahaan Otomatis** (`components/kop-surat.blade.php`):
+- Jika admin mengganti logo di Pengaturan Website (`/admin/settings`), seluruh template cetak PDF otomatis berubah seketika tanpa perlu kustomisasi manual.
+- Dilengkapi **Nomor Surat Otomatis**, **Stempel Merah Hanko (判子)**, dan **Tanda Tangan Pengesahan Pejabat LPK**.
+
+| Modul Cetak / Export PDF | Deskripsi & Rincian Dokumen | Rute & Tombol Aksi |
+| :--- | :--- | :--- |
+| **📋 Rekap Calon Siswa (Leads)** | Rekapitulasi pendaftar masuk, status konsultasi, kota asal, program minat, dan ringkasan KPI (A4 Landscape). | `/admin/leads/export-pdf` |
+| **📊 Proyeksi Keuangan & Arus Kas** | Laporan eksekutif omset potensial, kas masuk, total piutang, rasio kolektibilitas, rincian per program, forecast arus kas 30/60/90 hari, dan top 10 piutang (A4 Portrait). | `/admin/finance/export-pdf` |
+| **🎓 Buku Induk Siswa (Roster)** | Rekapitulasi seluruh database siswa pelatihan, angkatan, penempatan Kaisha di Jepang, status pelatihan, dan sisa kewajiban biaya (A4 Landscape). | `/admin/students/export-pdf` |
+| **👨‍🏫 Dewan Pengajar & Sensei** | Laporan resmi susunan instruktur bahasa berlisensi JLPT N1/Native, NIP resmi, spesialisasi, dan riwayat pengalaman di Jepang (A4 Portrait). | `/admin/teachers/export-pdf` |
+| **🏢 Riwayat & Agenda Wawancara** | Rekapitulasi seleksi wawancara kerja perusahaan Jepang (*Kaisha*), kuota, rentang gaji, daftar kandidat siswa, nilai skor, dan hasil kelulusan user (A4 Portrait). | `/admin/interviews/export-pdf` |
+| **🧾 Kwitansi Pembayaran (`/kwitansi/{nis}`)** | Nomor registrasi unik (`KW-SJI/YYYYMM/XXXX`), rincian pembayaran, penulisan kalimat terbilang rupiah, dan QR Code verifikasi. | `/kwitansi/{nis}` & Admin |
+| **📑 Invoice Tagihan (`/invoice/{nis}`)** | Nomor invoice resmi (`INV-SJI/YYYYMM/XXXX`), rincian paket biaya pelatihan, realisasi pembayaran, sisa tagihan, dan nomor rekening resmi (Mandiri & BCA). | `/invoice/{nis}` & Admin |
+| **📄 Lembar Biodata Siswa (`/print`)** | Dokumen dossier profil lengkap siswa (Rirekisho Pelatihan Jepang) untuk keperluan audit akreditasi Kemenaker RI. | `/admin/students/{id}/print` |
 
 ---
 
@@ -390,6 +394,7 @@ php artisan test
   ✓ admin can manage job interviews and assign candidates
   ✓ admin can manage campus galleries
   ✓ admin can configure social proof popup and poltekkes mou notice is rendered
+  ✓ admin can export pdf for leads finance students teachers and interviews with dynamic logo
 
    PASS  Tests\Feature\RealTimeSyncTest
   ✓ guest can access guest sync endpoint
@@ -410,8 +415,8 @@ php artisan test
    PASS  Tests\Feature\ExampleTest
   ✓ the application returns a successful response
 
-  Tests:    30 passed (167 assertions)
-  Duration: ~3.6s (100% Green)
+  Tests:    31 passed (192 assertions)
+  Duration: ~4.5s (100% Green)
 ```
 
 ---

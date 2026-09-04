@@ -93,15 +93,28 @@
             @endif
         </form>
 
-        <!-- Tambah Jadwal Wawancara Button -->
-        <button 
-            type="button" 
-            onclick="openModal('addInterviewModal')" 
-            class="btn-red-primary px-4 py-2.5 rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5"
-        >
-            <i data-lucide="plus-circle" class="w-4 h-4"></i>
-            <span>Jadwalkan Wawancara Kaisha</span>
-        </button>
+        <div class="flex items-center gap-2">
+            <!-- Export / Cetak PDF Riwayat Wawancara -->
+            <a 
+                href="{{ route('admin.interviews.export.pdf', request()->all()) }}" 
+                target="_blank"
+                class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition shadow-xs flex items-center gap-1.5"
+                title="Cetak Rekapitulasi Riwayat & Agenda Wawancara ke PDF Resmi"
+            >
+                <i data-lucide="printer" class="w-4 h-4 text-red-400"></i>
+                <span>Export PDF Wawancara</span>
+            </a>
+
+            <!-- Tambah Jadwal Wawancara Button -->
+            <button 
+                type="button" 
+                onclick="openModal('addInterviewModal')" 
+                class="btn-red-primary px-4 py-2.5 rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5"
+            >
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <span>Jadwalkan Wawancara Kaisha</span>
+            </button>
+        </div>
 
     </div>
 

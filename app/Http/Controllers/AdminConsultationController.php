@@ -160,4 +160,33 @@ class AdminConsultationController extends Controller
         $consultation = Consultation::findOrFail($id);
         return view('admin.consultations.print', compact('consultation'));
     }
+
+    /**
+     * Export / Cetak Rekapitulasi Data Leads Calon Siswa ke PDF
+     */
+    public function exportPdf(Request $request)
+    {
+        $query = Consultation::query()->latest();
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('program') && $request->program !== 'all') {
+            $query->where('program', 'like', "%{$request->program}%");
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%")
+                  ->orWhere('city', 'like', "%{$search}%");
+            });
+        }
+
+        $consultations = $query->get();
+
+        return view('admin.consultations.export_pdf', compact('consultations'));
+    }
 }

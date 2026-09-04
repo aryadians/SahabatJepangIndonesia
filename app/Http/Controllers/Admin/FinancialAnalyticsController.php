@@ -70,4 +70,60 @@ class FinancialAnalyticsController extends Controller
             'outstandingStudents'
         ));
     }
+
+    /**
+     * Export / Cetak Laporan Eksekutif Keuangan & Arus Kas ke PDF Resmi
+     */
+    public function exportPdf()
+    {
+        $totalPotentialRevenue = Student::sum('total_cost');
+        $totalRealizedRevenue = Student::sum('paid_amount');
+        $totalReceivables = $totalPotentialRevenue - $totalRealizedRevenue;
+        $collectionRate = $totalPotentialRevenue > 0 ? round(($totalRealizedRevenue / $totalPotentialRevenue) * 100, 1) : 0;
+
+        $programRevenue = Student::select('program', 
+            DB::raw('COUNT(*) as student_count'),
+            DB::raw('SUM(total_cost) as total_potential'),
+            DB::raw('SUM(paid_amount) as total_collected'),
+            DB::raw('SUM(total_cost - paid_amount) as total_outstanding')
+        )
+        ->groupBy('program')
+        ->get();
+
+        $statusCounts = [
+            'lunas' => Student::whereIn('payment_status', ['paid', 'lunas'])->count(),
+            'sebagian' => Student::whereIn('payment_status', ['partial', 'sebagian'])->count(),
+            'belum' => Student::whereIn('payment_status', ['unpaid', 'belum', 'talangan'])->count(),
+        ];
+
+        $forecast30Days = Student::whereIn('status', ['active', 'pelatihan'])
+            ->whereNotIn('payment_status', ['paid', 'lunas'])
+            ->sum(DB::raw('(total_cost - paid_amount) * 0.40'));
+
+        $forecast60Days = Student::whereIn('status', ['active', 'interview', 'matching'])
+            ->whereNotIn('payment_status', ['paid', 'lunas'])
+            ->sum(DB::raw('(total_cost - paid_amount) * 0.70'));
+
+        $forecast90Days = Student::whereIn('status', ['passed_interview', 'departed', 'terbang'])
+            ->whereNotIn('payment_status', ['paid', 'lunas'])
+            ->sum(DB::raw('total_cost - paid_amount'));
+
+        $outstandingStudents = Student::whereNotIn('payment_status', ['paid', 'lunas'])
+            ->whereRaw('total_cost > paid_amount')
+            ->orderByRaw('(total_cost - paid_amount) DESC')
+            ->get();
+
+        return view('admin.finance.export_pdf', compact(
+            'totalPotentialRevenue',
+            'totalRealizedRevenue',
+            'totalReceivables',
+            'collectionRate',
+            'programRevenue',
+            'statusCounts',
+            'forecast30Days',
+            'forecast60Days',
+            'forecast90Days',
+            'outstandingStudents'
+        ));
+    }
 }

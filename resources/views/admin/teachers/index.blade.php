@@ -74,13 +74,25 @@
             @endif
         </form>
 
-        <a 
-            href="{{ route('admin.teachers.create') }}" 
-            class="btn-red-primary px-4 py-2 rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5 flex-shrink-0"
-        >
-            <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>Tambah Sensei</span>
-        </a>
+        <div class="flex items-center gap-2 flex-shrink-0">
+            <a 
+                href="{{ route('admin.teachers.export.pdf', request()->all()) }}" 
+                target="_blank"
+                class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition shadow-xs flex items-center gap-1.5"
+                title="Cetak Rekapitulasi Data Dewan Pengajar ke PDF Resmi"
+            >
+                <i data-lucide="printer" class="w-4 h-4 text-red-400"></i>
+                <span>Export PDF Sensei</span>
+            </a>
+
+            <a 
+                href="{{ route('admin.teachers.create') }}" 
+                class="btn-red-primary px-4 py-2 rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5"
+            >
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>Tambah Sensei</span>
+            </a>
+        </div>
 
     </div>
 

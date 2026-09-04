@@ -78,9 +78,20 @@
                     <p class="text-xs text-slate-400">Estimasi pencairan dana dari termin cicilan dan jadwal terbang siswa ke Jepang</p>
                 </div>
             </div>
-            <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-100">
-                Otomatis Berbasis Jadwal
-            </span>
+            <div class="flex items-center gap-2">
+                <a 
+                    href="{{ route('admin.finance.export.pdf') }}" 
+                    target="_blank"
+                    class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition shadow-xs flex items-center gap-1.5"
+                    title="Cetak Laporan Eksekutif Keuangan & Proyeksi Arus Kas ke PDF"
+                >
+                    <i data-lucide="printer" class="w-4 h-4"></i>
+                    <span>Export PDF Keuangan</span>
+                </a>
+                <span class="px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 text-xs font-bold border border-blue-100 hidden sm:inline-block">
+                    Otomatis Berbasis Jadwal
+                </span>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
