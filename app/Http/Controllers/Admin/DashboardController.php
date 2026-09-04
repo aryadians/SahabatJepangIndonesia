@@ -17,6 +17,11 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        $totalCost = \App\Models\Student::sum('total_cost') ?? 0;
+        $paidAmount = \App\Models\Student::sum('paid_amount') ?? 0;
+        $receivables = max(0, $totalCost - $paidAmount);
+        $recoveryRate = $totalCost > 0 ? round(($paidAmount / $totalCost) * 100, 1) : 100;
+
         $counts = [
             'leads_total' => Consultation::count(),
             'leads_pending' => Consultation::where('status', 'pending')->count(),
@@ -33,13 +38,40 @@ class DashboardController extends Controller
             'teachers' => \App\Models\Teacher::count(),
             'schedules' => \App\Models\BatchSchedule::count(),
             'articles' => \App\Models\Article::count(),
-            'receivables' => \App\Models\Student::selectRaw('SUM(total_cost - paid_amount) as total_unpaid')->value('total_unpaid') ?? 0,
+            'receivables' => $receivables,
+            'total_cost' => $totalCost,
+            'paid_amount' => $paidAmount,
+            'recovery_rate' => $recoveryRate,
+            // Pipeline breakdown
+            'pipe_active' => \App\Models\Student::where('status', 'active')->count(),
+            'pipe_interview' => \App\Models\Student::where('status', 'interview')->count(),
+            'pipe_passed' => \App\Models\Student::where('status', 'passed_interview')->count(),
+            'pipe_departed' => \App\Models\Student::where('status', 'departed')->count(),
+            'pipe_graduated' => \App\Models\Student::where('status', 'graduated')->count(),
         ];
+
+        // 6-Month Intake Trend (DB agnostic using Carbon)
+        $monthlyIntake = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $monthDate = now()->subMonths($i);
+            $start = $monthDate->copy()->startOfMonth();
+            $end = $monthDate->copy()->endOfMonth();
+            $label = $monthDate->translatedFormat('M Y');
+            $studentCount = \App\Models\Student::whereBetween('created_at', [$start, $end])->count();
+            $leadCount = Consultation::whereBetween('created_at', [$start, $end])->count();
+
+            $monthlyIntake[] = [
+                'label' => $label,
+                'short' => $monthDate->translatedFormat('M'),
+                'students' => $studentCount,
+                'leads' => $leadCount,
+            ];
+        }
 
         $latestLeads = Consultation::latest()->take(5)->get();
         $latestStudents = \App\Models\Student::latest()->take(5)->get();
         $programs = Program::orderBy('order')->get();
 
-        return view('admin.dashboard', compact('counts', 'latestLeads', 'latestStudents', 'programs'));
+        return view('admin.dashboard', compact('counts', 'monthlyIntake', 'latestLeads', 'latestStudents', 'programs'));
     }
 }

@@ -64,7 +64,7 @@
         </div>
 
         <!-- Sektor Karir Filter Bar (Single Horizontal Line / Clean Wrap) -->
-        <div class="max-w-5xl mx-auto">
+        <div class="max-w-5xl mx-auto space-y-4">
             <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 px-3 bg-slate-900/90 rounded-2xl border border-slate-800 backdrop-blur-md justify-start md:justify-center shadow-lg">
                 <a 
                     href="{{ route('alumni.map') }}" 
@@ -81,6 +81,32 @@
                     </a>
                 @endforeach
             </div>
+
+            <!-- Instant Real-Time Search Bar -->
+            <div class="max-w-2xl mx-auto">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="alumniSearchInput" 
+                        oninput="filterAlumniDatabase()" 
+                        placeholder="🔍 Cari nama siswa, prefektur (Tokyo, Osaka, Aichi...), atau Kaisha..." 
+                        class="w-full px-5 py-3.5 pl-11 pr-20 rounded-2xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-400 text-xs sm:text-sm focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 shadow-xl transition"
+                    >
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                    <button 
+                        type="button" 
+                        id="clearSearchBtn" 
+                        onclick="clearAlumniSearch()" 
+                        class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs px-2.5 py-1 rounded-xl bg-slate-800 border border-slate-700 transition"
+                    >
+                        Reset
+                    </button>
+                </div>
+                <div class="flex items-center justify-between text-[11px] text-slate-400 mt-2 px-2">
+                    <span id="alumniSearchCount">Menampilkan semua alumni & siswa terverifikasi</span>
+                    <span class="text-japan-400 font-bold hidden sm:inline">Klik nama prefektur untuk filter instan</span>
+                </div>
+            </div>
         </div>
 
         <!-- 8 Regions Japan Matrix Showcase -->
@@ -91,7 +117,7 @@
                         <i data-lucide="map" class="w-6 h-6 text-japan-500"></i>
                         <span>Sebaran 8 Wilayah & Prefektur di Jepang</span>
                     </h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Peta konsentrasi penempatan kerja alumni LPK Sahabat Jepang Indonesia</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Klik wilayah untuk melihat detail sebaran, estimasi gaji, dan alumni yang bertugas</p>
                 </div>
                 <span class="font-japanese text-xs text-red-400 font-bold bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20 whitespace-nowrap">
                     日本全国 8地方ネットワーク
@@ -100,7 +126,11 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 @foreach($regions as $regKey => $reg)
-                    <div class="p-6 rounded-3xl bg-slate-900/90 border border-slate-800 hover:border-japan-600 transition-all duration-300 group flex flex-col justify-between shadow-lg hover:shadow-red-600/10 min-h-[220px]">
+                    <div 
+                        onclick="openRegionSpotlight('{{ $regKey }}')" 
+                        class="p-6 rounded-3xl bg-slate-900/90 border border-slate-800 hover:border-japan-600 transition-all duration-300 group flex flex-col justify-between shadow-lg hover:shadow-red-600/10 min-h-[220px] cursor-pointer active:scale-[0.98]"
+                        title="Klik untuk melihat spotlight {{ $reg['name'] }}"
+                    >
                         <div class="space-y-3">
                             <div class="flex items-center justify-between">
                                 <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase text-white shadow-xs {{ $reg['color'] }}">
@@ -112,13 +142,20 @@
                             </div>
 
                             <div>
-                                <h4 class="font-black text-white text-base group-hover:text-red-400 transition">{{ $reg['name'] }}</h4>
+                                <h4 class="font-black text-white text-base group-hover:text-red-400 transition flex items-center justify-between">
+                                    <span>{{ $reg['name'] }}</span>
+                                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-600 group-hover:text-red-400 group-hover:translate-x-0.5 transition"></i>
+                                </h4>
                                 <p class="text-xs text-japan-400 font-bold font-japanese mt-0.5">{{ $reg['hub'] }}</p>
                             </div>
 
                             <div class="pt-1 flex flex-wrap gap-1.5">
                                 @foreach($reg['prefectures'] as $pref)
-                                    <span class="px-2.5 py-0.5 rounded-lg bg-slate-800 border border-slate-700 text-[10px] text-slate-300 font-medium">
+                                    <span 
+                                        onclick="event.stopPropagation(); filterByPrefecture('{{ $pref }}')" 
+                                        class="px-2.5 py-0.5 rounded-lg bg-slate-800 hover:bg-red-950/80 hover:border-red-500/60 border border-slate-700 text-[10px] text-slate-300 font-medium transition cursor-pointer"
+                                        title="Filter siswa di {{ $pref }}"
+                                    >
                                         {{ $pref }}
                                     </span>
                                 @endforeach
@@ -130,7 +167,7 @@
                                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                                 <span>Status: Aktif</span>
                             </span>
-                            <span class="text-japan-400 font-bold font-mono text-[11px]">100% Terdaftar</span>
+                            <span class="text-japan-400 font-bold font-mono text-[11px] group-hover:underline">Lihat Detail &rarr;</span>
                         </div>
                     </div>
                 @endforeach
@@ -154,9 +191,16 @@
                     </span>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="departedStudentsGrid">
                     @foreach($departedStudents as $st)
-                        <div class="p-5 rounded-3xl bg-slate-900/90 border border-slate-800 hover:border-japan-500 transition shadow-lg group space-y-3">
+                        <div 
+                            class="student-card p-5 rounded-3xl bg-slate-900/90 border border-slate-800 hover:border-japan-500 transition-all duration-300 shadow-lg group space-y-3"
+                            data-name="{{ strtolower($st->name) }}"
+                            data-jpname="{{ strtolower($st->japanese_name ?: '') }}"
+                            data-prefecture="{{ strtolower($st->destination_prefecture ?: '') }}"
+                            data-company="{{ strtolower($st->destination_company ?: '') }}"
+                            data-program="{{ strtolower($st->sector ?: $st->program) }}"
+                        >
                             <div class="flex items-center gap-3">
                                 <div class="w-12 h-12 rounded-2xl bg-slate-800 border-2 border-slate-700 overflow-hidden flex-shrink-0">
                                     @if($st->photo)
@@ -175,7 +219,13 @@
                             <div class="p-3 rounded-2xl bg-slate-800/80 border border-slate-700/60 text-xs space-y-1.5">
                                 <div class="flex justify-between items-center text-slate-400">
                                     <span class="text-[11px]">Penempatan:</span>
-                                    <span class="font-bold text-white text-[11px] truncate max-w-[120px]">{{ $st->destination_prefecture ?: 'Jepang' }}</span>
+                                    <span 
+                                        onclick="filterByPrefecture('{{ $st->destination_prefecture }}')" 
+                                        class="font-bold text-white text-[11px] truncate max-w-[120px] hover:text-red-400 cursor-pointer"
+                                        title="Filter siswa di {{ $st->destination_prefecture }}"
+                                    >
+                                        {{ $st->destination_prefecture ?: 'Jepang' }}
+                                    </span>
                                 </div>
                                 <div class="flex justify-between items-center text-slate-400">
                                     <span class="text-[11px]">Kaisha:</span>
@@ -213,15 +263,29 @@
                     </h3>
                     <p class="text-xs text-slate-400 mt-0.5">Bukti nyata alumni yang telah sukses bekerja di berbagai kota dan perusahaan di Jepang</p>
                 </div>
-                <button onclick="openModal('consultationModal')" class="btn-red-primary px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 shadow-lg shadow-red-600/30 whitespace-nowrap">
+                <button onclick="openModal('consultationModal')" class="btn-red-primary px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 shadow-lg shadow-red-600/30 whitespace-nowrap active:scale-[0.97]">
                     <i data-lucide="sparkles" class="w-4 h-4 text-amber-200"></i>
                     <span>Ikuti Jejak Mereka Sekarang</span>
                 </button>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Empty State if Search results are 0 -->
+            <div id="noAlumniFoundState" class="hidden p-10 rounded-3xl bg-slate-900/60 border border-slate-800 text-center space-y-3">
+                <div class="w-12 h-12 rounded-2xl bg-slate-800 text-slate-400 flex items-center justify-center mx-auto text-xl">🔍</div>
+                <h4 class="font-bold text-white text-base">Tidak ada data yang cocok dengan pencarian</h4>
+                <p class="text-xs text-slate-400 max-w-sm mx-auto">Coba gunakan kata kunci prefektur seperti Tokyo, Aichi, Osaka, atau kosongkan kolom pencarian.</p>
+                <button type="button" onclick="clearAlumniSearch()" class="px-4 py-2 rounded-xl bg-japan-600 text-white font-bold text-xs">Reset Pencarian</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="testimonialsGrid">
                 @foreach($testimonials as $t)
-                    <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 flex flex-col justify-between hover:border-red-500/60 transition-all duration-300 shadow-xl group space-y-4">
+                    <div 
+                        class="testimonial-card p-6 rounded-3xl bg-slate-900 border border-slate-800 flex flex-col justify-between hover:border-red-500/60 transition-all duration-300 shadow-xl group space-y-4"
+                        data-name="{{ strtolower($t->name) }}"
+                        data-prefecture="{{ strtolower($t->prefecture) }}"
+                        data-company="{{ strtolower($t->company) }}"
+                        data-program="{{ strtolower($t->program) }}"
+                    >
                         <div class="space-y-4">
                             
                             <!-- Avatar & Location Header -->
@@ -232,7 +296,11 @@
                                         <h4 class="font-extrabold text-white text-base leading-tight">{{ $t->name }}</h4>
                                         <span class="w-2 h-2 rounded-full bg-emerald-400" title="Alumni Aktif"></span>
                                     </div>
-                                    <p class="text-xs text-red-400 font-bold font-japanese flex items-center gap-1 mt-0.5">
+                                    <p 
+                                        onclick="filterByPrefecture('{{ $t->prefecture }}')" 
+                                        class="text-xs text-red-400 font-bold font-japanese flex items-center gap-1 mt-0.5 cursor-pointer hover:underline"
+                                        title="Filter di prefektur {{ $t->prefecture }}"
+                                    >
                                         <i data-lucide="map-pin" class="w-3.5 h-3.5 text-japan-500"></i>
                                         <span>{{ $t->prefecture }}, Jepang</span>
                                     </p>
@@ -286,12 +354,12 @@
             </div>
             
             <div class="pt-2 flex flex-wrap items-center justify-center gap-3">
-                <button onclick="openModal('consultationModal')" class="px-8 py-3.5 rounded-2xl bg-white text-japan-700 font-black text-xs sm:text-sm hover:bg-red-50 transition shadow-xl shadow-black/30 flex items-center gap-2">
+                <button onclick="openModal('consultationModal')" class="px-8 py-3.5 rounded-2xl bg-white text-japan-700 font-black text-xs sm:text-sm hover:bg-red-50 transition shadow-xl shadow-black/30 flex items-center gap-2 active:scale-[0.97]">
                     <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
                     <span>Daftar Konsultasi Karir Gratis Sekarang</span>
                 </button>
 
-                <a href="{{ route('exam.simulator') }}" class="px-6 py-3.5 rounded-2xl bg-red-800/80 hover:bg-red-800 text-white font-bold text-xs sm:text-sm transition border border-red-400/30 flex items-center gap-2">
+                <a href="{{ route('exam.simulator') }}" class="px-6 py-3.5 rounded-2xl bg-red-800/80 hover:bg-red-800 text-white font-bold text-xs sm:text-sm transition border border-red-400/30 flex items-center gap-2 active:scale-[0.97]">
                     <i data-lucide="file-check" class="w-4 h-4"></i>
                     <span>Coba Tryout JLPT Online</span>
                 </a>
@@ -300,4 +368,200 @@
 
     </div>
 </div>
+
+<!-- Interactive Region Spotlight Modal -->
+<div id="regionSpotlightModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md transition-opacity">
+    <div class="bg-slate-900 border border-slate-700 text-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-5 relative overflow-hidden animate-fadeIn">
+        <button 
+            type="button" 
+            onclick="closeRegionSpotlight()" 
+            class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-xl bg-slate-800 hover:bg-slate-700 transition"
+        >
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+
+        <div class="space-y-1">
+            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase text-white bg-japan-600 inline-block" id="modalRegionBadge">
+                Region Spotlight
+            </span>
+            <h3 class="text-2xl font-black text-white" id="modalRegionName">Nama Region</h3>
+            <p class="text-xs text-japan-400 font-bold font-japanese" id="modalRegionHub">Hub Perkotaan</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 py-2">
+            <div class="p-3.5 rounded-2xl bg-slate-800/90 border border-slate-700/80 text-center">
+                <span class="text-[10px] font-bold text-slate-400 uppercase block">Total Alumni Ditempatkan</span>
+                <h4 class="text-xl font-black text-japan-500 mt-0.5" id="modalRegionCount">0 Alumni</h4>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-slate-800/90 border border-slate-700/80 text-center">
+                <span class="text-[10px] font-bold text-slate-400 uppercase block">Estimasi Gaji Bersih</span>
+                <h4 class="text-sm font-black text-emerald-400 mt-1" id="modalRegionSalary">¥175,000 - ¥230,000</h4>
+            </div>
+        </div>
+
+        <div class="space-y-2">
+            <span class="text-xs font-bold text-slate-300 block">Daftar Prefektur di Wilayah Ini:</span>
+            <div class="flex flex-wrap gap-1.5" id="modalPrefecturesList">
+                <!-- Injected via JS -->
+            </div>
+            <p class="text-[11px] text-slate-400 italic mt-1">💡 Klik pada salah satu prefektur di atas untuk memfilter data siswa yang bekerja di sana.</p>
+        </div>
+
+        <div class="pt-2 flex items-center justify-between gap-3 border-t border-slate-800">
+            <button 
+                type="button" 
+                onclick="closeRegionSpotlight()" 
+                class="px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-xs font-bold transition"
+            >
+                Tutup
+            </button>
+            <button 
+                type="button" 
+                onclick="closeRegionSpotlight(); openModal('consultationModal')" 
+                class="btn-red-primary px-5 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-red-600/30 flex items-center gap-1.5 active:scale-[0.97]"
+            >
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                <span>Daftar Penempatan Sini</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const regionsData = @json($regions);
+
+    function openRegionSpotlight(regKey) {
+        const reg = regionsData[regKey];
+        if (!reg) return;
+
+        document.getElementById('modalRegionBadge').innerText = `${reg.count} Alumni Bekerja`;
+        document.getElementById('modalRegionName').innerText = reg.name;
+        document.getElementById('modalRegionHub').innerText = `Hub: ${reg.hub}`;
+        document.getElementById('modalRegionCount').innerText = `${reg.count} Siswa`;
+
+        // Approximate regional salary benchmark
+        const salaryMap = {
+            'kanto': '¥190,000 - ¥245,000 (~Rp 20-26 jt)',
+            'chubu': '¥185,000 - ¥235,000 (~Rp 19-25 jt)',
+            'kansai': '¥180,000 - ¥230,000 (~Rp 19-24 jt)',
+            'kyushu': '¥170,000 - ¥215,000 (~Rp 18-23 jt)',
+            'tohoku': '¥165,000 - ¥210,000 (~Rp 17-22 jt)',
+            'chugoku': '¥170,000 - ¥220,000 (~Rp 18-23 jt)',
+            'shikoku': '¥165,000 - ¥210,000 (~Rp 17-22 jt)',
+            'hokkaido': '¥170,000 - ¥215,000 (~Rp 18-23 jt)',
+        };
+        document.getElementById('modalRegionSalary').innerText = salaryMap[regKey] || '¥175,000 - ¥225,000';
+
+        // Render prefectures tags
+        const prefContainer = document.getElementById('modalPrefecturesList');
+        prefContainer.innerHTML = '';
+        reg.prefectures.forEach(pref => {
+            const span = document.createElement('button');
+            span.type = 'button';
+            span.className = 'px-3 py-1 rounded-xl bg-slate-800 hover:bg-japan-600 hover:text-white border border-slate-700 text-xs text-slate-200 font-medium transition active:scale-[0.97]';
+            span.innerText = pref;
+            span.onclick = () => {
+                closeRegionSpotlight();
+                filterByPrefecture(pref);
+            };
+            prefContainer.appendChild(span);
+        });
+
+        const modal = document.getElementById('regionSpotlightModal');
+        modal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+        lucide.createIcons();
+    }
+
+    function closeRegionSpotlight() {
+        const modal = document.getElementById('regionSpotlightModal');
+        modal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    // Filter by clicking prefecture tag
+    function filterByPrefecture(prefName) {
+        if (!prefName) return;
+        const searchInput = document.getElementById('alumniSearchInput');
+        if (searchInput) {
+            searchInput.value = prefName;
+            filterAlumniDatabase();
+            searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    // Real-time client-side live filter
+    function filterAlumniDatabase() {
+        const q = (document.getElementById('alumniSearchInput')?.value || '').toLowerCase().trim();
+        const clearBtn = document.getElementById('clearSearchBtn');
+        const countText = document.getElementById('alumniSearchCount');
+        const emptyState = document.getElementById('noAlumniFoundState');
+
+        if (clearBtn) {
+            if (q.length > 0) clearBtn.classList.remove('hidden');
+            else clearBtn.classList.add('hidden');
+        }
+
+        let studentMatches = 0;
+        let testimonialMatches = 0;
+
+        // Filter student cards
+        document.querySelectorAll('.student-card').forEach(card => {
+            const name = card.getAttribute('data-name') || '';
+            const jpname = card.getAttribute('data-jpname') || '';
+            const pref = card.getAttribute('data-prefecture') || '';
+            const company = card.getAttribute('data-company') || '';
+            const program = card.getAttribute('data-program') || '';
+
+            const isMatch = !q || name.includes(q) || jpname.includes(q) || pref.includes(q) || company.includes(q) || program.includes(q);
+            if (isMatch) {
+                card.classList.remove('hidden');
+                studentMatches++;
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+
+        // Filter testimonial cards
+        document.querySelectorAll('.testimonial-card').forEach(card => {
+            const name = card.getAttribute('data-name') || '';
+            const pref = card.getAttribute('data-prefecture') || '';
+            const company = card.getAttribute('data-company') || '';
+            const program = card.getAttribute('data-program') || '';
+
+            const isMatch = !q || name.includes(q) || pref.includes(q) || company.includes(q) || program.includes(q);
+            if (isMatch) {
+                card.classList.remove('hidden');
+                testimonialMatches++;
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+
+        const totalVisible = studentMatches + testimonialMatches;
+        if (countText) {
+            if (q.length > 0) {
+                countText.innerText = `Ditemukan ${totalVisible} hasil untuk "${q}"`;
+            } else {
+                countText.innerText = 'Menampilkan semua alumni & siswa terverifikasi';
+            }
+        }
+
+        if (emptyState) {
+            if (totalVisible === 0 && q.length > 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+        }
+    }
+
+    function clearAlumniSearch() {
+        const searchInput = document.getElementById('alumniSearchInput');
+        if (searchInput) {
+            searchInput.value = '';
+            filterAlumniDatabase();
+        }
+    }
+</script>
 @endsection

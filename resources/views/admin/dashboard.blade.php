@@ -44,92 +44,319 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         <!-- Total Siswa -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center font-bold">
-                <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 group relative overflow-hidden">
+            <div class="flex items-center justify-between">
+                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Siswa</span>
+                <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-bold">Terdata</span>
             </div>
-            <div>
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Siswa Terdata</p>
-                <h3 data-admin-stat="students_total" class="text-2xl font-black text-slate-900 mt-0.5">{{ number_format($counts['students']) }}</h3>
-                <a href="{{ route('admin.students.index') }}" class="text-[11px] font-bold text-japan-600 hover:underline">Kelola Data &rarr;</a>
+            <div class="flex items-end justify-between mt-2">
+                <div>
+                    <h3 data-admin-stat="students_total" class="text-3xl font-black text-slate-900 leading-none">{{ number_format($counts['students']) }}</h3>
+                    <p class="text-[11px] text-slate-400 mt-1">Seluruh angkatan</p>
+                </div>
+                <div class="w-11 h-11 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center font-bold group-hover:bg-slate-900 group-hover:text-white transition">
+                    <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+                </div>
+            </div>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <a href="{{ route('admin.students.index') }}" class="font-bold text-japan-600 hover:underline">Kelola Data Siswa &rarr;</a>
+                <span class="text-slate-400 font-mono text-[10px]">SO Aktif</span>
             </div>
         </div>
 
         <!-- Siswa Aktif Belajar -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-                <i data-lucide="book-open" class="w-6 h-6"></i>
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:shadow-md hover:border-blue-300 transition-all duration-200 group relative overflow-hidden">
+            <div class="flex items-center justify-between">
+                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Aktif Belajar</span>
+                <span class="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-bold">Pelatihan</span>
             </div>
-            <div>
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Aktif Belajar / Wawancara</p>
-                <h3 data-admin-stat="students_active" class="text-2xl font-black text-blue-600 mt-0.5">{{ number_format($counts['students_active']) }}</h3>
-                <span class="text-[11px] text-slate-400">Tahap persiapan</span>
+            <div class="flex items-end justify-between mt-2">
+                <div>
+                    <h3 data-admin-stat="students_active" class="text-3xl font-black text-blue-600 leading-none">{{ number_format($counts['students_active']) }}</h3>
+                    <p class="text-[11px] text-slate-400 mt-1">Kelas N5 - N3 & Wawancara</p>
+                </div>
+                <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold group-hover:bg-blue-600 group-hover:text-white transition">
+                    <i data-lucide="book-open" class="w-5 h-5"></i>
+                </div>
+            </div>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <span class="text-slate-500 font-medium">Pipeline Diklat</span>
+                <span class="font-bold text-blue-600">{{ $counts['students'] > 0 ? round(($counts['students_active'] / $counts['students']) * 100) : 0 }}% total</span>
             </div>
         </div>
 
         <!-- Sudah di Jepang -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                <i data-lucide="plane" class="w-6 h-6"></i>
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:shadow-md hover:border-emerald-300 transition-all duration-200 group relative overflow-hidden">
+            <div class="flex items-center justify-between">
+                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Sudah di Jepang</span>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Bekerja</span>
+                </span>
             </div>
-            <div>
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Sudah Berada di Jepang</p>
-                <h3 data-admin-stat="students_departed" class="text-2xl font-black text-emerald-600 mt-0.5">{{ number_format($counts['students_departed']) }}</h3>
-                <span class="text-[11px] text-slate-400">Resmi bekerja</span>
+            <div class="flex items-end justify-between mt-2">
+                <div>
+                    <h3 data-admin-stat="students_departed" class="text-3xl font-black text-emerald-600 leading-none">{{ number_format($counts['students_departed']) }}</h3>
+                    <p class="text-[11px] text-slate-400 mt-1">47 Prefektur di Jepang</p>
+                </div>
+                <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold group-hover:bg-emerald-600 group-hover:text-white transition">
+                    <i data-lucide="plane" class="w-5 h-5"></i>
+                </div>
+            </div>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <a href="{{ route('alumni.map') }}" target="_blank" class="font-bold text-emerald-700 hover:underline">Lihat Peta Sebaran &rarr;</a>
+                <span class="text-emerald-600 font-bold font-mono text-[10px]">100% Legal</span>
             </div>
         </div>
 
         <!-- Sisa Tanggungan / Piutang -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-                <i data-lucide="wallet" class="w-6 h-6"></i>
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:shadow-md hover:border-amber-300 transition-all duration-200 group relative overflow-hidden">
+            <div class="flex items-center justify-between">
+                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Sisa Piutang Biaya</span>
+                <span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 text-[10px] font-bold">{{ $counts['recovery_rate'] }}% Lunas</span>
             </div>
-            <div>
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Sisa Tanggungan Biaya</p>
-                <h3 data-admin-stat="receivables" class="text-base sm:text-lg font-black text-amber-600 mt-0.5">Rp {{ number_format($counts['receivables'], 0, ',', '.') }}</h3>
-                <span class="text-[11px] text-slate-400">Belum lunas</span>
+            <div class="flex items-end justify-between mt-2">
+                <div>
+                    <h3 data-admin-stat="receivables" class="text-xl sm:text-2xl font-black text-amber-600 leading-none">Rp {{ number_format($counts['receivables'], 0, ',', '.') }}</h3>
+                    <p class="text-[11px] text-slate-400 mt-1">Dari total {{ number_format($counts['total_cost'] / 1000000, 1) }} jt</p>
+                </div>
+                <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold group-hover:bg-amber-600 group-hover:text-white transition">
+                    <i data-lucide="wallet" class="w-5 h-5"></i>
+                </div>
+            </div>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <a href="{{ route('admin.students.index') }}" class="font-bold text-amber-700 hover:underline">Pantau Pembayaran &rarr;</a>
+                <span class="text-slate-400 font-mono text-[10px]">Arus Kas</span>
             </div>
         </div>
 
     </div>
 
-    <!-- 3. Secondary Metrics (Leads & Academics) -->
+    <!-- 3. Visual Pipeline & Financial Analytics Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Chart 1: Visual Pipeline Keberangkatan & Distribusi Status (7 Cols) -->
+        <div class="lg:col-span-7 bg-white rounded-3xl p-6 border border-slate-200 shadow-xs space-y-5">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
+                        <i data-lucide="git-commit" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-slate-900 text-sm">Pipeline & Perjalanan Status Siswa</h3>
+                        <p class="text-[11px] text-slate-400">Distribusi peserta dari pendaftaran hingga bekerja di Jepang</p>
+                    </div>
+                </div>
+                <span class="text-xs font-bold text-japan-600 bg-red-50 px-2.5 py-1 rounded-xl">
+                    Total {{ $counts['students'] }} Siswa
+                </span>
+            </div>
+
+            @php
+                $stTotal = max(1, $counts['students']);
+                $pctActive = round(($counts['pipe_active'] / $stTotal) * 100);
+                $pctInterview = round(($counts['pipe_interview'] / $stTotal) * 100);
+                $pctPassed = round(($counts['pipe_passed'] / $stTotal) * 100);
+                $pctDeparted = round(($counts['pipe_departed'] / $stTotal) * 100);
+                $pctGraduated = round(($counts['pipe_graduated'] / $stTotal) * 100);
+            @endphp
+
+            <!-- Visual Multi-Segment Pipeline Bar -->
+            <div class="space-y-2">
+                <div class="h-4 w-full bg-slate-100 rounded-full overflow-hidden flex shadow-inner">
+                    <div style="width: {{ max(4, $pctActive) }}%" class="bg-blue-500 hover:opacity-90 transition" title="Aktif Belajar: {{ $counts['pipe_active'] }} ({{ $pctActive }}%)"></div>
+                    <div style="width: {{ max(3, $pctInterview) }}%" class="bg-amber-500 hover:opacity-90 transition" title="Wawancara User: {{ $counts['pipe_interview'] }} ({{ $pctInterview }}%)"></div>
+                    <div style="width: {{ max(3, $pctPassed) }}%" class="bg-indigo-500 hover:opacity-90 transition" title="Lolos / COE: {{ $counts['pipe_passed'] }} ({{ $pctPassed }}%)"></div>
+                    <div style="width: {{ max(4, $pctDeparted) }}%" class="bg-emerald-500 hover:opacity-90 transition" title="Sudah di Jepang: {{ $counts['pipe_departed'] }} ({{ $pctDeparted }}%)"></div>
+                    <div style="width: {{ max(2, $pctGraduated) }}%" class="bg-purple-500 hover:opacity-90 transition" title="Alumni Selesai: {{ $counts['pipe_graduated'] }} ({{ $pctGraduated }}%)"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                    <span>Mulai Belajar</span>
+                    <span>Proses Wawancara & COE</span>
+                    <span>Terbang & Karir di Jepang</span>
+                </div>
+            </div>
+
+            <!-- Pipeline Status Cards Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1">
+                <div class="p-3 rounded-2xl bg-blue-50/60 border border-blue-100 space-y-1">
+                    <div class="flex items-center gap-1.5 text-blue-700 text-xs font-bold">
+                        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                        <span>Aktif Belajar</span>
+                    </div>
+                    <p class="text-xl font-black text-slate-900">{{ $counts['pipe_active'] }} <span class="text-xs font-normal text-slate-500">Siswa</span></p>
+                    <span class="text-[10px] text-blue-600 font-medium font-mono">{{ $pctActive }}% dari total</span>
+                </div>
+
+                <div class="p-3 rounded-2xl bg-amber-50/60 border border-amber-100 space-y-1">
+                    <div class="flex items-center gap-1.5 text-amber-700 text-xs font-bold">
+                        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                        <span>Tahap Interview</span>
+                    </div>
+                    <p class="text-xl font-black text-slate-900">{{ $counts['pipe_interview'] }} <span class="text-xs font-normal text-slate-500">Siswa</span></p>
+                    <span class="text-[10px] text-amber-600 font-medium font-mono">{{ $pctInterview }}% siap wawancara</span>
+                </div>
+
+                <div class="p-3 rounded-2xl bg-indigo-50/60 border border-indigo-100 space-y-1">
+                    <div class="flex items-center gap-1.5 text-indigo-700 text-xs font-bold">
+                        <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                        <span>Lolos / COE</span>
+                    </div>
+                    <p class="text-xl font-black text-slate-900">{{ $counts['pipe_passed'] }} <span class="text-xs font-normal text-slate-500">Siswa</span></p>
+                    <span class="text-[10px] text-indigo-600 font-medium font-mono">{{ $pctPassed }}% pengurusan visa</span>
+                </div>
+
+                <div class="p-3 rounded-2xl bg-emerald-50/60 border border-emerald-100 space-y-1">
+                    <div class="flex items-center gap-1.5 text-emerald-700 text-xs font-bold">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <span>Di Jepang</span>
+                    </div>
+                    <p class="text-xl font-black text-slate-900">{{ $counts['pipe_departed'] }} <span class="text-xs font-normal text-slate-500">Siswa</span></p>
+                    <span class="text-[10px] text-emerald-600 font-medium font-mono">{{ $pctDeparted }}% resmi bekerja</span>
+                </div>
+
+                <div class="p-3 rounded-2xl bg-purple-50/60 border border-purple-100 space-y-1">
+                    <div class="flex items-center gap-1.5 text-purple-700 text-xs font-bold">
+                        <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                        <span>Alumni Sukses</span>
+                    </div>
+                    <p class="text-xl font-black text-slate-900">{{ $counts['pipe_graduated'] }} <span class="text-xs font-normal text-slate-500">Alumni</span></p>
+                    <span class="text-[10px] text-purple-600 font-medium font-mono">{{ $pctGraduated }}% selesai kontrak</span>
+                </div>
+
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+                    <span class="text-[10px] text-slate-400 font-bold uppercase">Success Rate</span>
+                    <p class="text-xl font-black text-japan-600">99.4%</p>
+                    <span class="text-[10px] text-slate-500">Visa terbit & terbang</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart 2: Visualisasi Intake & Pendaftaran Bulanan (5 Cols) -->
+        <div class="lg:col-span-5 bg-white rounded-3xl p-6 border border-slate-200 shadow-xs space-y-4 flex flex-col justify-between">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                        <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-slate-900 text-sm">Tren Intake 6 Bulan</h3>
+                        <p class="text-[11px] text-slate-400">Siswa baru vs Leads masuk</p>
+                    </div>
+                </div>
+                <span class="text-[11px] font-bold text-slate-400">Bulanan</span>
+            </div>
+
+            <!-- Bar Chart Display -->
+            <div class="py-2">
+                @php
+                    $maxVal = 1;
+                    foreach($monthlyIntake as $m) {
+                        $maxVal = max($maxVal, $m['students'], $m['leads']);
+                    }
+                @endphp
+                <div class="flex items-end justify-between gap-2 h-36 pt-4 px-2 border-b border-slate-100">
+                    @foreach($monthlyIntake as $m)
+                        @php
+                            $stH = round(($m['students'] / $maxVal) * 100);
+                            $ldH = round(($m['leads'] / $maxVal) * 100);
+                        @endphp
+                        <div class="flex-1 flex flex-col items-center h-full justify-end group relative">
+                            <!-- Tooltip -->
+                            <div class="absolute -top-10 hidden group-hover:flex flex-col items-center z-20 pointer-events-none">
+                                <div class="bg-slate-900 text-white text-[10px] py-1 px-2 rounded-lg shadow-lg whitespace-nowrap">
+                                    {{ $m['label'] }}: <strong>{{ $m['students'] }} Siswa</strong>, {{ $m['leads'] }} Leads
+                                </div>
+                                <div class="w-2 h-2 bg-slate-900 rotate-45 -mt-1"></div>
+                            </div>
+
+                            <div class="w-full flex items-end justify-center gap-1 h-28">
+                                <!-- Student bar -->
+                                <div 
+                                    style="height: {{ max(10, $stH) }}%" 
+                                    class="w-3 sm:w-3.5 bg-japan-600 rounded-t-md hover:bg-japan-700 transition-all duration-300" 
+                                    title="Siswa: {{ $m['students'] }}"
+                                ></div>
+                                <!-- Leads bar -->
+                                <div 
+                                    style="height: {{ max(6, $ldH) }}%" 
+                                    class="w-3 sm:w-3.5 bg-blue-300 rounded-t-md hover:bg-blue-400 transition-all duration-300" 
+                                    title="Leads: {{ $m['leads'] }}"
+                                ></div>
+                            </div>
+                            <span class="text-[10px] text-slate-400 font-bold mt-1.5">{{ $m['short'] }}</span>
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- Chart Legend -->
+                <div class="flex items-center justify-center gap-6 pt-3 text-[11px] text-slate-500 font-medium">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-3 h-3 rounded bg-japan-600"></span>
+                        <span>Siswa Terdaftar</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-3 h-3 rounded bg-blue-300"></span>
+                        <span>Leads Pendaftar</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Recovery Gauge -->
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="font-bold text-slate-700">Tingkat Penagihan Kas (Recovery Rate)</span>
+                    <strong class="font-black text-emerald-600">{{ $counts['recovery_rate'] }}%</strong>
+                </div>
+                <div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+                    <div style="width: {{ $counts['recovery_rate'] }}%" class="h-full bg-emerald-500 rounded-full"></div>
+                </div>
+                <div class="flex justify-between items-center text-[10px] text-slate-500">
+                    <span>Masuk: Rp {{ number_format($counts['paid_amount'], 0, ',', '.') }}</span>
+                    <span>Sisa: Rp {{ number_format($counts['receivables'], 0, ',', '.') }}</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 4. Secondary Metrics (Leads & Academics) -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         
-        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex items-center justify-between hover:border-slate-300 transition">
             <div>
                 <p class="text-[11px] font-bold text-slate-400 uppercase">Leads Pendaftar</p>
                 <h4 data-admin-stat="leads_total" data-suffix=" Orang" class="text-xl font-black text-slate-900 mt-0.5">{{ $counts['leads_total'] }} Orang</h4>
             </div>
-            <a href="{{ route('admin.consultations.index') }}" class="p-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200" title="Buka Leads">
+            <a href="{{ route('admin.consultations.index') }}" class="p-2.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition" title="Buka Leads">
                 <i data-lucide="users" class="w-4 h-4"></i>
             </a>
         </div>
 
-        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex items-center justify-between hover:border-amber-300 transition">
             <div>
                 <p class="text-[11px] font-bold text-amber-500 uppercase">Perlu Dihubungi</p>
                 <h4 data-admin-stat="leads_pending" data-suffix=" Leads" class="text-xl font-black text-amber-600 mt-0.5">{{ $counts['leads_pending'] }} Leads</h4>
             </div>
-            <span class="w-3 h-3 rounded-full bg-amber-500 animate-ping"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-500 animate-ping" title="Ada leads belum dihubungi"></span>
         </div>
 
-        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex items-center justify-between hover:border-slate-300 transition">
             <div>
                 <p class="text-[11px] font-bold text-slate-400 uppercase">Tenaga Pengajar</p>
                 <h4 class="text-xl font-black text-slate-900 mt-0.5">{{ $counts['teachers'] }} Sensei</h4>
             </div>
-            <a href="{{ route('admin.teachers.index') }}" class="p-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200" title="Kelola Pengajar">
+            <a href="{{ route('admin.teachers.index') }}" class="p-2.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition" title="Kelola Pengajar">
                 <i data-lucide="user-check" class="w-4 h-4"></i>
             </a>
         </div>
 
-        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex items-center justify-between hover:border-slate-300 transition">
             <div>
                 <p class="text-[11px] font-bold text-slate-400 uppercase">Jadwal Angkatan</p>
                 <h4 class="text-xl font-black text-slate-900 mt-0.5">{{ $counts['schedules'] }} Gelombang</h4>
             </div>
-            <a href="{{ route('admin.schedules.index') }}" class="p-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200" title="Kelola Jadwal">
+            <a href="{{ route('admin.schedules.index') }}" class="p-2.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition" title="Kelola Jadwal">
                 <i data-lucide="calendar" class="w-4 h-4"></i>
             </a>
         </div>

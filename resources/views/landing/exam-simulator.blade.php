@@ -53,7 +53,7 @@
             <!-- Left: Active Question Area (8 Cols) -->
             <div class="lg:col-span-8 space-y-4">
                 
-                <div class="bg-white text-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 min-h-[480px] flex flex-col justify-between relative">
+                <div id="questionCard" class="bg-white text-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 min-h-[480px] flex flex-col justify-between relative transition-all duration-200">
                     
                     <div>
                         <!-- Top Metadata & Section Badge -->
@@ -70,6 +70,9 @@
                                         <span class="text-xs font-bold text-japan-600 font-japanese">
                                             Level {{ $selectedLevel }}
                                         </span>
+                                        <span id="flagIndicator" class="hidden px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px] items-center gap-1 border border-amber-200">
+                                            🚩 Ditandai Ragu
+                                        </span>
                                     </div>
                                     <p class="text-[11px] text-slate-400 font-semibold mt-0.5">
                                         Bobot: {{ $questions[0]->points ?? 10 }} Poin
@@ -83,7 +86,7 @@
                         </div>
 
                         <!-- Question Text (With Japanese Furigana Support) -->
-                        <div class="space-y-3 mb-6">
+                        <div class="space-y-3 mb-6" id="questionContentBox">
                             <h3 id="questionTitle" class="text-base sm:text-lg font-extrabold text-slate-900 leading-relaxed font-sans">
                                 {{ $questions[0]->question ?? 'Memuat soal...' }}
                             </h3>
@@ -107,7 +110,7 @@
                                         type="button" 
                                         onclick="selectAnswer('{{ $optKey }}')" 
                                         id="optBtn_{{ $optKey }}"
-                                        class="option-btn w-full p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/40 text-left font-semibold text-xs sm:text-sm text-slate-800 flex items-center gap-3.5 transition group"
+                                        class="option-btn w-full p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/40 text-left font-semibold text-xs sm:text-sm text-slate-800 flex items-center gap-3.5 transition group active:scale-[0.99]"
                                     >
                                         <span class="w-8 h-8 rounded-xl bg-slate-100 group-hover:bg-japan-100 group-hover:text-japan-700 text-slate-700 font-black text-xs flex items-center justify-center flex-shrink-0 option-key transition">
                                             {{ $optKey }}
@@ -120,24 +123,38 @@
 
                     </div>
 
-                    <!-- Bottom Nav Actions -->
-                    <div class="flex items-center justify-between border-t border-slate-100 pt-5 mt-8">
-                        <button 
-                            type="button" 
-                            id="btnPrevQ" 
-                            onclick="prevQuestion()" 
-                            disabled
-                            class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-xs flex items-center gap-1.5 transition"
-                        >
-                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
-                            <span>Sebelumnya</span>
-                        </button>
+                    <!-- Bottom Nav Actions with Ragu-ragu -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-5 mt-8">
+                        <div class="flex items-center gap-2">
+                            <button 
+                                type="button" 
+                                id="btnPrevQ" 
+                                onclick="prevQuestion()" 
+                                disabled
+                                class="px-4 sm:px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed font-bold text-xs flex items-center gap-1.5 transition active:scale-[0.97]"
+                            >
+                                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                                <span>Sebelumnya</span>
+                            </button>
+
+                            <!-- Button Ragu-ragu (Doubt toggle) -->
+                            <button 
+                                type="button" 
+                                id="btnFlagQ" 
+                                onclick="toggleFlag()" 
+                                class="px-3.5 py-2.5 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs flex items-center gap-1.5 transition active:scale-[0.97]"
+                                title="Tandai nomor ini jika masih ragu-ragu"
+                            >
+                                <i data-lucide="flag" class="w-3.5 h-3.5 text-amber-600"></i>
+                                <span id="flagBtnText">Ragu-ragu</span>
+                            </button>
+                        </div>
 
                         <div class="flex items-center gap-2">
                             <button 
                                 type="button" 
-                                onclick="finishExam()" 
-                                class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-emerald-600/30 transition"
+                                onclick="confirmFinishExam()" 
+                                class="px-4 sm:px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-emerald-600/30 transition active:scale-[0.97]"
                             >
                                 <i data-lucide="check-circle" class="w-4 h-4"></i>
                                 <span>Kumpulkan Ujian</span>
@@ -147,7 +164,7 @@
                                 type="button" 
                                 id="btnNextQ" 
                                 onclick="nextQuestion()" 
-                                class="btn-red-primary px-6 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-md shadow-red-600/30"
+                                class="btn-red-primary px-5 sm:px-6 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-md shadow-red-600/30 active:scale-[0.97]"
                             >
                                 <span>Selanjutnya</span>
                                 <i data-lucide="chevron-right" class="w-4 h-4"></i>
@@ -155,6 +172,17 @@
                         </div>
                     </div>
 
+                </div>
+
+                <!-- Keyboard Navigation Hint Bar -->
+                <div class="px-4 py-2.5 rounded-2xl bg-slate-900/80 border border-slate-800 text-[11px] text-slate-400 flex flex-wrap items-center justify-between gap-2 backdrop-blur-md">
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-slate-300">⌨️ Pintasan Keyboard:</span>
+                        <span class="inline-flex items-center gap-1"><kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-white font-mono text-[10px]">A</kbd>-<kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-white font-mono text-[10px]">D</kbd> Pilih Opsi</span>
+                        <span class="inline-flex items-center gap-1"><kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-white font-mono text-[10px]">&larr;</kbd> <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-white font-mono text-[10px]">&rarr;</kbd> Navigasi</span>
+                        <span class="inline-flex items-center gap-1"><kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-white font-mono text-[10px]">R</kbd> Ragu-ragu</span>
+                    </div>
+                    <span class="text-slate-500 font-mono text-[10px]">CBT Mode v2.4</span>
                 </div>
 
             </div>
@@ -180,15 +208,15 @@
                     </div>
 
                     <!-- Question Badges Grid -->
-                    <div class="grid grid-cols-5 gap-2 max-h-60 overflow-y-auto pr-1" id="questionNavGrid">
+                    <div class="grid grid-cols-5 gap-2 max-h-64 overflow-y-auto pr-1" id="questionNavGrid">
                         @foreach($questions as $idx => $q)
                             <button 
                                 type="button" 
                                 onclick="goToQuestion({{ $idx }})" 
                                 id="navBtn_{{ $idx }}"
-                                class="nav-q-btn h-10 rounded-xl font-bold text-xs flex items-center justify-center transition {{ $idx === 0 ? 'bg-japan-600 text-white ring-2 ring-red-400' : 'bg-slate-800 text-slate-300 hover:bg-slate-700' }}"
+                                class="nav-q-btn h-10 rounded-xl font-bold text-xs flex items-center justify-center relative transition {{ $idx === 0 ? 'bg-japan-600 text-white ring-2 ring-red-400' : 'bg-slate-800 text-slate-300 hover:bg-slate-700' }}"
                             >
-                                {{ $idx + 1 }}
+                                <span>{{ $idx + 1 }}</span>
                             </button>
                         @endforeach
                     </div>
@@ -198,6 +226,14 @@
                         <div class="flex items-center gap-2">
                             <span class="w-3 h-3 rounded bg-emerald-600"></span>
                             <span>Sudah Terjawab</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded bg-amber-500"></span>
+                            <span>Ragu-ragu (🚩)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded bg-japan-600 ring-1 ring-red-400"></span>
+                            <span>Soal Aktif</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="w-3 h-3 rounded bg-slate-800 border border-slate-700"></span>
@@ -211,9 +247,12 @@
         </div>
 
         <!-- Result Screen Card (Hidden Initially) -->
-        <div id="resultCard" class="hidden bg-white text-slate-900 rounded-3xl p-6 sm:p-10 shadow-2xl border border-red-100 space-y-8 animate-fadeIn">
+        <div id="resultCard" class="hidden bg-white text-slate-900 rounded-3xl p-6 sm:p-10 shadow-2xl border border-red-100 space-y-8 animate-fadeIn relative">
             
-            <div class="text-center space-y-3 max-w-xl mx-auto">
+            <!-- Confetti Canvas Overlay -->
+            <canvas id="confettiCanvas" class="absolute inset-0 pointer-events-none z-20 w-full h-full"></canvas>
+
+            <div class="text-center space-y-3 max-w-xl mx-auto relative z-10">
                 <div id="passBadge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-black mb-2 bg-emerald-100 text-emerald-800 border border-emerald-300">
                     <i data-lucide="award" class="w-4 h-4 text-emerald-600"></i>
                     <span>Hasil Evaluasi Ujian</span>
@@ -224,6 +263,64 @@
                 <p class="text-xs sm:text-sm text-slate-600">
                     Berikut adalah hasil analisis skor dan kunci pembahasan lengkap dari simulasi ujian Anda.
                 </p>
+            </div>
+
+            <!-- Authentic Japanese Goukaku Certificate of Merit (Shown if passed) -->
+            <div id="certificateContainer" class="hidden max-w-2xl mx-auto p-6 sm:p-8 rounded-3xl border-4 border-amber-500/50 bg-gradient-to-br from-amber-50/70 via-white to-amber-50/50 shadow-2xl relative overflow-hidden text-center space-y-4">
+                <div class="absolute -top-12 -right-12 w-36 h-36 bg-amber-400/10 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="absolute -bottom-12 -left-12 w-36 h-36 bg-red-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                <!-- Certificate Header -->
+                <div class="space-y-1.5">
+                    <p class="font-japanese font-black text-amber-700 tracking-widest text-xs uppercase">日本学修了認定証 • CERTIFICATE OF MERIT</p>
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900 font-japanese">合格認定証 (GOUKAKU CERTIFICATE)</h3>
+                    <p class="text-xs text-slate-600">Diberikan sebagai pengakuan pencapaian standar kompetensi bahasa Jepang</p>
+                </div>
+
+                <div class="py-3 px-4 rounded-2xl bg-white/90 border border-amber-200/80 shadow-xs flex items-center justify-around text-center">
+                    <div>
+                        <span class="text-[10px] text-slate-400 font-bold uppercase block">Tingkat Ujian</span>
+                        <strong class="text-sm font-black text-japan-600 font-japanese">Level {{ $selectedLevel }}</strong>
+                    </div>
+                    <div class="h-8 w-px bg-slate-200"></div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 font-bold uppercase block">Skor Kelulusan</span>
+                        <strong class="text-sm font-black text-emerald-600 font-mono" id="certScoreDisplay">0 / 0</strong>
+                    </div>
+                    <div class="h-8 w-px bg-slate-200"></div>
+                    <div>
+                        <span class="text-[10px] text-slate-400 font-bold uppercase block">Status</span>
+                        <strong class="text-sm font-black text-japan-700 font-japanese">合格 (LULUS)</strong>
+                    </div>
+                </div>
+
+                <!-- Certificate Seal & Stamp -->
+                <div class="flex items-center justify-between pt-2 px-2">
+                    <div class="text-left text-[11px] text-slate-600 leading-snug">
+                        <p class="font-bold text-slate-900">LPK Sahabat Jepang Indonesia</p>
+                        <p class="text-[10px] text-slate-500">Izin Kemenaker RI: KEP.224/LATTAS/XII/2023</p>
+                        <p class="text-[10px] text-slate-400 mt-1">Tanggal Verifikasi: <span id="certDateDisplay">{{ date('d F Y') }}</span></p>
+                    </div>
+
+                    <!-- Official Japanese Hanko Goukaku Stamp -->
+                    <div class="hanko-stamp flex-shrink-0" style="width: 76px; height: 76px; border-width: 2.5px;" title="Official Goukaku Seal">
+                        <span style="font-size: 8px;">友好日本</span>
+                        <span class="hanko-center" style="font-size: 13px;">合格</span>
+                        <span style="font-size: 7.5px;">認定済</span>
+                    </div>
+                </div>
+
+                <!-- Print / Share buttons -->
+                <div class="flex flex-wrap items-center justify-center gap-2 pt-2 print:hidden">
+                    <button type="button" onclick="window.print()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition active:scale-[0.97]">
+                        <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                        <span>Cetak Sertifikat</span>
+                    </button>
+                    <button type="button" onclick="shareScoreToWA()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition active:scale-[0.97]">
+                        <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+                        <span>Bagikan ke WhatsApp</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Score Stats Grid -->
@@ -289,10 +386,12 @@
     const questionsData = @json($questions);
     let currentIndex = 0;
     let userAnswers = {}; // { questionId: 'A' }
+    let flaggedQuestions = {}; // { questionId: true }
     let totalMinutes = Math.max(30, Math.ceil(questionsData.length * 1.2));
     let timerSeconds = totalMinutes * 60;
     let timerInterval = null;
     let isTimerStarted = false;
+    let finalResultData = null;
 
     function startTimer() {
         if (isTimerStarted) return;
@@ -317,10 +416,37 @@
         const q = questionsData[idx];
         if (!q) return;
 
+        // Animate question transition
+        const qCard = document.getElementById('questionCard');
+        if (qCard) {
+            qCard.classList.add('opacity-80', 'scale-[0.99]');
+            setTimeout(() => {
+                qCard.classList.remove('opacity-80', 'scale-[0.99]');
+            }, 120);
+        }
+
         // Meta tags
         document.getElementById('currentQNumBadge').innerText = idx + 1;
         document.getElementById('currentQIndexText').innerText = idx + 1;
         document.getElementById('currentQSection').innerText = q.section || 'Kotoba';
+
+        // Flag status
+        const isFlagged = !!flaggedQuestions[q.id];
+        const flagIndicator = document.getElementById('flagIndicator');
+        const flagBtnText = document.getElementById('flagBtnText');
+        const btnFlagQ = document.getElementById('btnFlagQ');
+
+        if (isFlagged) {
+            flagIndicator.classList.remove('hidden');
+            flagIndicator.classList.add('inline-flex');
+            flagBtnText.innerText = 'Batal Ragu';
+            btnFlagQ.className = 'px-3.5 py-2.5 rounded-xl border border-amber-500 bg-amber-500 text-white font-bold text-xs flex items-center gap-1.5 transition active:scale-[0.97] shadow-sm';
+        } else {
+            flagIndicator.classList.add('hidden');
+            flagIndicator.classList.remove('inline-flex');
+            flagBtnText.innerText = 'Ragu-ragu';
+            btnFlagQ.className = 'px-3.5 py-2.5 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs flex items-center gap-1.5 transition active:scale-[0.97]';
+        }
 
         // Title & Japanese
         document.getElementById('questionTitle').innerText = q.question;
@@ -345,12 +471,12 @@
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.onclick = () => selectAnswer(k);
-            btn.className = `option-btn w-full p-4 rounded-2xl border-2 text-left font-semibold text-xs sm:text-sm flex items-center gap-3.5 transition group ${
-                isSel ? 'border-japan-600 bg-red-50 text-japan-900 shadow-sm' : 'border-slate-200 hover:border-japan-600 hover:bg-red-50/40 text-slate-800'
+            btn.className = `option-btn w-full p-4 rounded-2xl border-2 text-left font-semibold text-xs sm:text-sm flex items-center gap-3.5 transition group active:scale-[0.99] ${
+                isSel ? 'border-japan-600 bg-red-50/80 text-japan-900 shadow-md ring-2 ring-red-400/30' : 'border-slate-200 hover:border-japan-600 hover:bg-red-50/40 text-slate-800'
             }`;
             btn.innerHTML = `
                 <span class="w-8 h-8 rounded-xl font-black text-xs flex items-center justify-center flex-shrink-0 transition ${
-                    isSel ? 'bg-japan-600 text-white' : 'bg-slate-100 text-slate-700 group-hover:bg-japan-100 group-hover:text-japan-700'
+                    isSel ? 'bg-japan-600 text-white shadow-xs' : 'bg-slate-100 text-slate-700 group-hover:bg-japan-100 group-hover:text-japan-700'
                 }">${k}</span>
                 <span class="flex-1 font-japanese font-bold text-sm sm:text-base ${isSel ? 'text-japan-900' : 'text-slate-800'}">${v}</span>
             `;
@@ -365,13 +491,25 @@
 
         // Update nav grid highlight
         document.querySelectorAll('.nav-q-btn').forEach((btn, i) => {
-            const isAns = !!userAnswers[questionsData[i]?.id];
+            const qId = questionsData[i]?.id;
+            const isAns = !!userAnswers[qId];
+            const isFlg = !!flaggedQuestions[qId];
+
+            let badgeHtml = `<span>${i + 1}</span>`;
+            if (isFlg) {
+                badgeHtml += `<span class="absolute -top-1 -right-1 text-[10px]">🚩</span>`;
+            }
+
+            btn.innerHTML = badgeHtml;
+
             if (i === idx) {
-                btn.className = 'nav-q-btn h-10 rounded-xl font-bold text-xs flex items-center justify-center transition bg-japan-600 text-white ring-2 ring-red-400';
+                btn.className = 'nav-q-btn h-10 rounded-xl font-bold text-xs flex items-center justify-center relative transition bg-japan-600 text-white ring-2 ring-red-400 shadow-md';
+            } else if (isFlg) {
+                btn.className = 'nav-q-btn h-10 rounded-xl font-bold text-xs flex items-center justify-center relative transition bg-amber-500 text-white shadow-xs';
             } else if (isAns) {
-                btn.className = 'nav-q-btn h-10 rounded-xl font-bold text-xs flex items-center justify-center transition bg-emerald-600 text-white';
+                btn.className = 'nav-q-btn h-10 rounded-xl font-bold text-xs flex items-center justify-center relative transition bg-emerald-600 text-white';
             } else {
-                btn.className = 'nav-q-btn h-10 rounded-xl font-bold text-xs flex items-center justify-center transition bg-slate-800 text-slate-300 hover:bg-slate-700';
+                btn.className = 'nav-q-btn h-10 rounded-xl font-bold text-xs flex items-center justify-center relative transition bg-slate-800 text-slate-300 hover:bg-slate-700';
             }
         });
 
@@ -390,6 +528,19 @@
         renderQuestion(currentIndex);
     }
 
+    function toggleFlag() {
+        const q = questionsData[currentIndex];
+        if (!q) return;
+
+        if (flaggedQuestions[q.id]) {
+            delete flaggedQuestions[q.id];
+        } else {
+            flaggedQuestions[q.id] = true;
+        }
+
+        renderQuestion(currentIndex);
+    }
+
     function prevQuestion() {
         if (currentIndex > 0) {
             renderQuestion(currentIndex - 1);
@@ -400,12 +551,47 @@
         if (currentIndex < questionsData.length - 1) {
             renderQuestion(currentIndex + 1);
         } else {
-            finishExam();
+            confirmFinishExam();
         }
     }
 
     function goToQuestion(idx) {
         renderQuestion(idx);
+    }
+
+    // Keyboard Shortcuts (A-D, 1-4, Left, Right, R)
+    window.addEventListener('keydown', (e) => {
+        // Ignore if focus is in an input or textarea
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+        // Ignore if exam is finished
+        if (document.getElementById('examContainer').classList.contains('hidden')) return;
+
+        const key = e.key.toUpperCase();
+
+        if (key === 'A' || key === '1') selectAnswer('A');
+        else if (key === 'B' || key === '2') selectAnswer('B');
+        else if (key === 'C' || key === '3') selectAnswer('C');
+        else if (key === 'D' || key === '4') selectAnswer('D');
+        else if (key === 'R' || key === 'F') toggleFlag();
+        else if (e.key === 'ArrowLeft') prevQuestion();
+        else if (e.key === 'ArrowRight') nextQuestion();
+    });
+
+    function confirmFinishExam() {
+        const total = questionsData.length;
+        const answered = Object.keys(userAnswers).length;
+        const flagged = Object.keys(flaggedQuestions).length;
+
+        if (answered < total || flagged > 0) {
+            const message = `Peringatan Evaluasi:\n- Soal terjawab: ${answered} dari ${total}\n- Soal belum dijawab: ${total - answered}\n- Soal ragu-ragu: ${flagged}\n\nApakah Anda yakin ingin mengumpulkan dan menilai sekarang?`;
+            if (confirm(message)) {
+                finishExam();
+            }
+        } else {
+            if (confirm('Apakah Anda yakin ingin mengumpulkan seluruh lembar ujian?')) {
+                finishExam();
+            }
+        }
     }
 
     async function finishExam() {
@@ -426,6 +612,7 @@
 
             const data = await res.json();
             if (data.status === 'success') {
+                finalResultData = data;
                 document.getElementById('examContainer').classList.add('hidden');
                 const resultCard = document.getElementById('resultCard');
                 resultCard.classList.remove('hidden');
@@ -436,12 +623,24 @@
                 document.getElementById('resCounts').innerText = `${data.correct_count} / ${data.wrong_count}`;
 
                 const passBadge = document.getElementById('passBadge');
+                const certContainer = document.getElementById('certificateContainer');
+
                 if (data.is_passed) {
-                    passBadge.className = 'inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-black mb-2 bg-emerald-100 text-emerald-800 border border-emerald-300';
+                    passBadge.className = 'inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-black mb-2 bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-xs';
                     passBadge.innerHTML = '<i data-lucide="award" class="w-4 h-4 text-emerald-600"></i><span>SELAMAT, ANDA LULUS STANDAR JLPT! (合格)</span>';
+                    
+                    // Show Goukaku Certificate
+                    if (certContainer) {
+                        certContainer.classList.remove('hidden');
+                        document.getElementById('certScoreDisplay').innerText = `${data.earned_points} / ${data.total_points} (${data.percentage}%)`;
+                    }
+
+                    // Fire Japanese Celebratory Confetti
+                    fireJapaneseConfetti();
                 } else {
                     passBadge.className = 'inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-black mb-2 bg-amber-100 text-amber-800 border border-amber-300';
                     passBadge.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 text-amber-600"></i><span>BELUM LULUS (Perlu Penguatan Kosakata & Bunpou)</span>';
+                    if (certContainer) certContainer.classList.add('hidden');
                 }
 
                 // Render Explanations Accordion
@@ -481,6 +680,64 @@
             console.error(e);
             alert('Gagal memproses hasil ujian.');
         }
+    }
+
+    function shareScoreToWA() {
+        if (!finalResultData) return;
+        const lvl = '{{ $selectedLevel }}';
+        const msg = encodeURIComponent(`Halo Sensei LPK Sahabat Jepang Indonesia! Saya baru saja menyelesaikan Tryout JLPT CBT Online Level ${lvl} dengan hasil:\n- Skor: ${finalResultData.earned_points} / ${finalResultData.total_points} (${finalResultData.percentage}%)\n- Status: ${finalResultData.is_passed ? 'LULUS (合格)' : 'Perlu Bimbingan'}\n\nSaya ingin konsultasi persiapan kelas dan percepatan penempatan kerja ke Jepang.`);
+        window.open(`https://api.whatsapp.com/send?phone=6281234567890&text=${msg}`, '_blank');
+    }
+
+    // Canvas Confetti Celebration
+    function fireJapaneseConfetti() {
+        const canvas = document.getElementById('confettiCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        canvas.width = canvas.parentElement.offsetWidth;
+        canvas.height = canvas.parentElement.offsetHeight;
+
+        const colors = ['#DC2626', '#E11D48', '#F59E0B', '#10B981', '#3B82F6', '#FFD1DC'];
+        const pieces = [];
+        const count = 75;
+
+        for (let i = 0; i < count; i++) {
+            pieces.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * -canvas.height * 0.5,
+                size: Math.random() * 8 + 6,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                vx: Math.random() * 4 - 2,
+                vy: Math.random() * 3 + 2,
+                rot: Math.random() * 360,
+                rotSpeed: Math.random() * 4 - 2
+            });
+        }
+
+        let frames = 0;
+        function renderConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            pieces.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.rot += p.rotSpeed;
+
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate((p.rot * Math.PI) / 180);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+                ctx.restore();
+            });
+
+            frames++;
+            if (frames < 180) {
+                requestAnimationFrame(renderConfetti);
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+        requestAnimationFrame(renderConfetti);
     }
 </script>
 @endsection
