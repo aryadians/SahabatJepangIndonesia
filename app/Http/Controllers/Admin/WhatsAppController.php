@@ -67,6 +67,14 @@ class WhatsAppController extends Controller
 
         $waUrl = 'https://api.whatsapp.com/send?phone=' . $cleanPhone . '&text=' . urlencode($validated['message']);
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'wa_url' => $waUrl,
+                'message' => 'Pesan WhatsApp berhasil dicatat ke log sistem dan siap dikirim.'
+            ]);
+        }
+
         return redirect()->away($waUrl);
     }
 }

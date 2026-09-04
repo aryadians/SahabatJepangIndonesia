@@ -505,7 +505,7 @@
         }, 3000);
     }
 
-    // Send Quick WhatsApp Message
+    // Send Quick WhatsApp Message & Log Dispatch
     function sendQuickWa(templateNum) {
         if (!currentLeadData) return;
 
@@ -515,14 +515,43 @@
         }
 
         let msg = '';
+        let templateKey = templateNum === 1 ? 'new_lead' : 'custom';
         if (templateNum === 1) {
             msg = `Halo Kak ${currentLeadData.name}, salam dari LPK Sahabat Jepang Indonesia (友好日本インドネシア) 🌸\n\nTerima kasih telah mendaftar formulir konsultasi karir program *${currentLeadData.program}*.\n\nApakah saat ini Kak ${currentLeadData.name} ada waktu untuk konsultasi singkat mengenai alur persiapan dan seleksi ke Jepang?`;
         } else {
             msg = `Halo Kak ${currentLeadData.name}, berikut kami kirimkan informasi lengkap persyaratan berkas, estimasi biaya, dan jadwal pembukaan angkatan baru program *${currentLeadData.program}* di LPK Sahabat Jepang Indonesia.\n\nSilakan dipelajari dan kabari kami jika ada hal yang ingin ditanyakan ya Kak.`;
         }
 
-        const waUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(msg)}`;
-        window.open(waUrl, '_blank');
+        // Asynchronously log to WhatsAppLog
+        fetch('{{ route("admin.whatsapp.send") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                phone: cleanPhone,
+                name: currentLeadData.name,
+                template_key: templateKey,
+                message: msg
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && data.wa_url) {
+                showMiniToast('Pesan WhatsApp tercatat di log & dibuka.');
+                window.open(data.wa_url, '_blank');
+            } else {
+                const fallbackUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(msg)}`;
+                window.open(fallbackUrl, '_blank');
+            }
+        })
+        .catch(() => {
+            const fallbackUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(msg)}`;
+            window.open(fallbackUrl, '_blank');
+        });
     }
 </script>
 @endsection
