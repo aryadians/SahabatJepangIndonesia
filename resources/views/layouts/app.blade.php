@@ -174,6 +174,24 @@
     @include('components.pwa-install-banner')
     @include('components.mobile-bottom-bar')
 
+    <!-- Social Proof Pop-up Configuration from Admin Settings -->
+    @php
+        $popupEnabled = \App\Models\SiteSetting::get('popup_ticker_enabled', '1');
+        $popupInterval = (int) \App\Models\SiteSetting::get('popup_ticker_interval', '28');
+        $popupItemsRaw = \App\Models\SiteSetting::get('popup_ticker_items', null);
+        $popupItems = null;
+        if (!empty($popupItemsRaw)) {
+            $popupItems = is_string($popupItemsRaw) ? json_decode($popupItemsRaw, true) : $popupItemsRaw;
+        }
+    @endphp
+    <script>
+        window.__SOCIAL_PROOF_CONFIG__ = {
+            enabled: {{ ($popupEnabled === '0' || $popupEnabled === false) ? 'false' : 'true' }},
+            interval: {{ $popupInterval > 0 ? $popupInterval * 1000 : 28000 }},
+            items: {!! !empty($popupItems) && is_array($popupItems) ? json_encode($popupItems, JSON_UNESCAPED_UNICODE) : 'null' !!}
+        };
+    </script>
+
     <!-- Custom App Script -->
     <script src="{{ asset('js/app.js') }}"></script>
     <script>

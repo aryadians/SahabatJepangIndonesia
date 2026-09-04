@@ -235,6 +235,142 @@
         </div>
     </div>
 
+    <!-- 6. Bottom-Left Pop-Up Notification (Live Social Proof Ticker) Settings -->
+    @php
+        $defaultTickerItems = [
+            [
+                'icon' => '🌸',
+                'title' => 'CoE Resmi Terbit!',
+                'desc' => 'Siswa Budi Santoso (Kaigo Tokyo) baru saja terbit Certificate of Eligibility.',
+                'time' => '2m lalu'
+            ],
+            [
+                'icon' => '📥',
+                'title' => 'Brosur 2026 Terunduh',
+                'desc' => '1 Calon siswa asal Jawa Timur baru saja mengunduh Katalog Biaya Resmi.',
+                'time' => '5m lalu'
+            ],
+            [
+                'icon' => '🎉',
+                'title' => 'Lolos Wawancara Kaisha',
+                'desc' => '3 Siswa lulusan Poltekkes lolos seleksi user rumah sakit lansia di Osaka.',
+                'time' => '12m lalu'
+            ],
+            [
+                'icon' => '✈️',
+                'title' => 'Terbang ke Narita',
+                'desc' => 'Peserta Gelombang 4 SMILE Project (Poltekkes MoU) sukses bertolak ke Jepang hari ini.',
+                'time' => '24m lalu'
+            ],
+            [
+                'icon' => '📝',
+                'title' => 'Tryout JLPT CBT Online',
+                'desc' => 'Seorang siswa meraih nilai 96/100 (合格 - Lulus) simulasi JLPT N4.',
+                'time' => '38m lalu'
+            ],
+            [
+                'icon' => '🤝',
+                'title' => 'MoU Kampus Baru',
+                'desc' => 'LPK SJI meresmikan kerjasama beasiswa Kaigo dengan Poltekkes Kemenkes.',
+                'time' => '1j lalu'
+            ]
+        ];
+        $activeTickerItems = $defaultTickerItems;
+        if (!empty($settings['popup_ticker_items'])) {
+            $decoded = json_decode($settings['popup_ticker_items'], true);
+            if (is_array($decoded) && count($decoded) > 0) {
+                $activeTickerItems = $decoded;
+            }
+        }
+    @endphp
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                    <i data-lucide="bell-ring" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="font-extrabold text-slate-900 text-base">Notifikasi Pop-up Aktivitas (Pojok Kiri Bawah)</h3>
+                    <p class="text-xs text-slate-500">Atur kemunculan, jeda interval, serta seluruh isi pesan notifikasi melayang (Social Proof Ticker) di website pengunjung</p>
+                </div>
+            </div>
+
+            <!-- Master Toggle Switch -->
+            <label class="inline-flex items-center gap-2 cursor-pointer bg-slate-50 hover:bg-slate-100 px-4 py-2 rounded-xl border border-slate-200 transition select-none">
+                <input type="checkbox" name="popup_ticker_enabled" value="1" {{ ($settings['popup_ticker_enabled'] ?? '1') === '1' ? 'checked' : '' }} class="sr-only peer">
+                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600 relative"></div>
+                <span class="text-xs font-black text-slate-800 uppercase tracking-wider">Aktifkan Pop-up</span>
+            </label>
+        </div>
+
+        <!-- Interval and Settings -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+            <div class="md:col-span-4 space-y-4">
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">Jeda Interval Kemunculan (Detik)</label>
+                    <div class="flex items-center gap-2">
+                        <input type="number" name="popup_ticker_interval" value="{{ $settings['popup_ticker_interval'] ?? '28' }}" min="5" max="180" class="w-28 px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600 font-bold text-center">
+                        <span class="text-xs text-slate-500 font-medium">detik (Default: 28s)</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400">Jeda waktu antar notifikasi muncul bergantian di layar pengunjung.</p>
+                </div>
+
+                <!-- Live Preview Card -->
+                <div class="p-4 rounded-2xl bg-slate-900 text-white space-y-2.5 shadow-lg border border-slate-800">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-black uppercase text-amber-400 tracking-wider">Live Preview di Layar Pengunjung</span>
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    </div>
+                    
+                    <div id="tickerPreviewCard" class="p-3 rounded-xl bg-white/95 text-slate-900 border border-red-200 shadow-xl flex items-start gap-2.5 relative overflow-hidden select-none">
+                        <div id="previewIcon" class="w-7 h-7 rounded-lg bg-red-100 flex items-center justify-center text-sm flex-shrink-0 mt-0.5">
+                            🌸
+                        </div>
+                        <div class="flex-1 min-w-0 pr-3">
+                            <div class="flex items-center justify-between gap-1">
+                                <span id="previewTitle" class="text-[9px] font-black uppercase text-japan-700 tracking-wider font-mono">CoE Resmi Terbit!</span>
+                                <span id="previewTime" class="text-[8px] text-slate-400 font-medium">2m lalu</span>
+                            </div>
+                            <p id="previewDesc" class="text-[11px] text-slate-700 leading-snug mt-0.5 font-medium">Siswa Budi Santoso (Kaigo Tokyo) baru saja terbit Certificate of Eligibility.</p>
+                        </div>
+                        <span class="text-slate-300 text-xs absolute top-1 right-1">&times;</span>
+                        <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-red-100">
+                            <div class="h-full bg-japan-600 w-2/3"></div>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 text-center">Tampil melayang di pojok kiri bawah perangkat desktop & mobile.</p>
+                </div>
+            </div>
+
+            <!-- Repeater / List Editor -->
+            <div class="md:col-span-8 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="text-xs font-black text-slate-800 uppercase tracking-wider">Daftar Isi Notifikasi Pop-Up</h4>
+                        <p class="text-[11px] text-slate-400">Notifikasi akan dirotasi secara otomatis satu per satu.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="resetToDefaultTicker()" class="text-[11px] font-bold text-slate-500 hover:text-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 transition">
+                            Reset Default
+                        </button>
+                        <button type="button" onclick="addNewTickerItem()" class="text-[11px] font-bold text-white px-3 py-1.5 rounded-lg bg-japan-600 hover:bg-japan-700 transition flex items-center gap-1 shadow-xs">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                            <span>Tambah Item</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hidden Input Containing JSON String -->
+                <input type="hidden" name="popup_ticker_items" id="popupTickerItemsInput" value="{{ json_encode($activeTickerItems, JSON_UNESCAPED_UNICODE) }}">
+
+                <!-- Dynamic Item Container -->
+                <div id="tickerItemsContainer" class="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+                    <!-- Javascript will render rows here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Save Button -->
     <div class="sticky bottom-6 z-20 flex justify-end">
         <button type="submit" class="btn-red-primary px-8 py-4 rounded-2xl font-bold text-sm shadow-xl flex items-center gap-2">
@@ -263,5 +399,165 @@
             reader.readAsDataURL(input.files[0]);
         }
     }
+
+    /* ==========================================================
+       POP-UP TICKER (SOCIAL PROOF) INTERACTIVE REPEATER
+       ========================================================== */
+    const defaultTickerItemsList = @json($defaultTickerItems);
+    let tickerItems = [];
+
+    try {
+        const rawJson = document.getElementById('popupTickerItemsInput').value;
+        tickerItems = JSON.parse(rawJson);
+        if (!Array.isArray(tickerItems) || tickerItems.length === 0) {
+            tickerItems = [...defaultTickerItemsList];
+        }
+    } catch (e) {
+        tickerItems = [...defaultTickerItemsList];
+    }
+
+    function renderTickerRows() {
+        const container = document.getElementById('tickerItemsContainer');
+        if (!container) return;
+
+        if (tickerItems.length === 0) {
+            container.innerHTML = `
+                <div class="p-6 text-center rounded-2xl border-2 border-dashed border-slate-200 text-slate-400">
+                    <p class="text-xs">Belum ada item notifikasi. Klik tombol <b>+ Tambah Item</b> atau <b>Reset Default</b>.</p>
+                </div>
+            `;
+            syncTickerJson();
+            return;
+        }
+
+        container.innerHTML = tickerItems.map((item, idx) => `
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5 relative group hover:border-japan-300 transition">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="w-5 h-5 rounded-full bg-japan-100 text-japan-700 text-[10px] font-black flex items-center justify-center">${idx + 1}</span>
+                        <!-- Quick Emoji Selector -->
+                        <div class="flex items-center gap-1">
+                            <input 
+                                type="text" 
+                                value="${item.icon || '🌸'}" 
+                                maxlength="4"
+                                oninput="updateTickerItem(${idx}, 'icon', this.value)"
+                                class="w-10 h-8 text-center text-base rounded-lg border border-slate-200 bg-white focus:outline-none focus:border-japan-600 shadow-2xs"
+                                title="Icon / Emoji"
+                            >
+                            <div class="flex items-center gap-0.5">
+                                ${['🌸', '📥', '🎉', '✈️', '📝', '🤝', '🏥', '💼'].map(em => `
+                                    <button type="button" onclick="updateTickerItem(${idx}, 'icon', '${em}')" class="text-xs p-1 rounded hover:bg-white text-slate-600 transition">
+                                        ${em}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-1">
+                            <span class="text-[10px] text-slate-400 font-bold uppercase">Waktu:</span>
+                            <input 
+                                type="text" 
+                                value="${item.time || '2m lalu'}" 
+                                oninput="updateTickerItem(${idx}, 'time', this.value)"
+                                placeholder="2m lalu"
+                                class="w-20 px-2 py-1 text-[11px] rounded-lg border border-slate-200 bg-white font-medium focus:outline-none focus:border-japan-600"
+                            >
+                        </div>
+                        <button type="button" onclick="deleteTickerItem(${idx})" class="text-slate-400 hover:text-red-600 p-1 rounded-lg hover:bg-red-50 transition" title="Hapus Notifikasi">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                    <div class="sm:col-span-4">
+                        <input 
+                            type="text" 
+                            value="${item.title || ''}" 
+                            oninput="updateTickerItem(${idx}, 'title', this.value)"
+                            placeholder="Judul (e.g. CoE Resmi Terbit!)"
+                            class="w-full px-3 py-1.5 text-xs font-bold rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-japan-600 text-japan-700 font-mono"
+                        >
+                    </div>
+                    <div class="sm:col-span-8">
+                        <input 
+                            type="text" 
+                            value="${item.desc || ''}" 
+                            oninput="updateTickerItem(${idx}, 'desc', this.value)"
+                            placeholder="Rincian deskripsi notifikasi..."
+                            class="w-full px-3 py-1.5 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-japan-600 text-slate-700"
+                        >
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+
+        syncTickerJson();
+        updateLivePreview();
+    }
+
+    function updateTickerItem(idx, key, val) {
+        if (tickerItems[idx]) {
+            tickerItems[idx][key] = val;
+            syncTickerJson();
+            if (idx === 0) updateLivePreview();
+        }
+    }
+
+    function addNewTickerItem() {
+        tickerItems.push({
+            icon: '🎉',
+            title: 'Siswa Baru Lolos!',
+            desc: 'Calon kandidat sukses menyelesaikan tahap wawancara kerja.',
+            time: 'Baru saja'
+        });
+        renderTickerRows();
+    }
+
+    function deleteTickerItem(idx) {
+        if (confirm('Hapus item notifikasi ini?')) {
+            tickerItems.splice(idx, 1);
+            renderTickerRows();
+        }
+    }
+
+    function resetToDefaultTicker() {
+        if (confirm('Kembalikan ke 6 notifikasi pop-up default bawaan?')) {
+            tickerItems = JSON.parse(JSON.stringify(defaultTickerItemsList));
+            renderTickerRows();
+        }
+    }
+
+    function syncTickerJson() {
+        const input = document.getElementById('popupTickerItemsInput');
+        if (input) {
+            input.value = JSON.stringify(tickerItems);
+        }
+    }
+
+    function updateLivePreview() {
+        if (tickerItems.length > 0) {
+            const first = tickerItems[0];
+            const pIcon = document.getElementById('previewIcon');
+            const pTitle = document.getElementById('previewTitle');
+            const pDesc = document.getElementById('previewDesc');
+            const pTime = document.getElementById('previewTime');
+            if (pIcon) pIcon.textContent = first.icon || '🌸';
+            if (pTitle) pTitle.textContent = first.title || 'Judul Notifikasi';
+            if (pDesc) pDesc.textContent = first.desc || 'Deskripsi notifikasi';
+            if (pTime) pTime.textContent = first.time || 'Baru saja';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        renderTickerRows();
+    });
 </script>
 @endsection

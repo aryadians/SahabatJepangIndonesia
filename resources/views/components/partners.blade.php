@@ -183,10 +183,10 @@
                     </div>
                     <h3 class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white leading-tight">
                         2 Program Unggulan Pemerintah: <br class="hidden sm:inline">
-                        <span class="text-red-400">SMK Go Japan</span> & <span class="text-emerald-400">SMILE Project (Poltekkes Kemenkes)</span>
+                        <span class="text-red-400">SMK Go Japan</span> & <span class="text-emerald-400">SMILE Project (Khusus Poltekkes MoU)</span>
                     </h3>
                     <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                        LPK Sahabat Jepang Indonesia dipercaya menyelenggarakan program resmi pemerintah RI untuk 2 jalur utama: <b>Program SMK Go Japan</b> (khusus siswa/alumni SMK bidang teknik & industri) dan <b>SMILE Project Kemenkes RI</b> (program beasiswa Kaigo 100% gratis kerjasama MoU Poltekkes & STIKes yang telah sukses memberangkatkan <b>4 Gelombang</b> tenaga perawat ke Jepang).
+                        LPK Sahabat Jepang Indonesia dipercaya menyelenggarakan program resmi pemerintah RI untuk 2 jalur utama: <b>Program SMK Go Japan</b> (khusus siswa/alumni SMK bidang teknik & industri) dan <b>SMILE Project Kemenkes RI</b> (program beasiswa Kaigo 100% gratis khusus mahasiswa dan alumni <b>Poltekkes Kemenkes yang telah menandatangani MoU resmi dengan LPK SJI</b>, sukses memberangkatkan <b>4 Gelombang</b> tenaga perawat ke Jepang).
                     </p>
                 </div>
 
@@ -241,17 +241,17 @@
                     <div class="space-y-2.5">
                         <div class="flex items-center justify-between">
                             <span class="px-3 py-1 rounded-xl bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider shadow-xs">
-                                Jalur 02 • Beasiswa 100% GRATIS Kemenkes
+                                Jalur 02 • Beasiswa 100% GRATIS (Khusus Poltekkes MoU)
                             </span>
                             <span class="text-xs font-mono text-emerald-300 font-bold">4 Gelombang Sukses</span>
                         </div>
-                        <h4 class="text-xl font-black text-white">SMILE Project (Poltekkes & STIKes)</h4>
+                        <h4 class="text-xl font-black text-white">SMILE Project (Khusus Poltekkes MoU Resmi)</h4>
                         <p class="text-xs text-slate-300 leading-relaxed">
-                            Program beasiswa pemerintah dari Kementerian Kesehatan RI (Kemenkes) khusus lulusan Keperawatan & Kebidanan. Biaya belajar bahasa, asrama, sertifikasi Kaigo, CoE, visa, hingga tiket pesawat 100% dibiayai negara.
+                            Program beasiswa kerjasama Kementerian Kesehatan RI (Kemenkes) khusus bagi mahasiswa dan alumni <b>Poltekkes Kemenkes yang telah memiliki kerja sama MoU resmi</b> dengan LPK Sahabat Jepang Indonesia. Biaya pelatihan N4, asrama, sertifikasi Kaigo, CoE, visa, hingga tiket pesawat 100% GRATIS dibiayai negara. <i>(Bagi lulusan keperawatan/kebidanan non-MoU, tetap dapat mendaftar melalui jalur Tokutei Ginou Kaigo Reguler).</i>
                         </p>
                     </div>
                     <div class="pt-3 border-t border-emerald-500/20 flex items-center justify-between text-xs">
-                        <span class="text-emerald-300 font-bold">MoU Poltekkes Se-Indonesia</span>
+                        <span class="text-emerald-300 font-bold">Khusus Mitra MoU Poltekkes</span>
                         <a href="{{ route('brochure.index', ['program' => 'Tokutei Ginou (SSW)']) }}" class="text-white hover:text-emerald-300 font-black inline-flex items-center gap-1">
                             <span>Unduh Brosur</span>
                             <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>

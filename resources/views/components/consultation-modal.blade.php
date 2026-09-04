@@ -75,7 +75,7 @@
                 <!-- Quick Selection Chips -->
                 <div class="flex flex-wrap gap-1.5 pb-1">
                     <button type="button" onclick="setConsultProgram('Program Pemerintah: SMILE Project (Kemenkes Kaigo 100% Gratis)')" class="consult-chip px-2.5 py-1 rounded-lg bg-red-50 border border-red-200 text-japan-700 font-bold text-[10px] hover:bg-red-100 transition active:scale-[0.97]">
-                        🏥 SMILE (Kaigo)
+                        🏥 SMILE (Khusus Poltekkes MoU)
                     </button>
                     <button type="button" onclick="setConsultProgram('Tokutei Ginou (SSW)')" class="consult-chip px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 font-bold text-[10px] hover:bg-slate-200 transition active:scale-[0.97]">
                         💼 Tokutei Ginou (SSW)
@@ -93,7 +93,7 @@
 
                 <select id="consultProgramSelect" name="program" required class="w-full px-3.5 py-2 rounded-xl text-xs text-slate-900 bg-slate-50 border border-slate-200 focus:bg-white focus:border-japan-600 focus:outline-none font-bold text-japan-700">
                     <optgroup label="Program Resmi Pemerintah (Unggulan)">
-                        <option value="Program Pemerintah: SMILE Project (Kemenkes Kaigo 100% Gratis)">★ SMILE Project (Beasiswa Kemenkes & Poltekkes Kaigo 100% Gratis)</option>
+                        <option value="Program Pemerintah: SMILE Project (Kemenkes Kaigo 100% Gratis)">★ SMILE Project (Khusus Poltekkes MoU - Kaigo 100% Gratis)</option>
                         <option value="Program Pemerintah: SMK Go Japan (Vokasi Industri)">★ SMK Go Japan (Khusus Siswa & Alumni SMK)</option>
                     </optgroup>
                     <optgroup label="Jalur Reguler & Karir Jepang">
@@ -104,6 +104,34 @@
                         <option value="Belum Tahu / Ingin Konsultasi Dulu">Ingin Konsultasi Pilihan Program Dulu</option>
                     </optgroup>
                 </select>
+
+                <!-- Callout Khusus SMILE Project (Poltekkes MoU) -->
+                <div id="smileMouNotice" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs space-y-1 mt-2">
+                    <div class="flex items-center gap-1.5 font-bold text-amber-800">
+                        <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600 flex-shrink-0"></i>
+                        <span>Khusus Mahasiswa & Alumni Poltekkes yang Sudah MoU</span>
+                    </div>
+                    <p class="text-[11px] text-amber-800 leading-relaxed">
+                        Program <strong>SMILE Project (Kaigo 100% Bebas Biaya)</strong> khusus diperuntukkan bagi mahasiswa tingkat akhir / alumni dari <strong>Poltekkes Kemenkes yang telah memiliki naskah kerja sama (MoU) resmi</strong> dengan LPK Sahabat Jepang Indonesia.
+                    </p>
+                    <p class="text-[10px] text-amber-700 italic pt-0.5">
+                        *Bagi lulusan keperawatan/kebidanan non-Poltekkes MoU atau jalur umum, silakan memilih opsi <strong>Tokutei Ginou (SSW)</strong> bidang Kaigo (tersedia skema dana talangan & beasiswa penempatan).
+                    </p>
+                </div>
+
+                <!-- Input Asal Poltekkes Khusus SMILE Project -->
+                <div id="smileCampusField" class="hidden space-y-1 mt-2">
+                    <label class="block font-bold text-slate-700 uppercase text-[10px]">
+                        Nama Kampus Poltekkes Asal <span class="text-red-500">* (Wajib Poltekkes Mitra MoU)</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        name="campus_origin" 
+                        id="smileCampusInput"
+                        placeholder="Contoh: Poltekkes Kemenkes Bandung, Jakarta III, Yogyakarta, Semarang..."
+                        class="w-full px-3.5 py-2 rounded-xl text-xs text-slate-900 bg-amber-50/40 border border-amber-300 focus:bg-white focus:border-japan-600 focus:outline-none font-medium"
+                    >
+                </div>
             </div>
 
             <!-- Usia & Pendidikan Terakhir -->
@@ -196,6 +224,34 @@
         </form>
 
         <script>
+            function checkSmileSelection(val) {
+                const notice = document.getElementById('smileMouNotice');
+                const campusField = document.getElementById('smileCampusField');
+                const campusInput = document.getElementById('smileCampusInput');
+                const isSmile = val && val.toLowerCase().includes('smile');
+
+                if (notice) {
+                    if (isSmile) {
+                        notice.classList.remove('hidden');
+                    } else {
+                        notice.classList.add('hidden');
+                    }
+                }
+                if (campusField) {
+                    if (isSmile) {
+                        campusField.classList.remove('hidden');
+                        if (campusInput) campusInput.setAttribute('required', 'required');
+                    } else {
+                        campusField.classList.add('hidden');
+                        if (campusInput) {
+                            campusInput.removeAttribute('required');
+                            campusInput.value = '';
+                        }
+                    }
+                }
+                if (window.lucide) lucide.createIcons();
+            }
+
             function setConsultProgram(val) {
                 const select = document.getElementById('consultProgramSelect');
                 if (select) {
@@ -208,7 +264,18 @@
                         btn.className = 'consult-chip px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 font-bold text-[10px] hover:bg-slate-200 transition active:scale-[0.97]';
                     }
                 });
+                checkSmileSelection(val);
             }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const select = document.getElementById('consultProgramSelect');
+                if (select) {
+                    select.addEventListener('change', (e) => {
+                        checkSmileSelection(e.target.value);
+                    });
+                    checkSmileSelection(select.value);
+                }
+            });
         </script>
 
     </div>

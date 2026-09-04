@@ -210,9 +210,9 @@
                                         <td class="p-3">
                                             <span class="font-bold text-emerald-900 flex items-center gap-1.5">
                                                 <i data-lucide="award" class="w-4 h-4 text-emerald-600"></i>
-                                                <span>Program Pemerintah: SMILE Project (Kemenkes & Poltekkes Kaigo)</span>
+                                                <span>Program Pemerintah: SMILE Project (Khusus Poltekkes MoU - Kaigo 100% Gratis)</span>
                                             </span>
-                                            <p class="text-[10px] text-emerald-700 mt-0.5 font-medium">Khusus alumni Poltekkes Kemenkes & STIKes mitra se-Indonesia (Sukses 4 Gelombang)</p>
+                                            <p class="text-[10px] text-emerald-700 mt-0.5 font-medium">Khusus mahasiswa & alumni Poltekkes Kemenkes yang telah memiliki MoU resmi dengan LPK SJI (Sukses 4 Gelombang)</p>
                                         </td>
                                         <td class="p-3 text-emerald-800 text-[11px]">
                                             Pelatihan bahasa intensif, modul, asrama, ujian sertifikasi Kaigo, CoE, visa & penempatan RS Jepang 100% dibiayai negara.
@@ -269,10 +269,10 @@
                         <span>Program Resmi Pemerintah RI & Kemitraan Kampus</span>
                     </div>
                     <h3 class="text-xl sm:text-2xl font-black text-white">
-                        SMILE Project (Beasiswa Kemenkes 100% Gratis) & SMK Go Japan
+                        SMILE Project (Khusus Poltekkes MoU - Kaigo 100% Gratis) & SMK Go Japan
                     </h3>
                     <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-                        LPK SJI telah menuntaskan 4 gelombang keberangkatan Kaigo beasiswa Kemenkes dari Poltekkes & STIKes se-Indonesia serta program kemitraan BKK SMK. Unduh silabus dan petunjuk teknis resminya di bawah ini.
+                        LPK SJI telah menuntaskan 4 gelombang keberangkatan Kaigo beasiswa Kemenkes khusus mahasiswa dan alumni Poltekkes Kemenkes yang telah memiliki MoU resmi serta program kemitraan BKK SMK. Unduh silabus dan petunjuk teknis resminya di bawah ini.
                     </p>
                 </div>
                 <div class="flex flex-wrap items-center gap-3 flex-shrink-0">

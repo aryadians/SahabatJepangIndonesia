@@ -80,6 +80,8 @@ Website ini menggabungkan:
 | **🏛️ Tur Fasilitas & Lightbox** | Galeri interaktif fasilitas & asrama berstandar Jepang dengan filter kategori, penampil Lightbox keyboard-friendly (`←`/`→`/`Esc`), dan tanya WhatsApp instan. | `/#fasilitas` |
 | **💬 FAQ & Live Search Engine** | Tanya jawab interaktif seputar biaya, dana talangan, visa, dan asrama dengan filter topik, pencarian *real-time*, dan kontrol buka/tutup semua. | `/#faq` |
 | **📖 Zen Article Reader** | Halaman artikel edukatif dengan indikator progres baca atas layar, pengatur ukuran teks (`A-`/`Normal`/`A+`), dan kapsul share sosial mengambang. | `/artikel/{slug}` |
+| **🔔 Live Social Proof Ticker** | Pop-up aktivitas melayang di pojok kiri bawah (CoE terbit, brosur terunduh, lolos wawancara, terbang ke Narita, simulasi CBT, MoU) yang dikonfigurasi dinamis oleh Admin. | Global Layout |
+| **🏥 SMILE Project (Poltekkes MoU)** | Program beasiswa Kaigo 100% Gratis dari Kemenkes RI **khusus mahasiswa/alumni Poltekkes Kemenkes yang telah MoU resmi**, lengkap dengan peringatan alur pintar dan input kampus asal. | `components/consultation-modal` & `components/partners` |
 | **💰 Simulasi Gaji & Tabungan** | Transparansi penghitungan gaji kotor, lembur (*zangyou*), potongan pajak, dan proyeksi sisa tabungan bulanan. | `/#kalkulator` |
 | **📝 Simulasi Ujian JLPT CBT** | Aplikasi simulator Computer-Based Test (CBT) interaktif dengan bank 100 soal bahasa Jepang (Moji, Goi, Bunpou, Dokkai) lengkap dengan skoring instan gratis. | `/simulasi-ujian` |
 | **🗺️ Peta Alumni 47 Prefektur** | Peta interaktif sebaran alumni LPK SJI yang telah aktif bekerja di Tokyo, Osaka, Aichi, Kanagawa, Fukuoka, Hokkaido, dll. | `/sebaran-alumni` |
@@ -97,20 +99,25 @@ Panel Admin aman dan dilindungi autentikasi session multi-role:
    - Audio notifikasi instan & *toast alert* saat ada calon siswa baru yang mendaftar dari portal publik.
 2. **Database Siswa & Master Data (`/admin/students`)**:
    - Manajemen siklus hidup siswa (*Pendaftaran -> Pelatihan -> Medical -> Matching User -> Paspor/CoE -> Terbang ke Jepang*).
-   - **Filter 2-Tier Cepat**: Filter berdasarkan Program, Angkatan (*Batch*), Status Medikal (*Fit / Unfit*), Status Biaya (*Lunas / Talangan / Cicilan*), serta **Kategori Pendaftaran Khusus (SMILE Project Kemenkes / SMK Go Japan / Reguler)**.
+   - **Filter 2-Tier Cepat**: Filter berdasarkan Program, Angkatan (*Batch*), Status Medikal (*Fit / Unfit*), Status Biaya (*Lunas / Talangan / Cicilan*), serta **Kategori Pendaftaran Khusus (SMILE Project Khusus Poltekkes MoU / SMK Go Japan / Reguler)**.
    - **Tombol Pintas Portal Siswa**: Admin dapat mengklik satu tombol untuk melihat tampilan tracking mandiri siswa.
    - **Template WhatsApp Pintar**: Kirim rincian biaya, jadwal MCU, jadwal wawancara, kabar CoE terbit, atau tautan portal tracking langsung via WhatsApp ke nomor siswa/orang tua.
    - **Export & Import CSV Massal**: Template CSV standar untuk import ratusan siswa dalam sekali klik.
-3. **Manajemen Jadwal Wawancara Kaisha (`/admin/interviews`)**:
+3. **Pengaturan Website & Social Proof Pop-Up Ticker (`/admin/settings`)**:
+   - **Sakelar Master On/Off**: Aktifkan atau nonaktifkan pop-up pojok kiri bawah kapan saja.
+   - **Interval Rotasi**: Tentukan jeda detik antar kemunculan notifikasi (contoh: 28 detik).
+   - **Manajer Notifikasi Interaktif**: Tambah, edit, hapus pesan pop-up, pilih emoji (🌸, 📥, 🎉, ✈️, 📝, 🤝, 🏥, 💼), atur judul dan rincian teks, serta tombol 1-klik untuk reset ke template default.
+   - **Live Preview Real-Time**: Tampilan instan bagaimana kartu pop-up terlihat di layar pengunjung sebelum disimpan.
+4. **Manajemen Jadwal Wawancara Kaisha (`/admin/interviews`)**:
    - Jadwal temu wawancara kerja daring/luring dengan perwakilan perusahaan Jepang (*Kaisha*).
    - Penugasan kandidat siswa, pencatatan nilai wawancara, dan otomatisasi update status siswa menjadi *Lolos User*.
-4. **Manajemen Brosur Resmi (`/admin/brochures`)**:
+5. **Manajemen Brosur Resmi (`/admin/brochures`)**:
    - Unggah berkas brosur PDF resmi atau tautan unduhan eksternal.
    - Tentukan badge edisi (*Edisi 2026 / Gratis / Beasiswa*), program studi target, dan lacak statistik jumlah unduhan.
-5. **Manajemen Galeri Kampus & MoU (`/admin/campus-galleries`)**:
+6. **Manajemen Galeri Kampus & MoU (`/admin/campus-galleries`)**:
    - CRUD dokumentasi kunjungan kampus kesehatan dan bursa kerja.
    - Fitur upload file gambar dengan *live image preview* instan yang langsung tersinkron ke Carousel Beranda.
-6. **Integrasi WhatsApp Quick Templates**:
+7. **Integrasi WhatsApp Quick Templates**:
    - Template pesan dinamis dengan tag otomatis `{nama}`, `{nis}`, `{program}`, `{sisa_biaya}` untuk follow-up cepat via WhatsApp Web / API.
 
 ---

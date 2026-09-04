@@ -270,7 +270,7 @@
                             <select name="registration_category" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-japan-600">
                                 <option value="umum" {{ old('registration_category', $student->registration_category) === 'umum' ? 'selected' : '' }}>Jalur Reguler / Umum</option>
                                 <option value="smk_go_japan" {{ old('registration_category', $student->registration_category) === 'smk_go_japan' ? 'selected' : '' }}>Program Pemerintah: SMK Go Japan (Khusus Anak SMK)</option>
-                                <option value="smile_project" {{ in_array(old('registration_category', $student->registration_category), ['smile_project', 'kemenkes_kaigo']) ? 'selected' : '' }}>Program Pemerintah: SMILE Project (Kemenkes & Poltekkes Kaigo 100% Gratis)</option>
+                                <option value="smile_project" {{ in_array(old('registration_category', $student->registration_category), ['smile_project', 'kemenkes_kaigo']) ? 'selected' : '' }}>Program Pemerintah: SMILE Project (Khusus Poltekkes MoU - Kaigo 100% Gratis)</option>
                                 <option value="bkk_smk" {{ old('registration_category', $student->registration_category) === 'bkk_smk' ? 'selected' : '' }}>Kemitraan BKK SMK</option>
                                 <option value="poltekkes_kampus" {{ old('registration_category', $student->registration_category) === 'poltekkes_kampus' ? 'selected' : '' }}>Kemitraan Kampus Poltekkes / STIKes</option>
                             </select>

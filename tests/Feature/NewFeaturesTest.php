@@ -229,4 +229,53 @@ class NewFeaturesTest extends TestCase
         $deleteResponse->assertRedirect('/admin/campus-galleries');
         $this->assertNull(\App\Models\CampusGallery::find($uploadedGallery->id));
     }
+
+    /**
+     * Test Admin can configure Social Proof Ticker and SMILE Project Poltekkes MoU Notice is Rendered
+     */
+    public function test_admin_can_configure_social_proof_popup_and_poltekkes_mou_notice_is_rendered(): void
+    {
+        // 1. Admin accesses settings page
+        $settingsPage = $this->actingAs($this->admin)->get('/admin/settings');
+        $settingsPage->assertStatus(200);
+        $settingsPage->assertSee('Notifikasi Pop-up Aktivitas (Pojok Kiri Bawah)');
+
+        // 2. Admin saves custom social proof ticker configuration
+        $customItems = [
+            [
+                'icon' => '🌸',
+                'title' => 'Visa Kaigo Terbit',
+                'desc' => 'Alumni Poltekkes Kemenkes lolos seleksi rumah sakit Tokyo.',
+                'time' => '1m lalu'
+            ]
+        ];
+
+        $updateResponse = $this->actingAs($this->admin)->post('/admin/settings', [
+            'popup_ticker_enabled' => '1',
+            'popup_ticker_interval' => '18',
+            'popup_ticker_items' => json_encode($customItems),
+        ]);
+
+        $updateResponse->assertSessionHas('success');
+
+        // 3. Guest visits homepage and verifies config is injected
+        $homeResponse = $this->get('/');
+        $homeResponse->assertStatus(200);
+        $homeResponse->assertSee('window.__SOCIAL_PROOF_CONFIG__', false);
+        $homeResponse->assertSee('Visa Kaigo Terbit', false);
+        $homeResponse->assertSee('18000', false);
+
+        // 4. Verify Poltekkes MoU notice is present in consultation modal
+        $homeResponse->assertSee('Khusus Mahasiswa & Alumni Poltekkes yang Sudah MoU', false);
+        $homeResponse->assertSee('smileMouNotice', false);
+
+        // 5. Admin disables popup ticker
+        $disableResponse = $this->actingAs($this->admin)->post('/admin/settings', [
+            'popup_ticker_interval' => '25',
+        ]);
+        $disableResponse->assertSessionHas('success');
+
+        $homeDisabled = $this->get('/');
+        $homeDisabled->assertSee('enabled: false', false);
+    }
 }

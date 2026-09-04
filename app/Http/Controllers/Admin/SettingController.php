@@ -39,6 +39,16 @@ class SettingController extends Controller
         // 2. Handle Text Inputs
         $inputs = $request->except(['_token', '_method', 'site_logo_file', 'hero_image_file']);
 
+        // Handle popup_ticker_enabled checkbox
+        if (!$request->has('popup_ticker_enabled')) {
+            $inputs['popup_ticker_enabled'] = '0';
+        }
+
+        // Handle popup_ticker_items if passed as array
+        if (isset($inputs['popup_ticker_items']) && is_array($inputs['popup_ticker_items'])) {
+            $inputs['popup_ticker_items'] = json_encode(array_values($inputs['popup_ticker_items']), JSON_UNESCAPED_UNICODE);
+        }
+
         foreach ($inputs as $key => $value) {
             $group = 'general';
             if (str_starts_with($key, 'hero_')) {
@@ -47,14 +57,19 @@ class SettingController extends Controller
                 $group = 'stats';
             } elseif (str_starts_with($key, 'contact_')) {
                 $group = 'contact';
+            } elseif (str_starts_with($key, 'popup_')) {
+                $group = 'ticker';
             }
 
             SiteSetting::updateOrCreate(
                 ['key' => $key],
-                ['value' => $value, 'group' => $group]
+                ['value' => is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value, 'group' => $group]
             );
         }
 
-        return back()->with('success', 'Pengaturan website dan logo berhasil diperbarui.');
+        // Invalidate cached site settings
+        \Illuminate\Support\Facades\Cache::forget('site_settings_all');
+
+        return back()->with('success', 'Pengaturan website, notifikasi pop-up, dan logo berhasil diperbarui.');
     }
 }

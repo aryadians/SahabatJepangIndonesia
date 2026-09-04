@@ -103,8 +103,8 @@
 
                     <button type="button" onclick="selectQuizAnswer('education', 'Diploma D3', 3)" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group">
                         <div>
-                            <p class="font-extrabold text-slate-900 text-sm group-hover:text-japan-700">Diploma (D1 - D3)</p>
-                            <p class="text-xs text-slate-400">Kesehatan / Teknik / Umum</p>
+                            <p class="font-extrabold text-slate-900 text-sm group-hover:text-japan-700">Diploma (D1 - D3) / Poltekkes</p>
+                            <p class="text-xs text-slate-400">Kesehatan (MoU SMILE Project) / Teknik / Umum</p>
                         </div>
                         <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-japan-600"></i>
                     </button>
@@ -202,7 +202,7 @@
                     <button type="button" onclick="selectQuizAnswer('sector', 'Kaigo (Caregiver / Perawat Lansia)', 'result')" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group active:scale-[0.98]">
                         <div>
                             <p class="font-extrabold text-slate-900 text-sm group-hover:text-japan-700">Kaigo (Caregiver)</p>
-                            <p class="text-xs text-slate-400">Paling banyak kuota & bonus besar</p>
+                            <p class="text-xs text-slate-400">Kuota besar & beasiswa SMILE (Poltekkes MoU)</p>
                         </div>
                         <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-japan-600"></i>
                     </button>

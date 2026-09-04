@@ -101,7 +101,7 @@
 
                 <select name="program" class="px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition">
                     <option value="all" {{ request('program') === 'all' ? 'selected' : '' }}>Semua Program</option>
-                    <option value="SMILE Project" {{ request('program') === 'SMILE Project' ? 'selected' : '' }}>★ SMILE Project (Kemenkes Kaigo)</option>
+                    <option value="SMILE Project" {{ request('program') === 'SMILE Project' ? 'selected' : '' }}>★ SMILE Project (Khusus Poltekkes MoU)</option>
                     <option value="SMK Go Japan" {{ request('program') === 'SMK Go Japan' ? 'selected' : '' }}>★ SMK Go Japan (Vokasi SMK)</option>
                     <option value="Tokutei Ginou" {{ request('program') === 'Tokutei Ginou' ? 'selected' : '' }}>Tokutei Ginou (SSW)</option>
                     <option value="Magang" {{ request('program') === 'Magang' ? 'selected' : '' }}>Ginou Jisshusei (Magang)</option>

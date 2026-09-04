@@ -243,9 +243,9 @@
                             <i data-lucide="award" class="w-3.5 h-3.5 text-emerald-400"></i>
                             <span>Jalur Beasiswa Pemerintah RI (100% Bebas Biaya)</span>
                         </div>
-                        <h4 class="text-lg sm:text-xl font-black text-white">SMILE Project (Kemenkes & Poltekkes Kaigo) — Sukses 4 Gelombang</h4>
+                        <h4 class="text-lg sm:text-xl font-black text-white">SMILE Project (Khusus Poltekkes MoU Resmi — Kaigo 100% Gratis)</h4>
                         <p class="text-xs sm:text-sm text-emerald-100/80 max-w-xl">
-                            Khusus lulusan Poltekkes Kemenkes & STIKes kesehatan se-Indonesia, seluruh biaya pelatihan bahasa, asrama, sertifikasi Kaigo, CoE, visa, hingga tiket pesawat <b>100% dibiayai negara (Gratis)</b>. Juga tersedia jalur vokasi industri <b>SMK Go Japan</b> khusus anak SMK.
+                            Khusus mahasiswa & alumni <b>Poltekkes Kemenkes yang telah menandatangani MoU resmi</b> dengan LPK SJI, seluruh biaya pelatihan bahasa, asrama, sertifikasi Kaigo, CoE, visa, hingga tiket pesawat <b>100% dibiayai penuh negara (0 Rupiah)</b>. Untuk pendaftar umum/non-MoU, tersedia jalur reguler Tokutei Ginou Kaigo dengan skema cicilan/talangan.
                         </p>
                     </div>
 

@@ -1020,7 +1020,7 @@ function calculateQuizRecommendation() {
         recSalary = '¥ 230.000 - 380.000+';
     } else if (quizAnswers.sector.includes('Kaigo')) {
         recTitle = 'Tokutei Ginou (SSW) - Kaigo (Caregiver)';
-        recDesc = 'Bidang Kaigo (Perawat Lansia) memiliki kuota keberangkatan terbesar dan tunjangan tertinggi di Jepang dengan proses pelatihan intensif yang terstruktur.';
+        recDesc = 'Bidang Kaigo (Perawat Lansia) memiliki kuota terbesar di Jepang. Khusus mahasiswa & alumni Poltekkes Kemenkes yang telah MoU resmi dengan LPK SJI, tersedia program beasiswa SMILE Project (Kaigo 100% Gratis). Untuk institusi non-MoU, tersedia jalur resmi Tokutei Ginou Kaigo Reguler.';
         recSalary = '¥ 210.000 - 270.000';
     } else if (quizAnswers.age === '18-25' && quizAnswers.japanese === 'Nol / Pemula') {
         recTitle = 'Ginou Jisshusei (Magang Kerja Industri)';
@@ -1263,7 +1263,12 @@ function initSocialProofTicker() {
         return;
     }
 
-    const activities = [
+    const config = window.__SOCIAL_PROOF_CONFIG__ || { enabled: true, interval: 28000, items: null };
+    if (config.enabled === false) {
+        return; // Disabled by admin
+    }
+
+    const defaultActivities = [
         {
             icon: '🌸',
             title: 'CoE Resmi Terbit!',
@@ -1285,7 +1290,7 @@ function initSocialProofTicker() {
         {
             icon: '✈️',
             title: 'Terbang ke Narita',
-            desc: 'Peserta Gelombang 4 SMILE Project sukses bertolak ke Jepang hari ini.',
+            desc: 'Peserta Gelombang 4 SMILE Project (Poltekkes MoU) sukses bertolak ke Jepang hari ini.',
             time: '24m lalu'
         },
         {
@@ -1302,6 +1307,14 @@ function initSocialProofTicker() {
         }
     ];
 
+    const activities = (config.items && Array.isArray(config.items) && config.items.length > 0)
+        ? config.items
+        : defaultActivities;
+
+    if (!activities || activities.length === 0) {
+        return;
+    }
+
     let currentIndex = 0;
     let container = document.getElementById('socialProofToast');
 
@@ -1312,6 +1325,15 @@ function initSocialProofTicker() {
         document.body.appendChild(container);
     }
 
+    function escapeHtml(str) {
+        return String(str || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
     function showNextActivity() {
         const item = activities[currentIndex];
         currentIndex = (currentIndex + 1) % activities.length;
@@ -1319,14 +1341,14 @@ function initSocialProofTicker() {
         container.innerHTML = `
             <div class="p-3 sm:p-3.5 rounded-2xl bg-white/95 text-slate-900 border border-red-200 shadow-2xl backdrop-blur-md flex items-start gap-3 relative overflow-hidden select-none">
                 <div class="w-8 h-8 rounded-xl bg-red-100 flex items-center justify-center text-base flex-shrink-0 mt-0.5 shadow-2xs">
-                    ${item.icon}
+                    ${escapeHtml(item.icon || '🌸')}
                 </div>
                 <div class="flex-1 min-w-0 pr-4">
                     <div class="flex items-center justify-between gap-1">
-                        <span class="text-[10px] font-black uppercase text-japan-700 tracking-wider font-mono">${item.title}</span>
-                        <span class="text-[9px] text-slate-400 font-medium">${item.time}</span>
+                        <span class="text-[10px] font-black uppercase text-japan-700 tracking-wider font-mono">${escapeHtml(item.title || '')}</span>
+                        <span class="text-[9px] text-slate-400 font-medium">${escapeHtml(item.time || '')}</span>
                     </div>
-                    <p class="text-xs text-slate-700 leading-snug mt-0.5 font-medium">${item.desc}</p>
+                    <p class="text-xs text-slate-700 leading-snug mt-0.5 font-medium">${escapeHtml(item.desc || '')}</p>
                 </div>
                 <button type="button" onclick="dismissSocialProof()" class="text-slate-400 hover:text-slate-700 text-sm leading-none p-1 absolute top-2 right-2" aria-label="Tutup">
                     &times;
@@ -1355,8 +1377,9 @@ function initSocialProofTicker() {
         container.classList.remove('translate-y-0', 'opacity-100', 'scale-100');
     };
 
+    const intervalMs = (config.interval && config.interval >= 5000) ? config.interval : 28000;
     setTimeout(showNextActivity, 7000);
-    setInterval(showNextActivity, 28000);
+    setInterval(showNextActivity, intervalMs);
 }
 
 
