@@ -359,6 +359,7 @@
             <a href="{{ route('admin.schedules.index') }}" class="p-2.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition" title="Kelola Jadwal">
                 <i data-lucide="calendar" class="w-4 h-4"></i>
             </a>
+        </div>
     </div>
 
     <!-- 3b. Executive PDF Export Quick Hub (Pusat Cetak Dokumen Resmi) -->
