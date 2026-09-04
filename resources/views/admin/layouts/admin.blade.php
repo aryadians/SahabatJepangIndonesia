@@ -427,25 +427,44 @@
         <!-- Main Body (Scrolls smoothly without affecting the sidebar) -->
         <main class="p-4 sm:p-6 lg:p-8 flex-1 space-y-6">
             
-            <!-- Global Flash Messages -->
+            <!-- Global Floating Flash Notifications -->
             @if(session('success'))
-                <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center justify-between shadow-sm">
-                    <div class="flex items-center gap-2">
-                        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
-                        <span>{{ session('success') }}</span>
+                <div id="adminSuccessToast" class="fixed top-20 right-6 z-50 max-w-md p-4 rounded-2xl bg-white border border-emerald-300 text-slate-800 shadow-2xl flex items-start gap-3 transition-all duration-300 transform translate-y-0 opacity-100 ring-1 ring-emerald-500/20">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i data-lucide="check-circle" class="w-5 h-5"></i>
                     </div>
-                    <button onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700 font-bold text-lg leading-none">&times;</button>
+                    <div class="flex-1 min-w-0 pr-2">
+                        <p class="text-xs font-black text-emerald-800 uppercase tracking-wider">Operasi Berhasil</p>
+                        <p class="text-xs font-semibold text-slate-700 mt-0.5 leading-relaxed">{{ session('success') }}</p>
+                    </div>
+                    <button onclick="dismissToast('adminSuccessToast')" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg transition text-base leading-none">&times;</button>
                 </div>
+                <script>
+                    setTimeout(() => { dismissToast('adminSuccessToast'); }, 4500);
+                    function dismissToast(id) {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            el.classList.add('opacity-0', 'translate-y-2');
+                            setTimeout(() => el.remove(), 300);
+                        }
+                    }
+                </script>
             @endif
 
             @if($errors->any())
-                <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold space-y-1 shadow-sm">
-                    @foreach($errors->all() as $err)
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-rose-600 flex-shrink-0"></i>
-                            <span>{{ $err }}</span>
-                        </div>
-                    @endforeach
+                <div id="adminErrorToast" class="fixed top-20 right-6 z-50 max-w-md p-4 rounded-2xl bg-white border border-rose-300 text-slate-800 shadow-2xl flex items-start gap-3 transition-all duration-300 ring-1 ring-rose-500/20">
+                    <div class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                    </div>
+                    <div class="flex-1 min-w-0 pr-2">
+                        <p class="text-xs font-black text-rose-800 uppercase tracking-wider">Perhatian / Gagal</p>
+                        <ul class="text-xs font-medium text-rose-700 mt-1 space-y-0.5 list-disc list-inside">
+                            @foreach($errors->all() as $err)
+                                <li>{{ $err }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    <button onclick="dismissToast('adminErrorToast')" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg transition text-base leading-none">&times;</button>
                 </div>
             @endif
 

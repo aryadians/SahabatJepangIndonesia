@@ -19,6 +19,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('site_settings')) {
+                \Illuminate\Support\Facades\View::composer('*', function ($view) {
+                    $view->with('settings', \App\Models\SiteSetting::allCached());
+                });
+            }
+        } catch (\Throwable $e) {
+            // Ignore during setup/migrations
+        }
     }
 }

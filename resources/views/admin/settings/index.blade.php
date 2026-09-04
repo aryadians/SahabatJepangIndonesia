@@ -7,8 +7,46 @@
 <form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data" class="space-y-8 max-w-5xl">
     @csrf
 
+    <!-- Quick Sticky Navigation Sub-Bar -->
+    <div class="sticky top-0 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2.5 bg-slate-100/95 backdrop-blur-md border-b border-slate-200/80 mb-6 flex items-center justify-between gap-3 overflow-x-auto select-none">
+        <div class="flex items-center gap-2 flex-nowrap min-w-max text-xs font-bold">
+            <a href="#sec-logo" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
+                <i data-lucide="image" class="w-3.5 h-3.5 text-japan-600"></i>
+                <span>Logo & Brand</span>
+            </a>
+            <a href="#sec-hero" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+                <span>Hero & Banner</span>
+            </a>
+            <a href="#sec-stats" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
+                <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-blue-500"></i>
+                <span>Statistik</span>
+            </a>
+            <a href="#sec-contact" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
+                <i data-lucide="phone" class="w-3.5 h-3.5 text-emerald-500"></i>
+                <span>Kontak & CS</span>
+            </a>
+            <a href="#sec-ticker" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
+                <i data-lucide="bell" class="w-3.5 h-3.5 text-purple-500"></i>
+                <span>Social Proof Ticker</span>
+            </a>
+            <a href="#sec-fonnte" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-emerald-400 hover:text-emerald-700 text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
+                <i data-lucide="message-square-code" class="w-3.5 h-3.5 text-emerald-600"></i>
+                <span>WhatsApp Fonnte</span>
+                @if(($settings['fonnte_enabled'] ?? '0') === '1' && !empty($settings['fonnte_api_token']))
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                @endif
+            </a>
+        </div>
+
+        <button type="submit" class="px-4 py-1.5 rounded-xl bg-japan-600 hover:bg-japan-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm flex-shrink-0">
+            <i data-lucide="save" class="w-3.5 h-3.5"></i>
+            <span>Simpan</span>
+        </button>
+    </div>
+
     <!-- 1. Logo & Brand Identity Settings (Base64 LONGTEXT) -->
-    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+    <div id="sec-logo" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 scroll-mt-20">
         <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
                 <i data-lucide="image" class="w-5 h-5"></i>
@@ -77,7 +115,7 @@
     </div>
 
     <!-- 2. Top Announcement Bar Settings -->
-    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5">
+    <div id="sec-announcement" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 scroll-mt-20">
         <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
                 <i data-lucide="megaphone" class="w-5 h-5"></i>
@@ -102,7 +140,7 @@
     </div>
 
     <!-- 3. Hero Section Settings -->
-    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5">
+    <div id="sec-hero" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 scroll-mt-20">
         <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
                 <i data-lucide="sparkles" class="w-5 h-5"></i>
@@ -155,7 +193,7 @@
     </div>
 
     <!-- 4. Stat Counters Settings -->
-    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5">
+    <div id="sec-stats" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 scroll-mt-20">
         <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
                 <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
@@ -196,7 +234,7 @@
     </div>
 
     <!-- 5. Contact & Footer Settings -->
-    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5">
+    <div id="sec-contact" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 scroll-mt-20">
         <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
                 <i data-lucide="phone" class="w-5 h-5"></i>
@@ -283,7 +321,7 @@
             }
         }
     @endphp
-    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+    <div id="sec-ticker" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 scroll-mt-20">
         <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
@@ -371,8 +409,8 @@
         </div>
     </div>
 
-    <!-- 6. WhatsApp Gateway API (Fonnte) Settings (No .ENV Needed) -->
-    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+    <!-- 7. WhatsApp Gateway API (Fonnte) Settings (No .ENV Needed) -->
+    <div id="sec-fonnte" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 scroll-mt-20">
         <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold shadow-xs">
@@ -873,8 +911,47 @@
         }
     }
 
+    /* ==========================================================
+       STICKY SUB-NAV SCROLLSPY
+       ========================================================== */
+    function initSettingScrollspy() {
+        const pills = document.querySelectorAll('.setting-pill');
+        const sections = ['sec-logo', 'sec-hero', 'sec-stats', 'sec-contact', 'sec-ticker', 'sec-fonnte']
+            .map(id => document.getElementById(id))
+            .filter(Boolean);
+
+        const scrollContainer = document.querySelector('main') || window;
+
+        function onScroll() {
+            let currentSecId = sections[0] ? sections[0].id : '';
+            const offset = 180;
+            sections.forEach(sec => {
+                const rect = sec.getBoundingClientRect();
+                if (rect.top <= offset) {
+                    currentSecId = sec.id;
+                }
+            });
+
+            pills.forEach(pill => {
+                const href = pill.getAttribute('href');
+                if (href === '#' + currentSecId) {
+                    pill.classList.add('bg-japan-50', 'border-japan-500', 'text-japan-700', 'font-black', 'ring-1', 'ring-japan-400');
+                    pill.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
+                } else {
+                    pill.classList.remove('bg-japan-50', 'border-japan-500', 'text-japan-700', 'font-black', 'ring-1', 'ring-japan-400');
+                    pill.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
+                }
+            });
+        }
+
+        scrollContainer.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         renderTickerRows();
+        initSettingScrollspy();
     });
 </script>
 @endsection

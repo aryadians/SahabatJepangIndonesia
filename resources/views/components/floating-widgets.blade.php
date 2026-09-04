@@ -29,8 +29,13 @@
     </button>
 
     <!-- Floating WhatsApp Action Button -->
+    @php
+        $waAdmin = $settings['contact_whatsapp'] ?? '6281234567890';
+        $cleanWaFloating = preg_replace('/[^0-9]/', '', $waAdmin);
+        if (str_starts_with($cleanWaFloating, '0')) $cleanWaFloating = '62' . substr($cleanWaFloating, 1);
+    @endphp
     <a 
-        href="https://api.whatsapp.com/send?phone=6281234567890&text=Halo%20Admin%20LPK%20Sahabat%20Jepang%20Indonesia,%20saya%20tertarik%20bertanya%20tentang%20pelatihan%20dan%20kerja%20di%20Jepang" 
+        href="https://api.whatsapp.com/send?phone={{ $cleanWaFloating }}&text=Halo%20Admin%20LPK%20Sahabat%20Jepang%20Indonesia,%20saya%20tertarik%20bertanya%20tentang%20pelatihan%20dan%20kerja%20di%20Jepang" 
         target="_blank" 
         rel="noopener noreferrer"
         class="group relative flex items-center gap-2 p-3.5 sm:px-5 sm:py-3.5 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-xl shadow-emerald-600/30 hover:shadow-2xl hover:scale-105 transition-all duration-300"
