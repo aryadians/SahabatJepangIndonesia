@@ -217,5 +217,64 @@
 
         </div>
 
+        <!-- Road to Japan High-Impact Conversion Card -->
+        <div class="mt-16 max-w-4xl mx-auto rounded-3xl bg-gradient-to-br from-slate-900 via-slate-850 to-japan-950 p-8 sm:p-10 text-white shadow-2xl border border-red-500/20 relative overflow-hidden reveal-on-scroll">
+            <div class="absolute -right-16 -bottom-16 w-64 h-64 rounded-full bg-japan-600/20 blur-3xl pointer-events-none"></div>
+            
+            <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="space-y-3 text-center md:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-900/60 border border-red-500/30 text-red-300 text-[11px] font-bold uppercase tracking-wider">
+                        <span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span>
+                        <span>Langkah Pertama Anda Dimulai Dari Sini</span>
+                    </div>
+                    <h3 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                        Siap Memulai Langkah 01 Anda <br class="hidden sm:inline">
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-rose-300 to-amber-300">Menuju Karir di Jepang?</span>
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
+                        Konsultasikan kesiapan berkas, jadwal kelas, dan opsi pembiayaan dana talangan bersama tim konselor resmi LPK Sahabat Jepang Indonesia.
+                    </p>
+
+                    <!-- Trust Metrics Ribbon -->
+                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-2 text-[11px] text-slate-400">
+                        <span class="flex items-center gap-1.5 text-slate-300 font-semibold">
+                            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+                            1.200+ Siswa Berangkat
+                        </span>
+                        <span>•</span>
+                        <span class="flex items-center gap-1.5 text-slate-300 font-semibold">
+                            <i data-lucide="award" class="w-4 h-4 text-amber-400"></i>
+                            98.4% Lolos Wawancara
+                        </span>
+                        <span>•</span>
+                        <span class="flex items-center gap-1.5 text-slate-300 font-semibold">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-red-400"></i>
+                            Izin Kemnaker RI Resmi
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Dual Action CTAs -->
+                <div class="flex flex-col sm:flex-row md:flex-col gap-3 w-full md:w-auto flex-shrink-0">
+                    <button 
+                        type="button" 
+                        onclick="openModal('consultationModal')" 
+                        class="btn-red-primary px-6 py-3.5 rounded-2xl text-xs sm:text-sm font-black shadow-xl flex items-center justify-center gap-2 hover:scale-105 active:scale-95 transition-all text-center"
+                    >
+                        <i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i>
+                        <span>Daftar Konsultasi (Gratis)</span>
+                    </button>
+                    <button 
+                        type="button" 
+                        onclick="openModal('quizModal')" 
+                        class="px-6 py-3 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold transition flex items-center justify-center gap-2 text-center"
+                    >
+                        <i data-lucide="compass" class="w-4 h-4 text-rose-300"></i>
+                        <span>Quiz Kecocokan Program (60 Detik)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </div>
 </section>

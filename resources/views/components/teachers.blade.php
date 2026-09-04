@@ -83,13 +83,23 @@
 
                     </div>
 
-                    <!-- Footer Note -->
-                    <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                    <!-- Footer Note & Quick Action -->
+                    <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between gap-2 text-xs">
                         <span class="inline-flex items-center gap-1.5 text-emerald-600 font-bold text-[11px]">
                             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                            <span>Instruktur Aktif LPK SJI</span>
+                            <span>Instruktur Aktif</span>
                         </span>
-                        <span class="text-[10px] text-slate-400 font-japanese">信頼の指導陣</span>
+                        
+                        <a 
+                            href="https://api.whatsapp.com/send?phone=6281234567890&text={{ urlencode('Halo Admin LPK SJI, saya ingin konsultasi mengenai kelas persiapan bahasa bersama ' . $teacher->name) }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-700 font-bold text-[11px] transition flex items-center gap-1 shadow-sm active:scale-95"
+                            title="Tanya jadwal kelas bersama {{ $teacher->name }}"
+                        >
+                            <i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
+                            <span>Tanya Kelas</span>
+                        </a>
                     </div>
 
                 </div>
@@ -113,13 +123,14 @@
                 </div>
             </div>
 
-            <a 
-                href="#daftar" 
-                class="btn-red-primary px-6 py-3 rounded-2xl text-xs font-black shadow-md flex items-center gap-2 flex-shrink-0 whitespace-nowrap"
+            <button 
+                type="button"
+                onclick="openModal('consultationModal')" 
+                class="btn-red-primary px-6 py-3.5 rounded-2xl text-xs font-black shadow-md flex items-center gap-2 flex-shrink-0 whitespace-nowrap hover:scale-105 active:scale-95 transition-all"
             >
-                <i data-lucide="send" class="w-4 h-4"></i>
+                <i data-lucide="send" class="w-4 h-4 text-amber-200"></i>
                 <span>Daftar Konsultasi Gratis</span>
-            </a>
+            </button>
         </div>
 
     </div>

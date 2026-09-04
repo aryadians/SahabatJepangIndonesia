@@ -235,6 +235,20 @@ Dirancang khusus dengan prinsip *tactile interaction*, estetika *Japanese Zen Lu
    - **Pengatur Ukuran Huruf Dinamis**: Opsi `A-`, `Normal`, dan `A+` untuk menyesuaikan ukuran teks demi kenyamanan calon siswa maupun orang tua.
    - **Kapsul Share Mengambang (Floating Share Capsule)**: Bar aksi mengambang di bawah layar untuk berbagi cepat ke WhatsApp, Facebook, X, serta salin tautan dengan indikator centang *Tersalin! ✓*.
    - **Kartu Kredibilitas Instruktur**: Profil verifikasi instruktur berlisensi N2/N1 dan status resmi SO Kemnaker RI.
+4. **📅 Filter Angkatan & Fast-Track Booking Slot Kursus (`/#jadwal`)**:
+   - **Filter Program Interaktif**: Pilah jadwal kelas berdasarkan jalur *Tokutei Ginou (SSW)*, *Magang Kerja*, dan *Kursus Bahasa*.
+   - **Sinkronisasi Modal Otomatis**: Memilih slot langsung membuka modal pendaftaran dengan pilihan program terisi (*auto-selected*).
+   - **Kunci Kursi via WhatsApp (Fast-Track)**: Tombol pemesanan cepat via WhatsApp resmi dengan data nama angkatan tertera otomatis.
+5. **⛩️ Visual Road to Japan & Dual Conversion Card (`/#alur`)**:
+   - **Peta Alur 6 Langkah**: Dari seleksi awal, asrama bahasa, wawancara direktur *Kaisha*, paspor/CoE, hingga penyambutan di bandara Jepang.
+   - **Kartu Konversi Dual Action**: Kartu CTA mewah bernuansa *Zen Dark* dengan akses instan ke pendaftaran konsultasi dan Quiz Kecocokan Karir 60 Detik.
+   - **Pita Metrik Kredibilitas**: Tampilan rekam jejak *1.200+ Siswa Berangkat*, *98.4% Lolos Wawancara*, dan *Izin Resmi Kemnaker RI*.
+6. **👨‍🏫 Showcase Sensei Berlisensi & Tanya Jadwal Kelas WA (`/#pengajar`)**:
+   - Profil instruktur bahasa berlisensi JLPT N1/N2 dan penutur asli (*Native Speaker*).
+   - Tombol konsultasi cepat per-sensei via WhatsApp untuk tanya jadwal kelas dan bimbingan wawancara (*Mensetsu*).
+7. **🌟 Pita Pembuktian Testimoni & Integrasi Peta Alumni (`/#testimoni`)**:
+   - Rating kepuasan 4.9/5.0 bintang dari 1.200+ alumni di 47 prefektur Jepang.
+   - Tautan langsung ke peta persebaran interaktif untuk melihat alumni aktif di wilayah kerja masing-masing.
 
 ## 🧾 Generator Kwitansi & Invoice Berstempel Hanko (判子)
 
