@@ -359,8 +359,119 @@
             <a href="{{ route('admin.schedules.index') }}" class="p-2.5 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition" title="Kelola Jadwal">
                 <i data-lucide="calendar" class="w-4 h-4"></i>
             </a>
+    </div>
+
+    <!-- 3b. Executive PDF Export Quick Hub (Pusat Cetak Dokumen Resmi) -->
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-6 text-white shadow-md border border-slate-700/50 space-y-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-700/60 pb-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-red-600/20 border border-red-500/30 text-red-400 flex items-center justify-center font-bold">
+                    <i data-lucide="printer" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
+                        <span>Pusat Cetak & Export Dokumen PDF Resmi LPK</span>
+                        <span class="px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 text-[10px] font-bold border border-red-500/30">Auto Logo Sync</span>
+                    </h3>
+                    <p class="text-xs text-slate-400">Unduh atau cetak laporan resmi berstempel dan kop surat standar Kemnaker RI dalam format A4</p>
+                </div>
+            </div>
+            <span class="text-[11px] text-slate-400 font-mono hidden sm:inline">5 Laporan Tersedia</span>
         </div>
 
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            
+            <!-- 1. PDF Buku Induk Siswa -->
+            <a 
+                href="{{ route('admin.students.export.pdf') }}" 
+                target="_blank"
+                class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-red-500/50 transition flex flex-col justify-between group space-y-2"
+            >
+                <div class="flex items-center justify-between">
+                    <span class="w-7 h-7 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center text-xs font-bold">
+                        <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
+                    </span>
+                    <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-L</span>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-white group-hover:text-red-400 transition">Buku Induk Siswa</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5 truncate">Database & status Jepang</p>
+                </div>
+            </a>
+
+            <!-- 2. PDF Proyeksi Keuangan -->
+            <a 
+                href="{{ route('admin.finance.export.pdf') }}" 
+                target="_blank"
+                class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-emerald-500/50 transition flex flex-col justify-between group space-y-2"
+            >
+                <div class="flex items-center justify-between">
+                    <span class="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold">
+                        <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
+                    </span>
+                    <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-P</span>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-white group-hover:text-emerald-400 transition">Proyeksi Keuangan</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5 truncate">Arus kas & piutang biaya</p>
+                </div>
+            </a>
+
+            <!-- 3. PDF Rekap Leads Pendaftar -->
+            <a 
+                href="{{ route('admin.consultations.export.pdf') }}" 
+                target="_blank"
+                class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-500/50 transition flex flex-col justify-between group space-y-2"
+            >
+                <div class="flex items-center justify-between">
+                    <span class="w-7 h-7 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold">
+                        <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                    </span>
+                    <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-L</span>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-white group-hover:text-blue-400 transition">Rekapitulasi Leads</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5 truncate">Pendaftar konsultasi masuk</p>
+                </div>
+            </a>
+
+            <!-- 4. PDF Riwayat Wawancara Kaisha -->
+            <a 
+                href="{{ route('admin.interviews.export.pdf') }}" 
+                target="_blank"
+                class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-500/50 transition flex flex-col justify-between group space-y-2"
+            >
+                <div class="flex items-center justify-between">
+                    <span class="w-7 h-7 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs font-bold">
+                        <i data-lucide="briefcase" class="w-3.5 h-3.5"></i>
+                    </span>
+                    <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-P</span>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-white group-hover:text-amber-400 transition">Riwayat Wawancara</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5 truncate">Hasil seleksi user Kaisha</p>
+                </div>
+            </a>
+
+            <!-- 5. PDF Dewan Pengajar & Sensei -->
+            <a 
+                href="{{ route('admin.teachers.export.pdf') }}" 
+                target="_blank"
+                class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/50 transition flex flex-col justify-between group space-y-2 col-span-2 sm:col-span-1"
+            >
+                <div class="flex items-center justify-between">
+                    <span class="w-7 h-7 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-bold">
+                        <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                    </span>
+                    <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-P</span>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-white group-hover:text-purple-400 transition">Dewan Sensei</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5 truncate">Instruktur JLPT N1/Native</p>
+                </div>
+            </a>
+
+        </div>
     </div>
 
     <!-- 4. Side-by-Side Live Data Tables (Students + Leads) -->
