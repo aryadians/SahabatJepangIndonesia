@@ -145,13 +145,20 @@ class LandingPageController extends Controller
                 $logMsg = "Konnichiwa Kak {$validated['name']}! Terima kasih telah mendaftar konsultasi program {$validated['program']} di LPK Sahabat Jepang Indonesia. Tim konselor kami siap membantu.";
             }
 
-            \App\Models\WhatsAppLog::create([
-                'recipient_phone' => $cleanUserPhone,
-                'recipient_name' => $validated['name'],
-                'template_key' => 'new_lead',
-                'message_body' => $logMsg,
-                'status' => 'sent',
-            ]);
+            if (\App\Services\FonnteService::isConfigured()) {
+                \App\Services\FonnteService::send($cleanUserPhone, $logMsg, [
+                    'recipient_name' => $validated['name'],
+                    'template_key' => 'new_lead',
+                ]);
+            } else {
+                \App\Models\WhatsAppLog::create([
+                    'recipient_phone' => $cleanUserPhone,
+                    'recipient_name' => $validated['name'],
+                    'template_key' => 'new_lead',
+                    'message_body' => $logMsg,
+                    'status' => 'sent',
+                ]);
+            }
 
             // Format WhatsApp URL untuk direct follow up
             $waMessage = urlencode("Halo Admin LPK Sahabat Jepang Indonesia, saya sudah mengisi form konsultasi di website.\n\nNama: {$validated['name']}\nUmur: " . ($validated['age'] ?? '-') . " Tahun\nPendidikan: " . ($validated['education'] ?? '-') . "\nProgram Minat: {$validated['program']}\nKota Asal: " . ($validated['city'] ?? '-') . "\n\nSaya ingin berkonsultasi mengenai proses keberangkatan ke Jepang. Terima kasih!");

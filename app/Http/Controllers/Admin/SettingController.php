@@ -44,6 +44,11 @@ class SettingController extends Controller
             $inputs['popup_ticker_enabled'] = '0';
         }
 
+        // Handle fonnte_enabled checkbox
+        if (!$request->has('fonnte_enabled')) {
+            $inputs['fonnte_enabled'] = '0';
+        }
+
         // Handle popup_ticker_items if passed as array
         if (isset($inputs['popup_ticker_items']) && is_array($inputs['popup_ticker_items'])) {
             $inputs['popup_ticker_items'] = json_encode(array_values($inputs['popup_ticker_items']), JSON_UNESCAPED_UNICODE);
@@ -59,6 +64,8 @@ class SettingController extends Controller
                 $group = 'contact';
             } elseif (str_starts_with($key, 'popup_')) {
                 $group = 'ticker';
+            } elseif (str_starts_with($key, 'fonnte_')) {
+                $group = 'whatsapp';
             }
 
             SiteSetting::updateOrCreate(
@@ -70,6 +77,40 @@ class SettingController extends Controller
         // Invalidate cached site settings
         \Illuminate\Support\Facades\Cache::forget('site_settings_all');
 
-        return back()->with('success', 'Pengaturan website, notifikasi pop-up, dan logo berhasil diperbarui.');
+        return back()->with('success', 'Pengaturan website, integrasi WhatsApp Fonnte, dan logo berhasil diperbarui.');
+    }
+
+    /**
+     * Uji Kirim Pesan WhatsApp via Fonnte Gateway
+     */
+    public function testFonnte(Request $request)
+    {
+        $validated = $request->validate([
+            'target_phone' => 'required|string',
+            'token' => 'nullable|string',
+        ]);
+
+        if (!empty($validated['token'])) {
+            SiteSetting::updateOrCreate(['key' => 'fonnte_api_token'], ['value' => trim($validated['token']), 'group' => 'whatsapp']);
+            \Illuminate\Support\Facades\Cache::forget('site_settings_all');
+        }
+
+        $testMsg = "Konnichiwa! 🌸\n\nPesan ini adalah UJI COBA KONEKSI WhatsApp Gateway Fonnte dari Portal Admin LPK Sahabat Jepang Indonesia.\n\nStatus: Terhubung Aktif ✅\nWaktu: " . now()->format('d M Y H:i') . " WIB\n\nSelamat, integrasi API WhatsApp Fonnte Anda telah berjalan sempurna tanpa perlu pengaturan file .env!";
+
+        $result = \App\Services\FonnteService::send($validated['target_phone'], $testMsg, [
+            'template_key' => 'fonnte_test',
+            'recipient_name' => 'Admin Tester',
+        ]);
+
+        return response()->json($result);
+    }
+
+    /**
+     * Cek Status Koneksi Device Fonnte
+     */
+    public function checkFonnteDevice()
+    {
+        $status = \App\Services\FonnteService::checkDevice();
+        return response()->json($status);
     }
 }

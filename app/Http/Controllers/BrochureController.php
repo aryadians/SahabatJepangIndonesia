@@ -93,13 +93,20 @@ class BrochureController extends Controller
             $waMessage = "Konnichiwa Kak {$validated['name']}! 🌸\n\nTerima kasih telah mengunduh {$brochure->title} ({$brochure->program}) dari LPK Sahabat Jepang Indonesia.\n\nDokumen resmi dapat diakses kembali di: {$brochureLink}\n\nApakah ada pertanyaan? Tim konselor siap membantu konsultasi via WhatsApp.";
         }
 
-        WhatsAppLog::create([
-            'recipient_phone' => $cleanPhone,
-            'recipient_name' => $validated['name'],
-            'template_key' => 'brochure_download',
-            'message_body' => $waMessage,
-            'status' => 'sent',
-        ]);
+        if (\App\Services\FonnteService::isConfigured()) {
+            \App\Services\FonnteService::send($cleanPhone, $waMessage, [
+                'recipient_name' => $validated['name'],
+                'template_key' => 'brochure_download',
+            ]);
+        } else {
+            WhatsAppLog::create([
+                'recipient_phone' => $cleanPhone,
+                'recipient_name' => $validated['name'],
+                'template_key' => 'brochure_download',
+                'message_body' => $waMessage,
+                'status' => 'sent',
+            ]);
+        }
 
         $hotlinePhone = preg_replace('/[^0-9]/', '', SiteSetting::get('contact_phone', '6281234567890'));
         $waCounselorUrl = "https://api.whatsapp.com/send?phone={$hotlinePhone}&text=" . urlencode("Halo Tim Konselor LPK SJI, saya {$validated['name']} baru saja mengunduh {$brochure->title}. Saya ingin konsultasi jadwal pendaftaran kelas dan tahapan seleksinya.");

@@ -56,14 +56,23 @@ class WhatsAppController extends Controller
             $cleanPhone = '62' . substr($cleanPhone, 1);
         }
 
-        // Save dispatch log
-        WhatsAppLog::create([
-            'recipient_phone' => $cleanPhone,
-            'recipient_name' => $validated['name'] ?? null,
-            'template_key' => $validated['template_key'] ?? 'custom',
-            'message_body' => $validated['message'],
-            'status' => 'sent',
-        ]);
+        $fonnteSuccess = false;
+        if (\App\Services\FonnteService::isConfigured()) {
+            $fonnteRes = \App\Services\FonnteService::send($cleanPhone, $validated['message'], [
+                'recipient_name' => $validated['name'] ?? null,
+                'template_key' => $validated['template_key'] ?? 'custom',
+            ]);
+            $fonnteSuccess = $fonnteRes['success'] ?? false;
+        } else {
+            // Save dispatch log directly
+            WhatsAppLog::create([
+                'recipient_phone' => $cleanPhone,
+                'recipient_name' => $validated['name'] ?? null,
+                'template_key' => $validated['template_key'] ?? 'custom',
+                'message_body' => $validated['message'],
+                'status' => 'sent',
+            ]);
+        }
 
         $waUrl = 'https://api.whatsapp.com/send?phone=' . $cleanPhone . '&text=' . urlencode($validated['message']);
 

@@ -6,9 +6,12 @@ use App\Models\Brochure;
 use App\Models\Consultation;
 use App\Models\InterviewCandidate;
 use App\Models\JobInterview;
+use App\Models\SiteSetting;
 use App\Models\Student;
 use App\Models\User;
+use App\Services\FonnteService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class NewFeaturesTest extends TestCase
@@ -481,6 +484,103 @@ class NewFeaturesTest extends TestCase
         $resHome->assertSee('"@type": "EducationalOrganization"', false);
         $resHome->assertSee('"@type": "Course"', false);
         $resHome->assertSee('Pelatihan Intensif Bahasa & Budaya Jepang', false);
+    }
+
+    public function test_admin_can_update_fonnte_settings(): void
+    {
+        $response = $this->actingAs($this->admin)->from('/admin/settings')->post('/admin/settings', [
+            'fonnte_enabled' => '1',
+            'fonnte_api_token' => 'fonnte_token_sample_12345',
+            'fonnte_country_code' => '62',
+        ]);
+
+        $response->assertRedirect('/admin/settings');
+        $this->assertEquals('1', SiteSetting::get('fonnte_enabled'));
+        $this->assertEquals('fonnte_token_sample_12345', SiteSetting::get('fonnte_api_token'));
+        $this->assertEquals('62', SiteSetting::get('fonnte_country_code'));
+        $this->assertTrue(FonnteService::isConfigured());
+    }
+
+    public function test_admin_can_send_test_fonnte_message_using_fake_api(): void
+    {
+        Http::fake([
+            'https://api.fonnte.com/send' => Http::response([
+                'status' => true,
+                'detail' => 'Pesan uji coba berhasil terkirim',
+            ], 200),
+        ]);
+
+        SiteSetting::set('fonnte_api_token', 'test_dummy_token_999');
+
+        $response = $this->actingAs($this->admin)->postJson('/admin/settings/test-fonnte', [
+            'target_phone' => '08123456789',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'message' => 'Pesan uji coba berhasil terkirim',
+        ]);
+
+        $this->assertDatabaseHas('whatsapp_logs', [
+            'recipient_phone' => '628123456789',
+            'status' => 'sent',
+            'template_key' => 'fonnte_test',
+        ]);
+    }
+
+    public function test_fonnte_device_status_endpoint(): void
+    {
+        Http::fake([
+            'https://api.fonnte.com/device' => Http::response([
+                'status' => true,
+                'device' => '628123456789',
+                'quota' => 450,
+            ], 200),
+        ]);
+
+        SiteSetting::set('fonnte_api_token', 'test_dummy_token_999');
+
+        $response = $this->actingAs($this->admin)->getJson('/admin/settings/device-fonnte');
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+        ]);
+        $this->assertEquals('628123456789', $response->json('device.device'));
+    }
+
+    public function test_brochure_and_lead_dispatch_with_fonnte_when_enabled(): void
+    {
+        SiteSetting::set('fonnte_enabled', '1');
+        SiteSetting::set('fonnte_api_token', 'valid_token_xyz');
+
+        Http::fake([
+            'https://api.fonnte.com/send' => Http::response([
+                'status' => true,
+                'detail' => 'Success dispatched',
+            ], 200),
+        ]);
+
+        $brochure = Brochure::create([
+            'title' => 'Brosur Program Magang Manufaktur',
+            'program' => 'Ginou Jisshusei (Magang)',
+            'is_active' => true,
+        ]);
+
+        $resBrochure = $this->post('/brosur/download', [
+            'name' => 'Faisal Rahman',
+            'phone' => '081299887766',
+            'brochure_id' => $brochure->id,
+            'city' => 'Surabaya',
+        ]);
+
+        $resBrochure->assertRedirect();
+        Http::assertSent(function ($request) {
+            return $request->url() === 'https://api.fonnte.com/send'
+                && $request['target'] === '6281299887766'
+                && $request->hasHeader('Authorization', 'valid_token_xyz');
+        });
     }
 }
 

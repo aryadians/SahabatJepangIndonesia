@@ -371,6 +371,161 @@
         </div>
     </div>
 
+    <!-- 6. WhatsApp Gateway API (Fonnte) Settings (No .ENV Needed) -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold shadow-xs">
+                    <i data-lucide="message-circle" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h3 class="font-extrabold text-slate-900 text-base">Integrasi WhatsApp Gateway API (Fonnte)</h3>
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase tracking-wider">No .ENV Needed</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-0.5">Kirim pesan notifikasi otomatis langsung dari database tanpa perlu mengedit file environment server</p>
+                </div>
+            </div>
+
+            <!-- Active Status Badge -->
+            <div class="flex items-center gap-2">
+                @if(($settings['fonnte_enabled'] ?? '0') === '1' && !empty($settings['fonnte_api_token']))
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>Gateway Aktif (Auto-Dispatch)</span>
+                    </span>
+                @else
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200 text-xs font-bold">
+                        <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                        <span>Mode Manual (Direct Link & Log)</span>
+                    </span>
+                @endif
+            </div>
+        </div>
+
+        <!-- Toggle Switch -->
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-4">
+            <div class="space-y-0.5">
+                <label for="fonnteEnabledCheckbox" class="text-xs font-bold text-slate-800 cursor-pointer flex items-center gap-2">
+                    <span>Aktifkan Pengiriman WhatsApp Otomatis via Fonnte</span>
+                </label>
+                <p class="text-[11px] text-slate-500 leading-relaxed">
+                    Bila diaktifkan, setiap calon siswa yang mengunduh brosur atau mengisi form konsultasi akan langsung menerima WhatsApp otomatis di nomor mereka.
+                </p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                <input 
+                    type="checkbox" 
+                    id="fonnteEnabledCheckbox" 
+                    name="fonnte_enabled" 
+                    value="1" 
+                    class="sr-only peer"
+                    {{ ($settings['fonnte_enabled'] ?? '0') === '1' ? 'checked' : '' }}
+                >
+                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+            </label>
+        </div>
+
+        <!-- Token & Credentials Form -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+            
+            <!-- API Token Field (Span 8) -->
+            <div class="md:col-span-8 space-y-1.5">
+                <div class="flex items-center justify-between">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">
+                        Fonnte Device API Token <span class="text-rose-500">*</span>
+                    </label>
+                    <a href="https://fonnte.com" target="_blank" class="text-[11px] font-bold text-emerald-600 hover:underline flex items-center gap-1">
+                        <span>Buka Dashboard Fonnte</span>
+                        <i data-lucide="external-link" class="w-3 h-3"></i>
+                    </a>
+                </div>
+                <div class="relative">
+                    <input 
+                        type="password" 
+                        id="fonnteApiTokenInput"
+                        name="fonnte_api_token" 
+                        value="{{ $settings['fonnte_api_token'] ?? '' }}" 
+                        placeholder="Contoh: p6V...#8s@aQzX9" 
+                        class="w-full pl-4 pr-12 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold bg-white focus:outline-none focus:border-emerald-600 shadow-2xs"
+                    >
+                    <button 
+                        type="button" 
+                        onclick="toggleTokenVisibility()"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
+                        title="Tampilkan / Sembunyikan Token"
+                    >
+                        <i id="tokenEyeIcon" data-lucide="eye" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <p class="text-[10px] text-slate-400">
+                    Token disimpan aman di database. Anda tidak perlu mengubah berkas <code>.env</code> di server.
+                </p>
+            </div>
+
+            <!-- Country Code Field (Span 4) -->
+            <div class="md:col-span-4 space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700 uppercase">Kode Negara Default</label>
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        name="fonnte_country_code" 
+                        value="{{ $settings['fonnte_country_code'] ?? '62' }}" 
+                        placeholder="62" 
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold font-mono focus:outline-none focus:border-emerald-600"
+                    >
+                </div>
+                <p class="text-[10px] text-slate-400">Standar Indonesia: <b>62</b> (otomatis mengubah 0812 ke 62812)</p>
+            </div>
+
+        </div>
+
+        <!-- Interactive Fonnte Diagnostic & Test Box -->
+        <div class="p-5 rounded-2xl bg-emerald-50/50 border border-emerald-200/80 space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="activity" class="w-4 h-4 text-emerald-600"></i>
+                    <h4 class="text-xs font-black text-slate-900 uppercase tracking-wider">Uji Koneksi & Status Device Fonnte</h4>
+                </div>
+                <button 
+                    type="button" 
+                    onclick="checkFonnteDeviceStatus()" 
+                    class="px-3 py-1.5 rounded-xl bg-white border border-emerald-300 text-emerald-700 hover:bg-emerald-50 text-[11px] font-bold transition flex items-center gap-1.5 shadow-2xs"
+                >
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                    <span>Cek Status Device</span>
+                </button>
+            </div>
+
+            <!-- Diagnostic Input & Button -->
+            <div class="flex flex-col sm:flex-row items-center gap-2.5">
+                <div class="relative flex-1 w-full">
+                    <i data-lucide="phone" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                    <input 
+                        type="text" 
+                        id="testFonnteTargetPhone" 
+                        placeholder="Masukkan nomor WA uji coba (contoh: 08123456789)..." 
+                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white focus:outline-none focus:border-emerald-600 font-mono"
+                    >
+                </div>
+                <button 
+                    type="button" 
+                    id="btnSendTestFonnte"
+                    onclick="sendTestFonnteMessage()" 
+                    class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm flex-shrink-0"
+                >
+                    <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                    <span>Kirim Pesan Uji Coba</span>
+                </button>
+            </div>
+
+            <!-- Diagnostic Live Response Output Box -->
+            <div id="fonnteTestResultBox" class="hidden p-3.5 rounded-xl text-xs space-y-1 transition-all">
+                <!-- Result will be inserted here -->
+            </div>
+        </div>
+    </div>
+
     <!-- Save Button -->
     <div class="sticky bottom-6 z-20 flex justify-end">
         <button type="submit" class="btn-red-primary px-8 py-4 rounded-2xl font-bold text-sm shadow-xl flex items-center gap-2">
@@ -553,6 +708,168 @@
             if (pTitle) pTitle.textContent = first.title || 'Judul Notifikasi';
             if (pDesc) pDesc.textContent = first.desc || 'Deskripsi notifikasi';
             if (pTime) pTime.textContent = first.time || 'Baru saja';
+        }
+    }
+
+    /* ==========================================================
+       FONNTE WHATSAPP GATEWAY DIAGNOSTICS & HELPERS
+       ========================================================== */
+    function toggleTokenVisibility() {
+        const input = document.getElementById('fonnteApiTokenInput');
+        const icon = document.getElementById('tokenEyeIcon');
+        if (!input) return;
+        if (input.type === 'password') {
+            input.type = 'text';
+            if (icon) icon.setAttribute('data-lucide', 'eye-off');
+        } else {
+            input.type = 'password';
+            if (icon) icon.setAttribute('data-lucide', 'eye');
+        }
+        if (window.lucide) lucide.createIcons();
+    }
+
+    async function checkFonnteDeviceStatus() {
+        const resultBox = document.getElementById('fonnteTestResultBox');
+        if (!resultBox) return;
+
+        resultBox.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-900', 'border-emerald-300', 'bg-rose-50', 'text-rose-900', 'border-rose-300');
+        resultBox.classList.add('block', 'bg-blue-50', 'text-blue-900', 'border', 'border-blue-200');
+        resultBox.innerHTML = `
+            <div class="flex items-center gap-2">
+                <svg class="animate-spin h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
+                <span class="font-bold">Memeriksa status perangkat ke server Fonnte...</span>
+            </div>
+        `;
+
+        try {
+            const res = await fetch("{{ route('admin.settings.device.fonnte') }}", {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            const data = await res.json();
+
+            resultBox.classList.remove('bg-blue-50', 'text-blue-900', 'border-blue-200');
+
+            if (data.success) {
+                resultBox.classList.add('bg-emerald-50', 'text-emerald-900', 'border', 'border-emerald-300');
+                const dev = data.device || {};
+                resultBox.innerHTML = `
+                    <div class="flex items-start gap-2">
+                        <span class="font-bold text-emerald-700">✓ Berhasil:</span>
+                        <div>
+                            <p class="font-bold">${data.message || 'Perangkat terhubung aktif'}</p>
+                            ${dev.device ? `<p class="text-[11px] text-emerald-800">Nomor Perangkat: <b>${dev.device}</b> | Kuota: <b>${dev.quota ?? 'Aktif'}</b></p>` : ''}
+                        </div>
+                    </div>
+                `;
+            } else {
+                resultBox.classList.add('bg-rose-50', 'text-rose-900', 'border', 'border-rose-300');
+                resultBox.innerHTML = `
+                    <div class="flex items-start gap-2">
+                        <span class="font-bold text-rose-700">✕ Gagal:</span>
+                        <div>
+                            <p class="font-bold">${data.message || 'Gagal menghubungi perangkat Fonnte'}</p>
+                            <p class="text-[11px] text-rose-700 mt-0.5">Pastikan token API Fonnte telah disimpan dan perangkat di web Fonnte berstatus <em>Connected</em>.</p>
+                        </div>
+                    </div>
+                `;
+            }
+        } catch (err) {
+            resultBox.classList.remove('bg-blue-50', 'text-blue-900', 'border-blue-200');
+            resultBox.classList.add('bg-rose-50', 'text-rose-900', 'border', 'border-rose-300');
+            resultBox.innerHTML = `
+                <span class="font-bold text-rose-700">✕ Error:</span> ${err.message || 'Terjadi kesalahan sistem'}
+            `;
+        }
+    }
+
+    async function sendTestFonnteMessage() {
+        const phoneInput = document.getElementById('testFonnteTargetPhone');
+        const tokenInput = document.getElementById('fonnteApiTokenInput');
+        const resultBox = document.getElementById('fonnteTestResultBox');
+        const sendBtn = document.getElementById('btnSendTestFonnte');
+        
+        const targetPhone = phoneInput ? phoneInput.value.trim() : '';
+        const currentToken = tokenInput ? tokenInput.value.trim() : '';
+
+        if (!targetPhone) {
+            alert('Silakan masukkan nomor WhatsApp tujuan uji coba terlebih dahulu.');
+            if (phoneInput) phoneInput.focus();
+            return;
+        }
+
+        if (sendBtn) {
+            sendBtn.disabled = true;
+            sendBtn.classList.add('opacity-70', 'cursor-not-allowed');
+        }
+
+        resultBox.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-900', 'border-emerald-300', 'bg-rose-50', 'text-rose-900', 'border-rose-300');
+        resultBox.classList.add('block', 'bg-blue-50', 'text-blue-900', 'border', 'border-blue-200');
+        resultBox.innerHTML = `
+            <div class="flex items-center gap-2">
+                <svg class="animate-spin h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
+                <span class="font-bold">Mengirim pesan uji coba ke ${targetPhone}...</span>
+            </div>
+        `;
+
+        try {
+            const res = await fetch("{{ route('admin.settings.test.fonnte') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    target_phone: targetPhone,
+                    token: currentToken
+                })
+            });
+
+            const data = await res.json();
+            resultBox.classList.remove('bg-blue-50', 'text-blue-900', 'border-blue-200');
+
+            if (data.success) {
+                resultBox.classList.add('bg-emerald-50', 'text-emerald-900', 'border', 'border-emerald-300');
+                resultBox.innerHTML = `
+                    <div class="flex items-start gap-2">
+                        <span class="font-bold text-emerald-700">✓ Pesan Terkirim:</span>
+                        <div>
+                            <p class="font-bold">${data.message || 'Pesan uji coba WhatsApp berhasil dikirim!'}</p>
+                            <p class="text-[11px] text-emerald-800 mt-0.5">Silakan periksa aplikasi WhatsApp di nomor penerima.</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                resultBox.classList.add('bg-rose-50', 'text-rose-900', 'border', 'border-rose-300');
+                resultBox.innerHTML = `
+                    <div class="flex items-start gap-2">
+                        <span class="font-bold text-rose-700">✕ Pengiriman Gagal:</span>
+                        <div>
+                            <p class="font-bold">${data.message || 'Gagal mengirim pesan uji coba'}</p>
+                            <p class="text-[11px] text-rose-700 mt-0.5">Pastikan token valid dan nomor tujuan terdaftar di WhatsApp.</p>
+                        </div>
+                    </div>
+                `;
+            }
+        } catch (err) {
+            resultBox.classList.remove('bg-blue-50', 'text-blue-900', 'border-blue-200');
+            resultBox.classList.add('bg-rose-50', 'text-rose-900', 'border', 'border-rose-300');
+            resultBox.innerHTML = `
+                <span class="font-bold text-rose-700">✕ Error:</span> ${err.message || 'Terjadi kesalahan sistem saat menghubungi server.'}
+            `;
+        } finally {
+            if (sendBtn) {
+                sendBtn.disabled = false;
+                sendBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+            }
         }
     }
 

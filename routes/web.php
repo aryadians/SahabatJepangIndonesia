@@ -164,6 +164,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // 3. Site Settings & Hero CMS
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+    Route::post('/settings/test-fonnte', [SettingController::class, 'testFonnte'])->name('settings.test.fonnte');
+    Route::get('/settings/device-fonnte', [SettingController::class, 'checkFonnteDevice'])->name('settings.device.fonnte');
 
     // 4. Programs CRUD
     Route::resource('programs', ProgramController::class)->except(['show']);
