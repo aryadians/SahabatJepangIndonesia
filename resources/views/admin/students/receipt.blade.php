@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kwitansi Pembayaran - {{ $student->name }} ({{ $receiptNo }})</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ asset('js/app.js') }}" defer></script>
     <style>
         @media print {
             .no-print {
@@ -12,18 +14,26 @@
             }
             body {
                 background: white !important;
-                padding: 0 !important;
-            }
-            .page-container {
-                border: none !important;
-                box-shadow: none !important;
+                color: black !important;
                 padding: 0 !important;
                 margin: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .page-container {
+                border: 1px solid #E2E8F0 !important;
+                box-shadow: none !important;
+                padding: 24px !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                border-radius: 0 !important;
+                page-break-inside: avoid !important;
             }
         }
         @page {
             size: A4 portrait;
-            margin: 15mm;
+            margin: 10mm 15mm;
         }
     </style>
 </head>
@@ -78,7 +88,12 @@
                 <span class="inline-block px-3 py-1 bg-red-100 text-red-800 text-xs font-black rounded-lg uppercase tracking-wider mb-2">
                     Kwitansi Pembayaran Resmi
                 </span>
-                <p class="text-xs font-mono font-bold text-slate-900">{{ $receiptNo }}</p>
+                <p class="text-xs font-mono font-bold text-slate-900 flex items-center justify-end gap-1.5">
+                    <span>{{ $receiptNo }}</span>
+                    <button type="button" onclick="copyToClipboard('{{ $receiptNo }}', 'No. Kwitansi tersalin!')" class="no-print p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-red-600 transition" title="Salin nomor kwitansi">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    </button>
+                </p>
                 <p class="text-[11px] text-slate-400 mt-0.5">Tanggal: {{ date('d F Y') }}</p>
             </div>
         </div>
@@ -92,7 +107,12 @@
                     <td class="py-3 font-semibold text-slate-400 w-44">Telah Diterima Dari</td>
                     <td class="py-3 font-bold text-slate-900">
                         <span class="text-base font-black">{{ $student->name }}</span>
-                        <span class="text-xs text-slate-500 font-mono ml-2">(NIS: {{ $student->nis }})</span>
+                        <span class="text-xs text-slate-500 font-mono ml-2 inline-flex items-center gap-1">
+                            (NIS: {{ $student->nis }})
+                            <button type="button" onclick="copyToClipboard('{{ $student->nis }}', 'NIS Siswa tersalin!')" class="no-print p-0.5 rounded hover:bg-slate-100 text-slate-400 hover:text-red-600 transition" title="Salin NIS">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            </button>
+                        </span>
                     </td>
                 </tr>
 
@@ -174,12 +194,12 @@
                 <p class="text-xs text-slate-500">Jakarta, {{ date('d F Y') }}</p>
                 <p class="text-xs font-bold text-slate-700">Bagian Keuangan & Kasir LPK</p>
                 
-                <!-- Digital Stamp Badge -->
+                <!-- Digital Stamp Badge (Authentic Hanko Seal) -->
                 <div class="h-20 flex items-center justify-center relative">
-                    <div class="w-28 h-16 rounded-full border-2 border-red-600/80 text-red-600 font-bold text-[10px] flex flex-col items-center justify-center rotate-[-6deg] select-none bg-red-50/40">
-                        <span class="tracking-widest uppercase text-[9px] font-black">LPK SAHABAT JEPANG</span>
-                        <span class="text-xs font-black">LUNAS / VERIFIED</span>
-                        <span class="text-[8px] tracking-tight">KEMNAKER RI</span>
+                    <div class="hanko-stamp w-32 h-16 rounded-full flex flex-col items-center justify-center select-none py-1">
+                        <span class="tracking-widest uppercase text-[8px] font-black">LPK SAHABAT JEPANG</span>
+                        <span class="text-xs font-black tracking-wider">LUNAS / VERIFIED</span>
+                        <span class="text-[7px] tracking-tight font-japanese">送出機関 友好日本</span>
                     </div>
                 </div>
 

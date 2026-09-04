@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice Tagihan Biaya - {{ $student->name }} ({{ $invoiceNo }})</title>
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ asset('js/app.js') }}" defer></script>
     <style>
         @media print {
             .no-print {
@@ -12,18 +14,26 @@
             }
             body {
                 background: white !important;
-                padding: 0 !important;
-            }
-            .page-container {
-                border: none !important;
-                box-shadow: none !important;
+                color: black !important;
                 padding: 0 !important;
                 margin: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .page-container {
+                border: 1px solid #E2E8F0 !important;
+                box-shadow: none !important;
+                padding: 24px !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                border-radius: 0 !important;
+                page-break-inside: avoid !important;
             }
         }
         @page {
             size: A4 portrait;
-            margin: 15mm;
+            margin: 10mm 15mm;
         }
     </style>
 </head>
@@ -78,7 +88,12 @@
                 <span class="inline-block px-3 py-1 bg-slate-100 text-slate-800 text-xs font-black rounded-lg uppercase tracking-wider mb-2">
                     INVOICE TAGIHAN
                 </span>
-                <p class="text-xs font-mono font-bold text-slate-900">{{ $invoiceNo }}</p>
+                <p class="text-xs font-mono font-bold text-slate-900 flex items-center justify-end gap-1.5">
+                    <span>{{ $invoiceNo }}</span>
+                    <button type="button" onclick="copyToClipboard('{{ $invoiceNo }}', 'No. Invoice tersalin!')" class="no-print p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-red-600 transition" title="Salin nomor invoice">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    </button>
+                </p>
                 <p class="text-[11px] text-slate-400 mt-0.5">Tanggal Tagihan: {{ date('d F Y') }}</p>
             </div>
         </div>
@@ -88,7 +103,12 @@
             <div>
                 <p class="text-[11px] font-bold uppercase text-slate-400 tracking-wider">Ditagihkan Kepada:</p>
                 <h3 class="text-base font-black text-slate-900 mt-1">{{ $student->name }}</h3>
-                <p class="text-xs text-slate-600 mt-0.5">Nomor Induk Siswa (NIS): <span class="font-mono font-bold">{{ $student->nis }}</span></p>
+                <p class="text-xs text-slate-600 mt-0.5 inline-flex items-center gap-1">
+                    Nomor Induk Siswa (NIS): <span class="font-mono font-bold">{{ $student->nis }}</span>
+                    <button type="button" onclick="copyToClipboard('{{ $student->nis }}', 'NIS Siswa tersalin!')" class="no-print p-0.5 rounded hover:bg-slate-100 text-slate-400 hover:text-red-600 transition" title="Salin NIS">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    </button>
+                </p>
                 <p class="text-xs text-slate-600">No. WhatsApp: {{ $student->phone ?? '-' }}</p>
                 <p class="text-xs text-slate-600">Kota Asal: {{ $student->city ?? 'Indonesia' }}</p>
             </div>
@@ -150,15 +170,25 @@
         <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
             <h4 class="text-xs font-black uppercase text-slate-900 tracking-wider">Instruksi Pembayaran Resmi:</h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <div class="p-3 bg-white rounded-xl border border-slate-200">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase">Rekening Bank Mandiri</span>
-                    <p class="font-mono font-black text-sm text-slate-900 mt-0.5">123-00-9876543-2</p>
-                    <p class="text-[11px] text-slate-500">a.n. LPK SAHABAT JEPANG INDONESIA</p>
+                <div class="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Rekening Bank Mandiri</span>
+                        <p class="font-mono font-black text-sm text-slate-900 mt-0.5">123-00-9876543-2</p>
+                        <p class="text-[11px] text-slate-500">a.n. LPK SAHABAT JEPANG INDONESIA</p>
+                    </div>
+                    <button type="button" onclick="copyToClipboard('1230098765432', 'No. Rekening Mandiri tersalin!')" class="no-print p-2 rounded-lg bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 transition" title="Salin nomor rekening">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    </button>
                 </div>
-                <div class="p-3 bg-white rounded-xl border border-slate-200">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase">Rekening Bank BCA</span>
-                    <p class="font-mono font-black text-sm text-slate-900 mt-0.5">889-0123-456</p>
-                    <p class="text-[11px] text-slate-500">a.n. LPK SAHABAT JEPANG INDONESIA</p>
+                <div class="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Rekening Bank BCA</span>
+                        <p class="font-mono font-black text-sm text-slate-900 mt-0.5">889-0123-456</p>
+                        <p class="text-[11px] text-slate-500">a.n. LPK SAHABAT JEPANG INDONESIA</p>
+                    </div>
+                    <button type="button" onclick="copyToClipboard('8890123456', 'No. Rekening BCA tersalin!')" class="no-print p-2 rounded-lg bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 transition" title="Salin nomor rekening">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    </button>
                 </div>
             </div>
             <p class="text-[11px] text-slate-500">Harap cantumkan keterangan transfer: <b>NIS {{ $student->nis }} - {{ $student->name }}</b> dan konfirmasikan bukti transfer ke WhatsApp Keuangan LPK (+62 812-3456-7890).</p>
@@ -181,8 +211,14 @@
             <div class="text-center w-56 space-y-1">
                 <p class="text-xs text-slate-500">Jakarta, {{ date('d F Y') }}</p>
                 <p class="text-xs font-bold text-slate-700">Manajemen Keuangan LPK</p>
-                <div class="h-16 flex items-center justify-center">
-                    <span class="text-xs font-japanese font-bold text-slate-400">[Official Digital Seal]</span>
+                
+                <!-- Digital Stamp Badge (Authentic Hanko) -->
+                <div class="h-20 flex items-center justify-center relative">
+                    <div class="hanko-stamp w-32 h-16 rounded-full flex flex-col items-center justify-center select-none py-1">
+                        <span class="tracking-widest uppercase text-[8px] font-black">LPK SAHABAT JEPANG</span>
+                        <span class="text-xs font-black tracking-wider">TAGIHAN RESMI</span>
+                        <span class="text-[7px] tracking-tight font-japanese">送出機関 友好日本</span>
+                    </div>
                 </div>
                 <p class="text-xs font-black text-slate-900 underline underline-offset-4">LPK Sahabat Jepang</p>
             </div>

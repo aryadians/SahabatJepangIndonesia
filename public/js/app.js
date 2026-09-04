@@ -873,4 +873,76 @@ function initInstantPagePrefetch() {
     });
 }
 
+/* ==========================================================================
+   11. GLOBAL UI/UX UTILITIES: COPY-TO-CLIPBOARD & KEYBOARD SHORTCUTS
+   ========================================================================== */
+window.copyToClipboard = function (text, message = 'Tersalin ke clipboard!') {
+    if (!text) return;
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => showCopyToast(message));
+    } else {
+        const temp = document.createElement('textarea');
+        temp.value = text;
+        temp.style.position = 'fixed';
+        temp.style.left = '-9999px';
+        document.body.appendChild(temp);
+        temp.focus();
+        temp.select();
+        try {
+            document.execCommand('copy');
+            showCopyToast(message);
+        } catch (err) {
+            console.error('Copy fallback failed', err);
+        }
+        document.body.removeChild(temp);
+    }
+};
+
+function showCopyToast(msg) {
+    let toast = document.getElementById('globalCopyToast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'globalCopyToast';
+        toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] px-4 py-2.5 bg-slate-900/95 text-white text-xs font-bold rounded-2xl shadow-2xl border border-slate-700/80 flex items-center gap-2 pointer-events-none transition-all duration-300 opacity-0 translate-y-3';
+        toast.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span><span id="globalCopyToastMsg">${msg}</span>`;
+        document.body.appendChild(toast);
+    } else {
+        const msgEl = document.getElementById('globalCopyToastMsg');
+        if (msgEl) msgEl.textContent = msg;
+    }
+
+    requestAnimationFrame(() => {
+        toast.classList.remove('opacity-0', 'translate-y-3');
+        toast.classList.add('opacity-100', 'translate-y-0');
+    });
+
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-3');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+    }, 2400);
+}
+
+// Global Keyboard Shortcuts
+document.addEventListener('keydown', (e) => {
+    // Escape to close active modal
+    if (e.key === 'Escape') {
+        const activeModal = document.querySelector('.modal.active, [id$="Modal"].flex:not(.hidden)');
+        if (activeModal && typeof window.closeModal === 'function') {
+            window.closeModal(activeModal.id);
+        }
+    }
+
+    // Slash key '/' to focus primary search input (when not typing in an input)
+    if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+        const searchInput = document.querySelector('input[name="search"], input[name="keyword"], #studentSearchInput, #examSearchInput');
+        if (searchInput) {
+            e.preventDefault();
+            searchInput.focus();
+            searchInput.select();
+        }
+    }
+});
+
+
 

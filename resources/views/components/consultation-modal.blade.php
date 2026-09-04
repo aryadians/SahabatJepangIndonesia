@@ -57,6 +57,8 @@
                     <input 
                         type="tel" 
                         name="phone" 
+                        inputmode="tel"
+                        autocomplete="tel"
                         required 
                         placeholder="Contoh: 081234567890"
                         class="w-full px-3.5 py-2 rounded-xl text-xs text-slate-900 bg-slate-50 border border-slate-200 focus:bg-white focus:border-japan-600 focus:outline-none font-semibold"
@@ -93,10 +95,11 @@
                     <input 
                         type="number" 
                         name="age" 
+                        inputmode="numeric"
                         min="16" 
                         max="50" 
                         placeholder="Contoh: 21"
-                        class="w-full px-3.5 py-2 rounded-xl text-xs text-slate-900 bg-slate-50 border border-slate-200 focus:bg-white focus:border-japan-600 focus:outline-none"
+                        class="w-full px-3.5 py-2 rounded-xl text-xs text-slate-900 bg-slate-50 border border-slate-200 focus:bg-white focus:border-japan-600 focus:outline-none font-semibold"
                     >
                 </div>
 

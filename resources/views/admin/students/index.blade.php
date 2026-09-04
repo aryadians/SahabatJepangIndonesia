@@ -73,11 +73,13 @@
                     <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
                     <input 
                         type="text" 
+                        id="studentSearchInput"
                         name="q" 
                         value="{{ request('q') }}" 
                         placeholder="Cari NIS, Nama Siswa, NIK, No. HP, Kaisha, atau No. CoE..." 
-                        class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-japan-600 bg-slate-50/70 focus:bg-white transition"
+                        class="w-full pl-9 pr-10 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-japan-600 bg-slate-50/70 focus:bg-white transition"
                     >
+                    <span class="hidden sm:inline-flex items-center absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-slate-300 bg-white text-[10px] text-slate-400 font-mono shadow-2xs cursor-pointer select-none" title="Tekan tombol '/' untuk mencari">/</span>
                 </div>
 
                 <!-- Filter Program (Span 3 on Desktop) -->

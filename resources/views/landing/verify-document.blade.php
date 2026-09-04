@@ -77,7 +77,12 @@
 
                         <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Nomor Dokumen</span>
-                            <p class="text-sm font-mono font-black text-japan-700">{{ $docNo }}</p>
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm font-mono font-black text-japan-700">{{ $docNo }}</p>
+                                <button type="button" onclick="copyToClipboard('{{ $docNo }}', 'Nomor dokumen tersalin!')" class="p-1 rounded-md text-slate-400 hover:text-japan-600 hover:bg-slate-200/50 transition" title="Salin Nomor Dokumen">
+                                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
                         </div>
 
                         <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
@@ -90,7 +95,12 @@
 
                         <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Nomor Induk Siswa (NIS)</span>
-                            <p class="text-sm font-mono font-black text-slate-900">{{ $student->nis }}</p>
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm font-mono font-black text-slate-900">{{ $student->nis }}</p>
+                                <button type="button" onclick="copyToClipboard('{{ $student->nis }}', 'NIS tersalin!')" class="p-1 rounded-md text-slate-400 hover:text-japan-600 hover:bg-slate-200/50 transition" title="Salin NIS">
+                                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
                         </div>
 
                         <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
@@ -114,9 +124,11 @@
                     </div>
 
                     <!-- Red Hanko Seal Graphic -->
-                    <div class="flex items-center gap-3 bg-red-50/80 px-4 py-2.5 rounded-2xl border border-red-200 flex-shrink-0">
-                        <div class="w-10 h-10 rounded-full border-2 border-dashed border-red-600 flex items-center justify-center font-japanese font-black text-red-600 text-xs">
-                            印
+                    <div class="flex items-center gap-3 flex-shrink-0">
+                        <div class="hanko-stamp w-28 h-14 rounded-full flex flex-col items-center justify-center select-none py-1">
+                            <span class="tracking-widest uppercase text-[7px] font-black">LPK SAHABAT JEPANG</span>
+                            <span class="text-[10px] font-black tracking-wider">VERIFIED SEAL</span>
+                            <span class="text-[6px] tracking-tight font-japanese">送出機関 友好日本</span>
                         </div>
                         <div>
                             <span class="text-[9px] font-black uppercase text-red-700 block">Stempel Digital Resmi</span>

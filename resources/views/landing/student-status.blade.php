@@ -41,11 +41,12 @@
                         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
                         <input 
                             type="text" 
+                            id="studentSearchInput"
                             name="keyword" 
                             value="{{ $keyword }}" 
                             placeholder="Contoh: SJI-2026-001 atau 081234567890" 
                             required 
-                            class="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-800/80 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-japan-500 focus:ring-1 focus:ring-japan-500 transition"
+                            class="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-800/80 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-japan-500 focus:ring-1 focus:ring-japan-500 transition font-mono"
                         >
                     </div>
 
@@ -99,7 +100,12 @@
                             </div>
 
                             <p class="text-xs text-slate-500 font-mono font-bold flex flex-wrap items-center gap-2">
-                                <span>NIS: {{ $student->nis }}</span>
+                                <span class="inline-flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-lg">
+                                    <span>NIS: {{ $student->nis }}</span>
+                                    <button type="button" onclick="copyToClipboard('{{ $student->nis }}', 'NIS Siswa tersalin!')" class="text-slate-400 hover:text-japan-600 transition" title="Salin NIS">
+                                        <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                    </button>
+                                </span>
                                 <span class="text-slate-300">•</span>
                                 <span>Angkatan: {{ $student->batch ?: 'Aktif' }}</span>
                             </p>
