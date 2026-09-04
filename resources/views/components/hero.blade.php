@@ -4,6 +4,24 @@
     <!-- 3D Interactive Sakura Petal & Particle Canvas -->
     <canvas id="hero3dCanvas"></canvas>
 
+    <!-- Sakura Animation Power Switch -->
+    <button 
+        type="button" 
+        id="sakuraToggleBtn" 
+        onclick="toggleSakuraCanvas()" 
+        class="absolute top-4 right-4 sm:top-6 sm:right-8 z-20 px-3 py-1.5 rounded-full bg-white/85 hover:bg-white text-[11px] font-semibold text-slate-700 border border-red-100 shadow-xs backdrop-blur-sm transition flex items-center gap-1.5"
+        title="Nyalakan / Matikan animasi kelopak sakura untuk hemat baterai"
+    >
+        🌸 <span class="hidden sm:inline">Sakura:</span> <span class="text-emerald-600 font-bold">ON</span>
+    </button>
+
+    <!-- Decorative Vertical Kanji Banner (Tategaki) -->
+    <div class="hidden xl:flex flex-col items-center absolute left-6 top-1/2 -translate-y-1/2 select-none pointer-events-none opacity-20 hover:opacity-50 transition-opacity">
+        <span class="tategaki text-sm font-black text-japan-700">就職支援・日本友好</span>
+        <div class="w-px h-12 bg-red-400 my-2"></div>
+        <span class="tategaki text-xs font-bold text-slate-500">信頼の実績</span>
+    </div>
+
     <!-- Japanese Background Sun Motif -->
     <div class="absolute top-1/2 -right-32 -translate-y-1/2 w-[450px] h-[450px] lg:w-[650px] lg:h-[650px] rounded-full bg-gradient-to-br from-red-500/10 via-red-500/5 to-transparent blur-3xl pointer-events-none -z-0"></div>
     <div class="absolute -top-20 -left-20 w-[350px] h-[350px] rounded-full bg-red-100/50 blur-2xl pointer-events-none -z-0"></div>

@@ -172,6 +172,7 @@
     @include('components.quiz-modal')
     @include('components.success-modal')
     @include('components.pwa-install-banner')
+    @include('components.mobile-bottom-bar')
 
     <!-- Custom App Script -->
     <script src="{{ asset('js/app.js') }}"></script>

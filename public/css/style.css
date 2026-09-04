@@ -479,6 +479,53 @@ button:active,
 }
 
 /* ==========================================================================
+   AUTHENTIC JAPANESE VERTICAL CALLIGRAPHY (TATEGAKI 縦書き)
+   ========================================================================== */
+.tategaki {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    letter-spacing: 0.35em;
+    font-family: 'Zen Maru Gothic', 'Noto Sans JP', serif;
+    user-select: none;
+}
+
+/* ==========================================================================
+   MOBILE STICKY BOTTOM QUICK ACTION BAR
+   ========================================================================== */
+.mobile-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 55;
+    background: rgba(15, 23, 42, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(220, 38, 38, 0.25);
+    box-shadow: 0 -10px 25px -5px rgba(0, 0, 0, 0.3);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+}
+
+/* ==========================================================================
+   LIVE SOCIAL PROOF ACTIVITY TICKER
+   ========================================================================== */
+#socialProofToast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    z-index: 50;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+}
+@media (max-width: 640px) {
+    #socialProofToast {
+        bottom: 5rem;
+        left: 0.75rem;
+        right: 0.75rem;
+    }
+}
+
+/* ==========================================================================
    PIXEL-PERFECT A4 PRINT STYLESHEET
    ========================================================================== */
 @media print {

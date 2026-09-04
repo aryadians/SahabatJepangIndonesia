@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initScrollToTop();
     initFaqAccordion();
     initInstantPagePrefetch();
+    initMobileBottomBar();
+    initSocialProofTicker();
 });
 
 /* ==========================================================================
@@ -186,8 +188,23 @@ function init3DHeroCanvas() {
             p.draw();
         });
 
-        requestAnimationFrame(animate);
+        if (window.isSakuraCanvasActive !== false) {
+            requestAnimationFrame(animate);
+        }
     }
+
+    window.isSakuraCanvasActive = true;
+    window.toggleSakuraCanvas = function () {
+        window.isSakuraCanvasActive = !window.isSakuraCanvasActive;
+        const btn = document.getElementById('sakuraToggleBtn');
+        if (window.isSakuraCanvasActive) {
+            if (btn) btn.innerHTML = '🌸 <span class="hidden sm:inline">Sakura:</span> <span class="text-emerald-600 font-bold">ON</span>';
+            animate();
+        } else {
+            ctx.clearRect(0, 0, width, height);
+            if (btn) btn.innerHTML = '🌸 <span class="hidden sm:inline">Sakura:</span> <span class="text-slate-400 font-bold">OFF</span>';
+        }
+    };
 
     animate();
 }
@@ -335,14 +352,14 @@ function initSalaryCalculator() {
         // Net Savings
         const netSavings = Math.max(0, grossSalary - deductions - livingCost);
 
-        // Format and display
-        grossSalaryYenEl.textContent = `¥ ${grossSalary.toLocaleString('id-ID')}`;
+        // Format and display with smooth animated count-up ticker
+        animateNumber(grossSalaryYenEl, grossSalary, '¥ ');
         grossSalaryIdrEl.textContent = `≈ Rp ${Math.round((grossSalary * JPY_TO_IDR) / 1000).toLocaleString('id-ID')}.000`;
 
         if (deductionsYenEl) deductionsYenEl.textContent = `- ¥ ${deductions.toLocaleString('id-ID')}`;
         if (livingCostYenEl) livingCostYenEl.textContent = `- ¥ ${livingCost.toLocaleString('id-ID')}`;
 
-        netSavingsYenEl.textContent = `¥ ${netSavings.toLocaleString('id-ID')}`;
+        animateNumber(netSavingsYenEl, netSavings, '¥ ');
         netSavingsIdrEl.textContent = `≈ Rp ${Math.round((netSavings * JPY_TO_IDR) / 1000).toLocaleString('id-ID')}.000 / bln`;
     }
 
@@ -395,18 +412,14 @@ function initRemittanceCalculator() {
         const total1YearIdr = netIdrMonthly * 12;
         const totalContractIdr = netIdrMonthly * (contractYears * 12);
 
-        // Format outputs
-        netMonthlyIdrEl.textContent = `Rp ${netIdrMonthly.toLocaleString('id-ID')}`;
+        // Format outputs with smooth animated count-up ticker
+        animateNumber(netMonthlyIdrEl, netIdrMonthly, 'Rp ');
         if (calcTextEl) {
             calcTextEl.textContent = `(¥ ${sendYen.toLocaleString('id-ID')} - ¥ ${providerFee.toLocaleString('id-ID')} biaya kirim) × Rp ${rate.toLocaleString('id-ID')}`;
         }
 
-        if (total1YearEl) {
-            total1YearEl.textContent = `Rp ${total1YearIdr.toLocaleString('id-ID')}`;
-        }
-        if (totalContractEl) {
-            totalContractEl.textContent = `Rp ${totalContractIdr.toLocaleString('id-ID')}`;
-        }
+        animateNumber(total1YearEl, total1YearIdr, 'Rp ');
+        animateNumber(totalContractEl, totalContractIdr, 'Rp ');
         if (contractYearsDisplay) {
             contractYearsDisplay.textContent = contractYears;
         }
@@ -943,6 +956,158 @@ document.addEventListener('keydown', (e) => {
         }
     }
 });
+
+/* ==========================================================================
+   12. NUMERIC COUNT-UP ANIMATION TICKER
+   ========================================================================== */
+function animateNumber(element, target, prefix = '', suffix = '') {
+    if (!element) return;
+    const start = parseInt(element.dataset.currentNum || '0', 10);
+    element.dataset.currentNum = target;
+
+    if (start === target || start === 0) {
+        element.textContent = `${prefix}${target.toLocaleString('id-ID')}${suffix}`;
+        return;
+    }
+
+    const duration = 200;
+    const startTime = performance.now();
+
+    function step(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const val = Math.round(start + (target - start) * ease);
+        element.textContent = `${prefix}${val.toLocaleString('id-ID')}${suffix}`;
+        if (progress < 1) {
+            requestAnimationFrame(step);
+        } else {
+            element.textContent = `${prefix}${target.toLocaleString('id-ID')}${suffix}`;
+        }
+    }
+    requestAnimationFrame(step);
+}
+
+/* ==========================================================================
+   13. MOBILE STICKY BOTTOM QUICK ACTION BAR
+   ========================================================================== */
+function initMobileBottomBar() {
+    const bar = document.getElementById('mobileBottomBar');
+    if (!bar) return;
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 320) {
+            bar.classList.remove('translate-y-full', 'opacity-0', 'pointer-events-none');
+            bar.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+        } else {
+            bar.classList.add('translate-y-full', 'opacity-0', 'pointer-events-none');
+            bar.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+        }
+    }, { passive: true });
+}
+
+/* ==========================================================================
+   14. LIVE SOCIAL PROOF ACTIVITY TICKER
+   ========================================================================== */
+function initSocialProofTicker() {
+    if (window.location.pathname.startsWith('/admin') || window.location.pathname.includes('/kwitansi') || window.location.pathname.includes('/invoice')) {
+        return;
+    }
+
+    const activities = [
+        {
+            icon: '🌸',
+            title: 'CoE Resmi Terbit!',
+            desc: 'Siswa Budi Santoso (Kaigo Tokyo) baru saja terbit Certificate of Eligibility.',
+            time: '2m lalu'
+        },
+        {
+            icon: '📥',
+            title: 'Brosur 2026 Terunduh',
+            desc: '1 Calon siswa asal Jawa Timur baru saja mengunduh Katalog Biaya Resmi.',
+            time: '5m lalu'
+        },
+        {
+            icon: '🎉',
+            title: 'Lolos Wawancara Kaisha',
+            desc: '3 Siswa lulusan Poltekkes lolos seleksi user rumah sakit lansia di Osaka.',
+            time: '12m lalu'
+        },
+        {
+            icon: '✈️',
+            title: 'Terbang ke Narita',
+            desc: 'Peserta Gelombang 4 SMILE Project sukses bertolak ke Jepang hari ini.',
+            time: '24m lalu'
+        },
+        {
+            icon: '📝',
+            title: 'Tryout JLPT CBT Online',
+            desc: 'Seorang siswa meraih nilai 96/100 (合格 - Lulus) simulasi JLPT N4.',
+            time: '38m lalu'
+        },
+        {
+            icon: '🤝',
+            title: 'MoU Kampus Baru',
+            desc: 'LPK SJI meresmikan kerjasama beasiswa Kaigo dengan Poltekkes Kemenkes.',
+            time: '1j lalu'
+        }
+    ];
+
+    let currentIndex = 0;
+    let container = document.getElementById('socialProofToast');
+
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'socialProofToast';
+        container.className = 'fixed z-40 max-w-xs sm:max-w-sm pointer-events-auto transform transition-all duration-500 translate-y-24 opacity-0 scale-95';
+        document.body.appendChild(container);
+    }
+
+    function showNextActivity() {
+        const item = activities[currentIndex];
+        currentIndex = (currentIndex + 1) % activities.length;
+
+        container.innerHTML = `
+            <div class="p-3 sm:p-3.5 rounded-2xl bg-white/95 text-slate-900 border border-red-200 shadow-2xl backdrop-blur-md flex items-start gap-3 relative overflow-hidden select-none">
+                <div class="w-8 h-8 rounded-xl bg-red-100 flex items-center justify-center text-base flex-shrink-0 mt-0.5 shadow-2xs">
+                    ${item.icon}
+                </div>
+                <div class="flex-1 min-w-0 pr-4">
+                    <div class="flex items-center justify-between gap-1">
+                        <span class="text-[10px] font-black uppercase text-japan-700 tracking-wider font-mono">${item.title}</span>
+                        <span class="text-[9px] text-slate-400 font-medium">${item.time}</span>
+                    </div>
+                    <p class="text-xs text-slate-700 leading-snug mt-0.5 font-medium">${item.desc}</p>
+                </div>
+                <button type="button" onclick="dismissSocialProof()" class="text-slate-400 hover:text-slate-700 text-sm leading-none p-1 absolute top-2 right-2" aria-label="Tutup">
+                    &times;
+                </button>
+                <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-red-100">
+                    <div class="h-full bg-japan-600 transition-all duration-[6000ms] ease-linear w-full" id="socialProofBar"></div>
+                </div>
+            </div>
+        `;
+
+        requestAnimationFrame(() => {
+            container.classList.remove('translate-y-24', 'opacity-0', 'scale-95');
+            container.classList.add('translate-y-0', 'opacity-100', 'scale-100');
+            const bar = document.getElementById('socialProofBar');
+            if (bar) bar.style.width = '0%';
+        });
+
+        setTimeout(() => {
+            container.classList.add('translate-y-24', 'opacity-0', 'scale-95');
+            container.classList.remove('translate-y-0', 'opacity-100', 'scale-100');
+        }, 6000);
+    }
+
+    window.dismissSocialProof = function () {
+        container.classList.add('translate-y-24', 'opacity-0', 'scale-95');
+        container.classList.remove('translate-y-0', 'opacity-100', 'scale-100');
+    };
+
+    setTimeout(showNextActivity, 7000);
+    setInterval(showNextActivity, 28000);
+}
 
 
 
