@@ -161,7 +161,41 @@ Membantu calon siswa dan orang tua memproyeksikan devisa masa depan:
 
 ---
 
-## 🤝 Integrasi Program Unggulan Pemerintah RI (MoU Kampus)
+## 🎯 Simulasi Ujian JLPT & JFT-Basic CBT Online (100 Soal)
+
+Rute: **[`/simulasi-ujian`](http://127.0.0.1:8000/simulasi-ujian)** *(Shortcut: `/simulasi-ujian?level=N5`, `N4`, `N3`, `JFT-Basic`, atau `all`)*
+
+Sistem tryout interaktif berstandar Computer-Based Test (CBT) resmi tanpa perlu login:
+- **100 Bank Soal Standar Kurikulum Resmi**: Mencakup Kotoba (Kosakata), Bunpou (Tata Bahasa), Kanji, dan Dokkai (Pemahaman Bacaan) dengan furigana Jepang.
+- **Pintasan Keyboard Penuh (A-D, 1-4, &larr;, &rarr;, R)**: Peserta dapat memilih opsi dan berpindah nomor tanpa mouse.
+- **Fitur Penanda Ragu-ragu (🚩 Flag for Review)**: Membantu peserta menandai nomor yang masih bimbang untuk dievaluasi ulang sebelum submit.
+- **Transisi Soal Halus & Matriks Navigasi Nomor**: Visual grid nomor soal dengan indikator warna (🟢 Terjawab, 🟡 Ragu-ragu, 🔴 Aktif, ⚪ Belum).
+- **Sertifikat Kelulusan Resmi (*Goukaku Certificate 合格認定証*)**: Jika peserta mencapai ambang batas kelulusan, sistem memicu efek hujan konfeti (*Japanese Celebratory Confetti*) dan menerbitkan sertifikat digital berstempel *Hanko* yang siap dicetak PDF atau dibagikan langsung ke WhatsApp Sensei.
+
+---
+
+## 🗺️ Peta Interaktif Sebaran Alumni di Seluruh Jepang
+
+Rute: **[`/sebaran-alumni`](http://127.0.0.1:8000/sebaran-alumni)**
+
+Showcase kredibilitas dan bukti nyata keberhasilan penempatan kerja alumni:
+- **Pencarian Real-Time Instan (Client-Side)**: Kolom cari cepat untuk memfilter ratusan alumni berdasarkan nama, prefektur (Tokyo, Osaka, Aichi, Mie, dll), atau nama perusahaan (*Kaisha*).
+- **Spotlight 8 Wilayah Utama Jepang (Hokkaido s/d Kyushu)**: Kartu interaktif tiap region yang dapat diklik untuk membuka modal rincian estimasi gaji rata-rata (¥175.000 - ¥245.000), daftar prefektur aktif, dan tombol penempatan karir.
+- **Filter Tag Prefektur Cepat**: Mengklik tag prefektur di mana saja langsung menyortir daftar siswa dan testimoni yang bertugas di wilayah tersebut.
+- **Database Terverifikasi & Testimoni Kaisha**: Menampilkan foto asli alumni, NIS, nama perusahaan Jepang, besaran gaji bersih, dan quote pengalaman hidup di Jepang.
+
+---
+
+## 📊 Dashboard Visual Analytics, Intake Trends & Pipeline Keberangkatan
+
+Rute: **[`/admin/dashboard`](http://127.0.0.1:8000/admin/dashboard)**
+
+Dashboard eksekutif backoffice modern dengan penyajian visual berbasis data:
+- **Multi-Segment Pipeline Keberangkatan**: Visualisasi progress bar tahap siswa (Aktif Belajar &rarr; Interview User &rarr; Lolos COE &rarr; Berangkat ke Jepang &rarr; Alumni Sukses) lengkap dengan persentase dan headcount.
+- **Grafik Batang Tren Intake 6 Bulan**: Grafik visual intake siswa baru vs leads pendaftar masuk selama 6 bulan terakhir dengan interactive hover tooltips.
+- **Gauge Pemulihan Arus Kas (Recovery Rate)**: Indikator real-time rasio penagihan biaya pelatihan (Total Tagihan vs Uang Masuk vs Sisa Piutang) untuk akurasi laporan keuangan SO.
+
+---
 
 LPK Sahabat Jepang Indonesia dipercaya menyelenggarakan program strategis pemerintah:
 
