@@ -60,6 +60,8 @@ Route::get('/brosur', [BrochureController::class, 'index'])->name('brochure.inde
 Route::post('/brosur/download', [BrochureController::class, 'download'])->name('brochure.download')->middleware('throttle:10,1');
 Route::get('/brosur/file/{id}', [BrochureController::class, 'downloadFile'])->name('brochure.download.file');
 Route::get('/biaya', fn() => redirect()->route('brochure.index'));
+Route::get('/faq', [LandingPageController::class, 'faq'])->name('faq.index');
+Route::get('/tanya-jawab', fn() => redirect()->route('faq.index'));
 Route::get('/simulasi-gaji', fn() => redirect('/#kalkulator'));
 Route::get('/remitansi', fn() => redirect('/#kalkulator'));
 Route::get('/nenkin', fn() => redirect('/#kalkulator'));
@@ -87,6 +89,7 @@ Route::get('/sitemap.xml', function () {
     $staticRoutes = [
         ['url' => url('/'), 'priority' => '1.0', 'changefreq' => 'daily'],
         ['url' => route('brochure.index'), 'priority' => '0.9', 'changefreq' => 'daily'],
+        ['url' => route('faq.index'), 'priority' => '0.9', 'changefreq' => 'daily'],
         ['url' => route('exam.simulator'), 'priority' => '0.9', 'changefreq' => 'weekly'],
         ['url' => route('student.portal'), 'priority' => '0.8', 'changefreq' => 'weekly'],
         ['url' => route('alumni.map'), 'priority' => '0.8', 'changefreq' => 'weekly'],

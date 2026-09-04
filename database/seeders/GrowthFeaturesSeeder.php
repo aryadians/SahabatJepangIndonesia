@@ -372,6 +372,12 @@ class GrowthFeaturesSeeder extends Seeder
                 'message' => "Kabar Gembira untuk Kak {nama}! 🇯🇵🎉\n\nProfil Anda terpilih untuk mengikuti sesi wawancara langsung (Mensetsu) bersama Perusahaan Mitra Jepang untuk sektor {program}.\n\nJadwal Simulasi Wawancara:\n🗓️ Hari/Tgl: Menyesuaikan Jadwal Angkatan\n📍 Tempat: Ruang Zoom / Kampus LPK SJI\n\nHarap konfirmasi kesiapan dan kenakan pakaian formal (Kemeja Putih & Dasi). Ganbarimashou!",
                 'is_active' => true,
             ],
+            [
+                'trigger_key' => 'brochure_download',
+                'title' => 'Konfirmasi Unduh Brosur & Silabus Resmi',
+                'message' => "Konnichiwa Kak {nama}! 🌸\n\nTerima kasih telah mengunduh {brosur} ({program}) dari LPK Sahabat Jepang Indonesia.\n\nDokumen resmi kurikulum, rincian biaya transparan, dan proyeksi gaji di Jepang dapat Anda akses kembali melalui tautan: {link}.\n\nApakah Kak {nama} memiliki pertanyaan seputar pendaftaran kelas atau beasiswa SMILE Project Kemenkes? Tim konselor kami siap membantu konsultasi gratis via WhatsApp.\n\nSalam hangat,\nLPK Sahabat Jepang Indonesia 🇯🇵",
+                'is_active' => true,
+            ],
         ];
 
         foreach ($templates as $t) {

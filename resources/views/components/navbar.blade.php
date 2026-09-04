@@ -223,7 +223,7 @@
                                 <span>Fasilitas & Asrama</span>
                             </a>
 
-                            <a href="{{ route('home') }}#faq" class="flex items-center gap-2.5 p-2 rounded-lg hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition text-xs font-semibold">
+                            <a href="{{ route('faq.index') }}" class="flex items-center gap-2.5 p-2 rounded-lg hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition text-xs font-semibold">
                                 <i data-lucide="help-circle" class="w-3.5 h-3.5 text-slate-400"></i>
                                 <span>Tanya Jawab (FAQ)</span>
                             </a>
@@ -305,6 +305,14 @@
             <a href="{{ route('home') }}#kalkulator" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
                 <i data-lucide="calculator" class="w-4 h-4 text-japan-600"></i>
                 <span>Simulasi Gaji & Tabungan</span>
+            </a>
+            <a href="{{ route('brochure.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
+                <i data-lucide="download" class="w-4 h-4 text-japan-600"></i>
+                <span>Unduh Brosur Resmi</span>
+            </a>
+            <a href="{{ route('faq.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
+                <i data-lucide="help-circle" class="w-4 h-4 text-japan-600"></i>
+                <span>Tanya Jawab (FAQ)</span>
             </a>
             <a href="{{ route('articles.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
                 <i data-lucide="newspaper" class="w-4 h-4 text-japan-600"></i>

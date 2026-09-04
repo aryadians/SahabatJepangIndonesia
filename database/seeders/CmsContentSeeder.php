@@ -303,42 +303,94 @@ class CmsContentSeeder extends Seeder
             Testimonial::updateOrCreate(['name' => $testi['name']], $testi);
         }
 
-        // 5. FAQs
+        // 5. FAQs Terkategori Lengkap (Syarat Fisik, Biaya & Dana Talangan, SMILE Project, Pelatihan, Umum)
         $faqs = [
+            // Kategori: Umum & Legalitas
             [
                 'question' => 'Apakah LPK Sahabat Jepang Indonesia memiliki izin resmi Sending Organization (SO)?',
-                'answer' => 'Ya, 100% resmi dan terverifikasi. LPK Sahabat Jepang Indonesia telah terdaftar resmi di Kementerian Ketenagakerjaan Republik Indonesia (Kemenaker RI) dengan izin Sending Organization (SO) dan Akreditasi LPK, sehingga seluruh proses penempatan kerja di Jepang dijamin aman, legal, dan terlindungi undang-undang.',
+                'answer' => 'Ya, 100% resmi dan terakreditasi penuh. LPK Sahabat Jepang Indonesia adalah Sending Organization (SO) berizin resmi Kementerian Ketenagakerjaan Republik Indonesia (Kemenaker RI) dengan nomor izin KEP.224/LATTAS/XII/2023. Seluruh alur rekrutmen, diklat, hingga kontrak kerja di Jepang dilindungi payung hukum bilateral pemerintah Indonesia dan Jepang.',
+                'category' => 'umum',
                 'order' => 1
             ],
             [
                 'question' => 'Berapa batas usia dan syarat pendidikan minimal untuk mendaftar?',
-                'answer' => 'Untuk program Tokutei Ginou (SSW) dan Magang (Ginou Jisshusei), usia minimal 18 tahun dan maksimal 35 tahun dengan pendidikan minimal lulusan SMA/SMK sederajat semua jurusan. Untuk program Engineer, minimal lulusan D3/S1 jurusan Teknik atau IT.',
+                'answer' => 'Untuk program Tokutei Ginou (SSW) dan Magang (Ginou Jisshusei), usia minimal 18 tahun dan maksimal 35 tahun dengan pendidikan minimal lulusan SMA/SMK/MA sederajat semua jurusan. Untuk program Engineer & Spesialis IT/Teknik, minimal lulusan D3 atau S1 relevan.',
+                'category' => 'umum',
                 'order' => 2
             ],
+
+            // Kategori: Syarat Fisik & Medis (Medical Check Up)
             [
-                'question' => 'Apakah yang belum bisa Bahasa Jepang sama sekali bisa mendaftar?',
-                'answer' => 'Sangat bisa! 90% calon peserta kami memulai dari tingkat nol (belum tahu huruf Hiragana/Katakana). Kami menyediakan program pelatihan intensif bahasa dan budaya Jepang dari dasar dengan metode cepat dan interaktif hingga siap ujian kelulusan JLPT/JFT.',
+                'question' => 'Bagaimana jika memiliki mata minus atau mengenakan kacamata/softlens?',
+                'answer' => 'Mata minus diperbolehkan untuk mayoritas bidang karir (seperti Kaigo/Caregiver, Pengolahan Makanan, Pertanian, Perhotelan, dan Manufaktur Elektronik) asalkan dapat dikoreksi dengan kacamata atau softlens. Yang tidak diperbolehkan secara mutlak adalah buta warna parsial/total pada bidang tertentu yang membutuhkan ketelitian warna (seperti kelistrikan).',
+                'category' => 'syarat_fisik',
                 'order' => 3
             ],
             [
-                'question' => 'Apakah ada sistem dana talangan atau kemudahan pembiayaan pelatihan?',
-                'answer' => 'Ya, kami bekerja sama dengan lembaga keuangan mitra terpercaya untuk menyediakan opsi skema pembiayaan bertahap dan program dana talangan proses keberangkatan sehingga tidak memberatkan calon peserta dan keluarga.',
+                'question' => 'Apakah yang memiliki tato atau tindik telinga diperbolehkan mendaftar?',
+                'answer' => 'Untuk pria, tindik tidak diperkenankan. Untuk tato, peraturan bervariasi tergantung pihak Kaisha (perusahaan penerima di Jepang). Bila tato berada di area tersembunyi yang tertutup seragam kerja (tidak di wajah, leher, atau tangan) atau bersedia menjalani tindakan penghapusan tato secara medis, kandidat tetap dapat mengikuti seleksi dengan konsultasi awal bersama tim konselor kami.',
+                'category' => 'syarat_fisik',
                 'order' => 4
             ],
             [
-                'question' => 'Bagaimana jika memiliki mata minus atau bekas luka/tato?',
-                'answer' => 'Mata minus umumnya diperbolehkan dengan bantuan kacamata/softlens (kecuali bidang tertentu yang melarang buta warna total). Untuk tato, selama berada di area tertutup dan bersedia mematuhi aturan standar kaisha/pemberi kerja Jepang, silakan konsultasikan terlebih dahulu dengan tim konselor kami.',
+                'question' => 'Berapa standar tinggi dan berat badan minimal, serta riwayat operasi?',
+                'answer' => 'Standar proporsional: Pria minimal 158–160 cm, Wanita minimal 148–150 cm dengan Indeks Massa Tubuh (BMI) seimbang. Bekas luka operasi (seperti usus buntu atau caesar) diperbolehkan selama luka telah sembuh sempurna (minimal 6 bulan - 1 tahun) dan tidak mengganggu ketahanan fisik saat bekerja.',
+                'category' => 'syarat_fisik',
                 'order' => 5
             ],
             [
-                'question' => 'Berapa lama waktu yang dibutuhkan dari daftar sampai terbang ke Jepang?',
-                'answer' => 'Rata-rata waktu proses adalah 4 hingga 7 bulan, meliputi: Pelatihan Bahasa (2-3 bulan), Wawancara Perusahaan (Mensetsu), Pengurusan Dokumen Eligibility (COE) dari Imigrasi Jepang (2-3 bulan), Pembuatan Visa Kerja, dan Keberangkatan.',
+                'question' => 'Apa saja syarat Medical Check Up (MCU) yang wajib dipenuhi?',
+                'answer' => 'Kandidat wajib dinyatakan bebas dari Hepatitis B & C, Tuberkulosis (TBC) aktif, HIV/AIDS, penyakit jantung kronis, epilepsi, dan patah tulang yang membatasi gerak motorik. LPK SJI membantu pra-MCU di klinik rekanan resmi agar calon peserta mengetahui kesiapan kesehatannya sejak dini.',
+                'category' => 'syarat_fisik',
                 'order' => 6
+            ],
+
+            // Kategori: Biaya & Skema Dana Talangan
+            [
+                'question' => 'Apakah ada sistem dana talangan atau skema pembiayaan bertahap tanpa pungutan liar?',
+                'answer' => 'Ya, LPK SJI menerapkan prinsip Zero Hidden Fees (bebas biaya siluman) dan bekerja sama dengan mitra perbankan resmi untuk menyediakan opsi Dana Talangan Kerja. Calon siswa dapat mencicil biaya pelatihan setelah dinyatakan lolos wawancara kerja, dan pelunasan sisa biaya keberangkatan dapat dilakukan melalui sistem potong gaji legal setelah resmi bekerja di Jepang.',
+                'category' => 'biaya',
+                'order' => 7
+            ],
+            [
+                'question' => 'Berapa estimasi gaji bersih yang diterima selama bekerja di Jepang?',
+                'answer' => 'Standar upah minimum di Jepang berkisar antara 180.000 hingga 260.000 Yen per bulan (setara Rp 19 Juta – Rp 28 Juta/bulan tergantung prefektur penempatan dan jam lembur). Gaji tersebut ditransfer langsung ke rekening bank pribadi pekerja di Jepang setiap bulannya.',
+                'category' => 'biaya',
+                'order' => 8
+            ],
+
+            // Kategori: Program Pemerintah & Beasiswa SMILE Project
+            [
+                'question' => 'Apa itu program beasiswa SMILE Project Kemenkes dan siapa yang berhak mendaftar?',
+                'answer' => 'SMILE Project (Strengthening Medical and Healthcare Talent Initiative) adalah program penempatan tenaga perawat lansia (Kaigo) 100% Gratis yang didukung pemerintah. Khusus program ini, pendaftar WAJIB merupakan alumni atau mahasiswa tingkat akhir dari institusi Poltekkes Kemenkes atau perguruan tinggi kesehatan yang telah memiliki nota kesepahaman (MoU) resmi dengan LPK Sahabat Jepang Indonesia.',
+                'category' => 'program',
+                'order' => 9
+            ],
+            [
+                'question' => 'Apa perbedaan utama antara Tokutei Ginou (SSW) dan Magang (Ginou Jisshusei)?',
+                'answer' => 'Magang (Ginou Jisshusei) fokus pada alih keterampilan teknis dengan durasi kontrak 3 sampai 5 tahun. Sedangkan Tokutei Ginou (Specified Skilled Worker) adalah visa kerja keahlian khusus dengan standar gaji setara warga negara Jepang, hak perlindungan ketenagakerjaan penuh, dan potensi kenaikan jenjang karir hingga membawa keluarga (SSW 2).',
+                'category' => 'program',
+                'order' => 10
+            ],
+
+            // Kategori: Pelatihan & Alur Keberangkatan
+            [
+                'question' => 'Apakah yang belum bisa Bahasa Jepang sama sekali (dari nol) bisa mendaftar?',
+                'answer' => 'Sangat bisa! Lebih dari 85% siswa kami memulai dari tingkat nol tanpa pengetahuan huruf Hiragana/Katakana. Metode diklat intensif LPK SJI dirancang sistematis oleh instruktur berpengalaman dan Native Speaker hingga mencapai kompetensi JLPT N4 / JFT-Basic A2 dalam waktu 3–4 bulan.',
+                'category' => 'pelatihan',
+                'order' => 11
+            ],
+            [
+                'question' => 'Berapa lama waktu yang dibutuhkan dari pendaftaran hingga terbang ke Jepang?',
+                'answer' => 'Rata-rata proses membutuhkan waktu 4 hingga 7 bulan, meliputi: (1) Pelatihan Bahasa & Budaya (2-3 bulan), (2) Wawancara dengan Kaisha Jepang (Mensetsu), (3) Pengurusan Certificate of Eligibility (CoE) di Imigrasi Jepang (2-3 bulan), (4) Penerbitan Visa Kerja, dan (5) Penerbangan ke Jepang.',
+                'category' => 'pelatihan',
+                'order' => 12
             ]
         ];
 
+        Faq::truncate();
         foreach ($faqs as $faq) {
-            Faq::updateOrCreate(['question' => $faq['question']], $faq);
+            Faq::create($faq);
         }
 
         // 6. Partners

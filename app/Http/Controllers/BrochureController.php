@@ -7,6 +7,8 @@ use App\Models\Brochure;
 use App\Models\Consultation;
 use App\Models\Program;
 use App\Models\SiteSetting;
+use App\Models\WhatsAppLog;
+use App\Models\WhatsAppTemplate;
 use Illuminate\Http\Request;
 
 class BrochureController extends Controller
@@ -64,7 +66,7 @@ class BrochureController extends Controller
         $brochure->increment('download_count');
 
         // 2. Simpan pendaftar baru ke master database leads
-        Consultation::create([
+        $lead = Consultation::create([
             'name' => $validated['name'],
             'phone' => $validated['phone'],
             'program' => $brochure->program,
@@ -73,10 +75,42 @@ class BrochureController extends Controller
             'admin_notes' => 'Telah mengunduh: ' . $brochure->title . ' (' . $brochure->program . ')',
         ]);
 
+        // 3. Automasi Notifikasi WhatsApp: Catat log dan siapkan template sambutan resmi
+        $cleanPhone = preg_replace('/[^0-9]/', '', $validated['phone']);
+        if (str_starts_with($cleanPhone, '0')) {
+            $cleanPhone = '62' . substr($cleanPhone, 1);
+        }
+
+        $brochureLink = route('brochure.index', ['unlocked' => 'true', 'brochure_id' => $brochure->id]);
+        $template = WhatsAppTemplate::where('trigger_key', 'brochure_download')->first();
+        if ($template && !empty($template->message)) {
+            $waMessage = str_replace(
+                ['{nama}', '{brosur}', '{program}', '{link}'],
+                [$validated['name'], $brochure->title, $brochure->program, $brochureLink],
+                $template->message
+            );
+        } else {
+            $waMessage = "Konnichiwa Kak {$validated['name']}! 🌸\n\nTerima kasih telah mengunduh {$brochure->title} ({$brochure->program}) dari LPK Sahabat Jepang Indonesia.\n\nDokumen resmi dapat diakses kembali di: {$brochureLink}\n\nApakah ada pertanyaan? Tim konselor siap membantu konsultasi via WhatsApp.";
+        }
+
+        WhatsAppLog::create([
+            'recipient_phone' => $cleanPhone,
+            'recipient_name' => $validated['name'],
+            'template_key' => 'brochure_download',
+            'message_body' => $waMessage,
+            'status' => 'sent',
+        ]);
+
+        $hotlinePhone = preg_replace('/[^0-9]/', '', SiteSetting::get('contact_phone', '6281234567890'));
+        $waCounselorUrl = "https://api.whatsapp.com/send?phone={$hotlinePhone}&text=" . urlencode("Halo Tim Konselor LPK SJI, saya {$validated['name']} baru saja mengunduh {$brochure->title}. Saya ingin konsultasi jadwal pendaftaran kelas dan tahapan seleksinya.");
+
         return redirect()->route('brochure.index', [
             'unlocked' => 'true',
             'brochure_id' => $brochure->id,
-        ])->with('success', 'Selamat ' . $validated['name'] . '! Brosur ' . $brochure->title . ' siap Anda baca dan unduh.');
+        ])->with('success', 'Selamat ' . $validated['name'] . '! Brosur ' . $brochure->title . ' siap Anda baca dan unduh.')
+          ->with('wa_sent', true)
+          ->with('wa_phone', $cleanPhone)
+          ->with('wa_counselor_url', $waCounselorUrl);
     }
 
     /**

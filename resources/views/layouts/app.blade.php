@@ -134,6 +134,51 @@
       }
     }
     </script>
+
+    <!-- Schema.org Course Offerings Structured Data for Google Rich Snippets -->
+    <script type="application/ld+json">
+    [
+      {
+        "@@context": "https://schema.org",
+        "@@type": "Course",
+        "name": "Pelatihan Intensif Bahasa & Budaya Jepang (JLPT N5 - N4 / JFT-Basic A2)",
+        "description": "Program persiapan intensif 6 bulan meliputi tata bahasa, percakapan harian (kaiwa), listening (choukai), etika kerja Jepang (Horenso/5S), dan sertifikasi bahasa resmi untuk keberangkatan kerja.",
+        "provider": {
+          "@@type": "EducationalOrganization",
+          "name": "{{ $settings['site_name'] ?? 'LPK Sahabat Jepang Indonesia' }}",
+          "sameAs": "{{ url('/') }}"
+        },
+        "educationalCredentialAwarded": "Sertifikat Pelatihan LPK & Sertifikat Kelulusan JLPT / JFT",
+        "hasCourseInstance": {
+          "@@type": "CourseInstance",
+          "courseMode": "Blended",
+          "courseWorkload": "PT6M"
+        }
+      },
+      {
+        "@@context": "https://schema.org",
+        "@@type": "Course",
+        "name": "Program Penempatan Kerja Tokutei Ginou (Specified Skilled Worker - SSW)",
+        "description": "Program kerja keahlian khusus ke Jepang berizin SO Kemenaker RI dengan gaji standar Jepang (Rp 20 - 28 Juta/bulan), asuransi kesehatan lengkap, dan peluang visa kerja jangka panjang.",
+        "provider": {
+          "@@type": "EducationalOrganization",
+          "name": "{{ $settings['site_name'] ?? 'LPK Sahabat Jepang Indonesia' }}",
+          "sameAs": "{{ url('/') }}"
+        }
+      },
+      {
+        "@@context": "https://schema.org",
+        "@@type": "Course",
+        "name": "Program Beasiswa SMILE Project (Kaigo / Caregiver 100% Gratis)",
+        "description": "Program beasiswa khusus lulusan perguruan tinggi kesehatan / Poltekkes mitra MoU untuk penempatan tenaga medis lansia (Caregiver) di Jepang tanpa pungutan biaya pelatihan.",
+        "provider": {
+          "@@type": "EducationalOrganization",
+          "name": "{{ $settings['site_name'] ?? 'LPK Sahabat Jepang Indonesia' }}",
+          "sameAs": "{{ url('/') }}"
+        }
+      }
+    ]
+    </script>
 </head>
 <body class="bg-[#FAFAFA] text-slate-800 antialiased selection:bg-red-500 selection:text-white relative">
 

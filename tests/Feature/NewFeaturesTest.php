@@ -373,4 +373,114 @@ class NewFeaturesTest extends TestCase
         $resInterviews->assertSee('92.5/100');
         $resInterviews->assertSee('https://example.com/logo-lpk.png');
     }
+
+    public function test_guest_can_access_faq_page_and_filter_by_category(): void
+    {
+        \App\Models\Faq::create([
+            'question' => 'Bagaimana jika memiliki tato di punggung?',
+            'answer' => 'Tato yang tertutup diperbolehkan selama mematuhi kaisha.',
+            'category' => 'syarat_fisik',
+            'order' => 1,
+        ]);
+
+        \App\Models\Faq::create([
+            'question' => 'Apakah ada dana talangan biaya tanpa jaminan?',
+            'answer' => 'Ya, tersedia fasilitas dana talangan dengan sistem potong gaji legal di Jepang.',
+            'category' => 'biaya',
+            'order' => 2,
+        ]);
+
+        // 1. Akses halaman FAQ utama
+        $response = $this->get('/faq');
+        $response->assertStatus(200);
+        $response->assertSee('Pertanyaan yang Sering Diajukan');
+        $response->assertSee('Bagaimana jika memiliki tato di punggung?');
+        $response->assertSee('Apakah ada dana talangan biaya tanpa jaminan?');
+        $response->assertSee('Schema.org FAQPage Structured Data', false);
+        $response->assertSee('"@type": "FAQPage"', false);
+
+        // 2. Filter kategori syarat_fisik
+        $resFilter = $this->get('/faq?category=syarat_fisik');
+        $resFilter->assertStatus(200);
+        $resFilter->assertSee('Bagaimana jika memiliki tato di punggung?');
+    }
+
+    public function test_brochure_and_consultation_trigger_whatsapp_log_and_flow(): void
+    {
+        \App\Models\WhatsAppTemplate::create([
+            'trigger_key' => 'brochure_download',
+            'title' => 'Konfirmasi Unduh Brosur',
+            'message' => 'Konnichiwa Kak {nama}! Terima kasih telah mengunduh {brosur} ({program}). Link: {link}',
+            'is_active' => true,
+        ]);
+
+        \App\Models\WhatsAppTemplate::create([
+            'trigger_key' => 'new_lead',
+            'title' => 'Salam Sambutan Leads Baru',
+            'message' => 'Konnichiwa Kak {nama}! Terima kasih telah mendaftar program {program}.',
+            'is_active' => true,
+        ]);
+
+        $brochure = Brochure::create([
+            'title' => 'Brosur Pelatihan Kerja SSW 2026',
+            'program' => 'Tokutei Ginou (SSW)',
+            'badge_text' => 'Edisi 2026',
+            'description' => 'Panduan lengkap silabus',
+        ]);
+
+        // 1. Submit download brosur
+        $resBrochure = $this->post('/brosur/download', [
+            'name' => 'Budi Santoso',
+            'phone' => '081298765432',
+            'brochure_id' => $brochure->id,
+            'city' => 'Semarang',
+        ]);
+
+        $resBrochure->assertRedirect();
+        $resBrochure->assertSessionHas('wa_sent', true);
+        $resBrochure->assertSessionHas('wa_phone', '6281298765432');
+
+        // Pastikan WhatsAppLog tercatat
+        $this->assertDatabaseHas('whatsapp_logs', [
+            'recipient_phone' => '6281298765432',
+            'recipient_name' => 'Budi Santoso',
+            'template_key' => 'brochure_download',
+            'status' => 'sent',
+        ]);
+
+        // 2. Submit konsultasi lead
+        $resConsult = $this->post('/konsultasi', [
+            'name' => 'Dewi Lestari',
+            'phone' => '085712345678',
+            'age' => 22,
+            'education' => 'SMA Sederajat',
+            'program' => 'Tokutei Ginou (SSW)',
+            'city' => 'Yogyakarta',
+        ]);
+
+        $resConsult->assertRedirect();
+        $this->assertDatabaseHas('whatsapp_logs', [
+            'recipient_phone' => '6285712345678',
+            'recipient_name' => 'Dewi Lestari',
+            'template_key' => 'new_lead',
+            'status' => 'sent',
+        ]);
+    }
+
+    public function test_seo_rich_snippets_and_sitemap(): void
+    {
+        // 1. Periksa Sitemap XML
+        $resSitemap = $this->get('/sitemap.xml');
+        $resSitemap->assertStatus(200);
+        $resSitemap->assertSee('/brosur');
+        $resSitemap->assertSee('/faq');
+
+        // 2. Periksa Home Schema.org Course & EducationalOrganization
+        $resHome = $this->get('/');
+        $resHome->assertStatus(200);
+        $resHome->assertSee('"@type": "EducationalOrganization"', false);
+        $resHome->assertSee('"@type": "Course"', false);
+        $resHome->assertSee('Pelatihan Intensif Bahasa & Budaya Jepang', false);
+    }
 }
+

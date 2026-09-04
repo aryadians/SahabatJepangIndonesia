@@ -99,6 +99,21 @@
                             <span>Konsultasi WA</span>
                         </a>
                     </div>
+
+                    @if(session('wa_sent'))
+                        <div class="w-full bg-emerald-950/70 border border-emerald-500/40 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs mt-2">
+                            <div class="flex items-center gap-2 text-emerald-300">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                <span><b>Notifikasi Terkirim:</b> Silabus & rincian biaya telah dicatat untuk WhatsApp <b>+{{ session('wa_phone') }}</b>.</span>
+                            </div>
+                            @if(session('wa_counselor_url'))
+                                <a href="{{ session('wa_counselor_url') }}" target="_blank" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition flex items-center gap-1.5 shadow-sm">
+                                    <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                                    <span>Buka WhatsApp Konselor Sekarang &rarr;</span>
+                                </a>
+                            @endif
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Printable Paper Container -->

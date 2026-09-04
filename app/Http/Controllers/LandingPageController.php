@@ -128,6 +128,31 @@ class LandingPageController extends Controller
             $waAdmin = SiteSetting::get('contact_whatsapp', '6281234567890');
             $cleanWaAdmin = preg_replace('/[^0-9]/', '', $waAdmin);
 
+            // Automasi WhatsApp Log: Catat pengiriman salam sambutan pendaftar baru
+            $cleanUserPhone = preg_replace('/[^0-9]/', '', $validated['phone']);
+            if (str_starts_with($cleanUserPhone, '0')) {
+                $cleanUserPhone = '62' . substr($cleanUserPhone, 1);
+            }
+
+            $template = \App\Models\WhatsAppTemplate::where('trigger_key', 'new_lead')->first();
+            if ($template && !empty($template->message)) {
+                $logMsg = str_replace(
+                    ['{nama}', '{program}'],
+                    [$validated['name'], $validated['program']],
+                    $template->message
+                );
+            } else {
+                $logMsg = "Konnichiwa Kak {$validated['name']}! Terima kasih telah mendaftar konsultasi program {$validated['program']} di LPK Sahabat Jepang Indonesia. Tim konselor kami siap membantu.";
+            }
+
+            \App\Models\WhatsAppLog::create([
+                'recipient_phone' => $cleanUserPhone,
+                'recipient_name' => $validated['name'],
+                'template_key' => 'new_lead',
+                'message_body' => $logMsg,
+                'status' => 'sent',
+            ]);
+
             // Format WhatsApp URL untuk direct follow up
             $waMessage = urlencode("Halo Admin LPK Sahabat Jepang Indonesia, saya sudah mengisi form konsultasi di website.\n\nNama: {$validated['name']}\nUmur: " . ($validated['age'] ?? '-') . " Tahun\nPendidikan: " . ($validated['education'] ?? '-') . "\nProgram Minat: {$validated['program']}\nKota Asal: " . ($validated['city'] ?? '-') . "\n\nSaya ingin berkonsultasi mengenai proses keberangkatan ke Jepang. Terima kasih!");
             $waUrl = "https://api.whatsapp.com/send?phone={$cleanWaAdmin}&text={$waMessage}";
@@ -154,5 +179,32 @@ class LandingPageController extends Controller
 
             return back()->withInput()->with('error', 'Terjadi kesalahan saat memproses data. Silakan coba lagi.');
         }
+    }
+
+    /**
+     * Tampilkan Halaman Mandiri FAQ & Konsultasi Interaktif Publik
+     */
+    public function faq(Request $request)
+    {
+        $settings = SiteSetting::allCached();
+        $selectedCategory = $request->query('category', 'all');
+
+        $query = Faq::orderBy('order');
+        if ($selectedCategory !== 'all') {
+            $query->where('category', $selectedCategory);
+        }
+        $faqs = $query->get();
+
+        // Kategori statistik & nama label
+        $categories = [
+            'all' => ['label' => 'Semua Pertanyaan', 'count' => Faq::count()],
+            'syarat_fisik' => ['label' => 'Syarat Fisik & Medis', 'count' => Faq::where('category', 'syarat_fisik')->count()],
+            'biaya' => ['label' => 'Biaya & Dana Talangan', 'count' => Faq::where('category', 'biaya')->count()],
+            'program' => ['label' => 'SMILE Project & Beasiswa', 'count' => Faq::where('category', 'program')->count()],
+            'pelatihan' => ['label' => 'Pelatihan & Alur Visa', 'count' => Faq::where('category', 'pelatihan')->count()],
+            'umum' => ['label' => 'Legalitas & Umum', 'count' => Faq::where('category', 'umum')->count()],
+        ];
+
+        return view('landing.faq', compact('settings', 'faqs', 'selectedCategory', 'categories'));
     }
 }
