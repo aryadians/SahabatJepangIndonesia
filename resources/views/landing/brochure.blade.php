@@ -288,69 +288,176 @@
             </div>
 
             <!-- ========================================================
-                 BROCHURE CATALOG GRID WITH MODAL DOWNLOAD TRIGGER
+                 BROCHURE SEARCH BAR & CATALOG GRID
                  ======================================================== -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @forelse($brochures as $b)
-                    <div class="bg-slate-900/90 rounded-3xl p-6 border {{ $b->theme['border'] }} shadow-xl flex flex-col justify-between space-y-6 hover:shadow-2xl transition duration-300 group">
-                        
-                        <div class="space-y-4">
-                            <!-- Top Badge & Program -->
-                            <div class="flex items-center justify-between gap-2">
-                                <span class="px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider {{ $b->theme['badge_bg'] }}">
-                                    {{ $b->program }}
-                                </span>
-                                @if($b->badge_text)
-                                    <span class="px-2 py-0.5 rounded-lg text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                                        {{ $b->badge_text }}
+            <div class="space-y-6">
+                <!-- Real-Time Search Bar -->
+                <div class="bg-slate-900/90 rounded-2xl p-4 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="relative w-full sm:max-w-md">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                        <input 
+                            type="text" 
+                            id="brochureSearchInput"
+                            oninput="filterBrochureList()"
+                            placeholder="Cari brosur... (contoh: Kaigo, Magang, Biaya, Tokutei)"
+                            class="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-red-500 transition"
+                        >
+                        <button 
+                            type="button" 
+                            id="clearBrochureSearch" 
+                            onclick="clearBrochureFilter()" 
+                            class="hidden absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center text-xs"
+                        >
+                            ✕
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-3 text-xs text-slate-400 self-end sm:self-auto flex-shrink-0">
+                        <span id="brochureCountBadge" class="font-bold text-slate-300">
+                            {{ count($brochures) }} Brosur Tersedia
+                        </span>
+                        <span class="text-slate-700">•</span>
+                        <span class="text-emerald-400 font-semibold flex items-center gap-1">
+                            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                            Edisi Resmi 2026
+                        </span>
+                    </div>
+                </div>
+
+                <div id="brochureGridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @forelse($brochures as $b)
+                        <div 
+                            class="brochure-item bg-slate-900/90 rounded-3xl p-6 border {{ $b->theme['border'] }} shadow-xl flex flex-col justify-between space-y-6 hover:shadow-2xl transition duration-300 group"
+                            data-title="{{ strtolower($b->title) }}"
+                            data-program="{{ strtolower($b->program) }}"
+                            data-desc="{{ strtolower($b->description ?? '') }}"
+                        >
+                            
+                            <div class="space-y-4">
+                                <!-- Top Badge & Program -->
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider {{ $b->theme['badge_bg'] }}">
+                                        {{ $b->program }}
                                     </span>
-                                @endif
+                                    @if($b->badge_text)
+                                        <span class="px-2 py-0.5 rounded-lg text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                            {{ $b->badge_text }}
+                                        </span>
+                                    @endif
+                                </div>
+
+                                <!-- Title -->
+                                <h3 class="text-base sm:text-lg font-black text-white group-hover:text-red-400 transition leading-snug">
+                                    {{ $b->title }}
+                                </h3>
+
+                                <!-- Description -->
+                                <p class="text-xs text-slate-300 leading-relaxed line-clamp-3">
+                                    {{ $b->description ?: 'Dapatkan panduan resmi persyaratan, modul pembelajaran, dan rincian alur kerja di Jepang.' }}
+                                </p>
                             </div>
 
-                            <!-- Title -->
-                            <h3 class="text-base sm:text-lg font-black text-white group-hover:text-red-400 transition leading-snug">
-                                {{ $b->title }}
-                            </h3>
-
-                            <!-- Description -->
-                            <p class="text-xs text-slate-300 leading-relaxed line-clamp-3">
-                                {{ $b->description ?: 'Dapatkan panduan resmi persyaratan, modul pembelajaran, dan rincian alur kerja di Jepang.' }}
-                            </p>
-                        </div>
-
-                        <div class="space-y-4 pt-4 border-t border-slate-800">
-                            <!-- Meta Info -->
-                            <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono">
-                                <div class="flex items-center gap-1.5">
-                                    <i data-lucide="file-text" class="w-3.5 h-3.5 text-red-400"></i>
-                                    <span>{{ $b->file_size ?: 'PDF 2.5 MB' }}</span>
+                            <div class="space-y-4 pt-4 border-t border-slate-800">
+                                <!-- Meta Info -->
+                                <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                                    <div class="flex items-center gap-1.5">
+                                        <i data-lucide="file-text" class="w-3.5 h-3.5 text-red-400"></i>
+                                        <span>{{ $b->file_size ?: 'PDF 2.5 MB' }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 text-emerald-400">
+                                        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                        <span data-live-brochure-downloads="{{ $b->id }}">{{ number_format($b->download_count) }} diunduh</span>
+                                    </div>
                                 </div>
-                                <div class="flex items-center gap-1.5 text-emerald-400">
-                                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                                    <span data-live-brochure-downloads="{{ $b->id }}">{{ number_format($b->download_count) }} diunduh</span>
+
+                                <!-- Action Buttons: Download + WhatsApp Fast-Track -->
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button 
+                                        type="button" 
+                                        onclick="openDownloadBrochureModal({{ $b->id }}, '{{ addslashes($b->title) }}', '{{ addslashes($b->program) }}')" 
+                                        class="btn-red-primary py-2.5 rounded-xl text-xs font-black shadow-md flex items-center justify-center gap-1.5 active:scale-95 transition"
+                                    >
+                                        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                        <span>Unduh PDF</span>
+                                    </button>
+
+                                    <a 
+                                        href="https://api.whatsapp.com/send?phone=6281234567890&text={{ urlencode('Halo Admin LPK SJI, saya tertarik dengan brosur: ' . $b->title . ' dan ingin konsultasi lebih lanjut.') }}" 
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="py-2.5 rounded-xl bg-slate-800 hover:bg-emerald-600 text-slate-300 hover:text-white text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-700 active:scale-95"
+                                        title="Konsultasi langsung via WhatsApp"
+                                    >
+                                        <i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+                                        <span>Tanya WA</span>
+                                    </a>
                                 </div>
                             </div>
 
-                            <!-- Action Button -->
-                            <button 
-                                type="button" 
-                                onclick="openDownloadBrochureModal({{ $b->id }}, '{{ addslashes($b->title) }}', '{{ addslashes($b->program) }}')" 
-                                class="btn-red-primary w-full py-2.5 rounded-xl text-xs font-black shadow-md flex items-center justify-center gap-2"
-                            >
-                                <i data-lucide="download" class="w-4 h-4"></i>
-                                <span>Unduh Brosur Ini</span>
-                            </button>
                         </div>
+                    @empty
+                        <div class="col-span-full py-16 text-center text-slate-500 space-y-2">
+                            <i data-lucide="inbox" class="w-10 h-10 mx-auto opacity-40"></i>
+                            <p class="text-sm font-semibold">Belum ada brosur untuk kategori program ini.</p>
+                            <a href="{{ route('brochure.index') }}" class="text-xs text-japan-400 font-bold hover:underline block mt-2">Lihat semua brosur</a>
+                        </div>
+                    @endforelse
+                </div>
 
+                <!-- Empty Search Fallback State -->
+                <div id="brochureEmptySearch" class="hidden py-16 text-center text-slate-400 space-y-3 bg-slate-900/60 rounded-3xl border border-dashed border-slate-800">
+                    <i data-lucide="search-x" class="w-10 h-10 mx-auto text-slate-500"></i>
+                    <p class="text-sm font-bold text-white">Tidak ada brosur yang cocok dengan pencarian Anda</p>
+                    <p class="text-xs text-slate-400 max-w-sm mx-auto">Coba kata kunci lain atau hubungi konselor kami untuk mendapatkan dokumen resmi via WhatsApp.</p>
+                    <div class="pt-2">
+                        <button onclick="clearBrochureFilter()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition">
+                            Reset Pencarian
+                        </button>
                     </div>
-                @empty
-                    <div class="col-span-full py-16 text-center text-slate-500 space-y-2">
-                        <i data-lucide="inbox" class="w-10 h-10 mx-auto opacity-40"></i>
-                        <p class="text-sm font-semibold">Belum ada brosur untuk kategori program ini.</p>
-                        <a href="{{ route('brochure.index') }}" class="text-xs text-japan-400 font-bold hover:underline block mt-2">Lihat semua brosur</a>
-                    </div>
-                @endforelse
+                </div>
             </div>
+
+            <script>
+                function filterBrochureList() {
+                    const input = document.getElementById('brochureSearchInput');
+                    const q = (input ? input.value : '').toLowerCase().trim();
+                    const clearBtn = document.getElementById('clearBrochureSearch');
+                    const items = document.querySelectorAll('.brochure-item');
+                    const emptyState = document.getElementById('brochureEmptySearch');
+                    const countBadge = document.getElementById('brochureCountBadge');
+
+                    if (clearBtn) clearBtn.style.display = q.length > 0 ? 'flex' : 'none';
+
+                    let visible = 0;
+                    items.forEach(item => {
+                        const title = item.getAttribute('data-title') || '';
+                        const prog = item.getAttribute('data-program') || '';
+                        const desc = item.getAttribute('data-desc') || '';
+                        const full = title + ' ' + prog + ' ' + desc;
+
+                        if (!q || full.includes(q)) {
+                            item.style.display = 'flex';
+                            visible++;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+
+                    if (countBadge) {
+                        countBadge.textContent = `${visible} Brosur Ditemukan`;
+                    }
+
+                    if (emptyState) {
+                        emptyState.style.display = (visible === 0 && items.length > 0) ? 'block' : 'none';
+                    }
+                }
+
+                function clearBrochureFilter() {
+                    const input = document.getElementById('brochureSearchInput');
+                    if (input) input.value = '';
+                    filterBrochureList();
+                }
+            </script>
 
             <!-- Consultation Banner Bottom -->
             <div class="bg-gradient-to-r from-red-950/60 via-slate-900 to-slate-900 border border-red-500/20 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">

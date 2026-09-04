@@ -249,6 +249,13 @@ Dirancang khusus dengan prinsip *tactile interaction*, estetika *Japanese Zen Lu
 7. **🌟 Pita Pembuktian Testimoni & Integrasi Peta Alumni (`/#testimoni`)**:
    - Rating kepuasan 4.9/5.0 bintang dari 1.200+ alumni di 47 prefektur Jepang.
    - Tautan langsung ke peta persebaran interaktif untuk melihat alumni aktif di wilayah kerja masing-masing.
+8. **📥 Katalog Brosur Cerdas & Live Client-Side Search (`/brosur`)**:
+   - **Pencarian Seketika Tanpa Reload**: Filter brosur instan berdasarkan judul, kategori program, atau kata kunci (*Kaigo, Magang, Biaya, Tokutei*).
+   - **Dual Action Cards**: Tombol unduh file resmi (PDF) bersanding dengan tombol fast-track *"Tanya WA"* terformat otomatis.
+   - **Statistik Unduhan Live**: Badge penghitung real-time jumlah unduhan per brosur.
+9. **🤝 Simulasi Estimasi Komisi Mitra BKK SMK & Hotline Kemitraan (`/mitra-sekolah`)**:
+   - **Slider Interaktif Potensi Insentif**: Geser jumlah siswa yang direkomendasikan (1 s/d 50 siswa) untuk memproyeksikan total reward resmi (hingga Rp 37.500.000).
+   - **Hotline Presentasi Sekolah**: Akses langsung bagi kepala sekolah/guru BK untuk mengajukan seminar karir dan MoU resmi di sekolah via WhatsApp.
 
 ## 🧾 Generator Kwitansi & Invoice Berstempel Hanko (判子)
 

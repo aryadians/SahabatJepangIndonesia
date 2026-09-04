@@ -51,6 +51,62 @@
             </div>
         </div>
 
+        <!-- Interactive Referral Reward Calculator -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-slate-800 via-slate-850 to-slate-900 border border-slate-700/80 shadow-xl space-y-6">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-700/60 pb-4 text-center sm:text-left">
+                <div>
+                    <span class="px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-[10px] font-bold uppercase tracking-wider border border-red-500/30">
+                        ⚡ Kalkulator Estimasi Komisi Mitra
+                    </span>
+                    <h3 class="text-lg sm:text-xl font-black text-white mt-1">
+                        Hitung Potensi Reward Kemitraan Anda
+                    </h3>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs text-slate-400">Komisi per Siswa Masuk Kelas:</span>
+                    <p class="text-lg font-black text-emerald-400">Rp 750.000 / siswa</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                <div class="md:col-span-7 space-y-3">
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-300">
+                        <span>Jumlah Siswa / Rekan yang Direkomendasikan:</span>
+                        <span id="refStudentCountDisplay" class="px-3 py-1 rounded-full bg-japan-600 text-white font-mono text-sm shadow-sm">
+                            5 Siswa
+                        </span>
+                    </div>
+                    <input 
+                        type="range" 
+                        id="refStudentSlider" 
+                        min="1" 
+                        max="50" 
+                        value="5" 
+                        oninput="calculateRefReward(this.value)"
+                        class="w-full accent-red-500 h-2 bg-slate-700 rounded-lg cursor-pointer"
+                    >
+                    <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                        <span>1 Siswa</span>
+                        <span>10 Siswa</span>
+                        <span>25 Siswa</span>
+                        <span>50 Siswa</span>
+                    </div>
+                </div>
+
+                <div class="md:col-span-5 p-5 rounded-2xl bg-slate-950/80 border border-slate-800 text-center space-y-2">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                        Estimasi Total Komisi Resmi
+                    </span>
+                    <div id="refTotalRewardDisplay" class="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200">
+                        Rp 3.750.000
+                    </div>
+                    <p class="text-[10px] text-slate-400">
+                        *Cair langsung ke rekening terdaftar setelah siswa diverifikasi masuk kelas pelatihan.
+                    </p>
+                </div>
+            </div>
+        </div>
+
         <!-- Registration Form Card -->
         <div class="bg-white text-slate-900 rounded-3xl p-7 sm:p-10 shadow-2xl border border-red-100 space-y-6">
             
@@ -140,15 +196,50 @@
                 </div>
 
                 <div class="pt-4">
-                    <button type="submit" class="w-full btn-red-primary py-3 rounded-2xl text-xs sm:text-sm font-black shadow-lg shadow-red-600/30 flex items-center justify-center gap-2">
-                        <i data-lucide="user-plus" class="w-4 h-4"></i>
-                        <span>Daftar & Dapatkan Link Referral</span>
+                    <button type="submit" class="w-full btn-red-primary py-3 rounded-2xl text-xs sm:text-sm font-black shadow-lg shadow-red-600/30 flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-95 transition-all">
+                        <i data-lucide="user-plus" class="w-4 h-4 text-amber-200"></i>
+                        <span>Daftar & Dapatkan Link Referral Resmi</span>
                     </button>
                 </div>
             </form>
 
         </div>
 
+        <!-- BKK & School Partnership WhatsApp Hotline Banner -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-slate-800/80 border border-slate-700/80 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div class="space-y-1 text-center sm:text-left">
+                <h4 class="text-base font-black text-white">Butuh Presentasi / Sosialisasi Langsung ke Sekolah?</h4>
+                <p class="text-xs text-slate-400">Tim representatif SJI siap mengadakan seminar karir Jepang, tes minat bakat, dan penandatanganan MoU resmi langsung di sekolah Anda.</p>
+            </div>
+            <a 
+                href="https://api.whatsapp.com/send?phone=6281234567890&text={{ urlencode('Halo Tim Kerjasama LPK SJI, saya perwakilan BKK / Sekolah ingin mengajukan sosialisasi & MoU kemitraan karir Jepang.') }}" 
+                target="_blank"
+                rel="noopener noreferrer"
+                class="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-2 flex-shrink-0 shadow-md shadow-emerald-900/30"
+            >
+                <i data-lucide="message-circle" class="w-4 h-4"></i>
+                <span>Hubungi Tim Kemitraan via WA</span>
+            </a>
+        </div>
+
     </div>
 </div>
+
+<script>
+    function calculateRefReward(students) {
+        const count = parseInt(students, 10) || 1;
+        const rewardPerStudent = 750000;
+        const total = count * rewardPerStudent;
+
+        const countDisplay = document.getElementById('refStudentCountDisplay');
+        const totalDisplay = document.getElementById('refTotalRewardDisplay');
+
+        if (countDisplay) {
+            countDisplay.textContent = count + ' Siswa';
+        }
+        if (totalDisplay) {
+            totalDisplay.textContent = 'Rp ' + total.toLocaleString('id-ID');
+        }
+    }
+</script>
 @endsection
