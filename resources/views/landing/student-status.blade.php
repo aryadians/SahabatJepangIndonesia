@@ -51,8 +51,18 @@
                     </div>
 
                     <button 
+                        type="button" 
+                        onclick="openQrScanModal()" 
+                        class="w-full sm:w-auto px-4 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold flex items-center justify-center gap-2 transition whitespace-nowrap active:scale-[0.97]"
+                        title="Pindai QR Code Dokumen atau Kartu Siswa"
+                    >
+                        <i data-lucide="qr-code" class="w-4 h-4 text-japan-500"></i>
+                        <span>Pindai QR Dokumen</span>
+                    </button>
+
+                    <button 
                         type="submit" 
-                        class="btn-red-primary w-full sm:w-auto px-6 py-3 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-red-600/30 whitespace-nowrap"
+                        class="btn-red-primary w-full sm:w-auto px-6 py-3 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-red-600/30 whitespace-nowrap active:scale-[0.97]"
                     >
                         <i data-lucide="search" class="w-4 h-4"></i>
                         <span>Cek Status Sekarang</span>
@@ -150,11 +160,36 @@
 
                 <!-- Step-by-Step Road to Japan Progress Tracker -->
                 <div class="bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl space-y-6">
-                    <div>
-                        <span class="text-[10px] font-black uppercase tracking-wider text-red-400 block">Road to Japan Timeline</span>
-                        <h4 class="text-base sm:text-lg font-black text-white mt-0.5">
-                            Tahapan Proses Pemberangkatan Siswa
-                        </h4>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                        <div>
+                            <span class="text-[10px] font-black uppercase tracking-wider text-red-400 block">Road to Japan Timeline</span>
+                            <h4 class="text-base sm:text-lg font-black text-white mt-0.5">
+                                Tahapan Proses Pemberangkatan Siswa
+                            </h4>
+                        </div>
+
+                        @php
+                            $doneSteps = count(array_filter($progressSteps, fn($s) => $s['is_done']));
+                            $totalSteps = count($progressSteps);
+                            $timelinePct = round(($doneSteps / $totalSteps) * 100);
+                        @endphp
+                        <div class="sm:text-right">
+                            <span class="text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-3 py-1 rounded-full font-mono">
+                                {{ $doneSteps }} / {{ $totalSteps }} Tahap Selesai ({{ $timelinePct }}%)
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Cumulative Progress Gauge Bar -->
+                    <div class="space-y-1.5">
+                        <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden shadow-inner">
+                            <div style="width: {{ max(6, $timelinePct) }}%" class="h-full bg-gradient-to-r from-red-600 via-amber-500 to-emerald-500 rounded-full transition-all duration-700 shadow-xs"></div>
+                        </div>
+                        <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                            <span>Tahap 01: Pendaftaran</span>
+                            <span>Tahap 03: MCU & Interview</span>
+                            <span>Tahap 06: Terbang ke Jepang ✈️</span>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -357,4 +392,159 @@
     </div>
 
 </div>
+
+<!-- QR Code Scanner Modal -->
+<div id="qrScanModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md transition-opacity">
+    <div class="bg-slate-900 border border-slate-700 text-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 relative overflow-hidden animate-fadeIn">
+        <button 
+            type="button" 
+            onclick="closeQrScanModal()" 
+            class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-xl bg-slate-800 hover:bg-slate-700 transition"
+        >
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+
+        <div class="space-y-1 text-center">
+            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase text-white bg-japan-600 inline-block font-mono">
+                QR Scanner & Verification
+            </span>
+            <h3 class="text-xl font-black text-white">Pindai QR Code Dokumen</h3>
+            <p class="text-xs text-slate-400">Arahkan kamera ke QR Code pada Kwitansi atau Invoice resmi LPK SJI</p>
+        </div>
+
+        <!-- Viewfinder Box with Laser Animation -->
+        <div class="relative w-64 h-64 mx-auto bg-slate-950 rounded-2xl border-2 border-dashed border-red-500/60 overflow-hidden flex items-center justify-center shadow-inner">
+            <video id="qrVideoElement" class="w-full h-full object-cover hidden" playsinline></video>
+            <div id="qrPlaceholderIcon" class="flex flex-col items-center justify-center space-y-2 text-slate-500">
+                <i data-lucide="camera" class="w-12 h-12 text-japan-500/70 animate-pulse"></i>
+                <span class="text-xs font-mono">Kamera Siap Diaktifkan</span>
+            </div>
+            <!-- Red Laser Line Scan Effect -->
+            <div class="absolute inset-x-0 top-0 h-0.5 bg-red-500 shadow-md shadow-red-500 animate-pulse pointer-events-none" style="animation: scanLaser 2s infinite linear;"></div>
+        </div>
+
+        <!-- Camera Control Button -->
+        <div class="flex items-center justify-center gap-2">
+            <button 
+                type="button" 
+                id="btnToggleCamera" 
+                onclick="toggleCameraStream()" 
+                class="px-4 py-2 rounded-xl bg-japan-600 hover:bg-japan-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-red-600/30 transition active:scale-[0.97]"
+            >
+                <i data-lucide="video" class="w-4 h-4"></i>
+                <span id="cameraBtnLabel">Aktifkan Kamera</span>
+            </button>
+        </div>
+
+        <!-- Or Manual Paste Option -->
+        <div class="pt-2 border-t border-slate-800 space-y-2">
+            <label class="text-[11px] font-bold text-slate-400 block">Atau tempelkan tautan QR Code / NIS langsung:</label>
+            <div class="flex items-center gap-2">
+                <input 
+                    type="text" 
+                    id="manualQrInput" 
+                    placeholder="Contoh: SJI-2026-001 atau link verifikasi" 
+                    class="flex-1 px-3.5 py-2 rounded-xl text-xs bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-japan-500 font-mono"
+                >
+                <button 
+                    type="button" 
+                    onclick="submitScannedQr()" 
+                    class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-600 transition"
+                >
+                    Cek
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes scanLaser {
+    0% { top: 0%; opacity: 0.8; }
+    50% { top: 96%; opacity: 1; }
+    100% { top: 0%; opacity: 0.8; }
+}
+</style>
+
+<script>
+    let cameraStream = null;
+
+    function openQrScanModal() {
+        const modal = document.getElementById('qrScanModal');
+        modal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+        lucide.createIcons();
+    }
+
+    function closeQrScanModal() {
+        stopCameraStream();
+        const modal = document.getElementById('qrScanModal');
+        modal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    async function toggleCameraStream() {
+        const video = document.getElementById('qrVideoElement');
+        const placeholder = document.getElementById('qrPlaceholderIcon');
+        const label = document.getElementById('cameraBtnLabel');
+
+        if (cameraStream) {
+            stopCameraStream();
+            return;
+        }
+
+        try {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                video.srcObject = cameraStream;
+                video.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+                video.play();
+                label.innerText = 'Matikan Kamera';
+            } else {
+                alert('Akses kamera tidak didukung pada browser ini.');
+            }
+        } catch (err) {
+            console.warn('Camera access denied or unavailable:', err);
+            alert('Izin kamera belum diberikan. Anda dapat memasukkan kode NIS secara manual di kolom bawah.');
+        }
+    }
+
+    function stopCameraStream() {
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(track => track.stop());
+            cameraStream = null;
+        }
+        const video = document.getElementById('qrVideoElement');
+        const placeholder = document.getElementById('qrPlaceholderIcon');
+        const label = document.getElementById('cameraBtnLabel');
+
+        if (video) {
+            video.classList.add('hidden');
+            video.pause();
+            video.srcObject = null;
+        }
+        if (placeholder) placeholder.classList.remove('hidden');
+        if (label) label.innerText = 'Aktifkan Kamera';
+    }
+
+    function submitScannedQr() {
+        const val = (document.getElementById('manualQrInput')?.value || '').trim();
+        if (!val) return;
+
+        // If it is a full URL e.g. https://.../verifikasi/SJI-2026-001 or /kwitansi/SJI-2026-001
+        let nisOrCode = val;
+        if (val.includes('/')) {
+            const parts = val.split('/');
+            nisOrCode = parts[parts.length - 1];
+        }
+
+        const mainInput = document.getElementById('studentSearchInput');
+        if (mainInput) {
+            mainInput.value = nisOrCode;
+            closeQrScanModal();
+            mainInput.closest('form').submit();
+        }
+    }
+</script>
 @endsection

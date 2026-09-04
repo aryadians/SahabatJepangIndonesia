@@ -67,10 +67,30 @@
             </div>
 
             <!-- Program Minat -->
-            <div class="space-y-1">
+            <div class="space-y-1.5">
                 <label class="block font-bold text-slate-700 uppercase text-[10px]">
                     Pilihan Program Minat <span class="text-red-500">*</span>
                 </label>
+                
+                <!-- Quick Selection Chips -->
+                <div class="flex flex-wrap gap-1.5 pb-1">
+                    <button type="button" onclick="setConsultProgram('Program Pemerintah: SMILE Project (Kemenkes Kaigo 100% Gratis)')" class="consult-chip px-2.5 py-1 rounded-lg bg-red-50 border border-red-200 text-japan-700 font-bold text-[10px] hover:bg-red-100 transition active:scale-[0.97]">
+                        🏥 SMILE (Kaigo)
+                    </button>
+                    <button type="button" onclick="setConsultProgram('Tokutei Ginou (SSW)')" class="consult-chip px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 font-bold text-[10px] hover:bg-slate-200 transition active:scale-[0.97]">
+                        💼 Tokutei Ginou (SSW)
+                    </button>
+                    <button type="button" onclick="setConsultProgram('Ginou Jisshusei (Magang Kerja)')" class="consult-chip px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 font-bold text-[10px] hover:bg-slate-200 transition active:scale-[0.97]">
+                        🏭 Magang Jepang
+                    </button>
+                    <button type="button" onclick="setConsultProgram('Program Pemerintah: SMK Go Japan (Vokasi Industri)')" class="consult-chip px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 font-bold text-[10px] hover:bg-slate-200 transition active:scale-[0.97]">
+                        🏫 SMK Go Japan
+                    </button>
+                    <button type="button" onclick="setConsultProgram('Kursus Intensif Bahasa & Budaya')" class="consult-chip px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 font-bold text-[10px] hover:bg-slate-200 transition active:scale-[0.97]">
+                        📚 Kursus N5/N4
+                    </button>
+                </div>
+
                 <select id="consultProgramSelect" name="program" required class="w-full px-3.5 py-2 rounded-xl text-xs text-slate-900 bg-slate-50 border border-slate-200 focus:bg-white focus:border-japan-600 focus:outline-none font-bold text-japan-700">
                     <optgroup label="Program Resmi Pemerintah (Unggulan)">
                         <option value="Program Pemerintah: SMILE Project (Kemenkes Kaigo 100% Gratis)">★ SMILE Project (Beasiswa Kemenkes & Poltekkes Kaigo 100% Gratis)</option>
@@ -143,20 +163,53 @@
             </div>
 
             <!-- Submit Button (Fixed at bottom) -->
-            <div class="pt-2">
+            <div class="pt-2 space-y-2">
                 <button 
                     type="submit" 
-                    class="w-full btn-red-primary py-3 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-red-600/30 transition hover:scale-[1.01]"
+                    class="w-full btn-red-primary py-3 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-red-600/30 transition hover:scale-[1.01] active:scale-[0.98]"
                 >
                     <i data-lucide="send" class="w-4 h-4"></i>
                     <span>Kirim Formulir Pendaftaran</span>
                 </button>
-                <p class="text-[10px] text-slate-400 text-center mt-2">
+
+                <!-- WhatsApp Fast-Track Divider & Button -->
+                <div class="relative flex py-1 items-center">
+                    <div class="flex-grow border-t border-slate-200"></div>
+                    <span class="flex-shrink mx-2 text-[10px] text-slate-400 font-bold uppercase tracking-wider">Atau Hubungi Langsung</span>
+                    <div class="flex-grow border-t border-slate-200"></div>
+                </div>
+
+                <a 
+                    href="https://api.whatsapp.com/send?phone=6281234567890&text=Halo%20Sensei%20LPK%20Sahabat%20Jepang%20Indonesia,%20saya%20ingin%20konsultasi%20langsung%20mengenai%20program%20pelatihan%20dan%20penempatan%20ke%20Jepang." 
+                    target="_blank" 
+                    class="w-full py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-[0.98]"
+                >
+                    <i data-lucide="message-circle" class="w-4 h-4 text-emerald-600"></i>
+                    <span>Fast-Track Chat WhatsApp Sensei</span>
+                </a>
+
+                <p class="text-[10px] text-slate-400 text-center mt-1">
                     🔒 Data pribadi Anda dijamin aman untuk keperluan seleksi resmi LPK SJI.
                 </p>
             </div>
 
         </form>
+
+        <script>
+            function setConsultProgram(val) {
+                const select = document.getElementById('consultProgramSelect');
+                if (select) {
+                    select.value = val;
+                }
+                document.querySelectorAll('.consult-chip').forEach(btn => {
+                    if (btn.innerText.includes(val) || btn.getAttribute('onclick').includes(val)) {
+                        btn.className = 'consult-chip px-2.5 py-1 rounded-lg bg-red-600 text-white font-bold text-[10px] shadow-xs ring-1 ring-red-400 transition active:scale-[0.97]';
+                    } else {
+                        btn.className = 'consult-chip px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 font-bold text-[10px] hover:bg-slate-200 transition active:scale-[0.97]';
+                    }
+                });
+            }
+        </script>
 
     </div>
 </div>
