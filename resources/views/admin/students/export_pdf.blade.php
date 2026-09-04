@@ -111,6 +111,7 @@
                         <th class="py-2.5 px-3">Gender / Usia</th>
                         <th class="py-2.5 px-3">WhatsApp / HP</th>
                         <th class="py-2.5 px-3">Program & Sektor</th>
+                        <th class="py-2.5 px-3">Kategori</th>
                         <th class="py-2.5 px-3">Penempatan Jepang</th>
                         <th class="py-2.5 px-3 text-center">Status Pelatihan</th>
                         <th class="py-2.5 px-3 text-right">Sisa Biaya</th>
@@ -132,6 +133,27 @@
                             <td class="py-2 px-3">
                                 <p class="font-bold text-slate-800">{{ $st->program }}</p>
                                 <p class="text-[10px] text-slate-500">{{ $st->sector ?: '-' }}</p>
+                            </td>
+                            <td class="py-2 px-3">
+                                @if(in_array($st->registration_category, ['smile_project', 'kemenkes_kaigo']))
+                                    <span class="inline-block px-2 py-0.5 rounded text-[9px] font-black bg-rose-100 text-rose-800 border border-rose-200 uppercase">
+                                        ★ SMILE (MoU)
+                                    </span>
+                                @elseif($st->registration_category === 'smk_go_japan')
+                                    <span class="inline-block px-2 py-0.5 rounded text-[9px] font-black bg-blue-100 text-blue-800 border border-blue-200 uppercase">
+                                        ★ SMK GO
+                                    </span>
+                                @elseif($st->registration_category === 'bkk_smk')
+                                    <span class="inline-block px-2 py-0.5 rounded text-[9px] font-bold bg-purple-100 text-purple-800 uppercase">
+                                        BKK SMK
+                                    </span>
+                                @elseif($st->registration_category === 'poltekkes_kampus')
+                                    <span class="inline-block px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-800 uppercase">
+                                        Kampus
+                                    </span>
+                                @else
+                                    <span class="text-[10px] text-slate-500 font-medium">Umum</span>
+                                @endif
                             </td>
                             <td class="py-2 px-3">
                                 @if($st->destination_company || $st->destination_prefecture)
@@ -157,7 +179,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="py-6 text-center text-slate-400 italic">Belum ada data siswa yang cocok dengan kriteria.</td>
+                            <td colspan="10" class="py-6 text-center text-slate-400 italic">Belum ada data siswa yang cocok dengan kriteria.</td>
                         </tr>
                     @endforelse
                 </tbody>
