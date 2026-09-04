@@ -506,7 +506,7 @@ class StudentController extends Controller
             fputcsv($file, [
                 'NIS', 'Nama Lengkap', 'Nama Katakana', 'NIK', 'WhatsApp', 'Email',
                 'Jenis Kelamin', 'Tempat Lahir', 'Tanggal Lahir (YYYY-MM-DD)', 'Pendidikan', 'Kota Asal', 'Alamat',
-                'Kontak Darurat', 'No Darurat', 'Angkatan', 'Program', 'Sektor',
+                'Kontak Darurat', 'No Darurat', 'Angkatan', 'Program', 'Kategori Pendaftaran', 'Sektor',
                 'Tgl Masuk (YYYY-MM-DD)', 'Tgl Terbang (YYYY-MM-DD)', 'Perusahaan Jepang', 'Prefektur', 'Status Pelatihan',
                 'Level Bahasa', 'Sertifikat SSW', 'Nomor Paspor', 'Tgl MCU (YYYY-MM-DD)', 'Klinik MCU', 'Hasil MCU',
                 'Nomor CoE', 'Nomor Visa', 'Nilai Ujian', 'Kehadiran (%)', 'Total Biaya', 'Sudah Bayar', 'Skema Biaya'
@@ -516,7 +516,7 @@ class StudentController extends Controller
             fputcsv($file, [
                 'SJI-2026-801', 'Fajar Ramadhan', 'ファジャル・ラマダン', '3201123456780001', '081298761234', 'fajar@example.com',
                 'Laki-laki', 'Bandung', '2002-05-14', 'SMK Mesin', 'Bandung', 'Jl. Sukajadi No. 12',
-                'Bapak Ramadhan', '081299887766', 'Angkatan 45', 'Tokutei Ginou (SSW)', 'Pengolahan Makanan',
+                'Bapak Ramadhan', '081299887766', 'Angkatan 45', 'Tokutei Ginou (SSW)', 'smk_go_japan', 'Pengolahan Makanan',
                 '2026-01-10', '2026-11-20', 'Nichirei Foods Inc.', 'Aichi', 'passed_interview',
                 'JLPT N4', 'SSW Food Processing', 'C9876543', '2026-03-15', 'RS Medistra Jakarta', 'fit',
                 'COE-2026-TYO-991', 'VISA-JPN-4421', '88.5', '96', '25000000', '15000000', 'mandiri'
@@ -526,7 +526,7 @@ class StudentController extends Controller
             fputcsv($file, [
                 'SJI-2026-802', 'Siti Nurhaliza', 'シティ・ヌルハリザ', '3302123456780002', '081377881122', 'siti@example.com',
                 'Perempuan', 'Semarang', '2003-08-22', 'D3 Keperawatan', 'Semarang', 'Jl. Pandanaran No. 45',
-                'Ibu Nur', '081366554433', 'Angkatan 46', 'Tokutei Ginou (SSW)', 'Kaigo (Caregiver)',
+                'Ibu Nur', '081366554433', 'Angkatan 46', 'Tokutei Ginou (SSW)', 'smile_project', 'Kaigo (Caregiver)',
                 '2026-02-01', '', 'Sun City Care Group', 'Tokyo', 'active',
                 'JFT-Basic A2', 'SSW Kaigo Certified', '', '', '', 'pending',
                 '', '', '92.0', '100', '28000000', '10000000', 'talangan'
@@ -613,6 +613,19 @@ class StudentController extends Controller
             // Program
             $program = $data['program'] ?? 'Tokutei Ginou (SSW)';
 
+            // Kategori / Jalur Pendaftaran (SMILE Project Khusus Poltekkes MoU, SMK Go Japan, dll)
+            $rawCat = strtolower($data['kategori_pendaftaran'] ?? $data['jalur_pendaftaran'] ?? $data['kategori'] ?? $data['registration_category'] ?? '');
+            $registrationCategory = 'umum';
+            if (str_contains($rawCat, 'smile') || str_contains($rawCat, 'kemenkes')) {
+                $registrationCategory = 'smile_project';
+            } elseif (str_contains($rawCat, 'smk_go') || str_contains($rawCat, 'go_japan')) {
+                $registrationCategory = 'smk_go_japan';
+            } elseif (str_contains($rawCat, 'bkk')) {
+                $registrationCategory = 'bkk_smk';
+            } elseif (str_contains($rawCat, 'poltekkes') || str_contains($rawCat, 'stikes')) {
+                $registrationCategory = 'poltekkes_kampus';
+            }
+
             // Status
             $status = strtolower($data['status_pelatihan'] ?? $data['status'] ?? 'active');
             if (!in_array($status, ['active', 'interview', 'passed_interview', 'departed', 'graduated', 'dropout'])) {
@@ -658,6 +671,7 @@ class StudentController extends Controller
                 'emergency_contact_phone' => $data['no_darurat'] ?? $data['no_kontak_darurat'] ?? null,
                 'batch' => $data['angkatan'] ?? $data['batch'] ?? null,
                 'program' => $program,
+                'registration_category' => $registrationCategory,
                 'sector' => $data['sektor'] ?? $data['sektor_pekerjaan'] ?? null,
                 'entry_date' => $parseDate($data['tgl_masuk_yyyymmdd'] ?? $data['tgl_masuk'] ?? null),
                 'departure_date' => $parseDate($data['tgl_terbang_yyyymmdd'] ?? $data['tgl_terbang'] ?? null),
