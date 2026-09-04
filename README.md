@@ -38,15 +38,18 @@
 5. [🔍 Portal Cek Status Mandiri Siswa & Bukti Pembayaran](#-portal-cek-status-mandiri-siswa--bukti-pembayaran)
 6. [🛡️ Sistem Verifikasi Publik QR Code Dokumen (Anti-Fraud)](#-sistem-verifikasi-publik-qr-code-dokumen-anti-fraud)
 7. [💴 Kalkulator Remitansi Devisa & Klaim Nenkin Refund](#-kalkulator-remitansi-devisa--klaim-nenkin-refund)
-8. [🤝 Integrasi Program Unggulan Pemerintah RI (MoU Kampus)](#-integrasi-program-unggulan-pemerintah-ri-mou-kampus)
-9. [🧾 Generator Kwitansi & Invoice Berstempel Hanko (判子)](#-generator-kwitansi--invoice-berstempel-hanko-)
-10. [🌐 Optimalisasi SEO, WhatsApp Rich Share & Dynamic Sitemap](#-optimalisasi-seo-whatsapp-rich-share--dynamic-sitemap)
-11. [⚡ Arsitektur Real-Time Polling & Sinkronisasi Data](#-arsitektur-real-time-polling--sinkronisasi-data)
-12. [🛠️ Teknologi & Dependensi (Tech Stack)](#-teknologi--dependensi-tech-stack)
-13. [🚀 Panduan Instalasi & Menjalankan Lokal](#-panduan-instalasi--menjalankan-lokal)
-14. [🧪 Uji Otomatis (Automated Testing Suite)](#-uji-otomatis-automated-testing-suite)
-15. [📁 Struktur Direktori Proyek](#-struktur-direktori-proyek)
-16. [🔒 Kepatuhan Hukum & Regulasi RI - Jepang](#-kepatuhan-hukum--regulasi-ri---jepang)
+8. [🗺️ Peta Interaktif Sebaran Alumni di Seluruh Jepang](#-peta-interaktif-sebaran-alumni-di-seluruh-jepang)
+9. [📊 Dashboard Visual Analytics, Intake Trends & Pipeline Keberangkatan](#-dashboard-visual-analytics-intake-trends--pipeline-keberangkatan)
+10. [🤝 Integrasi Program Unggulan Pemerintah RI (MoU Kampus)](#-integrasi-program-unggulan-pemerintah-ri-mou-kampus)
+11. [🎨 Pengalaman Interaktif & UX Modern (Zen Interactive Suite)](#-pengalaman-interaktif--ux-modern-zen-interactive-suite)
+12. [🧾 Generator Kwitansi & Invoice Berstempel Hanko (判子)](#-generator-kwitansi--invoice-berstempel-hanko-)
+13. [🌐 Optimalisasi SEO, WhatsApp Rich Share & Dynamic Sitemap](#-optimalisasi-seo-whatsapp-rich-share--dynamic-sitemap)
+14. [⚡ Arsitektur Real-Time Polling & Sinkronisasi Data](#-arsitektur-real-time-polling--sinkronisasi-data)
+15. [🛠️ Teknologi & Dependensi (Tech Stack)](#-teknologi--dependensi-tech-stack)
+16. [🚀 Panduan Instalasi & Menjalankan Lokal](#-panduan-instalasi--menjalankan-lokal)
+17. [🧪 Uji Otomatis (Automated Testing Suite)](#-uji-otomatis-automated-testing-suite)
+18. [📁 Struktur Direktori Proyek](#-struktur-direktori-proyek)
+19. [🔒 Kepatuhan Hukum & Regulasi RI - Jepang](#-kepatuhan-hukum--regulasi-ri---jepang)
 
 ---
 
@@ -74,6 +77,9 @@ Website ini menggabungkan:
 | **💼 Program Karir Jepang** | Informasi silabus lengkap untuk jalur **Tokutei Ginou (SSW)**, **Ginou Jisshusei (Magang 3 Tahun)**, **Engineer & IT Pro**, serta **Kursus Intensif N5–N3**. | `/#program` |
 | **🏛️ Program Pemerintah MoU** | Showcase kerja sama resmi dengan Kemenkes RI (**SMILE Project**) dan Kemendikbudristek (**SMK Go Japan**) lengkap dengan rekam jejak **4 Gelombang Keberangkatan**. | `/#kemitraan` |
 | **🎠 Carousel Kunjungan Kampus** | Galeri foto dinamis dokumentasi MoU, seminar, dan bursa kerja (*Campus Hiring*) di Poltekkes & STIKes seluruh Indonesia dengan fitur *infinite loop* dan *smart autoplay pause-on-hover*. | `/#kemitraan` |
+| **🏛️ Tur Fasilitas & Lightbox** | Galeri interaktif fasilitas & asrama berstandar Jepang dengan filter kategori, penampil Lightbox keyboard-friendly (`←`/`→`/`Esc`), dan tanya WhatsApp instan. | `/#fasilitas` |
+| **💬 FAQ & Live Search Engine** | Tanya jawab interaktif seputar biaya, dana talangan, visa, dan asrama dengan filter topik, pencarian *real-time*, dan kontrol buka/tutup semua. | `/#faq` |
+| **📖 Zen Article Reader** | Halaman artikel edukatif dengan indikator progres baca atas layar, pengatur ukuran teks (`A-`/`Normal`/`A+`), dan kapsul share sosial mengambang. | `/artikel/{slug}` |
 | **💰 Simulasi Gaji & Tabungan** | Transparansi penghitungan gaji kotor, lembur (*zangyou*), potongan pajak, dan proyeksi sisa tabungan bulanan. | `/#kalkulator` |
 | **📝 Simulasi Ujian JLPT CBT** | Aplikasi simulator Computer-Based Test (CBT) interaktif dengan bank 100 soal bahasa Jepang (Moji, Goi, Bunpou, Dokkai) lengkap dengan skoring instan gratis. | `/simulasi-ujian` |
 | **🗺️ Peta Alumni 47 Prefektur** | Peta interaktif sebaran alumni LPK SJI yang telah aktif bekerja di Tokyo, Osaka, Aichi, Kanagawa, Fukuoka, Hokkaido, dll. | `/sebaran-alumni` |
@@ -197,6 +203,8 @@ Dashboard eksekutif backoffice modern dengan penyajian visual berbasis data:
 
 ---
 
+## 🤝 Integrasi Program Unggulan Pemerintah RI (MoU Kampus)
+
 LPK Sahabat Jepang Indonesia dipercaya menyelenggarakan program strategis pemerintah:
 
 1. **🏥 SMILE Project (Kemenkes RI)**:
@@ -208,6 +216,25 @@ LPK Sahabat Jepang Indonesia dipercaya menyelenggarakan program strategis pemeri
    - Fasilitas dana talangan cicilan ringan setelah siswa mulai bergaji di Jepang.
 
 ---
+
+## 🎨 Pengalaman Interaktif & UX Modern (Zen Interactive Suite)
+
+Dirancang khusus dengan prinsip *tactile interaction*, estetika *Japanese Zen Luxury*, dan kenyamanan membaca pengguna:
+
+1. **🏛️ Tur Virtual Kampus & Lightbox Fullscreen (`/#fasilitas`)**:
+   - **Filter Kategori Instan**: Pilah dokumentasi fasilitas berdasarkan *Pembelajaran, Akomodasi, Simulasi Kerja, Ujian & Sertifikasi, Kebugaran, dan Sosialisasi*.
+   - **Modal Lightbox Komprehensif**: Penampil foto layar penuh dengan navigasi carousel sebelumnya/selanjutnya, badge counter (*Fasilitas X dari Y*), dan dukungan tombol keyboard (`←` / `→` untuk navigasi, `Esc` untuk menutup).
+   - **Tombol WhatsApp Direct Inquiry**: Calon siswa dapat menanyakan detail fasilitas/asrama secara spesifik dengan pesan pembuka otomatis.
+2. **💬 Mesin Pencari & Filter FAQ Interaktif (`/#faq`)**:
+   - **Live Client-Side Search**: Input pencarian seketika yang mencocokkan teks pada judul pertanyaan maupun isi jawaban.
+   - **Filter Topik Cepat**: Akses instan ke kategori *Biaya & Talangan, Syarat & Usia, Visa & Kontrak, serta Asrama & Kelas*.
+   - **Kontrol Global**: Tombol *Buka Semua* dan *Tutup Semua* untuk memudahkan orang tua menelusuri seluruh informasi sekaligus.
+   - **Smart Fallback**: Jika pertanyaan tidak ditemukan, sistem menyajikan kartu ramah dengan tombol konsultasi WhatsApp terformat.
+3. **📖 Zen Article Reading Experience (`/artikel/{slug}`)**:
+   - **Scroll Reading Progress Bar**: Garis gradien halus (*Japan Red to Amber*) di bagian paling atas layar yang melacak progres membaca secara real-time.
+   - **Pengatur Ukuran Huruf Dinamis**: Opsi `A-`, `Normal`, dan `A+` untuk menyesuaikan ukuran teks demi kenyamanan calon siswa maupun orang tua.
+   - **Kapsul Share Mengambang (Floating Share Capsule)**: Bar aksi mengambang di bawah layar untuk berbagi cepat ke WhatsApp, Facebook, X, serta salin tautan dengan indikator centang *Tersalin! ✓*.
+   - **Kartu Kredibilitas Instruktur**: Profil verifikasi instruktur berlisensi N2/N1 dan status resmi SO Kemnaker RI.
 
 ## 🧾 Generator Kwitansi & Invoice Berstempel Hanko (判子)
 

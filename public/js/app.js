@@ -540,7 +540,105 @@ function initModals() {
         }
     };
 
-    // Facility Lightbox preview helper
+    // Facility Lightbox Interactive Navigation
+    let currentFacilityIndex = 0;
+
+    window.openFacilityLightbox = function (index) {
+        if (!window.__FACILITIES_DATA__ || !window.__FACILITIES_DATA__.length) return;
+        currentFacilityIndex = parseInt(index, 10) || 0;
+        renderFacilityLightbox(currentFacilityIndex);
+        openModal('facilityModal');
+    };
+
+    window.nextFacilityLightbox = function () {
+        if (!window.__FACILITIES_DATA__ || !window.__FACILITIES_DATA__.length) return;
+        currentFacilityIndex = (currentFacilityIndex + 1) % window.__FACILITIES_DATA__.length;
+        renderFacilityLightbox(currentFacilityIndex);
+    };
+
+    window.prevFacilityLightbox = function () {
+        if (!window.__FACILITIES_DATA__ || !window.__FACILITIES_DATA__.length) return;
+        currentFacilityIndex = (currentFacilityIndex - 1 + window.__FACILITIES_DATA__.length) % window.__FACILITIES_DATA__.length;
+        renderFacilityLightbox(currentFacilityIndex);
+    };
+
+    function renderFacilityLightbox(index) {
+        const list = window.__FACILITIES_DATA__;
+        if (!list || !list[index]) return;
+        const item = list[index];
+
+        const titleEl = document.getElementById('facModalTitle');
+        const catEl = document.getElementById('facModalCategory');
+        const descEl = document.getElementById('facModalDesc');
+        const imgEl = document.getElementById('facModalImg');
+        const counterEl = document.getElementById('facModalCounter');
+        const waBtn = document.getElementById('facModalWaBtn');
+
+        if (titleEl) titleEl.textContent = item.title;
+        if (catEl) {
+            const span = catEl.querySelector('span:last-child');
+            if (span) span.textContent = item.category || 'Fasilitas';
+            else catEl.textContent = item.category || 'Fasilitas';
+        }
+        if (descEl) descEl.textContent = item.description || item.desc || '';
+        if (counterEl) counterEl.textContent = `Fasilitas ${index + 1} dari ${list.length}`;
+        if (imgEl) {
+            imgEl.style.opacity = '0.3';
+            setTimeout(() => {
+                imgEl.src = item.image;
+                imgEl.alt = item.title;
+                imgEl.style.opacity = '1';
+            }, 120);
+        }
+
+        if (waBtn) {
+            const encodedTitle = encodeURIComponent(item.title);
+            waBtn.href = `https://api.whatsapp.com/send?phone=6281234567890&text=Halo%20Admin%20LPK%20Sahabat%20Jepang%20Indonesia,%20saya%20tertarik%20dengan%20fasilitas%20${encodedTitle}%20dan%20ingin%20tanya%20detailnya`;
+        }
+
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+    }
+
+    // Keyboard Arrow navigation for facility modal
+    window.addEventListener('keydown', (e) => {
+        const facModal = document.getElementById('facilityModal');
+        if (facModal && facModal.classList.contains('active')) {
+            if (e.key === 'ArrowRight') {
+                nextFacilityLightbox();
+            } else if (e.key === 'ArrowLeft') {
+                prevFacilityLightbox();
+            }
+        }
+    });
+
+    // Facility Category Filtering
+    window.filterFacilityGallery = function (category, btnEl) {
+        const cards = document.querySelectorAll('.facility-card');
+        const buttons = document.querySelectorAll('.facility-filter-btn');
+
+        buttons.forEach((btn) => {
+            btn.classList.remove('active', 'bg-japan-600', 'text-white', 'shadow-md', 'shadow-red-500/20');
+            btn.classList.add('bg-slate-100', 'text-slate-700');
+        });
+
+        if (btnEl) {
+            btnEl.classList.add('active', 'bg-japan-600', 'text-white', 'shadow-md', 'shadow-red-500/20');
+            btnEl.classList.remove('bg-slate-100', 'text-slate-700');
+        }
+
+        cards.forEach((card) => {
+            const cardCat = card.getAttribute('data-category');
+            if (category === 'all' || cardCat === category) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    };
+
+    // Facility Lightbox preview helper (backward compatibility)
     window.previewFacility = function (title, category, desc, imgSrc) {
         const titleEl = document.getElementById('facModalTitle');
         const catEl = document.getElementById('facModalCategory');
@@ -709,7 +807,7 @@ function initScrollToTop() {
 }
 
 /* ==========================================================================
-   10. FAQ ACCORDION
+   10. FAQ ACCORDION & REAL-TIME SEARCH
    ========================================================================== */
 function initFaqAccordion() {
     const faqButtons = document.querySelectorAll('.faq-toggle');
@@ -751,6 +849,121 @@ function initFaqAccordion() {
             }
         });
     });
+
+    let currentFaqTopic = 'all';
+
+    window.setFaqFilterTopic = function (topic, btnEl) {
+        currentFaqTopic = topic;
+        const chips = document.querySelectorAll('.faq-topic-chip');
+        chips.forEach((c) => {
+            c.classList.remove('active', 'bg-japan-600', 'text-white', 'shadow-sm');
+            c.classList.add('bg-slate-100', 'text-slate-600');
+        });
+        if (btnEl) {
+            btnEl.classList.add('active', 'bg-japan-600', 'text-white', 'shadow-sm');
+            btnEl.classList.remove('bg-slate-100', 'text-slate-600');
+        }
+        window.filterFaq();
+    };
+
+    window.clearFaqSearch = function () {
+        const input = document.getElementById('faqSearchInput');
+        if (input) {
+            input.value = '';
+        }
+        window.filterFaq();
+    };
+
+    window.filterFaq = function () {
+        const searchInput = document.getElementById('faqSearchInput');
+        const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
+        const clearBtn = document.getElementById('faqClearSearch');
+        const cards = document.querySelectorAll('.faq-card');
+        const counterEl = document.getElementById('faqCounter');
+        const emptyEl = document.getElementById('faqEmptyState');
+        const emptyWaLink = document.getElementById('faqEmptyWaLink');
+
+        if (clearBtn) {
+            clearBtn.style.display = query.length > 0 ? 'flex' : 'none';
+        }
+
+        const topicKeywords = {
+            biaya: ['biaya', 'talangan', 'bayar', 'dana', 'lunas', 'cicil', 'angsuran', 'uang', 'gratis', 'gaji'],
+            syarat: ['syarat', 'usia', 'umur', 'pendidikan', 'smk', 'sma', 'ijazah', 'tato', 'mata', 'buta warna', 'tinggi', 'berat', 'kualifikasi'],
+            visa: ['visa', 'kontrak', 'tokutei', 'ssw', 'magang', 'ginou', 'coe', 'resmi', 'kemnaker', 'so', 'kerja'],
+            asrama: ['asrama', 'makan', 'kelas', 'pelatihan', 'fasilitas', 'bahasa', 'choukai', 'jft', 'jlpt', 'sensei', 'kamar']
+        };
+
+        let visibleCount = 0;
+
+        cards.forEach((card) => {
+            const qText = (card.getAttribute('data-question') || '').toLowerCase();
+            const aText = (card.getAttribute('data-answer') || '').toLowerCase();
+            const fullText = qText + ' ' + aText;
+
+            // 1. Topic Match
+            let matchesTopic = true;
+            if (currentFaqTopic !== 'all') {
+                const kws = topicKeywords[currentFaqTopic] || [];
+                matchesTopic = kws.some((kw) => fullText.includes(kw));
+            }
+
+            // 2. Query Match
+            let matchesQuery = true;
+            if (query.length > 0) {
+                matchesQuery = fullText.includes(query);
+            }
+
+            if (matchesTopic && matchesQuery) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        if (counterEl) {
+            counterEl.textContent = `${visibleCount} dari ${cards.length} pertanyaan`;
+        }
+
+        if (emptyEl) {
+            if (visibleCount === 0) {
+                emptyEl.classList.remove('hidden');
+                if (emptyWaLink && query) {
+                    emptyWaLink.href = `https://api.whatsapp.com/send?phone=6281234567890&text=${encodeURIComponent('Halo Admin LPK Sahabat Jepang Indonesia, saya ingin menanyakan perihal: ' + query)}`;
+                }
+            } else {
+                emptyEl.classList.add('hidden');
+            }
+        }
+    };
+
+    window.toggleAllFaqs = function (shouldOpen) {
+        const buttons = document.querySelectorAll('.faq-toggle');
+        buttons.forEach((btn) => {
+            const answer = btn.nextElementSibling;
+            const icon = btn.querySelector('.faq-icon');
+            const parentCard = btn.closest('.faq-card');
+
+            if (parentCard && parentCard.style.display === 'none') return;
+
+            if (shouldOpen) {
+                btn.setAttribute('aria-expanded', 'true');
+                if (answer) {
+                    answer.classList.remove('hidden');
+                    answer.style.maxHeight = answer.scrollHeight + 'px';
+                }
+                if (icon) icon.style.transform = 'rotate(180deg)';
+            } else {
+                btn.setAttribute('aria-expanded', 'false');
+                if (answer) {
+                    answer.style.maxHeight = null;
+                    answer.classList.add('hidden');
+                }
+                if (icon) icon.style.transform = 'rotate(0deg)';
+            }
+        });
+    };
 }
 
 /* ==========================================================================
