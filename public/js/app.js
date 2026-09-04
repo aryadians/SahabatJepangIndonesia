@@ -847,6 +847,43 @@ window.claimQuizRecommendation = function () {
     setTimeout(() => openModal('consultationModal'), 200);
 };
 
+window.prevQuizStep = function (targetStep) {
+    const bar = document.getElementById('quizProgressBar');
+    const stepText = document.getElementById('quizStepText');
+    const percentText = document.getElementById('quizPercentText');
+
+    document.querySelectorAll('.quiz-step').forEach((el) => el.classList.add('hidden'));
+
+    if (targetStep === 1) {
+        document.getElementById('quizStep1')?.classList.remove('hidden');
+        if (bar) bar.style.width = '25%';
+        if (stepText) stepText.textContent = 'Langkah 1 dari 4: Usia';
+        if (percentText) percentText.textContent = '25%';
+    } else if (targetStep === 2) {
+        document.getElementById('quizStep2')?.classList.remove('hidden');
+        if (bar) bar.style.width = '50%';
+        if (stepText) stepText.textContent = 'Langkah 2 dari 4: Pendidikan';
+        if (percentText) percentText.textContent = '50%';
+    } else if (targetStep === 3) {
+        document.getElementById('quizStep3')?.classList.remove('hidden');
+        if (bar) bar.style.width = '75%';
+        if (stepText) stepText.textContent = 'Langkah 3 dari 4: Bahasa Jepang';
+        if (percentText) percentText.textContent = '75%';
+    }
+};
+
+window.shareQuizToWA = function () {
+    const titleEl = document.getElementById('quizResultProgramTitle');
+    const recTitle = titleEl ? titleEl.textContent.trim() : 'Tokutei Ginou (SSW)';
+    const age = quizAnswers.age || '18-25';
+    const edu = quizAnswers.education || 'SMA/SMK';
+    const jp = quizAnswers.japanese || 'Dasar';
+    const sec = quizAnswers.sector || 'Umum';
+
+    const msg = encodeURIComponent(`Halo Sensei LPK Sahabat Jepang Indonesia! Saya baru saja mengikuti Tes Kecocokan Karir Jepang di website dan mendapatkan rekomendasi program:\n\n★ *${recTitle}*\n- Rentang Usia: ${age}\n- Pendidikan: ${edu}\n- Kemampuan Bahasa: ${jp}\n- Sektor Diminati: ${sec}\n\nSaya ingin konsultasi langsung untuk persyaratan dan jadwal pendaftaran terdekat.`);
+    window.open(`https://api.whatsapp.com/send?phone=6281234567890&text=${msg}`, '_blank');
+};
+
 window.resetQuiz = function () {
     quizAnswers.age = '';
     quizAnswers.education = '';

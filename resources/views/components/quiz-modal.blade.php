@@ -117,12 +117,19 @@
                         <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-japan-600"></i>
                     </button>
 
-                    <button type="button" onclick="selectQuizAnswer('education', 'SMP', 3)" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group">
+                    <button type="button" onclick="selectQuizAnswer('education', 'SMP', 3)" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group active:scale-[0.98]">
                         <div>
                             <p class="font-extrabold text-slate-900 text-sm group-hover:text-japan-700">SMP / Lainnya</p>
                             <p class="text-xs text-slate-400">Konsultasi jalur kejar paket</p>
                         </div>
                         <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-japan-600"></i>
+                    </button>
+                </div>
+
+                <div class="pt-2">
+                    <button type="button" onclick="prevQuizStep(1)" class="text-xs font-bold text-slate-400 hover:text-slate-700 flex items-center gap-1 transition">
+                        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                        <span>Kembali ke pertanyaan sebelumnya</span>
                     </button>
                 </div>
             </div>
@@ -135,7 +142,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <button type="button" onclick="selectQuizAnswer('japanese', 'Nol / Pemula', 4)" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group">
+                    <button type="button" onclick="selectQuizAnswer('japanese', 'Nol / Pemula', 4)" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group active:scale-[0.98]">
                         <div>
                             <p class="font-extrabold text-slate-900 text-sm group-hover:text-japan-700">Nol / Belum Pernah Belajar</p>
                             <p class="text-xs text-slate-400">90% siswa mulai dari tahap ini</p>
@@ -143,7 +150,7 @@
                         <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-japan-600"></i>
                     </button>
 
-                    <button type="button" onclick="selectQuizAnswer('japanese', 'Dasar N5', 4)" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group">
+                    <button type="button" onclick="selectQuizAnswer('japanese', 'Dasar N5', 4)" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group active:scale-[0.98]">
                         <div>
                             <p class="font-extrabold text-slate-900 text-sm group-hover:text-japan-700">Dasar (Hiragana / N5)</p>
                             <p class="text-xs text-slate-400">Bisa membaca huruf dasar</p>
@@ -151,7 +158,7 @@
                         <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-japan-600"></i>
                     </button>
 
-                    <button type="button" onclick="selectQuizAnswer('japanese', 'N4 / JFT A2', 4)" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group">
+                    <button type="button" onclick="selectQuizAnswer('japanese', 'N4 / JFT A2', 4)" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group active:scale-[0.98]">
                         <div>
                             <p class="font-extrabold text-slate-900 text-sm group-hover:text-japan-700">Level N4 / JFT-Basic A2</p>
                             <p class="text-xs text-slate-400">Siap matching wawancara kerja</p>
@@ -159,12 +166,19 @@
                         <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-japan-600"></i>
                     </button>
 
-                    <button type="button" onclick="selectQuizAnswer('japanese', 'N3 / N2', 4)" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group">
+                    <button type="button" onclick="selectQuizAnswer('japanese', 'N3 / N2', 4)" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group active:scale-[0.98]">
                         <div>
                             <p class="font-extrabold text-slate-900 text-sm group-hover:text-japan-700">Menengah / Mahir (N3 / N2)</p>
                             <p class="text-xs text-slate-400">Jalur ekspres karir profesional</p>
                         </div>
                         <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-japan-600"></i>
+                    </button>
+                </div>
+
+                <div class="pt-2">
+                    <button type="button" onclick="prevQuizStep(2)" class="text-xs font-bold text-slate-400 hover:text-slate-700 flex items-center gap-1 transition">
+                        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                        <span>Kembali ke pertanyaan sebelumnya</span>
                     </button>
                 </div>
             </div>
@@ -177,7 +191,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <button type="button" onclick="selectQuizAnswer('sector', 'Pengolahan Makanan & Restoran', 'result')" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group">
+                    <button type="button" onclick="selectQuizAnswer('sector', 'Pengolahan Makanan & Restoran', 'result')" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group active:scale-[0.98]">
                         <div>
                             <p class="font-extrabold text-slate-900 text-sm group-hover:text-japan-700">Pengolahan Makanan / F&B</p>
                             <p class="text-xs text-slate-400">Pabrik bento, bakery, restoran</p>
@@ -185,7 +199,7 @@
                         <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-japan-600"></i>
                     </button>
 
-                    <button type="button" onclick="selectQuizAnswer('sector', 'Kaigo (Caregiver / Perawat Lansia)', 'result')" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group">
+                    <button type="button" onclick="selectQuizAnswer('sector', 'Kaigo (Caregiver / Perawat Lansia)', 'result')" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group active:scale-[0.98]">
                         <div>
                             <p class="font-extrabold text-slate-900 text-sm group-hover:text-japan-700">Kaigo (Caregiver)</p>
                             <p class="text-xs text-slate-400">Paling banyak kuota & bonus besar</p>
@@ -193,7 +207,7 @@
                         <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-japan-600"></i>
                     </button>
 
-                    <button type="button" onclick="selectQuizAnswer('sector', 'Manufaktur, Otomotif & Mesin', 'result')" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group">
+                    <button type="button" onclick="selectQuizAnswer('sector', 'Manufaktur, Otomotif & Mesin', 'result')" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group active:scale-[0.98]">
                         <div>
                             <p class="font-extrabold text-slate-900 text-sm group-hover:text-japan-700">Manufaktur & Otomotif</p>
                             <p class="text-xs text-slate-400">Pabrik mobil, elektronik, welding</p>
@@ -201,12 +215,19 @@
                         <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-japan-600"></i>
                     </button>
 
-                    <button type="button" onclick="selectQuizAnswer('sector', 'IT, Teknik & Engineering', 'result')" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group">
+                    <button type="button" onclick="selectQuizAnswer('sector', 'IT, Teknik & Engineering', 'result')" class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-japan-600 hover:bg-red-50/50 text-left transition flex items-center justify-between group active:scale-[0.98]">
                         <div>
                             <p class="font-extrabold text-slate-900 text-sm group-hover:text-japan-700">IT & Engineering</p>
                             <p class="text-xs text-slate-400">Programmer, CAD drafter, teknisi</p>
                         </div>
                         <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-japan-600"></i>
+                    </button>
+                </div>
+
+                <div class="pt-2">
+                    <button type="button" onclick="prevQuizStep(3)" class="text-xs font-bold text-slate-400 hover:text-slate-700 flex items-center gap-1 transition">
+                        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                        <span>Kembali ke pertanyaan sebelumnya</span>
                     </button>
                 </div>
             </div>
@@ -248,16 +269,25 @@
                     <button 
                         id="quizApplyBtn" 
                         onclick="claimQuizRecommendation()"
-                        class="w-full btn-red-primary py-4 rounded-2xl font-bold text-sm shadow-xl flex items-center justify-center gap-2"
+                        class="w-full btn-red-primary py-3.5 rounded-2xl font-bold text-sm shadow-xl flex items-center justify-center gap-2 active:scale-[0.98]"
                     >
                         <i data-lucide="sparkles" class="w-5 h-5 text-amber-200"></i>
-                        <span>Klaim Hasil & Konsultasi Gratis Sekarang</span>
+                        <span>Klaim Hasil & Buka Formulir</span>
+                    </button>
+
+                    <button 
+                        type="button" 
+                        onclick="shareQuizToWA()"
+                        class="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-emerald-600/30 transition active:scale-[0.98]"
+                    >
+                        <i data-lucide="message-circle" class="w-4 h-4"></i>
+                        <span>Kirim Hasil ke WhatsApp Sensei Sekarang</span>
                     </button>
 
                     <button 
                         type="button" 
                         onclick="resetQuiz()" 
-                        class="text-xs font-bold text-slate-400 hover:text-slate-700 transition"
+                        class="text-xs font-bold text-slate-400 hover:text-slate-700 transition block mx-auto pt-1"
                     >
                         Ulangi Tes Dari Awal
                     </button>
