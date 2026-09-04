@@ -21,7 +21,7 @@
   <img src="https://img.shields.io/badge/Tailwind_CSS-3.4+-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
   <img src="https://img.shields.io/badge/Database-MySQL%20%2F%20SQLite-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL / SQLite">
   <img src="https://img.shields.io/badge/PWA-Ready%20%7C%20Offline%20Cache-8A2BE2?style=for-the-badge&logo=pwa&logoColor=white" alt="PWA Ready">
-  <img src="https://img.shields.io/badge/Tests-29%20Passed%20%7C%20156%20Assertions-success?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Tests 100% Passing">
+  <img src="https://img.shields.io/badge/Tests-30%20Passed%20%7C%20167%20Assertions-success?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Tests 100% Passing">
   <img src="https://img.shields.io/badge/Design-Japanese_Zen_Luxury-DC2626?style=for-the-badge&logo=affinitydesigner&logoColor=white" alt="Japanese Zen Luxury">
   <img src="https://img.shields.io/badge/SEO-OpenGraph%20%7C%20WhatsApp%20Card-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" alt="WhatsApp Card Optimized">
   <img src="https://img.shields.io/badge/License-MIT-F59E0B?style=for-the-badge" alt="License MIT">
@@ -103,8 +103,11 @@ Panel Admin aman dan dilindungi autentikasi session multi-role:
    - Manajemen siklus hidup siswa (*Pendaftaran -> Pelatihan -> Medical -> Matching User -> Paspor/CoE -> Terbang ke Jepang*).
    - **Filter 2-Tier Cepat**: Filter berdasarkan Program, Angkatan (*Batch*), Status Medikal (*Fit / Unfit*), Status Biaya (*Lunas / Talangan / Cicilan*), serta **Kategori Pendaftaran Khusus (SMILE Project Khusus Poltekkes MoU / SMK Go Japan / Reguler)**.
    - **Tombol Pintas Portal Siswa**: Admin dapat mengklik satu tombol untuk melihat tampilan tracking mandiri siswa.
-   - **Template WhatsApp Pintar**: Kirim rincian biaya, jadwal MCU, jadwal wawancara, kabar CoE terbit, atau tautan portal tracking langsung via WhatsApp ke nomor siswa/orang tua.
-   - **Export & Import CSV Massal**: Template CSV standar untuk import ratusan siswa dalam sekali klik.
+   - **Export & Import CSV Massal Otomatis**: Template CSV standar untuk import ratusan data siswa sekaligus dengan sistem **Auto-Sync Terpadu**:
+      - Otomatis generate NIS resmi (`SJI-YYYY-XXXXX`) jika dikosongkan.
+      - Otomatis menghitung sisa tagihan (*remaining balance*) dan status bayar (*paid/partial/unpaid*).
+      - Otomatis mengenali kategori program pemerintah (**SMILE Project** khusus Poltekkes MoU, **SMK Go Japan**, dll.).
+      - Otomatis tersinkron ke **Portal Mandiri Siswa (`/cek-status`)**, **Kwitansi Digital**, **Invoice Tagihan**, **Verifikasi QR Keaslian**, dan **Peta Sebaran Alumni**.
 3. **Pengaturan Website & Social Proof Pop-Up Ticker (`/admin/settings`)**:
    - **Sakelar Master On/Off**: Aktifkan atau nonaktifkan pop-up pojok kiri bawah kapan saja.
    - **Interval Rotasi**: Tentukan jeda detik antar kemunculan notifikasi (contoh: 28 detik).
@@ -386,6 +389,7 @@ php artisan test
   ✓ admin can view student receipt and invoice
   ✓ admin can manage job interviews and assign candidates
   ✓ admin can manage campus galleries
+  ✓ admin can configure social proof popup and poltekkes mou notice is rendered
 
    PASS  Tests\Feature\RealTimeSyncTest
   ✓ guest can access guest sync endpoint
@@ -406,8 +410,8 @@ php artisan test
    PASS  Tests\Feature\ExampleTest
   ✓ the application returns a successful response
 
-  Tests:    29 passed (156 assertions)
-  Duration: ~3.5s (100% Green)
+  Tests:    30 passed (167 assertions)
+  Duration: ~3.6s (100% Green)
 ```
 
 ---

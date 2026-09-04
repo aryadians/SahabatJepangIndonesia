@@ -537,8 +537,10 @@
                         <p class="font-bold">Panduan Import Data Siswa:</p>
                         <ol class="list-decimal list-inside space-y-1 mt-1 text-slate-600 text-[11px]">
                             <li>Gunakan format kolom template resmi LPK.</li>
-                            <li>Jika kolom <strong>NIS</strong> dikosongkan, sistem akan membuatkan nomor NIS otomatis.</li>
-                            <li>Jika NIS sudah ada, data siswa tersebut akan diperbarui (update otomatis).</li>
+                            <li>Jika kolom <strong>NIS</strong> dikosongkan, sistem otomatis membuatkan NIS unik (<code>SJI-YYYY-XXXXX</code>).</li>
+                            <li>Jika NIS sudah ada, data siswa tersebut otomatis diperbarui (*update in-place*).</li>
+                            <li><strong>Kategori Pendaftaran:</strong> Mendukung <code>smile_project</code> (Khusus Poltekkes MoU), <code>smk_go_japan</code>, <code>bkk_smk</code>, <code>poltekkes_kampus</code>, dan <code>umum</code>.</li>
+                            <li><strong>Otomatis Tersinkron:</strong> Portal Siswa (<code>/cek-status</code>), Kwitansi Digital, Invoice Resmi, Verifikasi QR, dan Peta Sebaran Alumni langsung aktif saat itu juga!</li>
                         </ol>
                     </div>
                 </div>
