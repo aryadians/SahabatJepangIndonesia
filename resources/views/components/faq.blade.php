@@ -1,4 +1,8 @@
 <!-- FAQ (Pertanyaan yang Sering Diajukan) Section -->
+@php
+    $cleanWa = preg_replace('/[^0-9]/', '', $settings['contact_whatsapp'] ?? '6281234567890');
+    if (str_starts_with($cleanWa, '0')) $cleanWa = '62' . substr($cleanWa, 1);
+@endphp
 <section id="faq" class="py-20 lg:py-28 bg-[#FFF8F8] relative overflow-hidden border-t border-red-100">
     
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -154,7 +158,7 @@
             <div class="pt-2">
                 <a 
                     id="faqEmptyWaLink"
-                    href="https://api.whatsapp.com/send?phone=6281234567890&text=Halo%20Admin%20LPK%20Sahabat%20Jepang%20Indonesia,%20saya%20ingin%20bertanya%20seputar%20program" 
+                    href="https://api.whatsapp.com/send?phone={{ $cleanWa }}&text=Halo%20Admin%20LPK%20Sahabat%20Jepang%20Indonesia,%20saya%20ingin%20bertanya%20seputar%20program" 
                     target="_blank"
                     rel="noopener noreferrer"
                     class="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 px-5 py-2.5 rounded-xl shadow-md transition"
@@ -172,7 +176,7 @@
             </p>
             <div class="mt-3 flex items-center justify-center gap-3">
                 <a 
-                    href="https://api.whatsapp.com/send?phone=6281234567890&text=Halo%20Admin%20LPK%20Sahabat%20Jepang%20Indonesia,%20saya%20ingin%20konsultasi%20tanya%20jawab%20program" 
+                    href="https://api.whatsapp.com/send?phone={{ $cleanWa }}&text=Halo%20Admin%20LPK%20Sahabat%20Jepang%20Indonesia,%20saya%20ingin%20konsultasi%20tanya%20jawab%20program" 
                     target="_blank"
                     rel="noopener noreferrer"
                     class="inline-flex items-center gap-2 text-sm font-bold text-japan-600 hover:text-japan-700 bg-white px-5 py-2.5 rounded-xl border border-red-200 shadow-sm transition hover:shadow"

@@ -7,8 +7,8 @@
 <form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data" class="space-y-8 max-w-5xl">
     @csrf
 
-    <!-- Quick Sticky Navigation Sub-Bar -->
-    <div class="sticky top-0 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2.5 bg-slate-100/95 backdrop-blur-md border-b border-slate-200/80 mb-6 flex items-center justify-between gap-3 overflow-x-auto select-none">
+    <!-- Quick Sticky Navigation Sub-Bar (Docked right below h-16 Topbar) -->
+    <div class="sticky top-16 z-20 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2.5 bg-slate-100/95 backdrop-blur-md border-b border-slate-200/80 mb-6 flex items-center justify-between gap-3 overflow-x-auto select-none shadow-xs">
         <div class="flex items-center gap-2 flex-nowrap min-w-max text-xs font-bold">
             <a href="#sec-logo" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
                 <i data-lucide="image" class="w-3.5 h-3.5 text-japan-600"></i>
@@ -46,7 +46,7 @@
     </div>
 
     <!-- 1. Logo & Brand Identity Settings (Base64 LONGTEXT) -->
-    <div id="sec-logo" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 scroll-mt-20">
+    <div id="sec-logo" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 scroll-mt-32">
         <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
                 <i data-lucide="image" class="w-5 h-5"></i>
@@ -115,7 +115,7 @@
     </div>
 
     <!-- 2. Top Announcement Bar Settings -->
-    <div id="sec-announcement" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 scroll-mt-20">
+    <div id="sec-announcement" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 scroll-mt-32">
         <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
                 <i data-lucide="megaphone" class="w-5 h-5"></i>
@@ -140,7 +140,7 @@
     </div>
 
     <!-- 3. Hero Section Settings -->
-    <div id="sec-hero" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 scroll-mt-20">
+    <div id="sec-hero" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 scroll-mt-32">
         <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
                 <i data-lucide="sparkles" class="w-5 h-5"></i>
@@ -193,7 +193,7 @@
     </div>
 
     <!-- 4. Stat Counters Settings -->
-    <div id="sec-stats" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 scroll-mt-20">
+    <div id="sec-stats" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 scroll-mt-32">
         <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
                 <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
@@ -234,7 +234,7 @@
     </div>
 
     <!-- 5. Contact & Footer Settings -->
-    <div id="sec-contact" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 scroll-mt-20">
+    <div id="sec-contact" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 scroll-mt-32">
         <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
                 <i data-lucide="phone" class="w-5 h-5"></i>
@@ -321,7 +321,7 @@
             }
         }
     @endphp
-    <div id="sec-ticker" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 scroll-mt-20">
+    <div id="sec-ticker" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 scroll-mt-32">
         <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
@@ -410,7 +410,7 @@
     </div>
 
     <!-- 7. WhatsApp Gateway API (Fonnte) Settings (No .ENV Needed) -->
-    <div id="sec-fonnte" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 scroll-mt-20">
+    <div id="sec-fonnte" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 scroll-mt-32">
         <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold shadow-xs">
@@ -920,7 +920,7 @@
             .map(id => document.getElementById(id))
             .filter(Boolean);
 
-        const scrollContainer = document.querySelector('main') || window;
+        const scrollContainer = document.querySelector('.overflow-y-auto') || document.querySelector('main') || window;
 
         function onScroll() {
             let currentSecId = sections[0] ? sections[0].id : '';

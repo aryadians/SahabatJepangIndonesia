@@ -5,6 +5,10 @@
 @section('meta_keywords', 'faq lpk jepang, syarat fisik kerja jepang, tato kerja di jepang, mata minus magang jepang, dana talangan jepang, beasiswa smile project kemenkes, sahabat jepang indonesia faq')
 
 @section('content')
+@php
+    $cleanWa = preg_replace('/[^0-9]/', '', $settings['contact_whatsapp'] ?? '6281234567890');
+    if (str_starts_with($cleanWa, '0')) $cleanWa = '62' . substr($cleanWa, 1);
+@endphp
 <div class="bg-slate-950 text-white min-h-screen py-10 sm:py-16 relative overflow-hidden">
     
     <!-- Ambient Japanese Red Glow Background -->
@@ -163,7 +167,7 @@
                 <button onclick="clearFaqPageFilter()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition">
                     Reset Pencarian
                 </button>
-                <a href="https://api.whatsapp.com/send?phone=6281234567890&text={{ urlencode('Halo Konselor LPK SJI, saya membaca halaman FAQ dan memiliki pertanyaan khusus.') }}" target="_blank" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                <a href="https://api.whatsapp.com/send?phone={{ $cleanWa }}&text={{ urlencode('Halo Konselor LPK SJI, saya membaca halaman FAQ dan memiliki pertanyaan khusus.') }}" target="_blank" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
                     <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
                     <span>Tanya Konselor via WA</span>
                 </a>
@@ -190,7 +194,7 @@
                     <span>Unduh Brosur Lengkap</span>
                 </a>
                 <a 
-                    href="https://api.whatsapp.com/send?phone=6281234567890&text={{ urlencode('Halo LPK Sahabat Jepang Indonesia, saya ingin berkonsultasi mengenai persyaratan fisik dan skema pembiayaan pelatihan.') }}" 
+                    href="https://api.whatsapp.com/send?phone={{ $cleanWa }}&text={{ urlencode('Halo LPK Sahabat Jepang Indonesia, saya ingin berkonsultasi mengenai persyaratan fisik dan skema pembiayaan pelatihan.') }}" 
                     target="_blank" 
                     class="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-emerald-600/30"
                 >

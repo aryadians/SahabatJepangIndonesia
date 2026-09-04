@@ -686,7 +686,11 @@
         if (!finalResultData) return;
         const lvl = '{{ $selectedLevel }}';
         const msg = encodeURIComponent(`Halo Sensei LPK Sahabat Jepang Indonesia! Saya baru saja menyelesaikan Tryout JLPT CBT Online Level ${lvl} dengan hasil:\n- Skor: ${finalResultData.earned_points} / ${finalResultData.total_points} (${finalResultData.percentage}%)\n- Status: ${finalResultData.is_passed ? 'LULUS (合格)' : 'Perlu Bimbingan'}\n\nSaya ingin konsultasi persiapan kelas dan percepatan penempatan kerja ke Jepang.`);
-        window.open(`https://api.whatsapp.com/send?phone=6281234567890&text=${msg}`, '_blank');
+        @php
+            $cleanWaSimulator = preg_replace('/[^0-9]/', '', $settings['contact_whatsapp'] ?? '6281234567890');
+            if (str_starts_with($cleanWaSimulator, '0')) $cleanWaSimulator = '62' . substr($cleanWaSimulator, 1);
+        @endphp
+        window.open(`https://api.whatsapp.com/send?phone={{ $cleanWaSimulator }}&text=${msg}`, '_blank');
     }
 
     // Canvas Confetti Celebration

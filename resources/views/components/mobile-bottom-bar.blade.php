@@ -15,7 +15,11 @@
         </a>
 
         <!-- WhatsApp Konsultan (Primary Highlight Button) -->
-        <a href="https://api.whatsapp.com/send?phone=6281234567890&text=Halo%20LPK%20SJI,%20saya%20ingin%20konsultasi%20program%20kerja%20ke%20Jepang" target="_blank" class="flex-[1.4] py-2 px-3 rounded-xl btn-red-primary text-white text-[10px] font-black flex items-center justify-center gap-1.5 shadow-lg shadow-red-600/30 whitespace-nowrap">
+        @php
+            $cleanWaMobile = preg_replace('/[^0-9]/', '', $settings['contact_whatsapp'] ?? '6281234567890');
+            if (str_starts_with($cleanWaMobile, '0')) $cleanWaMobile = '62' . substr($cleanWaMobile, 1);
+        @endphp
+        <a href="https://api.whatsapp.com/send?phone={{ $cleanWaMobile }}&text=Halo%20LPK%20SJI,%20saya%20ingin%20konsultasi%20program%20kerja%20ke%20Jepang" target="_blank" class="flex-[1.4] py-2 px-3 rounded-xl btn-red-primary text-white text-[10px] font-black flex items-center justify-center gap-1.5 shadow-lg shadow-red-600/30 whitespace-nowrap">
             <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
             <span>Chat WA</span>
         </a>

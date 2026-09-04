@@ -3,6 +3,10 @@
 @section('title', 'Program Kemitraan Sekolah & Afiliasi - LPK Sahabat Jepang Indonesia')
 
 @section('content')
+@php
+    $cleanWa = preg_replace('/[^0-9]/', '', $settings['contact_whatsapp'] ?? '6281234567890');
+    if (str_starts_with($cleanWa, '0')) $cleanWa = '62' . substr($cleanWa, 1);
+@endphp
 <div class="bg-slate-900 text-white min-h-screen py-12 relative overflow-hidden">
 
     <!-- Japanese Red Glow Accents -->
@@ -212,7 +216,7 @@
                 <p class="text-xs text-slate-400">Tim representatif SJI siap mengadakan seminar karir Jepang, tes minat bakat, dan penandatanganan MoU resmi langsung di sekolah Anda.</p>
             </div>
             <a 
-                href="https://api.whatsapp.com/send?phone=6281234567890&text={{ urlencode('Halo Tim Kerjasama LPK SJI, saya perwakilan BKK / Sekolah ingin mengajukan sosialisasi & MoU kemitraan karir Jepang.') }}" 
+                href="https://api.whatsapp.com/send?phone={{ $cleanWa }}&text={{ urlencode('Halo Tim Kerjasama LPK SJI, saya perwakilan BKK / Sekolah ingin mengajukan sosialisasi & MoU kemitraan karir Jepang.') }}" 
                 target="_blank"
                 rel="noopener noreferrer"
                 class="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-2 flex-shrink-0 shadow-md shadow-emerald-900/30"

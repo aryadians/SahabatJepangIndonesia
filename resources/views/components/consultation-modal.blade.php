@@ -1,4 +1,8 @@
 <!-- Consultation & Registration Modal Pop-up (Clean, Compact, Responsive) -->
+@php
+    $cleanWa = preg_replace('/[^0-9]/', '', $settings['contact_whatsapp'] ?? '6281234567890');
+    if (str_starts_with($cleanWa, '0')) $cleanWa = '62' . substr($cleanWa, 1);
+@endphp
 <div id="consultationModal" class="custom-modal fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     
     <!-- Backdrop Blur -->
@@ -208,7 +212,7 @@
                 </div>
 
                 <a 
-                    href="https://api.whatsapp.com/send?phone=6281234567890&text=Halo%20Sensei%20LPK%20Sahabat%20Jepang%20Indonesia,%20saya%20ingin%20konsultasi%20langsung%20mengenai%20program%20pelatihan%20dan%20penempatan%20ke%20Jepang." 
+                    href="https://api.whatsapp.com/send?phone={{ $cleanWa }}&text=Halo%20Sensei%20LPK%20Sahabat%20Jepang%20Indonesia,%20saya%20ingin%20konsultasi%20langsung%20mengenai%20program%20pelatihan%20dan%20penempatan%20ke%20Jepang." 
                     target="_blank" 
                     class="w-full py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-[0.98]"
                 >

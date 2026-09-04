@@ -5,6 +5,10 @@
 @section('meta_keywords', 'verifikasi kwitansi lpk jepang, scan qr kwitansi sahabat jepang indonesia, cek keaslian dokumen resmi so kemnaker')
 
 @section('content')
+@php
+    $cleanWa = preg_replace('/[^0-9]/', '', $settings['contact_whatsapp'] ?? '6281234567890');
+    if (str_starts_with($cleanWa, '0')) $cleanWa = '62' . substr($cleanWa, 1);
+@endphp
 <div class="bg-slate-950 text-white min-h-screen py-10 sm:py-16 relative overflow-hidden">
 
     <!-- Ambient Japanese Red & Emerald Glow -->
@@ -211,7 +215,7 @@
                         Portal Cek Status Siswa
                     </a>
                     <span>•</span>
-                    <a href="https://api.whatsapp.com/send?phone=6281234567890&text=Halo%20Admin%20LPK%20SJI,%20saya%20ingin%20mengonfirmasi%20keaslian%20dokumen%20kwitansi%20saya" target="_blank" class="text-emerald-400 hover:text-emerald-300 font-bold inline-flex items-center gap-1">
+                    <a href="https://api.whatsapp.com/send?phone={{ $cleanWa }}&text=Halo%20Admin%20LPK%20SJI,%20saya%20ingin%20mengonfirmasi%20keaslian%20dokumen%20kwitansi%20saya" target="_blank" class="text-emerald-400 hover:text-emerald-300 font-bold inline-flex items-center gap-1">
                         <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
                         <span>Konfirmasi via WhatsApp Admin</span>
                     </a>

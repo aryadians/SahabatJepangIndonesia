@@ -5,6 +5,10 @@
 @section('meta_keywords', 'unduh brosur lpk jepang, silabus pelatihan jepang, rincian biaya magang jepang, beasiswa kemenkes jepang, sahabat jepang indonesia brosur')
 
 @section('content')
+@php
+    $cleanWa = preg_replace('/[^0-9]/', '', $settings['contact_whatsapp'] ?? '6281234567890');
+    if (str_starts_with($cleanWa, '0')) $cleanWa = '62' . substr($cleanWa, 1);
+@endphp
 <div class="bg-slate-950 text-white min-h-screen py-10 sm:py-16 relative overflow-hidden">
     
     <!-- Ambient Japanese Red Glow Background -->
@@ -94,7 +98,7 @@
                             <i data-lucide="printer" class="w-4 h-4"></i>
                             <span>Cetak / PDF</span>
                         </button>
-                        <a href="https://api.whatsapp.com/send?phone=6281234567890&text={{ urlencode('Halo Admin LPK SJI, saya sudah membaca ' . $unlockedBrochure->title . ' dan ingin konsultasi pendaftaran kelas ' . $unlockedBrochure->program) }}" target="_blank" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5">
+                        <a href="https://api.whatsapp.com/send?phone={{ $cleanWa }}&text={{ urlencode('Halo Admin LPK SJI, saya sudah membaca ' . $unlockedBrochure->title . ' dan ingin konsultasi pendaftaran kelas ' . $unlockedBrochure->program) }}" target="_blank" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5">
                             <i data-lucide="message-circle" class="w-4 h-4"></i>
                             <span>Konsultasi WA</span>
                         </a>
@@ -397,7 +401,7 @@
                                     </button>
 
                                     <a 
-                                        href="https://api.whatsapp.com/send?phone=6281234567890&text={{ urlencode('Halo Admin LPK SJI, saya tertarik dengan brosur: ' . $b->title . ' dan ingin konsultasi lebih lanjut.') }}" 
+                                        href="https://api.whatsapp.com/send?phone={{ $cleanWa }}&text={{ urlencode('Halo Admin LPK SJI, saya tertarik dengan brosur: ' . $b->title . ' dan ingin konsultasi lebih lanjut.') }}" 
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         class="py-2.5 rounded-xl bg-slate-800 hover:bg-emerald-600 text-slate-300 hover:text-white text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-700 active:scale-95"
@@ -480,7 +484,7 @@
                     <h4 class="text-base sm:text-lg font-black text-white">Butuh Bimbingan Memilih Program?</h4>
                     <p class="text-xs text-slate-300">Konsultasikan minat, latar belakang pendidikan, dan kesiapan finansial Anda bersama konsultan resmi LPK SJI secara gratis.</p>
                 </div>
-                <a href="https://api.whatsapp.com/send?phone=6281234567890&text=Halo%20LPK%20SJI,%20saya%20ingin%20konsultasi%20pemilihan%20program%20kerja%20Jepang" target="_blank" class="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-2 flex-shrink-0 shadow-lg shadow-emerald-600/20">
+                <a href="https://api.whatsapp.com/send?phone={{ $cleanWa }}&text=Halo%20LPK%20SJI,%20saya%20ingin%20konsultasi%20pemilihan%20program%20kerja%20Jepang" target="_blank" class="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-2 flex-shrink-0 shadow-lg shadow-emerald-600/20">
                     <i data-lucide="message-circle" class="w-4 h-4"></i>
                     <span>Tanya Konsultan via WhatsApp</span>
                 </a>

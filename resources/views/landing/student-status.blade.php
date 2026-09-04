@@ -5,6 +5,10 @@
 @section('meta_keywords', 'cek status siswa lpk jepang, tracking berkas visa jepang, unduh kwitansi lpk sahabat jepang, portal siswa sji')
 
 @section('content')
+@php
+    $cleanWa = preg_replace('/[^0-9]/', '', $settings['contact_whatsapp'] ?? '6281234567890');
+    if (str_starts_with($cleanWa, '0')) $cleanWa = '62' . substr($cleanWa, 1);
+@endphp
 <div class="bg-slate-950 text-white min-h-screen py-10 sm:py-16 relative overflow-hidden">
 
     <!-- Ambient Japanese Red Glow Background -->
@@ -71,7 +75,7 @@
 
                 <div class="flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px] text-slate-400">
                     <span>💡 Tips: NIS tertera pada kartu siswa atau tanda terima awal.</span>
-                    <a href="https://api.whatsapp.com/send?phone=6281234567890&text=Halo%20Admin%20LPK%20SJI,%20saya%20lupa%20NIS%20saya,%20mohon%20bantuannya" target="_blank" class="text-red-400 hover:text-red-300 font-bold inline-flex items-center gap-1">
+                    <a href="https://api.whatsapp.com/send?phone={{ $cleanWa }}&text=Halo%20Admin%20LPK%20SJI,%20saya%20lupa%20NIS%20saya,%20mohon%20bantuannya" target="_blank" class="text-red-400 hover:text-red-300 font-bold inline-flex items-center gap-1">
                         <span>Lupa NIS? Hubungi Admin</span>
                         <i data-lucide="arrow-up-right" class="w-3 h-3"></i>
                     </a>
@@ -313,7 +317,7 @@
 
                         <div class="pt-2">
                             <a 
-                                href="https://api.whatsapp.com/send?phone=6281234567890&text={{ urlencode('Halo Sensei/Admin LPK SJI, saya ' . $student->name . ' (NIS: ' . $student->nis . ') ingin menanyakan update berkas keberangkatan saya.') }}" 
+                                href="https://api.whatsapp.com/send?phone={{ $cleanWa }}&text={{ urlencode('Halo Sensei/Admin LPK SJI, saya ' . $student->name . ' (NIS: ' . $student->nis . ') ingin menanyakan update berkas keberangkatan saya.') }}" 
                                 target="_blank"
                                 class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs transition flex items-center justify-center gap-2 shadow-md shadow-emerald-900/30"
                             >
@@ -345,7 +349,7 @@
                     <a href="{{ route('student.portal') }}" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition">
                         Cari Ulang
                     </a>
-                    <a href="https://api.whatsapp.com/send?phone=6281234567890&text={{ urlencode('Halo Admin LPK SJI, saya mencari data siswa dengan kata kunci ' . $keyword . ' tetapi tidak ditemukan. Mohon dibantu.') }}" target="_blank" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5">
+                    <a href="https://api.whatsapp.com/send?phone={{ $cleanWa }}&text={{ urlencode('Halo Admin LPK SJI, saya mencari data siswa dengan kata kunci ' . $keyword . ' tetapi tidak ditemukan. Mohon dibantu.') }}" target="_blank" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5">
                         <i data-lucide="message-circle" class="w-4 h-4"></i>
                         <span>Bantuan Admin via WhatsApp</span>
                     </a>

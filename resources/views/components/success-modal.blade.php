@@ -1,4 +1,8 @@
 <!-- Registration Success Celebration Modal -->
+@php
+    $cleanWa = preg_replace('/[^0-9]/', '', $settings['contact_whatsapp'] ?? '6281234567890');
+    if (str_starts_with($cleanWa, '0')) $cleanWa = '62' . substr($cleanWa, 1);
+@endphp
 <div id="successModal" class="custom-modal fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
     
     <!-- Backdrop Blur -->
@@ -29,7 +33,7 @@
         <div class="mt-8 space-y-3">
             <a 
                 id="successWaBtn"
-                href="https://api.whatsapp.com/send?phone=6281234567890" 
+                href="https://api.whatsapp.com/send?phone={{ $cleanWa }}" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 class="w-full btn-red-primary py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-red-600/30"

@@ -1,4 +1,8 @@
 <!-- Sensei & Instructors Team Section -->
+@php
+    $cleanWa = preg_replace('/[^0-9]/', '', $settings['contact_whatsapp'] ?? '6281234567890');
+    if (str_starts_with($cleanWa, '0')) $cleanWa = '62' . substr($cleanWa, 1);
+@endphp
 <section id="pengajar" class="py-20 sm:py-28 bg-white relative overflow-hidden">
     
     <!-- Subtle Background Accents -->
@@ -91,7 +95,7 @@
                         </span>
                         
                         <a 
-                            href="https://api.whatsapp.com/send?phone=6281234567890&text={{ urlencode('Halo Admin LPK SJI, saya ingin konsultasi mengenai kelas persiapan bahasa bersama ' . $teacher->name) }}"
+                            href="https://api.whatsapp.com/send?phone={{ $cleanWa }}&text={{ urlencode('Halo Admin LPK SJI, saya ingin konsultasi mengenai kelas persiapan bahasa bersama ' . $teacher->name) }}"
                             target="_blank"
                             rel="noopener noreferrer"
                             class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-700 font-bold text-[11px] transition flex items-center gap-1 shadow-sm active:scale-95"

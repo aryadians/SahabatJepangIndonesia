@@ -1,4 +1,8 @@
 <!-- Jadwal Gelombang & Kuota Kelas Section -->
+@php
+    $cleanWa = preg_replace('/[^0-9]/', '', $settings['contact_whatsapp'] ?? '6281234567890');
+    if (str_starts_with($cleanWa, '0')) $cleanWa = '62' . substr($cleanWa, 1);
+@endphp
 <section id="jadwal" class="py-20 bg-slate-900 text-white relative overflow-hidden">
     
     <!-- Background Torii / Seigaiha Watermark -->
@@ -146,7 +150,7 @@
                                 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                             </button>
                             <a 
-                                href="https://api.whatsapp.com/send?phone=6281234567890&text={{ urlencode('Halo Admin SJI, saya ingin mengamankan slot kursi kelas untuk: ' . $sch->batch_name . ' (' . $sch->program_type . ')') }}"
+                                href="https://api.whatsapp.com/send?phone={{ $cleanWa }}&text={{ urlencode('Halo Admin SJI, saya ingin mengamankan slot kursi kelas untuk: ' . $sch->batch_name . ' (' . $sch->program_type . ')') }}"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 class="w-full py-2 rounded-xl bg-slate-700/60 hover:bg-emerald-600 text-slate-300 hover:text-white font-bold text-[11px] text-center transition flex items-center justify-center gap-1.5"
