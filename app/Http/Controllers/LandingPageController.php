@@ -84,13 +84,52 @@ class LandingPageController extends Controller
         // 7. Ambil Jadwal Gelombang & Kuota Kelas (Batch Schedules)
         $schedules = \App\Models\BatchSchedule::orderBy('order')->get();
 
-        // 8. Ambil Tenaga Pengajar / Sensei
-        $teachers = \App\Models\Teacher::where('status', 'active')->orderBy('id')->get();
+        // 8. Ambil Dewan Pimpinan & Eksekutif (CEO/Owner, Direktur)
+        $executives = \App\Models\Teacher::where('status', 'active')
+            ->where(function ($q) {
+                $q->where('is_executive', true)
+                  ->orWhereIn('role', ['ceo_owner', 'director']);
+            })
+            ->orderBy('order', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        // 8b. Ambil Tenaga Pengajar / Sensei (Jika ada data khusus sensei, gunakan filter; jika belum, ambil aktif)
+        $teachers = \App\Models\Teacher::where('status', 'active')
+            ->where(function ($q) {
+                $q->where('role', 'sensei')
+                  ->orWhereNull('role');
+            })
+            ->orderBy('order', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        if ($teachers->isEmpty()) {
+            $teachers = \App\Models\Teacher::where('status', 'active')->orderBy('id', 'asc')->get();
+        }
+
+        // 8c. Ambil Jadwal Wawancara Kaisha Terjadwal
+        $upcomingInterviews = \App\Models\JobInterview::whereIn('status', ['scheduled', 'in_progress'])
+            ->orderBy('interview_date', 'asc')
+            ->take(4)
+            ->get();
 
         // 9. Ambil Artikel Edukasi & Berita Terbaru
         $articles = \App\Models\Article::where('is_published', true)->latest()->take(3)->get();
 
-        return view('landing.index', compact('settings', 'programs', 'testimonials', 'faqs', 'facilities', 'partners', 'schedules', 'teachers', 'articles'));
+        return view('landing.index', compact(
+            'settings', 
+            'programs', 
+            'testimonials', 
+            'faqs', 
+            'facilities', 
+            'partners', 
+            'schedules', 
+            'teachers', 
+            'executives',
+            'upcomingInterviews',
+            'articles'
+        ));
     }
 
     /**

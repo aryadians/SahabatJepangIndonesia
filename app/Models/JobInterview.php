@@ -60,4 +60,14 @@ class JobInterview extends Model
             default => ['label' => ucfirst($this->status), 'bg' => 'bg-slate-100 text-slate-800 border-slate-200'],
         };
     }
+
+    public function getQuotaAttribute(): int
+    {
+        return (int) ($this->quota_needed ?? 1);
+    }
+
+    public function getProgramTypeAttribute(): string
+    {
+        return $this->sector ?? 'Tokutei Ginou';
+    }
 }

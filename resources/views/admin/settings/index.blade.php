@@ -319,6 +319,7 @@
                             id="previewHeroImg" 
                             src="{{ !empty($settings['hero_image']) ? $settings['hero_image'] : 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' }}" 
                             alt="Banner Preview" 
+                            onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80';"
                             class="w-full h-full object-cover opacity-85 group-hover/thumb:scale-105 transition-transform duration-500"
                         >
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
@@ -1341,6 +1342,37 @@
     }
 
     /* ==========================================================
+       IMAGE FILE PREVIEW (BASE64 LIVE PREVIEW)
+       ========================================================== */
+    function previewImageFile(input, previewId) {
+        if (input && input.files && input.files[0]) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const targetImg = document.getElementById(previewId);
+                if (targetImg) {
+                    targetImg.src = e.target.result;
+                }
+                if (previewId === 'previewHeroImg') {
+                    const heroUrlInput = document.getElementById('inputHeroImage');
+                    if (heroUrlInput) {
+                        heroUrlInput.value = ''; // Kosongkan text field agar upload file diutamakan
+                    }
+                } else if (previewId === 'logoPreviewImg') {
+                    const logoUrlInput = document.getElementById('inputSiteLogo');
+                    if (logoUrlInput) {
+                        logoUrlInput.value = '';
+                    }
+                }
+                if (typeof checkFormDirty === 'function') {
+                    checkFormDirty();
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    /* ==========================================================
        DRAG AND DROP LOGO UPLOAD ZONE
        ========================================================== */
     function initLogoDropZone() {
@@ -1414,6 +1446,8 @@
                 const val = imageIn.value.trim();
                 if (val) {
                     pImage.src = val;
+                } else {
+                    pImage.src = 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80';
                 }
             });
         }

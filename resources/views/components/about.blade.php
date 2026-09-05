@@ -180,5 +180,168 @@
             </div>
         </div>
 
+        <!-- Executive Leadership Board (Dewan Direksi, Owner & CEO) -->
+        <div class="mt-16 sm:mt-20 space-y-8 reveal-on-scroll">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-bold uppercase tracking-wider border border-amber-200">
+                    <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-600"></i>
+                    <span class="font-japanese">役員紹介</span>
+                    <span>• Dewan Pimpinan & Manajemen Eksekutif</span>
+                </div>
+                <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                    Kepemimpinan Berintegritas & <span class="text-japan-600">Berpengalaman 10+ Tahun</span>
+                </h3>
+                <p class="text-xs sm:text-sm text-slate-500">
+                    Dipimpin oleh para profesional yang mengutamakan legalitas, transparansi, serta perlindungan karir jangka panjang setiap peserta pelatihan.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                @if(isset($executives) && $executives->count() > 0)
+                    @foreach($executives as $exec)
+                        <div class="bg-gradient-to-b from-slate-50/80 via-white to-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-xl hover:border-amber-400/60 transition-all duration-300 flex flex-col justify-between group">
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-20 h-24 rounded-2xl bg-slate-100 border-2 border-amber-300/80 overflow-hidden shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
+                                        @if($exec->photo)
+                                            <img src="{{ $exec->photo }}" alt="{{ $exec->name }}" class="w-full h-full object-cover">
+                                        @else
+                                            <div class="w-full h-full flex items-center justify-center font-bold font-mono text-slate-400 bg-slate-100">
+                                                {{ substr($exec->name, 0, 2) }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border {{ $exec->role_badge['bg'] }}">
+                                            {{ $exec->role_badge['label'] }}
+                                        </span>
+                                        <h4 class="font-black text-slate-900 text-base mt-1.5 leading-tight group-hover:text-japan-600 transition truncate">
+                                            {{ $exec->name }}
+                                        </h4>
+                                        <p class="text-xs font-bold text-amber-800/80 mt-0.5">
+                                            {{ $exec->position_title ?: ($exec->role === 'ceo_owner' ? 'Founder & CEO' : 'Direktur Eksekutif') }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-xs text-slate-600 space-y-1.5">
+                                    <p class="italic text-[11px] leading-relaxed">
+                                        "{{ $exec->notes ?: 'Berkomitmen mendampingi talenta Indonesia mencapai kesuksesan karir legal dan bermartabat di industri Jepang.' }}"
+                                    </p>
+                                    @if($exec->japan_experience)
+                                        <div class="pt-1.5 border-t border-slate-200/60 flex items-center gap-1.5 text-[10px] font-semibold text-slate-500">
+                                            <i data-lucide="award" class="w-3.5 h-3.5 text-amber-600 flex-shrink-0"></i>
+                                            <span class="truncate">{{ $exec->japan_experience }}</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                                <span class="text-[11px] font-bold text-slate-500">
+                                    {{ $exec->department ?: 'Dewan Direksi' }}
+                                </span>
+                                <span class="text-emerald-600 font-extrabold text-[11px] flex items-center gap-1">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    <span>Pimpinan Lembaga</span>
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <!-- Fallback Executive Cards (Founder & Direktur) -->
+                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-xl transition flex flex-col justify-between group">
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-20 h-24 rounded-2xl bg-slate-100 border-2 border-amber-300 overflow-hidden shadow-sm flex-shrink-0">
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80" alt="Founder & CEO" class="w-full h-full object-cover">
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300">
+                                        Owner / CEO
+                                    </span>
+                                    <h4 class="font-black text-slate-900 text-base mt-1.5 leading-tight">
+                                        Hendra Kusuma, S.S., M.M.
+                                    </h4>
+                                    <p class="text-xs font-bold text-amber-800/80 mt-0.5">
+                                        Founder &amp; Direktur Utama
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-xs text-slate-600">
+                                <p class="italic text-[11px] leading-relaxed">
+                                    "LPK SJI didirikan atas komitmen moral untuk melindungi anak bangsa dan membuka gerbang kesuksesan kerja di Jepang tanpa potongan gaji yang memberatkan."
+                                </p>
+                            </div>
+                        </div>
+                        <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                            <span class="text-[11px] font-bold text-slate-500">Direksi &amp; Kebijakan SO</span>
+                            <span class="text-emerald-600 font-extrabold text-[11px]">Pimpinan Lembaga</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-xl transition flex flex-col justify-between group">
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-20 h-24 rounded-2xl bg-slate-100 border-2 border-purple-300 overflow-hidden shadow-sm flex-shrink-0">
+                                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80" alt="Direktur Operasional" class="w-full h-full object-cover">
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-800 border border-purple-300">
+                                        Direktur Operasional
+                                    </span>
+                                    <h4 class="font-black text-slate-900 text-base mt-1.5 leading-tight">
+                                        Dewi Sartika, S.Pd., M.Ed.
+                                    </h4>
+                                    <p class="text-xs font-bold text-purple-800/80 mt-0.5">
+                                        Direktur Pendidikan &amp; Pelatihan
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-xs text-slate-600">
+                                <p class="italic text-[11px] leading-relaxed">
+                                    "Kurikulum pembelajaran kami dirancang intensif berstandar CEFR &amp; JLPT agar setiap siswa tidak hanya lulus ujian tetapi percaya diri saat bekerja di Jepang."
+                                </p>
+                            </div>
+                        </div>
+                        <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                            <span class="text-[11px] font-bold text-slate-500">Akademik &amp; Pelatihan</span>
+                            <span class="text-emerald-600 font-extrabold text-[11px]">Pimpinan Lembaga</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-xl transition flex flex-col justify-between group">
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-20 h-24 rounded-2xl bg-slate-100 border-2 border-blue-300 overflow-hidden shadow-sm flex-shrink-0">
+                                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80" alt="Direktur Kemitraan" class="w-full h-full object-cover">
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-100 text-blue-800 border border-blue-300">
+                                        Kemitraan Luar Negeri
+                                    </span>
+                                    <h4 class="font-black text-slate-900 text-base mt-1.5 leading-tight">
+                                        Yamada Kenichi (山田健一)
+                                    </h4>
+                                    <p class="text-xs font-bold text-blue-800/80 mt-0.5">
+                                        Kepala Perwakilan Jepang &amp; Kaisha
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-xs text-slate-600">
+                                <p class="italic text-[11px] leading-relaxed">
+                                    "Menghubungkan langsung LPK SJI dengan 85+ Kaisha dan Kumiai di Tokyo, Osaka, dan Nagoya serta mendampingi hak-hak siswa selama tinggal di Jepang."
+                                </p>
+                            </div>
+                        </div>
+                        <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                            <span class="text-[11px] font-bold text-slate-500">Kantor Cabang Jepang</span>
+                            <span class="text-emerald-600 font-extrabold text-[11px]">Pimpinan Lembaga</span>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+
     </div>
 </section>

@@ -102,8 +102,9 @@
                     <div class="relative rounded-3xl p-2 bg-gradient-to-b from-red-200 via-white to-red-100 shadow-2xl shadow-red-900/10">
                         <div class="relative rounded-2xl overflow-hidden aspect-[4/4.8] sm:aspect-[4/4.5] bg-slate-100">
                             <img 
-                                src="{{ $settings['hero_image'] ?? 'https://images.unsplash.com/photo-1528164344705-475426879c0d?auto=format&fit=crop&w=900&q=80' }}" 
+                                src="{{ !empty($settings['hero_image']) ? $settings['hero_image'] : 'https://images.unsplash.com/photo-1528164344705-475426879c0d?auto=format&fit=crop&w=900&q=80' }}" 
                                 alt="Pesona Jepang & Karir Alumni Sahabat Jepang Indonesia"
+                                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1528164344705-475426879c0d?auto=format&fit=crop&w=900&q=80';"
                                 class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
                                 loading="lazy"
                             >

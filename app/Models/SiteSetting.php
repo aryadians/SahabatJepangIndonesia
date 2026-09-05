@@ -17,6 +17,20 @@ class SiteSetting extends Model
     ];
 
     /**
+     * Otomatis invalidate cache saat ada perubahan data pengaturan
+     */
+    protected static function booted(): void
+    {
+        static::saved(function () {
+            Cache::forget('site_settings_all');
+        });
+
+        static::deleted(function () {
+            Cache::forget('site_settings_all');
+        });
+    }
+
+    /**
      * Helper to get setting value by key with default
      */
     public static function get($key, $default = null)

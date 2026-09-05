@@ -25,35 +25,46 @@ class SettingController extends Controller
      */
     public function update(Request $request)
     {
-        // 1. Handle File Uploads (Base64 LongText)
+        // 1. Ambil semua input kecuali token dan file
+        $inputs = $request->except(['_token', '_method', 'site_logo_file', 'hero_image_file']);
+
+        // 2. Prioritaskan Upload File Gambar untuk Logo & Hero
         if ($request->hasFile('site_logo_file')) {
             $base64Logo = $this->handleImageUpload($request, 'site_logo_file', 'site_logo');
-            SiteSetting::updateOrCreate(['key' => 'site_logo'], ['value' => $base64Logo, 'group' => 'general']);
+            $inputs['site_logo'] = $base64Logo;
+        } elseif ($request->filled('site_logo')) {
+            $inputs['site_logo'] = trim($request->input('site_logo'));
+        } else {
+            // Jangan timpa logo lama jika input dikosongkan tanpa file baru
+            unset($inputs['site_logo']);
         }
 
         if ($request->hasFile('hero_image_file')) {
             $base64Hero = $this->handleImageUpload($request, 'hero_image_file', 'hero_image');
-            SiteSetting::updateOrCreate(['key' => 'hero_image'], ['value' => $base64Hero, 'group' => 'hero']);
+            $inputs['hero_image'] = $base64Hero;
+        } elseif ($request->filled('hero_image')) {
+            $inputs['hero_image'] = trim($request->input('hero_image'));
+        } else {
+            // Jangan timpa hero_image lama jika input dikosongkan tanpa file baru
+            unset($inputs['hero_image']);
         }
 
-        // 2. Handle Text Inputs
-        $inputs = $request->except(['_token', '_method', 'site_logo_file', 'hero_image_file']);
-
-        // Handle popup_ticker_enabled checkbox
+        // 3. Handle popup_ticker_enabled checkbox
         if (!$request->has('popup_ticker_enabled')) {
             $inputs['popup_ticker_enabled'] = '0';
         }
 
-        // Handle fonnte_enabled checkbox
+        // 4. Handle fonnte_enabled checkbox
         if (!$request->has('fonnte_enabled')) {
             $inputs['fonnte_enabled'] = '0';
         }
 
-        // Handle popup_ticker_items if passed as array
+        // 5. Handle popup_ticker_items if passed as array
         if (isset($inputs['popup_ticker_items']) && is_array($inputs['popup_ticker_items'])) {
             $inputs['popup_ticker_items'] = json_encode(array_values($inputs['popup_ticker_items']), JSON_UNESCAPED_UNICODE);
         }
 
+        // 6. Simpan semua konfigurasi ke database
         foreach ($inputs as $key => $value) {
             $group = 'general';
             if (str_starts_with($key, 'hero_')) {
@@ -74,10 +85,15 @@ class SettingController extends Controller
             );
         }
 
-        // Invalidate cached site settings
+        // 7. Invalidate dan flush cache agar seketika sinkron di halaman guest
         \Illuminate\Support\Facades\Cache::forget('site_settings_all');
+        try {
+            \Illuminate\Support\Facades\Cache::flush();
+        } catch (\Throwable $e) {
+            // ignore if redis/tag cache not supporting full flush
+        }
 
-        return back()->with('success', 'Pengaturan website, integrasi WhatsApp Fonnte, dan logo berhasil diperbarui.');
+        return back()->with('success', 'Pengaturan website, banner hero, dan logo berhasil disimpan dan otomatis disinkronkan ke halaman utama.');
     }
 
     /**

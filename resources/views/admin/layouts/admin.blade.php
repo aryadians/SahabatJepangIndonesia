@@ -165,8 +165,8 @@
                 href="{{ route('admin.teachers.index') }}" 
                 class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.teachers.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
             >
-                <i data-lucide="user-check" class="w-4 h-4"></i>
-                <span>Data Pengajar (Sensei)</span>
+                <i data-lucide="users" class="w-4 h-4"></i>
+                <span>Karyawan, Direksi & Sensei</span>
             </a>
 
             <a 
@@ -178,7 +178,7 @@
             </a>
 
             <div class="px-3 pt-3 pb-1 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
-                Keuangan & CRM Growth
+                Keuangan, Dinas & Operasional
             </div>
 
             <a 
@@ -187,6 +187,30 @@
             >
                 <i data-lucide="trending-up" class="w-4 h-4"></i>
                 <span>Proyeksi Kas & Keuangan</span>
+            </a>
+
+            <a 
+                href="{{ route('admin.reimbursements.index') }}" 
+                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.reimbursements.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+            >
+                <i data-lucide="receipt" class="w-4 h-4"></i>
+                <span>Reimburse & Kasbon Dinas</span>
+                @php
+                    $pendingReimbursements = \App\Models\Reimbursement::where('status', 'submitted')->count();
+                @endphp
+                @if($pendingReimbursements > 0)
+                    <span class="ml-auto px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 font-black text-[10px]">
+                        {{ $pendingReimbursements }}
+                    </span>
+                @endif
+            </a>
+
+            <a 
+                href="{{ route('admin.digital-archives.index') }}" 
+                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.digital-archives.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+            >
+                <i data-lucide="folder-archive" class="w-4 h-4"></i>
+                <span>Arsip Digital Nota & Berkas</span>
             </a>
 
             <a 

@@ -174,6 +174,59 @@
             @endforelse
         </div>
 
+        <!-- 3. Dynamic Kaisha Matching & Scheduled Interviews Showcase -->
+        @if(isset($upcomingInterviews) && $upcomingInterviews->count() > 0)
+            <div class="pt-8 border-t border-slate-800 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="space-y-1">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-950/80 border border-blue-500/30 text-blue-400 text-[11px] font-black uppercase tracking-wider">
+                            <i data-lucide="video" class="w-3 h-3"></i>
+                            <span class="font-japanese">面接日程</span>
+                            <span>• Agenda Wawancara Langsung User Jepang</span>
+                        </div>
+                        <h3 class="text-xl font-black text-white">Jadwal Seleksi & Wawancara Kaisha Aktif</h3>
+                    </div>
+                    <span class="text-xs text-slate-400">
+                        Sinkronisasi otomatis dengan database penerimaan perusahaan Jepang
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    @foreach($upcomingInterviews as $interview)
+                        <div class="p-4 rounded-2xl bg-white/5 border border-slate-800 hover:border-blue-500/40 transition flex flex-col justify-between space-y-3 group">
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-blue-900/60 text-blue-300 border border-blue-700/60">
+                                        {{ $interview->program_type }}
+                                    </span>
+                                    <span class="text-[11px] font-mono text-emerald-400 font-bold">
+                                        {{ $interview->quota }} Kuota
+                                    </span>
+                                </div>
+                                <h4 class="font-black text-white text-sm group-hover:text-blue-300 transition line-clamp-1" title="{{ $interview->company_name }}">
+                                    {{ $interview->company_name }}
+                                </h4>
+                                <p class="text-xs text-slate-400 flex items-center gap-1.5">
+                                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-red-400 flex-shrink-0"></i>
+                                    <span>Prefektur: {{ $interview->prefecture }}</span>
+                                </p>
+                            </div>
+
+                            <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
+                                <span class="text-slate-400">
+                                    {{ $interview->interview_date ? $interview->interview_date->format('d M Y') : 'Terjadwal' }}
+                                </span>
+                                <span class="text-emerald-400 font-bold uppercase text-[10px] flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    <span>Online Zoom</span>
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         <!-- Inline Batch Booking Script -->
         <script>
             function bookBatchSlot(batchName, programType) {

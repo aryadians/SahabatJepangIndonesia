@@ -5,12 +5,14 @@ use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BatchScheduleController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DigitalArchiveController;
 use App\Http\Controllers\Admin\FacilityController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\FinancialAnalyticsController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProgramController;
+use App\Http\Controllers\Admin\ReimbursementController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\TeacherController;
@@ -219,6 +221,18 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/finance', [FinancialAnalyticsController::class, 'index'])->name('finance.index');
     Route::get('/finance/export-pdf', [FinancialAnalyticsController::class, 'exportPdf'])->name('finance.export.pdf');
 
+    // 14b. Klaim Reimbursement & Uang Muka Perjalanan Dinas (Cash Advance)
+    Route::get('/reimbursements/export', [ReimbursementController::class, 'exportCsv'])->name('reimbursements.export');
+    Route::get('/reimbursements/export-pdf', [ReimbursementController::class, 'exportPdf'])->name('reimbursements.export.pdf');
+    Route::get('/reimbursements/template', [ReimbursementController::class, 'exportTemplate'])->name('reimbursements.template');
+    Route::post('/reimbursements/import', [ReimbursementController::class, 'importCsv'])->name('reimbursements.import');
+    Route::get('/reimbursements/{id}/print', [ReimbursementController::class, 'print'])->name('reimbursements.print');
+    Route::post('/reimbursements/{id}/status', [ReimbursementController::class, 'updateStatus'])->name('reimbursements.status');
+    Route::resource('reimbursements', ReimbursementController::class)->except(['create', 'show', 'edit']);
+
+    // 14c. Panel Arsip Digital Dokumen & Nota (Base64 LONGTEXT)
+    Route::resource('digital-archives', DigitalArchiveController::class)->except(['create', 'show', 'edit', 'update']);
+
     // 15. Program Kemitraan & Referral Afiliasi
     Route::resource('affiliates', AffiliateController::class)->except(['create', 'show', 'edit']);
 
@@ -240,6 +254,12 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/user', fn() => redirect()->route('admin.users.index'));
     Route::get('/student', fn() => redirect()->route('admin.students.index'));
     Route::get('/teacher', fn() => redirect()->route('admin.teachers.index'));
+    Route::get('/employee', fn() => redirect()->route('admin.teachers.index'));
+    Route::get('/karyawan', fn() => redirect()->route('admin.teachers.index'));
+    Route::get('/reimbursement', fn() => redirect()->route('admin.reimbursements.index'));
+    Route::get('/reimburse', fn() => redirect()->route('admin.reimbursements.index'));
+    Route::get('/kasbon', fn() => redirect()->route('admin.reimbursements.index', ['type' => 'cash_advance']));
+    Route::get('/arsip', fn() => redirect()->route('admin.digital-archives.index'));
     Route::get('/setting', fn() => redirect()->route('admin.settings.index'));
     Route::get('/lead', fn() => redirect()->route('admin.consultations.index'));
     Route::get('/program', fn() => redirect()->route('admin.programs.index'));

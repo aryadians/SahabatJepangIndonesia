@@ -582,5 +582,29 @@ class NewFeaturesTest extends TestCase
                 && $request->hasHeader('Authorization', 'valid_token_xyz');
         });
     }
+
+    public function test_admin_can_update_hero_settings_and_guest_immediately_reflects_changes(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($admin);
+
+        // 1. Update settings with new hero headline and image via post
+        $response = $this->post('/admin/settings', [
+            'hero_title_1' => 'Gerbang Emas Menuju Prestasi',
+            'hero_title_highlight' => 'Masa Depan Cerah di Tokyo',
+            'hero_image' => 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=900',
+            'hero_motto' => 'Pusat Pelatihan Kerja Resmi Kemenaker',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        // 2. Immediately access guest homepage
+        $guestHome = $this->get('/');
+        $guestHome->assertOk();
+        $guestHome->assertSee('Gerbang Emas Menuju Prestasi');
+        $guestHome->assertSee('Masa Depan Cerah di Tokyo');
+        $guestHome->assertSee('https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=900');
+    }
 }
 
