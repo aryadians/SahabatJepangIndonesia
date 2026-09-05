@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ArchiveFolder;
 use App\Models\DigitalArchive;
 use App\Models\Reimbursement;
 use App\Models\Teacher;
@@ -15,8 +16,6 @@ class ReimbursementController extends Controller
 {
     use UploadsImage;
 
-    /**
-     * Tampilkan Dashboard & Daftar Klaim Reimburse / Kasbon Dinas
     /**
      * Tampilkan Dashboard & Daftar Klaim Reimburse / Kasbon Dinas
      */
@@ -153,9 +152,15 @@ class ReimbursementController extends Controller
         ]);
 
         // Otomatis simpan juga ke Arsip Digital Dokumen agar terintegrasi di panel arsip
+        $reimburseFolder = ArchiveFolder::firstOrCreate(
+            ['name' => 'Nota & Kuitansi Reimburse'],
+            ['color' => 'emerald', 'created_by' => 'Sistem Keuangan']
+        );
+
         foreach ($receipts as $rc) {
             DigitalArchive::create([
                 'archive_no' => DigitalArchive::generateNumber(),
+                'folder_id' => $reimburseFolder->id,
                 'title' => "Bukti [{$reimbursementNo}] - " . $rc['title'],
                 'category' => 'nota_reimburse',
                 'reimbursement_id' => $reimbursement->id,
@@ -231,8 +236,14 @@ class ReimbursementController extends Controller
                             ];
                             $existingReceipts[] = $newItem;
 
+                            $reimburseFolder = ArchiveFolder::firstOrCreate(
+                                ['name' => 'Nota & Kuitansi Reimburse'],
+                                ['color' => 'emerald', 'created_by' => 'Sistem Keuangan']
+                            );
+
                             DigitalArchive::create([
                                 'archive_no' => DigitalArchive::generateNumber(),
+                                'folder_id' => $reimburseFolder->id,
                                 'title' => "SPJ [{$reimbursement->reimbursement_no}] - " . $file->getClientOriginalName(),
                                 'category' => 'nota_reimburse',
                                 'reimbursement_id' => $reimbursement->id,
