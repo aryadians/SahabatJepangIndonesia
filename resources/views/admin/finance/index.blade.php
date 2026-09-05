@@ -63,6 +63,7 @@
             </div>
             <p class="text-[10px] text-slate-400">Total data siswa terdaftar</p>
         </div>
+    </div>
 
     <!-- Centralized Cashflow Comparison (Inflow Siswa vs Outflow Reimburse & Kasbon) -->
     <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
