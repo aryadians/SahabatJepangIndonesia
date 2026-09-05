@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\BatchSchedule;
+use App\Models\CashTransaction;
 use App\Models\Reimbursement;
 use App\Models\Student;
 use Carbon\Carbon;
@@ -20,7 +21,7 @@ class FinancialAnalyticsController extends Controller
         $totalReceivables = $totalPotentialRevenue - $totalRealizedRevenue;
         $collectionRate = $totalPotentialRevenue > 0 ? round(($totalRealizedRevenue / $totalPotentialRevenue) * 100, 1) : 0;
 
-        // 1b. Arus Kas Keluar (Pengeluaran Reimburse & Kasbon Dinas)
+        // 1b. Arus Kas Keluar (Sinkronisasi Pengeluaran Buku Kas Umum & Reimbursement Dinas)
         $totalReimbursements = (float) Reimbursement::where('type', 'reimbursement')
             ->whereIn('status', ['paid', 'settled'])
             ->sum('amount_approved');
@@ -29,18 +30,28 @@ class FinancialAnalyticsController extends Controller
             ->whereIn('status', ['paid', 'settled'])
             ->sum('amount_approved');
 
-        $totalOutflow = $totalReimbursements + $totalCashAdvances;
+        $cashBookExpense = (float) CashTransaction::where('type', 'expense')->sum('amount');
+        $totalOutflow = $cashBookExpense > 0 ? $cashBookExpense : ($totalReimbursements + $totalCashAdvances);
         $netCashflow = $totalRealizedRevenue - $totalOutflow;
         $expenseRatio = $totalRealizedRevenue > 0 ? round(($totalOutflow / $totalRealizedRevenue) * 100, 1) : 0;
 
-        // 1c. Grafik Komparatif 12 Bulan (Arus Kas Masuk vs Kas Keluar)
+        // 1c. Grafik Komparatif 12 Bulan (Arus Kas Masuk vs Kas Keluar Terintegrasi)
         $currentYear = now()->year;
         $monthlyComparison = [];
         for ($m = 1; $m <= 12; $m++) {
             $monthStart = Carbon::create($currentYear, $m, 1)->startOfMonth();
             $monthEnd = Carbon::create($currentYear, $m, 1)->endOfMonth();
 
-            $mInflow = (float) Student::whereBetween('created_at', [$monthStart, $monthEnd])->sum('paid_amount');
+            $mCashIncome = (float) CashTransaction::where('type', 'income')
+                ->whereBetween('transaction_date', [$monthStart, $monthEnd])
+                ->sum('amount');
+
+            $mStudentInflow = (float) Student::whereBetween('created_at', [$monthStart, $monthEnd])->sum('paid_amount');
+            $mInflow = $mCashIncome > 0 ? $mCashIncome : $mStudentInflow;
+
+            $mCashExpense = (float) CashTransaction::where('type', 'expense')
+                ->whereBetween('transaction_date', [$monthStart, $monthEnd])
+                ->sum('amount');
 
             $mReimb = (float) Reimbursement::where('type', 'reimbursement')
                 ->whereIn('status', ['paid', 'settled'])
@@ -62,7 +73,7 @@ class FinancialAnalyticsController extends Controller
                 })
                 ->sum('amount_approved');
 
-            $mOutflow = $mReimb + $mAdv;
+            $mOutflow = $mCashExpense > 0 ? $mCashExpense : ($mReimb + $mAdv);
             $monthlyComparison[] = [
                 'month' => $m,
                 'month_name' => $monthStart->translatedFormat('M'),
@@ -184,7 +195,8 @@ class FinancialAnalyticsController extends Controller
             ->whereIn('status', ['paid', 'settled'])
             ->sum(DB::raw('COALESCE(amount_approved, amount_requested)'));
 
-        $totalOutflow = $totalReimbursements + $totalCashAdvances;
+        $cashBookExpense = (float) CashTransaction::where('type', 'expense')->sum('amount');
+        $totalOutflow = $cashBookExpense > 0 ? $cashBookExpense : ($totalReimbursements + $totalCashAdvances);
         $netCashflow = $totalRealizedRevenue - $totalOutflow;
         $expenseRatio = $totalRealizedRevenue > 0 ? round(($totalOutflow / $totalRealizedRevenue) * 100, 1) : 0;
 
@@ -194,7 +206,16 @@ class FinancialAnalyticsController extends Controller
             $monthStart = Carbon::create($currentYear, $m, 1)->startOfMonth();
             $monthEnd = Carbon::create($currentYear, $m, 1)->endOfMonth();
 
-            $mInflow = (float) Student::whereBetween('created_at', [$monthStart, $monthEnd])->sum('paid_amount');
+            $mCashIncome = (float) CashTransaction::where('type', 'income')
+                ->whereBetween('transaction_date', [$monthStart, $monthEnd])
+                ->sum('amount');
+
+            $mStudentInflow = (float) Student::whereBetween('created_at', [$monthStart, $monthEnd])->sum('paid_amount');
+            $mInflow = $mCashIncome > 0 ? $mCashIncome : $mStudentInflow;
+
+            $mCashExpense = (float) CashTransaction::where('type', 'expense')
+                ->whereBetween('transaction_date', [$monthStart, $monthEnd])
+                ->sum('amount');
 
             $mReimb = (float) Reimbursement::where('type', 'reimbursement')
                 ->whereIn('status', ['paid', 'settled'])
@@ -216,7 +237,7 @@ class FinancialAnalyticsController extends Controller
                 })
                 ->sum('amount_approved');
 
-            $mOutflow = $mReimb + $mAdv;
+            $mOutflow = $mCashExpense > 0 ? $mCashExpense : ($mReimb + $mAdv);
             $monthlyComparison[] = [
                 'month' => $m,
                 'month_name' => $monthStart->translatedFormat('M'),

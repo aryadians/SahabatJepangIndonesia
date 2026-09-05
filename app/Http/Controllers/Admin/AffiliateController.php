@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Affiliate;
+use App\Models\CashTransaction;
 use App\Models\SiteSetting;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -72,7 +74,26 @@ class AffiliateController extends Controller
         $totalReferredLeads = \App\Models\Consultation::whereNotNull('affiliate_code')->count();
         $totalReferredStudents = \App\Models\Student::whereNotNull('affiliate_code')->count();
 
-        return view('admin.affiliates.index', compact('affiliates', 'totalAffiliates', 'totalReferredLeads', 'totalReferredStudents'));
+        // Total Akumulasi Komisi Se-LPK
+        $allAffiliates = Affiliate::withCount('students')->get();
+        $totalCommissionEarned = $allAffiliates->sum(fn($a) => $a->total_reward_earned);
+        $totalCommissionPaid = (float) CashTransaction::where('reference_type', 'affiliate')
+            ->where('type', 'expense')
+            ->sum('amount');
+        $totalCommissionPending = max(0, $totalCommissionEarned - $totalCommissionPaid);
+
+        $paymentMethods = CashTransaction::PAYMENT_METHODS;
+
+        return view('admin.affiliates.index', compact(
+            'affiliates',
+            'totalAffiliates',
+            'totalReferredLeads',
+            'totalReferredStudents',
+            'totalCommissionEarned',
+            'totalCommissionPaid',
+            'totalCommissionPending',
+            'paymentMethods'
+        ));
     }
 
     /**
@@ -357,4 +378,85 @@ class AffiliateController extends Controller
 
         return view('admin.affiliates.export_pdf', compact('affiliates', 'totalAffiliates', 'totalStudents', 'totalCommission'));
     }
+
+    /**
+     * Pencairan Komisi Afiliasi / BKK ke Buku Kas Umum
+     */
+    public function payoutCommission(Request $request, $id)
+    {
+        $affiliate = Affiliate::findOrFail($id);
+        $pendingCommission = $affiliate->pending_commission;
+
+        if ($pendingCommission <= 0) {
+            return back()->with('error', "Mitra {$affiliate->name} tidak memiliki saldo komisi tertunda untuk dicairkan.");
+        }
+
+        $validated = $request->validate([
+            'amount' => "required|numeric|min:1000|max:{$pendingCommission}",
+            'payment_method' => 'required|string|in:' . implode(',', array_keys(CashTransaction::PAYMENT_METHODS)),
+            'payout_date' => 'required|date',
+            'notes' => 'nullable|string|max:1000',
+            'proof_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240',
+        ]);
+
+        // Check if period is locked
+        $lockDate = SiteSetting::get('financial_lock_until');
+        if ($lockDate && $validated['payout_date'] <= $lockDate) {
+            return back()->with('error', "Gagal! Tanggal pencairan komisi berada dalam periode yang telah Ditutup Buku (s/d " . Carbon::parse($lockDate)->format('d/m/Y') . ").");
+        }
+
+        $proofBase64 = null;
+        if ($request->hasFile('proof_file')) {
+            $file = $request->file('proof_file');
+            $mime = $file->getMimeType();
+            $data = base64_encode(file_get_contents($file->getRealPath()));
+            $proofBase64 = 'data:' . $mime . ';base64,' . $data;
+        }
+
+        $trxNumber = CashTransaction::generateNumber('expense');
+
+        $trx = CashTransaction::create([
+            'transaction_number' => $trxNumber,
+            'transaction_date' => $validated['payout_date'],
+            'type' => 'expense',
+            'category' => 'affiliate_commission',
+            'title' => "Pencairan Komisi Referral - {$affiliate->name} (" . ($affiliate->institution_name ?: $affiliate->type_label) . ")",
+            'amount' => $validated['amount'],
+            'payment_method' => $validated['payment_method'],
+            'reference_type' => 'affiliate',
+            'reference_id' => $affiliate->id,
+            'proof_file' => $proofBase64,
+            'notes' => $validated['notes'] ?: "Pencairan komisi referral kepada {$affiliate->name}. Rekening: " . ($affiliate->bank_name ?: 'Bank') . ' ' . ($affiliate->bank_account_number ?: '-') . ' a.n ' . ($affiliate->bank_account_holder ?: '-'),
+            'recorded_by' => auth()->user()->name ?? 'Admin Keuangan',
+        ]);
+
+        $formattedAmount = 'Rp ' . number_format($validated['amount'], 0, ',', '.');
+
+        // Optional Fonnte notification
+        $cleanPhone = preg_replace('/[^0-9]/', '', $affiliate->phone);
+        if (str_starts_with($cleanPhone, '0')) {
+            $cleanPhone = '62' . substr($cleanPhone, 1);
+        }
+
+        if (\App\Services\FonnteService::isConfigured() && !empty($cleanPhone)) {
+            $msg = "Konnichiwa, Bapak/Ibu *{$affiliate->name}* ({$affiliate->institution_name}) 🌸\n\n";
+            $msg .= "Kabar gembira! Pencairan insentif komisi kemitraan referral Anda telah berhasil diproses oleh Manajemen *LPK Sahabat Jepang Indonesia*.\n\n";
+            $msg .= "📋 *Detail Pencairan Komisi*:\n";
+            $msg .= "🔖 *No. Bukti Kas*: `{$trxNumber}`\n";
+            $msg .= "💵 *Nominal Dicairkan*: *{$formattedAmount}*\n";
+            $msg .= "🏦 *Tujuan Rekening*: " . ($affiliate->bank_name ?: '-') . " " . ($affiliate->bank_account_number ?: '-') . " a.n " . ($affiliate->bank_account_holder ?: '-') . "\n";
+            $msg .= "📅 *Tanggal Transaksi*: " . Carbon::parse($validated['payout_date'])->format('d/m/Y') . "\n\n";
+            $msg .= "Terima kasih banyak atas kemitraan dan dedikasi Anda dalam menyalurkan generasi muda unggul menuju karir di Jepang 🇯🇵.\n\n";
+            $msg .= "_LPK Sahabat Jepang Indonesia - Lembaga Penyalur & Pelatihan Kerja Resmi Kemenaker RI_";
+
+            \App\Services\FonnteService::send($cleanPhone, $msg, [
+                'type' => 'affiliate_payout',
+                'affiliate_id' => $affiliate->id,
+                'transaction_id' => $trx->id,
+            ]);
+        }
+
+        return back()->with('success', "Pencairan komisi sebesar {$formattedAmount} kepada {$affiliate->name} berhasil dicatat di Buku Kas Umum dengan No. Bukti {$trxNumber}.");
+    }
 }
+

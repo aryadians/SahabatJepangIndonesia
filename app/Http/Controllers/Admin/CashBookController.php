@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\CashTransaction;
+use App\Models\SiteSetting;
 use App\Traits\UploadsImage;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -19,6 +20,9 @@ class CashBookController extends Controller
     public function index(Request $request)
     {
         $query = $this->buildFilteredQuery($request);
+
+        // Status Tutup Buku / Periode Terkunci
+        $lockDate = SiteSetting::get('financial_lock_until');
 
         // Filter parameters for view
         $period = $request->input('period', 'this_month');
@@ -97,10 +101,34 @@ class CashBookController extends Controller
             'incomeCategories',
             'expenseCategories',
             'paymentMethods',
+            'lockDate',
             'period',
             'startDate',
             'endDate'
         ));
+    }
+
+    /**
+     * Kunci / Buka Tutup Buku Periode Keuangan
+     */
+    public function togglePeriodLock(Request $request)
+    {
+        $action = $request->input('action', 'lock');
+
+        if ($action === 'unlock') {
+            SiteSetting::set('financial_lock_until', null, 'financial');
+            return back()->with('success', 'Kunci periode tutup buku berhasil dibuka. Semua periode kas dapat diedit kembali.');
+        }
+
+        $request->validate([
+            'lock_date' => 'required|date',
+        ]);
+
+        $lockDate = $request->input('lock_date');
+        SiteSetting::set('financial_lock_until', $lockDate, 'financial');
+
+        $formattedDate = Carbon::parse($lockDate)->format('d/m/Y');
+        return back()->with('success', "Tutup buku berhasil diaktifkan! Transaksi kas sampai dengan {$formattedDate} sekarang terkunci dan terlindungi.");
     }
 
     /**
@@ -118,6 +146,13 @@ class CashBookController extends Controller
             'notes' => 'nullable|string|max:1000',
             'proof_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240',
         ]);
+
+        // Cek apakah tanggal transaksi berada dalam periode tutup buku
+        $lockDate = SiteSetting::get('financial_lock_until');
+        if ($lockDate && $validated['transaction_date'] <= $lockDate) {
+            $formattedLock = Carbon::parse($lockDate)->format('d/m/Y');
+            return back()->with('error', "Gagal! Tanggal transaksi berada dalam periode yang telah Ditutup Buku (Lock Period s/d {$formattedLock}). Buka kunci periode terlebih dahulu jika perlu input susulan.");
+        }
 
         $proofBase64 = null;
         if ($request->hasFile('proof_file')) {
@@ -164,6 +199,14 @@ class CashBookController extends Controller
             'proof_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240',
         ]);
 
+        // Cek proteksi periode tutup buku
+        $lockDate = SiteSetting::get('financial_lock_until');
+        $existingDate = $transaction->transaction_date ? Carbon::parse($transaction->transaction_date)->format('Y-m-d') : null;
+        if ($lockDate && ($existingDate <= $lockDate || $validated['transaction_date'] <= $lockDate)) {
+            $formattedLock = Carbon::parse($lockDate)->format('d/m/Y');
+            return back()->with('error', "Gagal! Transaksi kas ini berada dalam periode yang telah Ditutup Buku (Lock Period s/d {$formattedLock}). Buka kunci periode terlebih dahulu jika memerlukan koreksi.");
+        }
+
         if ($request->hasFile('proof_file')) {
             $file = $request->file('proof_file');
             $mime = $file->getMimeType();
@@ -188,6 +231,15 @@ class CashBookController extends Controller
     public function destroy($id)
     {
         $transaction = CashTransaction::findOrFail($id);
+
+        // Cek proteksi periode tutup buku
+        $lockDate = SiteSetting::get('financial_lock_until');
+        $existingDate = $transaction->transaction_date ? Carbon::parse($transaction->transaction_date)->format('Y-m-d') : null;
+        if ($lockDate && $existingDate <= $lockDate) {
+            $formattedLock = Carbon::parse($lockDate)->format('d/m/Y');
+            return back()->with('error', "Gagal! Transaksi {$transaction->transaction_number} berada dalam periode yang telah Ditutup Buku (s/d {$formattedLock}). Transaksi terkunci dari penghapusan.");
+        }
+
         $no = $transaction->transaction_number;
         $transaction->delete();
 

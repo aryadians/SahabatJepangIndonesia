@@ -109,6 +109,7 @@ class CashTransaction extends Model
             'marketing_ads' => ['bg' => 'bg-pink-100 text-pink-800 border-pink-200', 'icon' => 'megaphone'],
             'student_equipment' => ['bg' => 'bg-teal-100 text-teal-800 border-teal-200', 'icon' => 'book-open'],
             'reimbursement', 'cash_advance' => ['bg' => 'bg-rose-100 text-rose-800 border-rose-200', 'icon' => 'receipt'],
+            'affiliate_commission' => ['bg' => 'bg-purple-100 text-purple-800 border-purple-200', 'icon' => 'gift'],
             default => ['bg' => 'bg-slate-100 text-slate-800 border-slate-200', 'icon' => 'file-text'],
         };
     }
@@ -143,5 +144,13 @@ class CashTransaction extends Model
     public function reimbursement(): BelongsTo
     {
         return $this->belongsTo(Reimbursement::class, 'reference_id');
+    }
+
+    /**
+     * Relasi ke Mitra Afiliasi jika transaksi terkait pencairan komisi BKK/SMK
+     */
+    public function affiliate(): BelongsTo
+    {
+        return $this->belongsTo(Affiliate::class, 'reference_id');
     }
 }

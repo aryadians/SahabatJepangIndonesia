@@ -225,6 +225,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // 14-GL. Buku Kas Umum & Jurnal Akuntansi Keuangan LPK
     Route::get('/cash-book/export-csv', [CashBookController::class, 'exportCsv'])->name('cash-book.export.csv');
     Route::get('/cash-book/export-pdf', [CashBookController::class, 'exportPdf'])->name('cash-book.export.pdf');
+    Route::post('/cash-book/period-lock', [CashBookController::class, 'togglePeriodLock'])->name('cash-book.period-lock');
     Route::resource('cash-book', CashBookController::class)->except(['create', 'show', 'edit']);
 
     // 14b. Klaim Reimbursement & Uang Muka Perjalanan Dinas (Cash Advance)
@@ -258,6 +259,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/affiliates/export-csv', [AffiliateController::class, 'exportCsv'])->name('affiliates.export.csv');
     Route::get('/affiliates/{id}/students', [AffiliateController::class, 'referredStudents'])->name('affiliates.students');
     Route::post('/affiliates/{id}/send-wa', [AffiliateController::class, 'sendWaGreeting'])->name('affiliates.send.wa');
+    Route::post('/affiliates/{id}/payout', [AffiliateController::class, 'payoutCommission'])->name('affiliates.payout');
     Route::resource('affiliates', AffiliateController::class)->except(['create', 'show', 'edit']);
 
     // 16. User Management & RBAC Roles

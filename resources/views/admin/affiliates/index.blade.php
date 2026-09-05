@@ -6,26 +6,17 @@
 @section('content')
 <div class="space-y-8">
     
-    <!-- KPI Summary Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+    <!-- KPI Summary Grid (Kinerja Kemitraan & Keuangan Komisi) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
                 <i data-lucide="handshake" class="w-6 h-6"></i>
             </div>
             <div>
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Mitra Aktif</p>
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Mitra Aktif & Leads</p>
                 <h3 class="text-2xl font-black text-slate-900 mt-0.5">{{ $totalAffiliates }} Mitra</h3>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
-                <i data-lucide="user-check" class="w-6 h-6"></i>
-            </div>
-            <div>
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Leads dari Referral</p>
-                <h3 class="text-2xl font-black text-purple-600 mt-0.5">{{ $totalReferredLeads }} Pendaftar</h3>
+                <p class="text-[11px] text-purple-600 font-bold mt-0.5">{{ $totalReferredLeads }} Leads Pendaftar</p>
             </div>
         </div>
 
@@ -34,21 +25,33 @@
                 <i data-lucide="graduation-cap" class="w-6 h-6"></i>
             </div>
             <div>
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Siswa Masuk Kelas</p>
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Siswa Terdaftar (Enrolled)</p>
                 <h3 class="text-2xl font-black text-emerald-600 mt-0.5">{{ $totalReferredStudents }} Siswa</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Konversi resmi masuk pelatihan</p>
             </div>
         </div>
 
         <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+            <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
                 <i data-lucide="award" class="w-6 h-6"></i>
             </div>
             <div>
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Halaman Pendaftaran</p>
-                <a href="{{ route('affiliates.public.register') }}" target="_blank" class="text-xs font-black text-japan-600 hover:underline flex items-center gap-1 mt-1">
-                    <span>Buka Link Publik</span>
-                    <i data-lucide="external-link" class="w-3 h-3"></i>
-                </a>
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Hak Komisi Mitra</p>
+                <h3 class="text-2xl font-black text-purple-700 mt-0.5">Rp {{ number_format($totalCommissionEarned, 0, ',', '.') }}</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Total komisi siswa enrolled</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4 bg-gradient-to-br from-slate-900 to-slate-950 text-white">
+            <div class="w-12 h-12 rounded-xl bg-slate-800 text-emerald-400 flex items-center justify-center font-bold">
+                <i data-lucide="wallet" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <p class="text-slate-300 text-xs font-bold uppercase tracking-wider">Status Pencairan Kas</p>
+                <h3 class="text-xl font-black text-emerald-400 mt-0.5">Rp {{ number_format($totalCommissionPaid, 0, ',', '.') }}</h3>
+                <p class="text-[11px] text-amber-300 font-medium mt-0.5">
+                    Sisa Pending: Rp {{ number_format($totalCommissionPending, 0, ',', '.') }}
+                </p>
             </div>
         </div>
 
@@ -167,12 +170,13 @@
                 <thead>
                     <tr class="bg-slate-50 border-b border-slate-200 text-slate-400 text-[11px] uppercase font-bold">
                         <th class="py-3.5 px-4">Nama Mitra & Instansi</th>
-                        <th class="py-3.5 px-4">Kode Referral & Link</th>
-                        <th class="py-3.5 px-4 text-center">Leads Mendaftar</th>
-                        <th class="py-3.5 px-4 text-center">Siswa Masuk</th>
+                        <th class="py-3.5 px-4">Kode & Tautan</th>
+                        <th class="py-3.5 px-4 text-center">Leads / Siswa</th>
                         <th class="py-3.5 px-4">Reward / Siswa</th>
-                        <th class="py-3.5 px-4">Total Komisi</th>
-                        <th class="py-3.5 px-4 text-right">Aksi</th>
+                        <th class="py-3.5 px-4">Hak Komisi</th>
+                        <th class="py-3.5 px-4">Sudah Dibayar</th>
+                        <th class="py-3.5 px-4">Sisa Komisi</th>
+                        <th class="py-3.5 px-4 text-right">Aksi & Kas</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -196,43 +200,67 @@
                                     <button 
                                         type="button" 
                                         onclick="navigator.clipboard.writeText('{{ url('/?ref=' . $a->code) }}'); alert('Link referral disalin!');" 
-                                        class="p-1 rounded text-blue-600 hover:bg-blue-50 transition" 
+                                        class="p-1 rounded text-blue-600 hover:bg-blue-50 transition cursor-pointer" 
                                         title="Salin Link Referral"
                                     >
                                         <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                                     </button>
                                 </div>
                             </td>
-                            <td class="py-3.5 px-4 text-center font-bold text-purple-700">
-                                {{ $a->consultations_count }} Leads
-                            </td>
-                            <td class="py-3.5 px-4 text-center font-black text-emerald-700">
-                                {{ $a->students_count }} Siswa
+                            <td class="py-3.5 px-4 text-center">
+                                <div class="font-black text-emerald-700">{{ $a->students_count }} Siswa</div>
+                                <div class="text-[10px] text-purple-600 font-bold font-mono">{{ $a->consultations_count }} Leads</div>
                             </td>
                             <td class="py-3.5 px-4 text-slate-600 font-semibold font-mono">
-                                Rp {{ number_format($a->reward_per_lead) }}
+                                Rp {{ number_format($a->reward_per_lead, 0, ',', '.') }}
                             </td>
-                            <td class="py-3.5 px-4 font-black text-emerald-600 font-mono">
-                                Rp {{ number_format($a->total_reward_earned) }}
+                            <td class="py-3.5 px-4 font-bold text-slate-900 font-mono">
+                                Rp {{ number_format($a->total_reward_earned, 0, ',', '.') }}
+                            </td>
+                            <td class="py-3.5 px-4 font-bold text-emerald-700 font-mono">
+                                Rp {{ number_format($a->total_paid_commission, 0, ',', '.') }}
+                            </td>
+                            <td class="py-3.5 px-4 font-mono">
+                                @if($a->pending_commission > 0)
+                                    <span class="px-2 py-0.5 rounded font-black text-rose-700 bg-rose-50 border border-rose-200 inline-block">
+                                        Rp {{ number_format($a->pending_commission, 0, ',', '.') }}
+                                    </span>
+                                @else
+                                    <span class="text-slate-400 font-medium text-xs">Lunas</span>
+                                @endif
                             </td>
                             <td class="py-3.5 px-4 text-right">
-                                <div class="inline-flex items-center gap-1.5">
+                                <div class="inline-flex items-center justify-end gap-1.5 flex-wrap">
+                                    <!-- Bayar Komisi (Kas Keluar) jika ada pending -->
+                                    @if($a->pending_commission > 0)
+                                        <button 
+                                            type="button" 
+                                            data-aff='@json($a)'
+                                            onclick="openPayoutModal(JSON.parse(this.getAttribute('data-aff')), {{ $a->pending_commission }})" 
+                                            class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition cursor-pointer"
+                                            title="Cairkan Komisi & Catat ke Buku Kas Umum"
+                                        >
+                                            <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
+                                            <span>Bayar</span>
+                                        </button>
+                                    @endif
+
                                     <!-- Detail Siswa Rujukan -->
                                     <button 
                                         type="button" 
                                         onclick="openAffiliateStudentsModal({{ $a->id }})" 
-                                        class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center gap-1 transition"
+                                        class="px-2 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center gap-1 transition cursor-pointer"
                                         title="Lihat Daftar Siswa Rujukan & Status Karir"
                                     >
                                         <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
-                                        <span>Siswa ({{ $a->students_count }})</span>
+                                        <span>({{ $a->students_count }})</span>
                                     </button>
 
                                     <!-- Kirim Sapaan WhatsApp -->
                                     <button 
                                         type="button" 
                                         onclick="openAffiliateWaModal({{ $a->id }}, '{{ addslashes($a->name) }}', '{{ $a->phone }}', '{{ addslashes($a->institution_name ?: $a->name) }}')" 
-                                        class="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold transition"
+                                        class="p-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold transition cursor-pointer"
                                         title="Kirim Sapaan / Rekap WA via Fonnte"
                                     >
                                         <i data-lucide="message-circle" class="w-4 h-4"></i>
@@ -243,17 +271,17 @@
                                         type="button" 
                                         data-aff='@json($a)'
                                         onclick="openEditAffiliate(JSON.parse(this.getAttribute('data-aff')))" 
-                                        class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs flex items-center gap-1 transition"
+                                        class="p-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs transition cursor-pointer"
+                                        title="Edit Data Mitra"
                                     >
                                         <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
-                                        <span>Edit</span>
                                     </button>
 
                                     <!-- Hapus -->
                                     <form action="{{ route('admin.affiliates.destroy', $a->id) }}" method="POST" class="inline" onsubmit="return confirm('Hapus data mitra {{ $a->name }}?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 transition" title="Hapus">
+                                        <button type="submit" class="p-1 rounded-lg text-rose-500 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 transition cursor-pointer" title="Hapus">
                                             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                         </button>
                                     </form>
@@ -262,7 +290,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="py-8 text-center text-slate-400 text-xs">Belum ada data mitra afiliasi.</td>
+                            <td colspan="8" class="py-8 text-center text-slate-400 text-xs">Belum ada data mitra afiliasi.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -479,6 +507,113 @@
     </div>
 </div>
 
+<!-- Modal 4: Pencairan Komisi Mitra ke Buku Kas Umum -->
+<div id="payoutModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+    <div class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs" onclick="closePayoutModal()"></div>
+    <div class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-200">
+        <div class="bg-gradient-to-r from-emerald-700 to-teal-800 text-white p-5 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-white/20 text-white flex items-center justify-center font-bold">
+                    <i data-lucide="wallet" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-black text-white">Pencairan Komisi Referral Mitra</h3>
+                    <p class="text-[10px] text-emerald-200 font-semibold">Otomatis Tercatat di Buku Kas Umum (BKK/Kredit)</p>
+                </div>
+            </div>
+            <button onclick="closePayoutModal()" class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm cursor-pointer">
+                &times;
+            </button>
+        </div>
+
+        <form id="payoutCommissionForm" method="POST" enctype="multipart/form-data" class="p-6 space-y-4 text-xs">
+            @csrf
+            
+            <div class="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-100 space-y-2">
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-500 font-medium">Penerima Komisi:</span>
+                    <span id="payoutMitraName" class="font-extrabold text-slate-900">-</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-500 font-medium">Rekening Bank Tujuan:</span>
+                    <span id="payoutMitraBank" class="font-bold text-slate-800 font-mono">-</span>
+                </div>
+                <div class="flex justify-between items-center pt-2 border-t border-emerald-200/60">
+                    <span class="text-emerald-800 font-bold uppercase text-[11px]">Sisa Komisi Belum Dibayar:</span>
+                    <span id="payoutMitraPending" class="font-black text-emerald-700 text-sm font-mono">Rp 0</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-slate-700 uppercase">Nominal Pencairan (Rp) *</label>
+                    <input 
+                        type="number" 
+                        name="amount" 
+                        id="payoutAmountInput" 
+                        required 
+                        min="1000" 
+                        step="1000"
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-600 font-mono font-bold text-sm text-emerald-800"
+                    >
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-slate-700 uppercase">Akun Kas / Bank Pembayar *</label>
+                    <select name="payment_method" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-600 font-bold">
+                        @foreach($paymentMethods as $pmKey => $pmLabel)
+                            <option value="{{ $pmKey }}">{{ $pmLabel }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-slate-700 uppercase">Tanggal Pembayaran *</label>
+                    <input 
+                        type="date" 
+                        name="payout_date" 
+                        value="{{ date('Y-m-d') }}" 
+                        required 
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-600 font-bold"
+                    >
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-slate-700 uppercase">Bukti Transfer (Opsional)</label>
+                    <input 
+                        type="file" 
+                        name="proof_file" 
+                        accept="image/*,.pdf"
+                        class="w-full text-[11px] text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
+                    >
+                </div>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block font-bold text-slate-700 uppercase">Catatan / Memo Transaksi</label>
+                <input 
+                    type="text" 
+                    name="notes" 
+                    placeholder="Contoh: Pencairan komisi rujukan siswa gelombang Agustus" 
+                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-600"
+                >
+            </div>
+
+            <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <button type="button" onclick="closePayoutModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 cursor-pointer">
+                    Batal
+                </button>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-md flex items-center gap-1.5 cursor-pointer">
+                    <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                    <span>Cairkan Komisi (Kas Keluar)</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     function openEditAffiliate(a) {
         document.getElementById('editAffName').value = a.name;
@@ -577,6 +712,26 @@
 
     function closeAffiliateWaModal() {
         document.getElementById('affiliateWaModal').classList.add('hidden');
+    }
+
+    function openPayoutModal(aff, pending) {
+        const form = document.getElementById('payoutCommissionForm');
+        form.action = `/admin/affiliates/${aff.id}/payout`;
+
+        document.getElementById('payoutMitraName').textContent = aff.name + (aff.institution_name ? ' (' + aff.institution_name + ')' : '');
+        document.getElementById('payoutMitraBank').textContent = (aff.bank_name ? aff.bank_name + ' - ' : '') + (aff.bank_account_number || '-') + ' a.n ' + (aff.bank_account_holder || '-');
+        document.getElementById('payoutMitraPending').textContent = 'Rp ' + Number(pending).toLocaleString('id-ID');
+
+        const amountInput = document.getElementById('payoutAmountInput');
+        amountInput.value = pending;
+        amountInput.max = pending;
+
+        document.getElementById('payoutModal').classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function closePayoutModal() {
+        document.getElementById('payoutModal').classList.add('hidden');
     }
 </script>
 @endsection

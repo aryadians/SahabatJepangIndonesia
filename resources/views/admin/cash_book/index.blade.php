@@ -68,6 +68,16 @@
                 <i data-lucide="pie-chart" class="w-4 h-4 text-blue-600"></i>
                 <span class="hidden sm:inline">Rekap Laba Rugi</span>
             </button>
+
+            <button 
+                type="button" 
+                onclick="openModal('periodLockModal')" 
+                class="px-3.5 py-2.5 rounded-xl {{ $lockDate ? 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200' }} font-bold text-xs border shadow-xs flex items-center gap-1.5 transition cursor-pointer"
+                title="{{ $lockDate ? 'Tutup Buku Aktif s/d ' . \Carbon\Carbon::parse($lockDate)->format('d/m/Y') : 'Kunci Periode / Tutup Buku' }}"
+            >
+                <i data-lucide="{{ $lockDate ? 'lock' : 'unlock' }}" class="w-4 h-4 {{ $lockDate ? 'text-amber-600' : 'text-slate-500' }}"></i>
+                <span class="hidden sm:inline">{{ $lockDate ? 'Tutup Buku: ' . \Carbon\Carbon::parse($lockDate)->format('d/m/Y') : 'Tutup Buku' }}</span>
+            </button>
         </div>
     </div>
 
@@ -370,32 +380,43 @@
 
                             <!-- Aksi -->
                             <td class="py-3 px-4 text-center">
+                                @php
+                                    $isLocked = ($lockDate && $trx->transaction_date && \Carbon\Carbon::parse($trx->transaction_date)->format('Y-m-d') <= $lockDate);
+                                @endphp
                                 <div class="flex items-center justify-center gap-1">
-                                    <button 
-                                        type="button" 
-                                        onclick="openEditModal({{ json_encode($trx) }})" 
-                                        class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition" 
-                                        title="Edit Transaksi"
-                                    >
-                                        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                                    </button>
+                                    @if($isLocked)
+                                        <span class="p-1.5 rounded-lg bg-amber-50 text-amber-600 inline-flex items-center" title="Terkunci (Periode Tutup Buku s/d {{ \Carbon\Carbon::parse($lockDate)->format('d/m/Y') }})">
+                                            <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                                        </span>
+                                    @else
+                                        <button 
+                                            type="button" 
+                                            onclick="openEditModal({{ json_encode($trx) }})" 
+                                            class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition cursor-pointer" 
+                                            title="Edit Transaksi"
+                                        >
+                                            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                    @endif
 
                                     <button 
                                         type="button" 
                                         onclick="duplicateTransaction({{ json_encode($trx) }})" 
-                                        class="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition" 
-                                        title="Catat Ulang / Duplikat Transaksi Ini"
+                                        class="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition cursor-pointer" 
+                                        title="Catat Ulang / Duplikat Transaksi Ini (Kas Baru)"
                                     >
                                         <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                                     </button>
 
-                                    <form action="{{ route('admin.cash-book.destroy', $trx->id) }}" method="POST" onsubmit="return confirm('Hapus transaksi kas {{ $trx->transaction_number }}?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition" title="Hapus Transaksi">
-                                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                                        </button>
-                                    </form>
+                                    @if(!$isLocked)
+                                        <form action="{{ route('admin.cash-book.destroy', $trx->id) }}" method="POST" onsubmit="return confirm('Hapus transaksi kas {{ $trx->transaction_number }}?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition cursor-pointer" title="Hapus Transaksi">
+                                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -749,6 +770,112 @@
             <button type="button" onclick="closeModal('incomeStatementModal')" class="px-5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">
                 Tutup Ringkasan
             </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 4: Kunci Periode & Tutup Buku Bulanan (Financial Closing Period) -->
+<div id="periodLockModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 custom-modal">
+    <div class="fixed inset-0 modal-backdrop-blur" onclick="closeModal('periodLockModal')"></div>
+    <div class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden modal-content-box z-10 animate-in fade-in zoom-in-95 duration-200">
+        <div class="bg-gradient-to-r from-slate-900 via-slate-850 to-slate-800 text-white p-5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl {{ $lockDate ? 'bg-amber-500/20 text-amber-400' : 'bg-blue-500/20 text-blue-400' }} flex items-center justify-center font-bold">
+                    <i data-lucide="{{ $lockDate ? 'lock' : 'shield-check' }}" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h4 class="font-extrabold text-sm text-white">Tutup Buku & Kunci Periode Keuangan</h4>
+                    <p class="text-[11px] text-slate-400">Proteksi integritas pembukuan kas & audit LPK</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeModal('periodLockModal')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer">
+                &times;
+            </button>
+        </div>
+
+        <div class="p-6 space-y-4 text-xs">
+            <!-- Status Card -->
+            <div class="p-4 rounded-2xl {{ $lockDate ? 'bg-amber-50 border border-amber-200' : 'bg-slate-50 border border-slate-200' }} space-y-1.5">
+                <div class="flex items-center justify-between">
+                    <span class="font-bold text-slate-600 uppercase text-[10px] tracking-wider">Status Pembukuan Saat Ini:</span>
+                    <span class="px-2.5 py-0.5 rounded-full font-black text-[10px] {{ $lockDate ? 'bg-amber-100 text-amber-900' : 'bg-emerald-100 text-emerald-800' }}">
+                        {{ $lockDate ? 'TUTUP BUKU AKTIF' : 'PERIODE TERBUKA' }}
+                    </span>
+                </div>
+                @if($lockDate)
+                    <p class="text-slate-800 font-bold text-xs">
+                        Terkunci sampai dengan: <span class="text-amber-800 font-mono font-black">{{ \Carbon\Carbon::parse($lockDate)->format('d F Y') }}</span>
+                    </p>
+                    <p class="text-[11px] text-slate-500">
+                        Seluruh mutasi kas masuk, kas keluar, dan klaim reimbursement pada atau sebelum tanggal tersebut tidak dapat diubah atau dihapus.
+                    </p>
+                @else
+                    <p class="text-slate-600 text-xs">
+                        Semua periode keuangan saat ini terbuka untuk pencatatan dan koreksi transaksi kas.
+                    </p>
+                @endif
+            </div>
+
+            <!-- Form Kunci Periode -->
+            <form action="{{ route('admin.cash-book.period-lock') }}" method="POST" class="space-y-4">
+                @csrf
+                <input type="hidden" name="action" value="lock">
+
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-slate-700 uppercase text-[11px]">Kunci Transaksi Sampai Tanggal *</label>
+                    <input 
+                        type="date" 
+                        name="lock_date" 
+                        id="inputLockDate"
+                        value="{{ $lockDate ?: \Carbon\Carbon::now()->subMonth()->endOfMonth()->format('Y-m-d') }}" 
+                        required 
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-japan-600 font-bold text-slate-800"
+                    >
+                    <div class="flex items-center gap-2 mt-2 flex-wrap">
+                        <button 
+                            type="button" 
+                            onclick="document.getElementById('inputLockDate').value = '{{ \Carbon\Carbon::now()->subMonth()->endOfMonth()->format('Y-m-d') }}'" 
+                            class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] transition cursor-pointer"
+                        >
+                            Akhir Bulan Lalu ({{ \Carbon\Carbon::now()->subMonth()->endOfMonth()->format('d/m/Y') }})
+                        </button>
+                        <button 
+                            type="button" 
+                            onclick="document.getElementById('inputLockDate').value = '{{ \Carbon\Carbon::now()->format('Y-m-d') }}'" 
+                            class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] transition cursor-pointer"
+                        >
+                            Hari Ini ({{ \Carbon\Carbon::now()->format('d/m/Y') }})
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                    @if($lockDate)
+                        <button 
+                            type="submit" 
+                            name="action" 
+                            value="unlock" 
+                            class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 transition cursor-pointer flex items-center gap-1"
+                            onclick="return confirm('Buka kunci periode tutup buku? Transaksi lampau akan dapat diedit kembali.')"
+                        >
+                            <i data-lucide="unlock" class="w-3.5 h-3.5"></i>
+                            <span>Buka Kunci (Unlock)</span>
+                        </button>
+                    @else
+                        <div></div>
+                    @endif
+
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="closeModal('periodLockModal')" class="px-4 py-2 rounded-xl text-slate-500 hover:bg-slate-100 font-bold cursor-pointer">
+                            Batal
+                        </button>
+                        <button type="submit" class="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black shadow-md flex items-center gap-1.5 cursor-pointer">
+                            <i data-lucide="lock" class="w-3.5 h-3.5 text-amber-400"></i>
+                            <span>Simpan Tutup Buku</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>

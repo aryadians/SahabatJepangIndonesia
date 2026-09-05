@@ -260,4 +260,140 @@ class CashBookTest extends TestCase
         $pdfRes->assertSee('BKM-EXP-001');
         $pdfRes->assertSee('15.000.000');
     }
+
+    public function test_affiliate_commission_payout_creates_cash_book_expense(): void
+    {
+        $this->actingAs($this->admin);
+
+        $affiliate = \App\Models\Affiliate::create([
+            'code' => 'SMK-TEST-01',
+            'name' => 'Bambang Subagio',
+            'type' => 'smk_bkk',
+            'institution_name' => 'SMKN 1 Majalengka',
+            'phone' => '08123456789',
+            'reward_per_lead' => 500000,
+            'bank_name' => 'BCA',
+            'bank_account_number' => '1234567890',
+            'bank_account_holder' => 'Bambang Subagio',
+        ]);
+
+        // Create 2 students with this affiliate code
+        Student::create([
+            'nis' => 'SJI-AFF-01',
+            'name' => 'Siswa Rujukan 1',
+            'gender' => 'Laki-laki',
+            'total_cost' => 20000000,
+            'paid_amount' => 5000000,
+            'status' => 'active',
+            'affiliate_code' => $affiliate->code,
+        ]);
+
+        Student::create([
+            'nis' => 'SJI-AFF-02',
+            'name' => 'Siswa Rujukan 2',
+            'gender' => 'Perempuan',
+            'total_cost' => 20000000,
+            'paid_amount' => 5000000,
+            'status' => 'active',
+            'affiliate_code' => $affiliate->code,
+        ]);
+
+        $this->assertEquals(1000000, $affiliate->total_reward_earned);
+        $this->assertEquals(1000000, $affiliate->pending_commission);
+        $this->assertEquals(0, $affiliate->total_paid_commission);
+
+        // Admin dispatches commission payout
+        $response = $this->post("/admin/affiliates/{$affiliate->id}/payout", [
+            'amount' => 500000,
+            'payment_method' => 'bank_bca',
+            'payout_date' => now()->toDateString(),
+            'notes' => 'Pencairan komisi 1 siswa pertama via transfer BCA',
+        ]);
+
+        $response->assertSessionHas('success');
+
+        // Verify CashTransaction was created
+        $this->assertDatabaseHas('cash_transactions', [
+            'type' => 'expense',
+            'category' => 'affiliate_commission',
+            'reference_type' => 'affiliate',
+            'reference_id' => $affiliate->id,
+            'amount' => 500000,
+        ]);
+
+        // Refresh affiliate and verify updated balances
+        $affiliate->refresh();
+        $this->assertEquals(500000, $affiliate->total_paid_commission);
+        $this->assertEquals(500000, $affiliate->pending_commission);
+    }
+
+    public function test_period_lock_prevents_updates_and_deletions_of_closed_transactions(): void
+    {
+        $this->actingAs($this->admin);
+
+        $closedDate = now()->subDays(5)->toDateString();
+
+        $trx = CashTransaction::create([
+            'transaction_number' => 'BKM-LOCK-001',
+            'transaction_date' => $closedDate,
+            'type' => 'income',
+            'category' => 'tuition_student',
+            'title' => 'Pembayaran Siswa Lama',
+            'amount' => 2000000,
+            'payment_method' => 'bank_mandiri',
+        ]);
+
+        // Lock period up to 2 days ago
+        $lockDate = now()->subDays(2)->toDateString();
+        $lockRes = $this->post('/admin/cash-book/period-lock', [
+            'action' => 'lock',
+            'lock_date' => $lockDate,
+        ]);
+        $lockRes->assertSessionHas('success');
+
+        // 1. Attempt to update locked transaction -> Should fail
+        $updateRes = $this->put("/admin/cash-book/{$trx->id}", [
+            'title' => 'Ganti Judul Transaksi Terkunci',
+            'category' => 'tuition_student',
+            'payment_method' => 'bank_mandiri',
+            'transaction_date' => $closedDate,
+        ]);
+        $updateRes->assertSessionHas('error');
+        $this->assertDatabaseMissing('cash_transactions', [
+            'id' => $trx->id,
+            'title' => 'Ganti Judul Transaksi Terkunci',
+        ]);
+
+        // 2. Attempt to delete locked transaction -> Should fail
+        $deleteRes = $this->delete("/admin/cash-book/{$trx->id}");
+        $deleteRes->assertSessionHas('error');
+        $this->assertDatabaseHas('cash_transactions', [
+            'id' => $trx->id,
+        ]);
+
+        // 3. Attempt to create new transaction in closed period -> Should fail
+        $createRes = $this->post('/admin/cash-book', [
+            'type' => 'expense',
+            'category' => 'utilities',
+            'title' => 'Beban Listrik Susulan',
+            'amount' => 500000,
+            'transaction_date' => $closedDate,
+            'payment_method' => 'cash_kasir',
+        ]);
+        $createRes->assertSessionHas('error');
+
+        // 4. Unlock period
+        $unlockRes = $this->post('/admin/cash-book/period-lock', [
+            'action' => 'unlock',
+        ]);
+        $unlockRes->assertSessionHas('success');
+
+        // 5. Now delete should succeed
+        $deleteSuccessRes = $this->delete("/admin/cash-book/{$trx->id}");
+        $deleteSuccessRes->assertRedirect('/admin/cash-book');
+        $this->assertDatabaseMissing('cash_transactions', [
+            'id' => $trx->id,
+        ]);
+    }
 }
+

@@ -55,6 +55,34 @@ class Affiliate extends Model
     }
 
     /**
+     * Riwayat Transaksi Pengeluaran Kas untuk Pencairan Komisi Mitra
+     */
+    public function cashTransactions(): HasMany
+    {
+        return $this->hasMany(CashTransaction::class, 'reference_id')
+            ->where('reference_type', 'affiliate');
+    }
+
+    /**
+     * Total Komisi yang Telah Dicairkan / Dibayarkan ke Mitra
+     */
+    public function getTotalPaidCommissionAttribute(): float
+    {
+        return (float) CashTransaction::where('reference_type', 'affiliate')
+            ->where('reference_id', $this->id)
+            ->where('type', 'expense')
+            ->sum('amount');
+    }
+
+    /**
+     * Sisa Komisi yang Belum Dicairkan (Pending)
+     */
+    public function getPendingCommissionAttribute(): float
+    {
+        return max(0, $this->total_reward_earned - $this->total_paid_commission);
+    }
+
+    /**
      * Label Kategori Kemitraan SMK / BKK
      */
     public function getTypeLabelAttribute(): string
