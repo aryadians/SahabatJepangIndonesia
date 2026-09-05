@@ -47,13 +47,33 @@
 
     <!-- 1. Logo & Brand Identity Settings (Base64 LONGTEXT) -->
     <div id="sec-logo" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 scroll-mt-32">
-        <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
-                <i data-lucide="image" class="w-5 h-5"></i>
+        <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
+                    <i data-lucide="image" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="font-extrabold text-slate-900 text-base">Logo Website (Header & Footer)</h3>
+                    <p class="text-xs text-slate-500">Ubah logo brand website yang tampil di header atas dan footer (disimpan sebagai Base64)</p>
+                </div>
             </div>
-            <div>
-                <h3 class="font-extrabold text-slate-900 text-base">Logo Website (Header & Footer)</h3>
-                <p class="text-xs text-slate-500">Ubah logo brand website yang tampil di header atas dan footer (disimpan sebagai Base64)</p>
+
+            <!-- Brand Mini Live Simulation Pill -->
+            <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs shadow-2xs">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Simulasi Header:</span>
+                <div class="flex items-center gap-2 font-black text-slate-800">
+                    <div class="h-6 w-6 rounded-lg bg-japan-600 text-white flex items-center justify-center font-japanese text-xs overflow-hidden" id="headerSimBox">
+                        @if(!empty($settings['site_logo']))
+                            <img id="headerSimImg" src="{{ $settings['site_logo'] }}" class="h-full w-full object-contain" alt="Logo">
+                        @else
+                            <span id="headerSimKanji">友</span>
+                        @endif
+                    </div>
+                    <div class="text-left leading-tight">
+                        <span id="previewBrandName" class="block font-black text-xs text-slate-800">{{ $settings['site_name'] ?? 'SAHABAT JEPANG' }}</span>
+                        <span id="previewBrandTagline" class="block text-[9px] text-slate-400 font-medium">{{ $settings['site_tagline'] ?? 'Penyalur Resmi Kemenaker' }}</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -61,18 +81,33 @@
             
             <!-- Logo Preview Box -->
             <div class="md:col-span-4 p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center space-y-3">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Preview Logo Aktif</p>
-                <div class="h-20 w-full flex items-center justify-center bg-white p-2 rounded-xl border border-slate-200 shadow-inner overflow-hidden">
-                    @if(!empty($settings['site_logo']))
-                        <img id="logoPreviewImg" src="{{ $settings['site_logo'] }}" alt="Logo LPK" class="max-h-full max-w-full object-contain">
-                    @else
-                        <div id="logoDefaultBadge" class="flex items-center gap-2">
-                            <div class="w-10 h-10 rounded-xl bg-japan-600 text-white flex items-center justify-center font-japanese font-black text-lg">
-                                友
-                            </div>
-                            <span class="font-extrabold text-slate-800 text-xs text-left">Badge Default (Kanji 友)</span>
+                <div class="flex items-center justify-between w-full">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Preview Logo Aktif</p>
+                    <button 
+                        type="button" 
+                        onclick="resetToDefaultLogoBadge()" 
+                        class="text-[10px] font-bold text-slate-500 hover:text-japan-600 transition underline decoration-slate-300"
+                        title="Kembalikan ke badge kanji default 友"
+                    >
+                        Gunakan Default 友
+                    </button>
+                </div>
+                <div class="h-24 w-full flex items-center justify-center bg-white p-2 rounded-xl border border-slate-200 shadow-inner overflow-hidden relative">
+                    <img 
+                        id="logoPreviewImg" 
+                        src="{{ $settings['site_logo'] ?? '' }}" 
+                        alt="Logo LPK" 
+                        class="max-h-full max-w-full object-contain {{ empty($settings['site_logo']) ? 'hidden' : '' }}"
+                    >
+                    <div id="logoDefaultBadge" class="flex items-center gap-2.5 {{ !empty($settings['site_logo']) ? 'hidden' : '' }}">
+                        <div class="w-12 h-12 rounded-2xl bg-japan-600 text-white flex items-center justify-center font-japanese font-black text-xl shadow-sm">
+                            友
                         </div>
-                    @endif
+                        <div class="text-left">
+                            <span class="block font-black text-slate-800 text-xs">Badge Default</span>
+                            <span class="block text-[10px] text-slate-400 font-medium font-japanese">Kanji 友 (Tomo - Sahabat)</span>
+                        </div>
+                    </div>
                 </div>
                 <p class="text-[10px] text-slate-400">Format: PNG transparan, JPG, WEBP, atau SVG</p>
             </div>
@@ -80,32 +115,66 @@
             <!-- Upload & Input Controls -->
             <div class="md:col-span-8 space-y-4">
                 
+                <!-- Drag and Drop Dropzone -->
                 <div class="space-y-1.5">
-                    <label class="block text-xs font-bold text-slate-700 uppercase">1. Unggah File Logo Baru (Otomatis Tersimpan Base64)</label>
-                    <input 
-                        type="file" 
-                        name="site_logo_file" 
-                        accept="image/*" 
-                        onchange="previewImageFile(this, 'logoPreviewImg')"
-                        class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:outline-none focus:border-japan-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-japan-600 file:text-white hover:file:bg-japan-700 cursor-pointer"
+                    <label class="block text-xs font-bold text-slate-700 uppercase">1. Unggah File Logo Baru (Drag & Drop atau Klik)</label>
+                    <div 
+                        id="logoDropZone" 
+                        class="border-2 border-dashed border-slate-200 hover:border-japan-400 bg-slate-50/60 hover:bg-japan-50/20 rounded-2xl p-4 transition text-center cursor-pointer relative group"
                     >
-                    <p class="text-[10px] text-slate-400">File langsung dikonversi ke Base64 format tanpa memerlukan hosting eksternal.</p>
+                        <input 
+                            type="file" 
+                            id="siteLogoFileInput"
+                            name="site_logo_file" 
+                            accept="image/*" 
+                            onchange="previewImageFile(this, 'logoPreviewImg')"
+                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        >
+                        <div class="flex flex-col items-center justify-center space-y-1.5 pointer-events-none">
+                            <div class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-japan-600 flex items-center justify-center group-hover:scale-110 transition shadow-2xs">
+                                <i data-lucide="upload-cloud" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-slate-700">Tarik & Lepaskan file logo di sini, atau <span class="text-japan-600 underline">pilih berkas</span></p>
+                                <p id="logoFileFeedback" class="text-[10px] text-slate-400 mt-0.5">Maksimal 2 MB (Otomatis dikonversi ke Base64 format aman)</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="space-y-1.5">
                     <label class="block text-xs font-bold text-slate-700 uppercase">2. Atau Masukkan URL / Data Base64 Manual</label>
-                    <input type="text" name="site_logo" value="{{ $settings['site_logo'] ?? '' }}" placeholder="https://... atau data:image/png;base64,..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600 font-mono">
+                    <input 
+                        type="text" 
+                        id="siteLogoTextInput"
+                        name="site_logo" 
+                        value="{{ $settings['site_logo'] ?? '' }}" 
+                        placeholder="https://... atau data:image/png;base64,..." 
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600 font-mono"
+                    >
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                     <div class="space-y-1.5">
                         <label class="block text-xs font-bold text-slate-700 uppercase">Nama Brand Header</label>
-                        <input type="text" name="site_name" value="{{ $settings['site_name'] ?? 'SAHABAT JEPANG' }}" class="w-full px-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600 font-bold">
+                        <input 
+                            type="text" 
+                            id="inputSiteName"
+                            name="site_name" 
+                            value="{{ $settings['site_name'] ?? 'SAHABAT JEPANG' }}" 
+                            class="w-full px-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600 font-bold"
+                        >
                     </div>
 
                     <div class="space-y-1.5">
                         <label class="block text-xs font-bold text-slate-700 uppercase">Tagline / Subtitle Header</label>
-                        <input type="text" name="site_tagline" value="{{ $settings['site_tagline'] ?? 'Penyalur Resmi Kemenaker' }}" class="w-full px-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600">
+                        <input 
+                            type="text" 
+                            id="inputSiteTagline"
+                            name="site_tagline" 
+                            value="{{ $settings['site_tagline'] ?? 'Penyalur Resmi Kemenaker' }}" 
+                            class="w-full px-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600"
+                        >
                     </div>
                 </div>
 
@@ -126,108 +195,347 @@
             </div>
         </div>
 
+        <!-- Live Announcement Bar Preview Mockup -->
+        <div class="rounded-xl bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 text-white p-3 border border-slate-800 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div class="flex items-center gap-2.5 flex-wrap">
+                <span id="previewAnnouncementBadge" class="px-2.5 py-0.5 rounded-full bg-japan-600 text-white font-bold text-[10px] tracking-wide shadow-2xs">
+                    {{ $settings['announcement_badge'] ?? 'Batch Baru 2026 Dibuka' }}
+                </span>
+                <span id="previewAnnouncementText" class="text-slate-200 font-medium text-xs">
+                    {{ $settings['announcement_text'] ?? '🌸 Pendaftaran Gelombang Khusus Tokutei Ginou & Magang Jepang Telah Dibuka! Kuota Terbatas.' }}
+                </span>
+            </div>
+            <span class="text-[10px] text-slate-400 font-semibold bg-slate-800/80 px-2 py-0.5 rounded-md flex-shrink-0 border border-slate-700 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-japan-500 animate-pulse"></span>
+                Live Top Bar Preview
+            </span>
+        </div>
+
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div class="space-y-1.5">
                 <label class="block text-xs font-bold text-slate-700 uppercase">Badge Label</label>
-                <input type="text" name="announcement_badge" value="{{ $settings['announcement_badge'] ?? 'Batch Baru 2026 Dibuka' }}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600">
+                <input 
+                    type="text" 
+                    id="inputAnnouncementBadge"
+                    name="announcement_badge" 
+                    value="{{ $settings['announcement_badge'] ?? 'Batch Baru 2026 Dibuka' }}" 
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600 font-semibold"
+                >
             </div>
 
             <div class="space-y-1.5 sm:col-span-2">
                 <label class="block text-xs font-bold text-slate-700 uppercase">Teks Pengumuman Promo / Batch</label>
-                <input type="text" name="announcement_text" value="{{ $settings['announcement_text'] ?? '🌸 Pendaftaran Gelombang Khusus Tokutei Ginou & Magang Jepang Telah Dibuka! Kuota Terbatas.' }}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600">
+                <input 
+                    type="text" 
+                    id="inputAnnouncementText"
+                    name="announcement_text" 
+                    value="{{ $settings['announcement_text'] ?? '🌸 Pendaftaran Gelombang Khusus Tokutei Ginou & Magang Jepang Telah Dibuka! Kuota Terbatas.' }}" 
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600"
+                >
             </div>
         </div>
     </div>
 
     <!-- 3. Hero Section Settings -->
-    <div id="sec-hero" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 scroll-mt-32">
-        <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
-                <i data-lucide="sparkles" class="w-5 h-5"></i>
+    <div id="sec-hero" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 scroll-mt-32">
+        <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
+                    <i data-lucide="sparkles" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="font-extrabold text-slate-900 text-base">Konten Hero Section (Beranda Utama)</h3>
+                    <p class="text-xs text-slate-500">Judul utama (headline), sub-judul penjelas, dan gambar banner visual</p>
+                </div>
             </div>
-            <div>
-                <h3 class="font-extrabold text-slate-900 text-base">Konten Hero Section (Beranda Utama)</h3>
-                <p class="text-xs text-slate-500">Judul utama (headline), sub-judul penjelas, dan gambar banner visual</p>
+            
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-japan-50 text-japan-700 text-xs font-bold border border-japan-200 shadow-2xs">
+                <span class="w-2 h-2 rounded-full bg-japan-600 animate-pulse"></span>
+                <span>Preview Interaktif Beranda</span>
             </div>
         </div>
 
-        <div class="space-y-4">
+        <!-- Live Hero Preview Banner (Interactive Frontend Mockup) -->
+        <div class="rounded-3xl bg-gradient-to-br from-slate-900 via-slate-850 to-japan-950 p-6 sm:p-7 text-white border border-slate-700/80 shadow-xl relative overflow-hidden group">
+            <!-- Background Kanji & Glow decoration -->
+            <div class="absolute -right-10 -bottom-10 w-52 h-52 bg-japan-600/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute top-4 right-6 font-japanese text-4xl font-black text-white/5 select-none pointer-events-none">日本夢</div>
+            
+            <div class="flex items-center justify-between pb-3.5 border-b border-slate-700/60 mb-5">
+                <div class="flex items-center gap-2 text-xs font-bold text-japan-300">
+                    <span class="flex h-2 w-2 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <i data-lucide="eye" class="w-3.5 h-3.5 text-emerald-400"></i>
+                    <span class="tracking-wide">LIVE PREVIEW HERO BERANDA (FRONT-END)</span>
+                </div>
+                <span class="text-[10px] text-emerald-300 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-800/80 flex items-center gap-1.5 font-semibold">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    Real-time Sync
+                </span>
+            </div>
+
+            <!-- Mini Preview Render Canvas -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                <div class="lg:col-span-8 space-y-4">
+                    <!-- Motto Badge -->
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-semibold text-japan-200">
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                        <span class="font-japanese text-xs text-red-400 font-bold">夢をつかめ</span>
+                        <span class="text-white/30">|</span>
+                        <span id="previewHeroMotto" class="text-white font-medium">{{ $settings['hero_motto'] ?? 'LPK & SO Resmi Kemenaker RI' }}</span>
+                    </div>
+
+                    <!-- Headline -->
+                    <h2 class="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight leading-snug">
+                        <span id="previewHeroTitle1" class="text-white">{{ $settings['hero_title_1'] ?? 'Jembatan Emas Menuju' }}</span> <br>
+                        <span id="previewHeroTitleHighlight" class="bg-gradient-to-r from-red-400 via-rose-400 to-amber-300 bg-clip-text text-transparent">
+                            {{ $settings['hero_title_highlight'] ?? 'Karir Gemilang di Jepang' }}
+                        </span>
+                    </h2>
+
+                    <!-- Subtitle -->
+                    <p id="previewHeroSubtitle" class="text-xs sm:text-sm text-slate-300 leading-relaxed line-clamp-3">
+                        {{ $settings['hero_subtitle'] ?? 'Wujudkan impian berpenghasilan Rp 18 - 35 Juta/bulan di Jepang. Program Tokutei Ginou (SSW) & Magang Resmi dengan bimbingan bahasa intensif dari nol, asrama representatif, hingga penempatan kerja terpercaya di seluruh prefektur Jepang.' }}
+                    </p>
+
+                    <!-- Preview Action Buttons -->
+                    <div class="flex items-center gap-2.5 pt-1 opacity-90 pointer-events-none select-none">
+                        <div class="px-3.5 py-2 rounded-xl bg-japan-600 text-white text-xs font-bold shadow-xs flex items-center gap-1.5">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-200"></i>
+                            <span>Mulai Konsultasi Gratis</span>
+                        </div>
+                        <div class="px-3.5 py-2 rounded-xl bg-white/10 text-white text-xs font-bold border border-white/15">
+                            <span>Pilihan Program</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mini Hero Banner Preview Thumbnail -->
+                <div class="lg:col-span-4 flex flex-col items-center justify-center">
+                    <div class="w-full h-40 rounded-2xl border border-slate-700/80 overflow-hidden bg-slate-800 relative group/thumb shadow-inner flex items-center justify-center">
+                        <img 
+                            id="previewHeroImg" 
+                            src="{{ !empty($settings['hero_image']) ? $settings['hero_image'] : 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80' }}" 
+                            alt="Banner Preview" 
+                            class="w-full h-full object-cover opacity-85 group-hover/thumb:scale-105 transition-transform duration-500"
+                        >
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                        <span class="absolute bottom-2.5 left-2.5 text-[10px] font-bold text-slate-200 bg-slate-900/85 px-2.5 py-1 rounded-lg backdrop-blur-xs border border-slate-700/80 flex items-center gap-1">
+                            <i data-lucide="image" class="w-3 h-3 text-japan-400"></i>
+                            <span>Banner Visual Aktif</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-4 pt-1">
             <div class="space-y-1.5">
                 <label class="block text-xs font-bold text-slate-700 uppercase">Motto Badge Atas Judul</label>
-                <input type="text" name="hero_motto" value="{{ $settings['hero_motto'] ?? 'LPK & SO Resmi Kemenaker RI' }}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600">
+                <input 
+                    type="text" 
+                    id="inputHeroMotto"
+                    name="hero_motto" 
+                    value="{{ $settings['hero_motto'] ?? 'LPK & SO Resmi Kemenaker RI' }}" 
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600 font-semibold"
+                >
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="space-y-1.5">
                     <label class="block text-xs font-bold text-slate-700 uppercase">Headline Bagian 1</label>
-                    <input type="text" name="hero_title_1" value="{{ $settings['hero_title_1'] ?? 'Jembatan Emas Menuju' }}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600 font-bold">
+                    <input 
+                        type="text" 
+                        id="inputHeroTitle1"
+                        name="hero_title_1" 
+                        value="{{ $settings['hero_title_1'] ?? 'Jembatan Emas Menuju' }}" 
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600 font-bold"
+                    >
                 </div>
 
                 <div class="space-y-1.5">
-                    <label class="block text-xs font-bold text-slate-700 uppercase">Headline Teks Highlight (Merah)</label>
-                    <input type="text" name="hero_title_highlight" value="{{ $settings['hero_title_highlight'] ?? 'Karir Gemilang di Jepang' }}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600 font-bold text-japan-600">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">Headline Teks Highlight (Merah Gradient)</label>
+                    <input 
+                        type="text" 
+                        id="inputHeroTitleHighlight"
+                        name="hero_title_highlight" 
+                        value="{{ $settings['hero_title_highlight'] ?? 'Karir Gemilang di Jepang' }}" 
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600 font-bold text-japan-600"
+                    >
                 </div>
             </div>
 
             <div class="space-y-1.5">
                 <label class="block text-xs font-bold text-slate-700 uppercase">Deskripsi / Subtitle Hero</label>
-                <textarea name="hero_subtitle" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600">{{ $settings['hero_subtitle'] ?? '' }}</textarea>
+                <textarea 
+                    id="inputHeroSubtitle"
+                    name="hero_subtitle" 
+                    rows="3" 
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600 leading-relaxed"
+                >{{ $settings['hero_subtitle'] ?? '' }}</textarea>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
                 <div class="space-y-1.5">
                     <label class="block text-xs font-bold text-slate-700 uppercase">Upload Gambar Banner Hero (Base64)</label>
                     <input 
                         type="file" 
                         name="hero_image_file" 
                         accept="image/*" 
+                        onchange="previewImageFile(this, 'previewHeroImg')"
                         class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:outline-none focus:border-japan-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-japan-600 file:text-white hover:file:bg-japan-700 cursor-pointer"
                     >
                 </div>
                 <div class="space-y-1.5">
                     <label class="block text-xs font-bold text-slate-700 uppercase">Atau URL Gambar Hero</label>
-                    <input type="text" name="hero_image" value="{{ $settings['hero_image'] ?? '' }}" placeholder="https://images.unsplash.com/..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600 font-mono">
+                    <input 
+                        type="text" 
+                        id="inputHeroImage"
+                        name="hero_image" 
+                        value="{{ $settings['hero_image'] ?? '' }}" 
+                        placeholder="https://images.unsplash.com/..." 
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600 font-mono"
+                    >
                 </div>
             </div>
         </div>
     </div>
 
     <!-- 4. Stat Counters Settings -->
-    <div id="sec-stats" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 scroll-mt-32">
-        <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
-                <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+    <div id="sec-stats" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 scroll-mt-32">
+        <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-red-50 text-japan-600 flex items-center justify-center font-bold">
+                    <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="font-extrabold text-slate-900 text-base">Angka Pencapaian (Statistik Banner)</h3>
+                    <p class="text-xs text-slate-500">4 kotak statistik yang ditampilkan di bawah Hero beranda</p>
+                </div>
             </div>
-            <div>
-                <h3 class="font-extrabold text-slate-900 text-base">Angka Pencapaian (Statistik Banner)</h3>
-                <p class="text-xs text-slate-500">4 kotak statistik yang ditampilkan di bawah Hero beranda</p>
+
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200 shadow-2xs">
+                <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                <span>Kalkulasi Otomatis Beranda</span>
+            </div>
+        </div>
+
+        <!-- Live Stat Counter Preview Bar -->
+        <div class="p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 text-white border border-slate-800 shadow-lg space-y-3">
+            <div class="flex items-center justify-between text-xs font-bold text-japan-300">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-blue-400"></i>
+                    <span class="tracking-wider">LIVE DISPLAY COUNTER BERANDA</span>
+                </div>
+                <span class="text-[10px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full border border-slate-700">Format Live</span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700/80 shadow-2xs">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">1. Alumni Berangkat</p>
+                    <p id="previewStatAlumni" class="text-xl font-black text-white mt-1">
+                        {{ ($settings['stat_alumni_count'] ?? '500') . ($settings['stat_alumni_suffix'] ?? '+') }}
+                    </p>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700/80 shadow-2xs">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">2. Mitra Kaisha</p>
+                    <p id="previewStatPartners" class="text-xl font-black text-white mt-1">
+                        {{ ($settings['stat_partners_count'] ?? '50') . ($settings['stat_partners_suffix'] ?? '+') }}
+                    </p>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700/80 shadow-2xs">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">3. Tingkat Lulus</p>
+                    <p id="previewStatPass" class="text-xl font-black text-japan-400 mt-1">
+                        {{ ($settings['stat_pass_rate_count'] ?? '98') . ($settings['stat_pass_rate_suffix'] ?? '%') }}
+                    </p>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700/80 shadow-2xs">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">4. Legalitas</p>
+                    <p id="previewStatLegal" class="text-xl font-black text-emerald-400 mt-1">
+                        {{ ($settings['stat_legal_count'] ?? '100') . ($settings['stat_legal_suffix'] ?? '%') }}
+                    </p>
+                </div>
             </div>
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
             
-            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-2 hover:border-japan-300 transition">
                 <p class="text-[11px] font-extrabold text-slate-700">1. Alumni Berangkat</p>
-                <input type="number" name="stat_alumni_count" value="{{ $settings['stat_alumni_count'] ?? '500' }}" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-bold">
-                <input type="text" name="stat_alumni_suffix" value="{{ $settings['stat_alumni_suffix'] ?? '+' }}" placeholder="Suffix (+)" class="w-full px-3 py-1 rounded-lg border border-slate-200 text-xs">
+                <input 
+                    type="number" 
+                    id="inputStatAlumniCount"
+                    name="stat_alumni_count" 
+                    value="{{ $settings['stat_alumni_count'] ?? '500' }}" 
+                    class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-bold focus:outline-none focus:border-japan-600 bg-white"
+                >
+                <input 
+                    type="text" 
+                    id="inputStatAlumniSuffix"
+                    name="stat_alumni_suffix" 
+                    value="{{ $settings['stat_alumni_suffix'] ?? '+' }}" 
+                    placeholder="Suffix (+)" 
+                    class="w-full px-3 py-1 rounded-lg border border-slate-200 text-xs focus:outline-none focus:border-japan-600 bg-white"
+                >
             </div>
 
-            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-2 hover:border-japan-300 transition">
                 <p class="text-[11px] font-extrabold text-slate-700">2. Mitra Kaisha</p>
-                <input type="number" name="stat_partners_count" value="{{ $settings['stat_partners_count'] ?? '50' }}" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-bold">
-                <input type="text" name="stat_partners_suffix" value="{{ $settings['stat_partners_suffix'] ?? '+' }}" placeholder="Suffix (+)" class="w-full px-3 py-1 rounded-lg border border-slate-200 text-xs">
+                <input 
+                    type="number" 
+                    id="inputStatPartnersCount"
+                    name="stat_partners_count" 
+                    value="{{ $settings['stat_partners_count'] ?? '50' }}" 
+                    class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-bold focus:outline-none focus:border-japan-600 bg-white"
+                >
+                <input 
+                    type="text" 
+                    id="inputStatPartnersSuffix"
+                    name="stat_partners_suffix" 
+                    value="{{ $settings['stat_partners_suffix'] ?? '+' }}" 
+                    placeholder="Suffix (+)" 
+                    class="w-full px-3 py-1 rounded-lg border border-slate-200 text-xs focus:outline-none focus:border-japan-600 bg-white"
+                >
             </div>
 
-            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-2 hover:border-japan-300 transition">
                 <p class="text-[11px] font-extrabold text-slate-700">3. Tingkat Lulus Ujian</p>
-                <input type="number" name="stat_pass_rate_count" value="{{ $settings['stat_pass_rate_count'] ?? '98' }}" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-bold">
-                <input type="text" name="stat_pass_rate_suffix" value="{{ $settings['stat_pass_rate_suffix'] ?? '%' }}" placeholder="Suffix (%)" class="w-full px-3 py-1 rounded-lg border border-slate-200 text-xs">
+                <input 
+                    type="number" 
+                    id="inputStatPassCount"
+                    name="stat_pass_rate_count" 
+                    value="{{ $settings['stat_pass_rate_count'] ?? '98' }}" 
+                    class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-bold focus:outline-none focus:border-japan-600 bg-white"
+                >
+                <input 
+                    type="text" 
+                    id="inputStatPassSuffix"
+                    name="stat_pass_rate_suffix" 
+                    value="{{ $settings['stat_pass_rate_suffix'] ?? '%' }}" 
+                    placeholder="Suffix (%)" 
+                    class="w-full px-3 py-1 rounded-lg border border-slate-200 text-xs focus:outline-none focus:border-japan-600 bg-white"
+                >
             </div>
 
-            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-2 hover:border-japan-300 transition">
                 <p class="text-[11px] font-extrabold text-slate-700">4. Legalitas Kemenaker</p>
-                <input type="number" name="stat_legal_count" value="{{ $settings['stat_legal_count'] ?? '100' }}" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-bold">
-                <input type="text" name="stat_legal_suffix" value="{{ $settings['stat_legal_suffix'] ?? '%' }}" placeholder="Suffix (%)" class="w-full px-3 py-1 rounded-lg border border-slate-200 text-xs">
+                <input 
+                    type="number" 
+                    id="inputStatLegalCount"
+                    name="stat_legal_count" 
+                    value="{{ $settings['stat_legal_count'] ?? '100' }}" 
+                    class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-bold focus:outline-none focus:border-japan-600 bg-white"
+                >
+                <input 
+                    type="text" 
+                    id="inputStatLegalSuffix"
+                    name="stat_legal_suffix" 
+                    value="{{ $settings['stat_legal_suffix'] ?? '%' }}" 
+                    placeholder="Suffix (%)" 
+                    class="w-full px-3 py-1 rounded-lg border border-slate-200 text-xs focus:outline-none focus:border-japan-600 bg-white"
+                >
             </div>
 
         </div>
@@ -473,10 +781,22 @@
                     <label class="block text-xs font-bold text-slate-700 uppercase">
                         Fonnte Device API Token <span class="text-rose-500">*</span>
                     </label>
-                    <a href="https://fonnte.com" target="_blank" class="text-[11px] font-bold text-emerald-600 hover:underline flex items-center gap-1">
-                        <span>Buka Dashboard Fonnte</span>
-                        <i data-lucide="external-link" class="w-3 h-3"></i>
-                    </a>
+                    <div class="flex items-center gap-3">
+                        <button 
+                            type="button" 
+                            id="btnCopyFonnteToken"
+                            onclick="copyFonnteToken()" 
+                            class="text-[11px] font-bold text-slate-600 hover:text-emerald-700 flex items-center gap-1 transition px-2 py-0.5 rounded-lg bg-white border border-slate-200 hover:border-emerald-300 shadow-2xs"
+                            title="Salin token ke clipboard"
+                        >
+                            <i data-lucide="copy" class="w-3.5 h-3.5 text-emerald-600"></i>
+                            <span id="copyTokenLabel">Salin Token</span>
+                        </button>
+                        <a href="https://fonnte.com" target="_blank" class="text-[11px] font-bold text-emerald-600 hover:underline flex items-center gap-1">
+                            <span>Buka Dashboard Fonnte</span>
+                            <i data-lucide="external-link" class="w-3 h-3"></i>
+                        </a>
+                    </div>
                 </div>
                 <div class="relative">
                     <input 
@@ -564,12 +884,37 @@
         </div>
     </div>
 
-    <!-- Save Button -->
-    <div class="sticky bottom-6 z-20 flex justify-end">
-        <button type="submit" class="btn-red-primary px-8 py-4 rounded-2xl font-bold text-sm shadow-xl flex items-center gap-2">
-            <i data-lucide="save" class="w-5 h-5"></i>
-            <span>Simpan Semua Perubahan</span>
-        </button>
+    <!-- Floating Unsaved Changes Notification Dock (Glassmorphism Bottom Bar) -->
+    <div id="unsavedChangesDock" class="fixed bottom-6 inset-x-0 mx-auto max-w-xl z-50 px-4 transition-all duration-300 transform translate-y-24 opacity-0 pointer-events-none">
+        <div class="bg-slate-900/95 backdrop-blur-md text-white rounded-2xl p-3 sm:px-5 sm:py-3.5 border border-slate-700/80 shadow-2xl flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <span class="flex h-2.5 w-2.5 relative flex-shrink-0">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+                </span>
+                <div class="min-w-0">
+                    <p class="text-xs font-bold text-slate-100 truncate">Terdapat perubahan belum disimpan</p>
+                    <p class="text-[10px] text-slate-400 hidden sm:block">Tekan <kbd class="px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 font-mono text-[10px] border border-slate-700">Ctrl + S</kbd> untuk simpan instan</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <button 
+                    type="button" 
+                    onclick="resetFormChanges()" 
+                    class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition border border-slate-700"
+                >
+                    Urungkan
+                </button>
+                <button 
+                    type="submit" 
+                    class="px-4 py-1.5 rounded-xl bg-japan-600 hover:bg-japan-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-red-900/40"
+                >
+                    <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                    <span>Simpan</span>
+                </button>
+            </div>
+        </div>
     </div>
 
 </form>
@@ -577,6 +922,7 @@
 <script>
     function previewImageFile(input, targetImgId) {
         if (input.files && input.files[0]) {
+            const file = input.files[0];
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = document.getElementById(targetImgId);
@@ -588,8 +934,50 @@
                 if (defaultBadge) {
                     defaultBadge.classList.add('hidden');
                 }
+                if (targetImgId === 'logoPreviewImg') {
+                    const headerBox = document.getElementById('headerSimBox');
+                    if (headerBox) {
+                        headerBox.innerHTML = `<img src="${e.target.result}" class="h-full w-full object-contain" alt="Logo">`;
+                    }
+                    const feedback = document.getElementById('logoFileFeedback');
+                    if (feedback) {
+                        const sizeKb = Math.round(file.size / 1024);
+                        feedback.innerHTML = `<span class="text-emerald-600 font-bold">✓ Terpilih: ${file.name} (${sizeKb} KB)</span>`;
+                    }
+                }
+                if (typeof checkFormDirty === 'function') {
+                    checkFormDirty();
+                }
             };
-            reader.readAsDataURL(input.files[0]);
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function resetToDefaultLogoBadge() {
+        const fileInput = document.getElementById('siteLogoFileInput');
+        const textInput = document.getElementById('siteLogoTextInput');
+        const img = document.getElementById('logoPreviewImg');
+        const defaultBadge = document.getElementById('logoDefaultBadge');
+        const headerBox = document.getElementById('headerSimBox');
+        const feedback = document.getElementById('logoFileFeedback');
+
+        if (fileInput) fileInput.value = '';
+        if (textInput) textInput.value = '';
+        if (img) {
+            img.src = '';
+            img.classList.add('hidden');
+        }
+        if (defaultBadge) {
+            defaultBadge.classList.remove('hidden');
+        }
+        if (headerBox) {
+            headerBox.innerHTML = `<span id="headerSimKanji">友</span>`;
+        }
+        if (feedback) {
+            feedback.innerHTML = `<span class="text-amber-600 font-bold">✓ Menggunakan Badge Default Kanji 友</span>`;
+        }
+        if (typeof checkFormDirty === 'function') {
+            checkFormDirty();
         }
     }
 
@@ -912,7 +1300,265 @@
     }
 
     /* ==========================================================
-       STICKY SUB-NAV SCROLLSPY
+       FONNTE TOKEN CLIPBOARD COPY
+       ========================================================== */
+    function copyFonnteToken() {
+        const input = document.getElementById('fonnteApiTokenInput');
+        const label = document.getElementById('copyTokenLabel');
+        if (!input) return;
+        const val = input.value.trim();
+        if (!val) {
+            alert('Token Fonnte masih kosong. Silakan isi terlebih dahulu.');
+            input.focus();
+            return;
+        }
+        navigator.clipboard.writeText(val).then(() => {
+            if (label) {
+                const orig = label.textContent;
+                label.textContent = '✓ Tersalin!';
+                label.classList.add('text-emerald-700', 'font-black');
+                setTimeout(() => {
+                    label.textContent = orig;
+                    label.classList.remove('text-emerald-700', 'font-black');
+                }, 2200);
+            }
+        }).catch(() => {
+            input.select();
+            document.execCommand('copy');
+            if (label) {
+                label.textContent = '✓ Tersalin!';
+                setTimeout(() => { label.textContent = 'Salin Token'; }, 2000);
+            }
+        });
+    }
+
+    /* ==========================================================
+       DRAG AND DROP LOGO UPLOAD ZONE
+       ========================================================== */
+    function initLogoDropZone() {
+        const dropZone = document.getElementById('logoDropZone');
+        const fileInput = document.getElementById('siteLogoFileInput');
+        if (!dropZone || !fileInput) return;
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('border-japan-500', 'bg-japan-50/70', 'ring-2', 'ring-japan-200');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('border-japan-500', 'bg-japan-50/70', 'ring-2', 'ring-japan-200');
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            if (dt && dt.files && dt.files.length > 0) {
+                fileInput.files = dt.files;
+                previewImageFile(fileInput, 'logoPreviewImg');
+            }
+        }, false);
+    }
+
+    /* ==========================================================
+       REAL-TIME LIVE PREVIEW FOR HERO SECTION
+       ========================================================== */
+    function initHeroLivePreview() {
+        const mottoIn = document.getElementById('inputHeroMotto');
+        const title1In = document.getElementById('inputHeroTitle1');
+        const highlightIn = document.getElementById('inputHeroTitleHighlight');
+        const subtitleIn = document.getElementById('inputHeroSubtitle');
+        const imageIn = document.getElementById('inputHeroImage');
+
+        const pMotto = document.getElementById('previewHeroMotto');
+        const pTitle1 = document.getElementById('previewHeroTitle1');
+        const pHighlight = document.getElementById('previewHeroTitleHighlight');
+        const pSubtitle = document.getElementById('previewHeroSubtitle');
+        const pImage = document.getElementById('previewHeroImg');
+
+        if (mottoIn && pMotto) {
+            mottoIn.addEventListener('input', () => {
+                pMotto.textContent = mottoIn.value.trim() || 'LPK & SO Resmi Kemenaker RI';
+            });
+        }
+        if (title1In && pTitle1) {
+            title1In.addEventListener('input', () => {
+                pTitle1.textContent = title1In.value.trim() || 'Jembatan Emas Menuju';
+            });
+        }
+        if (highlightIn && pHighlight) {
+            highlightIn.addEventListener('input', () => {
+                pHighlight.textContent = highlightIn.value.trim() || 'Karir Gemilang di Jepang';
+            });
+        }
+        if (subtitleIn && pSubtitle) {
+            subtitleIn.addEventListener('input', () => {
+                pSubtitle.textContent = subtitleIn.value.trim() || 'Wujudkan impian berpenghasilan Rp 18 - 35 Juta/bulan di Jepang...';
+            });
+        }
+        if (imageIn && pImage) {
+            imageIn.addEventListener('input', () => {
+                const val = imageIn.value.trim();
+                if (val) {
+                    pImage.src = val;
+                }
+            });
+        }
+    }
+
+    /* ==========================================================
+       REAL-TIME LIVE PREVIEW FOR STAT COUNTERS
+       ========================================================== */
+    function initStatsLivePreview() {
+        const cAlumni = document.getElementById('inputStatAlumniCount');
+        const sAlumni = document.getElementById('inputStatAlumniSuffix');
+        const pAlumni = document.getElementById('previewStatAlumni');
+
+        const cPartners = document.getElementById('inputStatPartnersCount');
+        const sPartners = document.getElementById('inputStatPartnersSuffix');
+        const pPartners = document.getElementById('previewStatPartners');
+
+        const cPass = document.getElementById('inputStatPassCount');
+        const sPass = document.getElementById('inputStatPassSuffix');
+        const pPass = document.getElementById('previewStatPass');
+
+        const cLegal = document.getElementById('inputStatLegalCount');
+        const sLegal = document.getElementById('inputStatLegalSuffix');
+        const pLegal = document.getElementById('previewStatLegal');
+
+        function updateStatPreviews() {
+            if (pAlumni && cAlumni) pAlumni.textContent = (cAlumni.value || '0') + (sAlumni ? sAlumni.value : '+');
+            if (pPartners && cPartners) pPartners.textContent = (cPartners.value || '0') + (sPartners ? sPartners.value : '+');
+            if (pPass && cPass) pPass.textContent = (cPass.value || '0') + (sPass ? sPass.value : '%');
+            if (pLegal && cLegal) pLegal.textContent = (cLegal.value || '0') + (sLegal ? sLegal.value : '%');
+        }
+
+        [cAlumni, sAlumni, cPartners, sPartners, cPass, sPass, cLegal, sLegal].forEach(el => {
+            if (el) el.addEventListener('input', updateStatPreviews);
+        });
+    }
+
+    /* ==========================================================
+       REAL-TIME LIVE PREVIEW FOR ANNOUNCEMENT & BRAND
+       ========================================================== */
+    function initAnnouncementAndBrandLivePreview() {
+        const aBadge = document.getElementById('inputAnnouncementBadge');
+        const aText = document.getElementById('inputAnnouncementText');
+        const pBadge = document.getElementById('previewAnnouncementBadge');
+        const pText = document.getElementById('previewAnnouncementText');
+
+        if (aBadge && pBadge) {
+            aBadge.addEventListener('input', () => {
+                pBadge.textContent = aBadge.value.trim() || 'Pengumuman';
+            });
+        }
+        if (aText && pText) {
+            aText.addEventListener('input', () => {
+                pText.textContent = aText.value.trim() || 'Pendaftaran Gelombang Khusus Dibuka';
+            });
+        }
+
+        const bName = document.getElementById('inputSiteName');
+        const bTagline = document.getElementById('inputSiteTagline');
+        const pName = document.getElementById('previewBrandName');
+        const pTagline = document.getElementById('previewBrandTagline');
+
+        if (bName && pName) {
+            bName.addEventListener('input', () => {
+                pName.textContent = bName.value.trim() || 'SAHABAT JEPANG';
+            });
+        }
+        if (bTagline && pTagline) {
+            bTagline.addEventListener('input', () => {
+                pTagline.textContent = bTagline.value.trim() || 'Penyalur Resmi Kemenaker';
+            });
+        }
+    }
+
+    /* ==========================================================
+       UNSAVED CHANGES TRACKER & KEYBOARD SHORTCUT (CTRL+S)
+       ========================================================== */
+    let initialFormState = '';
+    let formIsSubmitting = false;
+
+    function getFormSerialized() {
+        const form = document.querySelector('form');
+        if (!form) return '';
+        const formData = new FormData(form);
+        const pairs = [];
+        for (let [k, v] of formData.entries()) {
+            if (k === '_token' || (v instanceof File)) continue;
+            pairs.push(k + '=' + v);
+        }
+        return pairs.sort().join('&');
+    }
+
+    function checkFormDirty() {
+        const dock = document.getElementById('unsavedChangesDock');
+        if (!dock) return;
+        const current = getFormSerialized();
+        const isDirty = current !== initialFormState;
+
+        if (isDirty) {
+            dock.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+            dock.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+        } else {
+            dock.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+            dock.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+        }
+    }
+
+    function resetFormChanges() {
+        const form = document.querySelector('form');
+        if (form) {
+            form.reset();
+            setTimeout(() => {
+                renderTickerRows();
+                initHeroLivePreview();
+                initStatsLivePreview();
+                initAnnouncementAndBrandLivePreview();
+                checkFormDirty();
+            }, 50);
+        }
+    }
+
+    function initUnsavedChangesTracker() {
+        const form = document.querySelector('form');
+        if (!form) return;
+
+        initialFormState = getFormSerialized();
+
+        form.addEventListener('input', checkFormDirty);
+        form.addEventListener('change', checkFormDirty);
+
+        form.addEventListener('submit', () => {
+            formIsSubmitting = true;
+        });
+
+        window.addEventListener('beforeunload', (e) => {
+            if (formIsSubmitting) return;
+            if (getFormSerialized() !== initialFormState) {
+                e.preventDefault();
+                e.returnValue = 'Perubahan belum disimpan. Yakin ingin meninggalkan halaman?';
+            }
+        });
+
+        // Global Ctrl+S / Cmd+S Shortcut
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+                e.preventDefault();
+                form.submit();
+            }
+        });
+    }
+
+    /* ==========================================================
+       STICKY SUB-NAV SCROLLSPY & SMOOTH NAVIGATION
        ========================================================== */
     function initSettingScrollspy() {
         const pills = document.querySelectorAll('.setting-pill');
@@ -944,6 +1590,18 @@
             });
         }
 
+        // Smooth scroll on click
+        pills.forEach(pill => {
+            pill.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = pill.getAttribute('href').replace('#', '');
+                const targetEl = document.getElementById(targetId);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
         scrollContainer.addEventListener('scroll', onScroll, { passive: true });
         window.addEventListener('scroll', onScroll, { passive: true });
         onScroll();
@@ -951,6 +1609,11 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         renderTickerRows();
+        initLogoDropZone();
+        initHeroLivePreview();
+        initStatsLivePreview();
+        initAnnouncementAndBrandLivePreview();
+        initUnsavedChangesTracker();
         initSettingScrollspy();
     });
 </script>
