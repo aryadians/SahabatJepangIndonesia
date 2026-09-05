@@ -58,6 +58,16 @@
                 <i data-lucide="printer" class="w-4 h-4 text-japan-400"></i>
                 <span class="hidden sm:inline">Cetak PDF</span>
             </a>
+
+            <button 
+                type="button" 
+                onclick="openModal('incomeStatementModal')" 
+                class="px-3.5 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs border border-blue-200 shadow-xs flex items-center gap-1.5 transition cursor-pointer"
+                title="Lihat Ringkasan Laba Rugi & Rasio Operasional"
+            >
+                <i data-lucide="pie-chart" class="w-4 h-4 text-blue-600"></i>
+                <span class="hidden sm:inline">Rekap Laba Rugi</span>
+            </button>
         </div>
     </div>
 
@@ -111,6 +121,54 @@
             </div>
             <h3 class="text-2xl font-black text-white">Rp {{ number_format($overallCashBalance, 0, ',', '.') }}</h3>
             <p class="text-[11px] text-slate-400 font-medium">Akumulasi saldo kas & rekening aktif LPK</p>
+        </div>
+    </div>
+
+    <!-- Posisi Saldo Kas Tunai & Rekening Bank LPK (Account Balance Distribution) -->
+    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <h3 class="text-xs font-black uppercase tracking-wider text-slate-800">Distribusi Saldo Rekening & Kas Fisik LPK</h3>
+                <span class="text-[10px] text-slate-400 font-medium">(Posisi Likuiditas Terkini)</span>
+            </div>
+            @if(request('payment_method') && request('payment_method') !== 'all')
+                <a href="{{ route('admin.cash-book.index', request()->except('payment_method')) }}" class="text-[11px] font-bold text-japan-600 hover:underline flex items-center gap-1">
+                    <span>&times; Hapus Filter Akun</span>
+                </a>
+            @endif
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            @foreach($paymentMethods as $mKey => $mLabel)
+                @php
+                    $mBal = $balancePerMethod[$mKey]['balance'] ?? 0;
+                    $isSelected = request('payment_method') === $mKey;
+                @endphp
+                <a 
+                    href="{{ route('admin.cash-book.index', array_merge(request()->query(), ['payment_method' => $mKey])) }}"
+                    class="p-3.5 rounded-2xl border transition group {{ $isSelected ? 'bg-japan-50 border-japan-500 ring-2 ring-japan-200' : 'bg-slate-50 hover:bg-white border-slate-200 hover:border-slate-300 shadow-2xs' }}"
+                >
+                    <div class="flex items-center justify-between text-slate-400 text-[10px] font-bold">
+                        <span class="truncate">{{ $mLabel }}</span>
+                        @if($mKey === 'cash_kasir')
+                            <i data-lucide="banknote" class="w-3.5 h-3.5 text-emerald-600"></i>
+                        @elseif($mKey === 'qris_transfer')
+                            <i data-lucide="qr-code" class="w-3.5 h-3.5 text-purple-600"></i>
+                        @else
+                            <i data-lucide="building-2" class="w-3.5 h-3.5 text-blue-600"></i>
+                        @endif
+                    </div>
+                    <div class="mt-2">
+                        <span class="text-xs font-mono font-extrabold {{ $mBal >= 0 ? 'text-slate-900 group-hover:text-japan-600' : 'text-rose-600' }}">
+                            Rp {{ number_format($mBal, 0, ',', '.') }}
+                        </span>
+                    </div>
+                    <div class="mt-1 flex items-center justify-between text-[9px] text-slate-400">
+                        <span>{{ $isSelected ? '● Aktif Difilter' : 'Klik untuk filter' }}</span>
+                    </div>
+                </a>
+            @endforeach
         </div>
     </div>
 
@@ -320,6 +378,15 @@
                                         title="Edit Transaksi"
                                     >
                                         <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                                    </button>
+
+                                    <button 
+                                        type="button" 
+                                        onclick="duplicateTransaction({{ json_encode($trx) }})" 
+                                        class="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition" 
+                                        title="Catat Ulang / Duplikat Transaksi Ini"
+                                    >
+                                        <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                                     </button>
 
                                     <form action="{{ route('admin.cash-book.destroy', $trx->id) }}" method="POST" onsubmit="return confirm('Hapus transaksi kas {{ $trx->transaction_number }}?')">
@@ -558,6 +625,134 @@
     </div>
 </div>
 
+<!-- Modal Ringkasan Laba Rugi Operasional & Margin LPK -->
+<div id="incomeStatementModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                    <i data-lucide="pie-chart" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h4 class="font-extrabold text-slate-900 text-base">Rekap Laba Rugi Operasional Lembaga</h4>
+                    <p class="text-xs text-slate-400">Periode: {{ $period === 'this_month' ? 'Bulan Ini (' . now()->translatedFormat('F Y') . ')' : ($period === 'this_year' ? 'Tahun Ini (' . now()->year . ')' : ($period === 'today' ? 'Hari Ini' : 'Rentang Pilihan')) }}</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeModal('incomeStatementModal')" class="text-slate-400 hover:text-slate-700 text-xl font-bold p-1">&times;</button>
+        </div>
+
+        <!-- 3 Highlight Metrics -->
+        <div class="grid grid-cols-3 gap-3">
+            <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-100">
+                <span class="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Total Pendapatan</span>
+                <p class="text-base sm:text-lg font-black text-emerald-700 mt-0.5">Rp {{ number_format($periodIncome, 0, ',', '.') }}</p>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-rose-50 border border-rose-100">
+                <span class="text-[10px] font-bold text-rose-800 uppercase tracking-wider">Total Beban Usaha</span>
+                <p class="text-base sm:text-lg font-black text-rose-700 mt-0.5">Rp {{ number_format($periodExpense, 0, ',', '.') }}</p>
+            </div>
+            <div class="p-3.5 rounded-2xl {{ $periodNet >= 0 ? 'bg-blue-50 border-blue-100' : 'bg-red-50 border-red-100' }}">
+                <span class="text-[10px] font-bold uppercase tracking-wider {{ $periodNet >= 0 ? 'text-blue-800' : 'text-red-800' }}">
+                    {{ $periodNet >= 0 ? 'Laba Bersih' : 'Defisit Usaha' }}
+                </span>
+                <p class="text-base sm:text-lg font-black mt-0.5 {{ $periodNet >= 0 ? 'text-blue-700' : 'text-rose-700' }}">
+                    {{ $periodNet >= 0 ? '+' : '' }}Rp {{ number_format($periodNet, 0, ',', '.') }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Operating Profit Margin & Expense Ratio -->
+        @php
+            $marginPct = $periodIncome > 0 ? round(($periodNet / $periodIncome) * 100, 1) : 0;
+            $expenseRatio = $periodIncome > 0 ? round(($periodExpense / $periodIncome) * 100, 1) : 0;
+        @endphp
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div>
+                <div class="flex items-center justify-between font-bold text-slate-700">
+                    <span>Operating Profit Margin:</span>
+                    <span class="{{ $marginPct >= 0 ? 'text-emerald-700' : 'text-rose-700' }}">{{ $marginPct }}%</span>
+                </div>
+                <div class="w-full h-2 bg-slate-200 rounded-full mt-1.5 overflow-hidden">
+                    <div class="h-full {{ $marginPct >= 0 ? 'bg-emerald-500' : 'bg-rose-500' }}" style="width: {{ min(max($marginPct, 0), 100) }}%"></div>
+                </div>
+            </div>
+            <div>
+                <div class="flex items-center justify-between font-bold text-slate-700">
+                    <span>Operating Expense Ratio:</span>
+                    <span class="text-slate-800">{{ $expenseRatio }}%</span>
+                </div>
+                <div class="w-full h-2 bg-slate-200 rounded-full mt-1.5 overflow-hidden">
+                    <div class="h-full bg-rose-500" style="width: {{ min($expenseRatio, 100) }}%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Breakdown Pos Pendapatan -->
+        <div class="space-y-2">
+            <h5 class="text-xs font-black uppercase tracking-wider text-emerald-800 flex items-center justify-between">
+                <span>1. Rincian Pos Pendapatan Kas (Debit)</span>
+                <span>Subtotal: Rp {{ number_format($periodIncome, 0, ',', '.') }}</span>
+            </h5>
+            <div class="border border-slate-200 rounded-2xl divide-y divide-slate-100 overflow-hidden text-xs">
+                @forelse($incomeBreakdown as $ib)
+                    <div class="p-3 bg-white hover:bg-slate-50 flex items-center justify-between">
+                        <div class="flex-1 pr-4">
+                            <div class="flex items-center justify-between font-semibold text-slate-800">
+                                <span>{{ $ib['label'] }}</span>
+                                <span class="font-mono font-bold text-emerald-700">Rp {{ number_format($ib['amount'], 0, ',', '.') }} ({{ $ib['percentage'] }}%)</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-slate-100 rounded-full mt-1.5 overflow-hidden">
+                                <div class="h-full bg-emerald-500 rounded-full" style="width: {{ $ib['percentage'] }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-3 text-center text-slate-400 italic text-[11px]">Belum ada data pendapatan pada periode ini.</div>
+                @endforelse
+            </div>
+        </div>
+
+        <!-- Detail Breakdown Pos Beban Pengeluaran -->
+        <div class="space-y-2">
+            <h5 class="text-xs font-black uppercase tracking-wider text-rose-800 flex items-center justify-between">
+                <span>2. Rincian Pos Beban Operasional (Kredit)</span>
+                <span>Subtotal: Rp {{ number_format($periodExpense, 0, ',', '.') }}</span>
+            </h5>
+            <div class="border border-slate-200 rounded-2xl divide-y divide-slate-100 overflow-hidden text-xs">
+                @forelse($expenseBreakdown as $eb)
+                    <div class="p-3 bg-white hover:bg-slate-50 flex items-center justify-between">
+                        <div class="flex-1 pr-4">
+                            <div class="flex items-center justify-between font-semibold text-slate-800">
+                                <span>{{ $eb['label'] }}</span>
+                                <span class="font-mono font-bold text-rose-700">Rp {{ number_format($eb['amount'], 0, ',', '.') }} ({{ $eb['percentage'] }}%)</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-slate-100 rounded-full mt-1.5 overflow-hidden">
+                                <div class="h-full bg-rose-500 rounded-full" style="width: {{ $eb['percentage'] }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-3 text-center text-slate-400 italic text-[11px]">Belum ada data beban pada periode ini.</div>
+                @endforelse
+            </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+            <a 
+                href="{{ route('admin.cash-book.export.pdf', request()->query()) }}" 
+                target="_blank" 
+                class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs flex items-center gap-1.5 transition"
+            >
+                <i data-lucide="printer" class="w-4 h-4 text-japan-400"></i>
+                <span>Cetak Rekap Resmi PDF</span>
+            </a>
+            <button type="button" onclick="closeModal('incomeStatementModal')" class="px-5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">
+                Tutup Ringkasan
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
     const incomeCategoriesMap = @json($incomeCategories);
     const expenseCategoriesMap = @json($expenseCategories);
@@ -688,6 +883,29 @@
 
         const modal = document.getElementById('editTransactionModal');
         if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            modal.classList.add('active');
+        }
+    };
+
+    window.duplicateTransaction = function(trx) {
+        switchModalType(trx.type);
+        const modal = document.getElementById('createTransactionModal');
+        if (modal) {
+            const form = modal.querySelector('form');
+            if (form) {
+                const titleInput = form.querySelector('input[name="title"]');
+                if (titleInput) titleInput.value = trx.title;
+                const amountInput = form.querySelector('input[name="amount"]');
+                if (amountInput) amountInput.value = Math.round(trx.amount);
+                const catSelect = form.querySelector('select[name="category"]');
+                if (catSelect) catSelect.value = trx.category;
+                const methodSelect = form.querySelector('select[name="payment_method"]');
+                if (methodSelect) methodSelect.value = trx.payment_method;
+                const notesText = form.querySelector('textarea[name="notes"]');
+                if (notesText) notesText.value = trx.notes || '';
+            }
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             modal.classList.add('active');

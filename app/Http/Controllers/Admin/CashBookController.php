@@ -35,15 +35,55 @@ class CashBookController extends Controller
         $totalAllExpense = (float) CashTransaction::where('type', 'expense')->sum('amount');
         $overallCashBalance = $totalAllIncome - $totalAllExpense;
 
+        // Saldo Per Akun / Metode Pembayaran (Kas Tunai & Rekening Bank Aktif)
+        $balancePerMethod = [];
+        foreach (CashTransaction::PAYMENT_METHODS as $methodKey => $methodLabel) {
+            $in = (float) CashTransaction::where('payment_method', $methodKey)->where('type', 'income')->sum('amount');
+            $out = (float) CashTransaction::where('payment_method', $methodKey)->where('type', 'expense')->sum('amount');
+            $balancePerMethod[$methodKey] = [
+                'label' => $methodLabel,
+                'income' => $in,
+                'expense' => $out,
+                'balance' => $in - $out,
+            ];
+        }
+
+        $incomeCategories = CashTransaction::INCOME_CATEGORIES;
+        $expenseCategories = CashTransaction::EXPENSE_CATEGORIES;
+        $paymentMethods = CashTransaction::PAYMENT_METHODS;
+
+        // Breakdown Kategori untuk Rekap Laba Rugi Periode Terpilih
+        $incomeBreakdown = [];
+        foreach ($incomeCategories as $catKey => $catLabel) {
+            $sum = (float) (clone $query)->where('type', 'income')->where('category', $catKey)->sum('amount');
+            if ($sum > 0) {
+                $incomeBreakdown[] = [
+                    'key' => $catKey,
+                    'label' => $catLabel,
+                    'amount' => $sum,
+                    'percentage' => $periodIncome > 0 ? round(($sum / $periodIncome) * 100, 1) : 0,
+                ];
+            }
+        }
+
+        $expenseBreakdown = [];
+        foreach ($expenseCategories as $catKey => $catLabel) {
+            $sum = (float) (clone $query)->where('type', 'expense')->where('category', $catKey)->sum('amount');
+            if ($sum > 0) {
+                $expenseBreakdown[] = [
+                    'key' => $catKey,
+                    'label' => $catLabel,
+                    'amount' => $sum,
+                    'percentage' => $periodExpense > 0 ? round(($sum / $periodExpense) * 100, 1) : 0,
+                ];
+            }
+        }
+
         // Ambil Transaksi Terurut Tanggal & ID
         $transactions = $query->orderBy('transaction_date', 'desc')
             ->orderBy('id', 'desc')
             ->paginate(25)
             ->withQueryString();
-
-        $incomeCategories = CashTransaction::INCOME_CATEGORIES;
-        $expenseCategories = CashTransaction::EXPENSE_CATEGORIES;
-        $paymentMethods = CashTransaction::PAYMENT_METHODS;
 
         return view('admin.cash_book.index', compact(
             'transactions',
@@ -51,6 +91,9 @@ class CashBookController extends Controller
             'periodExpense',
             'periodNet',
             'overallCashBalance',
+            'balancePerMethod',
+            'incomeBreakdown',
+            'expenseBreakdown',
             'incomeCategories',
             'expenseCategories',
             'paymentMethods',
