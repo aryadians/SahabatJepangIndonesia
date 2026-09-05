@@ -56,6 +56,10 @@ class CashBookTest extends TestCase
         $response->assertSee('BKK-202609-0001');
         $response->assertSee('5.000.000');
         $response->assertSee('750.000');
+        $response->assertSee('btnTopKasMasuk');
+        $response->assertSee('btnTopKasKeluar');
+        $response->assertSee('createTransactionModal');
+        $response->assertSee('download="buku_kas_umum_lpk_sji.csv"', false);
     }
 
     public function test_admin_can_create_manual_income_and_expense_transactions(): void

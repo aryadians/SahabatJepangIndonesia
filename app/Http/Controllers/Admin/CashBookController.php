@@ -18,64 +18,14 @@ class CashBookController extends Controller
      */
     public function index(Request $request)
     {
-        $query = CashTransaction::query();
+        $query = $this->buildFilteredQuery($request);
 
-        // 1. Filter Rentang Waktu (Periode)
+        // Filter parameters for view
         $period = $request->input('period', 'this_month');
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-        switch ($period) {
-            case 'today':
-                $query->whereDate('transaction_date', Carbon::today());
-                break;
-            case 'this_week':
-                $query->whereBetween('transaction_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
-                break;
-            case 'this_month':
-                $query->whereBetween('transaction_date', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()]);
-                break;
-            case 'this_year':
-                $query->whereYear('transaction_date', Carbon::now()->year);
-                break;
-            case 'custom':
-                if ($startDate && $endDate) {
-                    $query->whereBetween('transaction_date', [$startDate, $endDate]);
-                } elseif ($startDate) {
-                    $query->whereDate('transaction_date', '>=', $startDate);
-                } elseif ($endDate) {
-                    $query->whereDate('transaction_date', '<=', $endDate);
-                }
-                break;
-        }
-
-        // 2. Filter Tipe Transaksi (Income / Expense)
-        if ($request->filled('type') && in_array($request->type, ['income', 'expense'])) {
-            $query->where('type', $request->type);
-        }
-
-        // 3. Filter Kategori Akun
-        if ($request->filled('category') && $request->category !== 'all') {
-            $query->where('category', $request->category);
-        }
-
-        // 4. Filter Metode Pembayaran
-        if ($request->filled('payment_method') && $request->payment_method !== 'all') {
-            $query->where('payment_method', $request->payment_method);
-        }
-
-        // 5. Pencarian Teks (No Bukti, Judul, Keterangan)
-        if ($request->filled('q')) {
-            $search = trim($request->q);
-            $query->where(function ($q) use ($search) {
-                $q->where('transaction_number', 'like', "%{$search}%")
-                  ->orWhere('title', 'like', "%{$search}%")
-                  ->orWhere('notes', 'like', "%{$search}%")
-                  ->orWhere('recorded_by', 'like', "%{$search}%");
-            });
-        }
-
-        // 6. Hitung Metrik Akumulatif Periode Ini
+        // Hitung Metrik Akumulatif Periode Ini
         $periodIncome = (float) (clone $query)->where('type', 'income')->sum('amount');
         $periodExpense = (float) (clone $query)->where('type', 'expense')->sum('amount');
         $periodNet = $periodIncome - $periodExpense;
@@ -85,7 +35,7 @@ class CashBookController extends Controller
         $totalAllExpense = (float) CashTransaction::where('type', 'expense')->sum('amount');
         $overallCashBalance = $totalAllIncome - $totalAllExpense;
 
-        // 7. Ambil Transaksi Terurut Tanggal & ID
+        // Ambil Transaksi Terurut Tanggal & ID
         $transactions = $query->orderBy('transaction_date', 'desc')
             ->orderBy('id', 'desc')
             ->paginate(25)
@@ -207,41 +157,27 @@ class CashBookController extends Controller
      */
     public function exportCsv(Request $request)
     {
-        $query = CashTransaction::query();
-
-        // Terapkan filter yang sama
-        if ($request->filled('type') && in_array($request->type, ['income', 'expense'])) {
-            $query->where('type', $request->type);
-        }
-        if ($request->filled('category') && $request->category !== 'all') {
-            $query->where('category', $request->category);
-        }
-        if ($request->filled('payment_method') && $request->payment_method !== 'all') {
-            $query->where('payment_method', $request->payment_method);
-        }
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereBetween('transaction_date', [$request->start_date, $request->end_date]);
-        }
-
+        $query = $this->buildFilteredQuery($request);
         $transactions = $query->orderBy('transaction_date', 'asc')->orderBy('id', 'asc')->get();
+
+        $fileName = 'buku_kas_umum_lpk_sji_' . date('Ymd_His') . '.csv';
 
         $headers = [
             'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="buku_kas_umum_lpk_sji_' . date('Ymd_His') . '.csv"',
             'Pragma' => 'no-cache',
             'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
             'Expires' => '0'
         ];
 
-        $callback = function () use ($transactions) {
+        return response()->streamDownload(function () use ($transactions) {
             $file = fopen('php://output', 'w');
-            fputs($file, "\xEF\xBB\xBF"); // UTF-8 BOM
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF)); // UTF-8 BOM
 
             fputcsv($file, [
-                'ID',
+                'No',
                 'No. Bukti Kas',
                 'Tanggal Transaksi',
-                'Tipe',
+                'Tipe Mutasi',
                 'Kategori Akun',
                 'Uraian / Judul Transaksi',
                 'Metode Pembayaran',
@@ -254,15 +190,19 @@ class CashBookController extends Controller
             ]);
 
             $runningBalance = 0;
+            $no = 1;
             foreach ($transactions as $t) {
                 $debet = $t->type === 'income' ? (float) $t->amount : 0;
                 $kredit = $t->type === 'expense' ? (float) $t->amount : 0;
                 $runningBalance += ($debet - $kredit);
 
+                $formattedDate = $t->transaction_date ? Carbon::parse($t->transaction_date)->format('d/m/Y') : '-';
+                $createdAt = $t->created_at ? Carbon::parse($t->created_at)->format('d/m/Y H:i') : '-';
+
                 fputcsv($file, [
-                    $t->id,
+                    $no++,
                     $t->transaction_number,
-                    $t->transaction_date->format('d/m/Y'),
+                    $formattedDate,
                     $t->type === 'income' ? 'Kas Masuk' : 'Kas Keluar',
                     $t->category_label,
                     $t->title,
@@ -272,14 +212,12 @@ class CashBookController extends Controller
                     $runningBalance,
                     $t->notes ?: '-',
                     $t->recorded_by ?: 'System',
-                    $t->created_at ? $t->created_at->format('d/m/Y H:i') : '-'
+                    $createdAt
                 ]);
             }
 
             fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        }, $fileName, $headers);
     }
 
     /**
@@ -287,25 +225,11 @@ class CashBookController extends Controller
      */
     public function exportPdf(Request $request)
     {
-        $query = CashTransaction::query();
-
-        if ($request->filled('type') && in_array($request->type, ['income', 'expense'])) {
-            $query->where('type', $request->type);
-        }
-        if ($request->filled('category') && $request->category !== 'all') {
-            $query->where('category', $request->category);
-        }
-        if ($request->filled('payment_method') && $request->payment_method !== 'all') {
-            $query->where('payment_method', $request->payment_method);
-        }
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereBetween('transaction_date', [$request->start_date, $request->end_date]);
-        }
-
+        $query = $this->buildFilteredQuery($request);
         $transactions = $query->orderBy('transaction_date', 'asc')->orderBy('id', 'asc')->get();
 
-        $totalIncome = $transactions->where('type', 'income')->sum('amount');
-        $totalExpense = $transactions->where('type', 'expense')->sum('amount');
+        $totalIncome = (float) $transactions->where('type', 'income')->sum('amount');
+        $totalExpense = (float) $transactions->where('type', 'expense')->sum('amount');
         $netCashflow = $totalIncome - $totalExpense;
 
         return view('admin.cash_book.export_pdf', compact(
@@ -314,5 +238,70 @@ class CashBookController extends Controller
             'totalExpense',
             'netCashflow'
         ));
+    }
+
+    /**
+     * Helper Reusable Filter Query Buku Kas
+     */
+    private function buildFilteredQuery(Request $request)
+    {
+        $query = CashTransaction::query();
+
+        // 1. Filter Rentang Waktu (Periode)
+        $period = $request->input('period', 'this_month');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        switch ($period) {
+            case 'today':
+                $query->whereDate('transaction_date', Carbon::today());
+                break;
+            case 'this_week':
+                $query->whereBetween('transaction_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+                break;
+            case 'this_month':
+                $query->whereBetween('transaction_date', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()]);
+                break;
+            case 'this_year':
+                $query->whereYear('transaction_date', Carbon::now()->year);
+                break;
+            case 'custom':
+                if ($startDate && $endDate) {
+                    $query->whereBetween('transaction_date', [$startDate, $endDate]);
+                } elseif ($startDate) {
+                    $query->whereDate('transaction_date', '>=', $startDate);
+                } elseif ($endDate) {
+                    $query->whereDate('transaction_date', '<=', $endDate);
+                }
+                break;
+        }
+
+        // 2. Filter Tipe Transaksi (Income / Expense)
+        if ($request->filled('type') && in_array($request->type, ['income', 'expense'])) {
+            $query->where('type', $request->type);
+        }
+
+        // 3. Filter Kategori Akun
+        if ($request->filled('category') && $request->category !== 'all') {
+            $query->where('category', $request->category);
+        }
+
+        // 4. Filter Metode Pembayaran
+        if ($request->filled('payment_method') && $request->payment_method !== 'all') {
+            $query->where('payment_method', $request->payment_method);
+        }
+
+        // 5. Pencarian Teks (No Bukti, Judul, Keterangan)
+        if ($request->filled('q')) {
+            $search = trim($request->q);
+            $query->where(function ($q) use ($search) {
+                $q->where('transaction_number', 'like', "%{$search}%")
+                  ->orWhere('title', 'like', "%{$search}%")
+                  ->orWhere('notes', 'like', "%{$search}%")
+                  ->orWhere('recorded_by', 'like', "%{$search}%");
+            });
+        }
+
+        return $query;
     }
 }

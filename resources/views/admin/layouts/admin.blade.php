@@ -937,5 +937,7 @@
     <!-- Universal Alert & Toast Containers -->
     <div id="appAlertContainer" class="fixed top-5 right-5 z-[9999] flex flex-col gap-2.5 max-w-sm pointer-events-none"></div>
     <div id="realtimeToastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm pointer-events-none"></div>
+
+    @stack('scripts')
 </body>
 </html>

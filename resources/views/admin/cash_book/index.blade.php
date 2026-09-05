@@ -21,8 +21,9 @@
         <div class="flex items-center gap-2 flex-wrap">
             <button 
                 type="button" 
+                id="btnTopKasMasuk"
                 onclick="openCreateModal('income')" 
-                class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm flex items-center gap-2 transition transform active:scale-95"
+                class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm flex items-center gap-2 transition transform active:scale-95 cursor-pointer"
             >
                 <i data-lucide="arrow-down-left" class="w-4 h-4"></i>
                 <span>+ Kas Masuk (Debit)</span>
@@ -30,8 +31,9 @@
 
             <button 
                 type="button" 
+                id="btnTopKasKeluar"
                 onclick="openCreateModal('expense')" 
-                class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm flex items-center gap-2 transition transform active:scale-95"
+                class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm flex items-center gap-2 transition transform active:scale-95 cursor-pointer"
             >
                 <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
                 <span>+ Kas Keluar (Kredit)</span>
@@ -39,7 +41,8 @@
 
             <a 
                 href="{{ route('admin.cash-book.export.csv', request()->query()) }}" 
-                class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-200 shadow-xs flex items-center gap-1.5 transition"
+                download="buku_kas_umum_lpk_sji.csv"
+                class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-200 shadow-xs flex items-center gap-1.5 transition cursor-pointer"
                 title="Ekspor Seluruh Mutasi ke Format CSV Excel"
             >
                 <i data-lucide="download" class="w-4 h-4 text-slate-600"></i>
@@ -49,7 +52,7 @@
             <a 
                 href="{{ route('admin.cash-book.export.pdf', request()->query()) }}" 
                 target="_blank" 
-                class="px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs flex items-center gap-1.5 transition"
+                class="px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs flex items-center gap-1.5 transition cursor-pointer"
                 title="Cetak Laporan Buku Kas Resmi ke PDF A4 Landscape"
             >
                 <i data-lucide="printer" class="w-4 h-4 text-japan-400"></i>
@@ -334,7 +337,15 @@
                             <td colspan="7" class="py-12 text-center text-slate-400">
                                 <i data-lucide="inbox" class="w-10 h-10 mx-auto mb-2 opacity-40"></i>
                                 <p class="text-sm font-bold text-slate-700">Belum ada transaksi kas pada periode ini.</p>
-                                <p class="text-xs text-slate-400 mt-1">Gunakan tombol di atas untuk mencatat kas masuk atau pengeluaran operasional.</p>
+                                <p class="text-xs text-slate-400 mt-1">Gunakan tombol cepat di bawah untuk mencatat kas masuk atau pengeluaran operasional.</p>
+                                <div class="mt-4 flex items-center justify-center gap-2">
+                                    <button type="button" onclick="openCreateModal('income')" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition">
+                                        + Kas Masuk (Debit)
+                                    </button>
+                                    <button type="button" onclick="openCreateModal('expense')" class="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-xs transition">
+                                        + Kas Keluar (Kredit)
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     @endforelse
@@ -547,10 +558,28 @@
     </div>
 </div>
 
-@push('scripts')
 <script>
     const incomeCategoriesMap = @json($incomeCategories);
     const expenseCategoriesMap = @json($expenseCategories);
+
+    // Fallback modal open/close helpers
+    window.openModal = window.openModal || function(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            modal.classList.add('active');
+        }
+    };
+
+    window.closeModal = window.closeModal || function(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            modal.classList.remove('active');
+        }
+    };
 
     function toggleCustomDates(val) {
         const range = document.getElementById('customDateRange');
@@ -563,93 +592,158 @@
         }
     }
 
-    function openCreateModal(type) {
+    // Direct Instant Zero-Lag Modal Trigger
+    window.openCreateModal = function(type) {
         switchModalType(type);
-        openModal('createTransactionModal');
-    }
+        const modal = document.getElementById('createTransactionModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            modal.classList.add('active');
+        }
+    };
 
-    function switchModalType(type) {
+    window.switchModalType = function(type) {
         const formType = document.getElementById('formType');
         const modalTitle = document.getElementById('modalTitle');
         const modalIconContainer = document.getElementById('modalIconContainer');
-        const modalIcon = document.getElementById('modalIcon');
         const modalSubmitBtn = document.getElementById('modalSubmitBtn');
         const btnSwitchIncome = document.getElementById('btnSwitchIncome');
         const btnSwitchExpense = document.getElementById('btnSwitchExpense');
         const formCategory = document.getElementById('formCategory');
 
-        formType.value = type;
+        if (formType) formType.value = type;
 
         if (type === 'income') {
-            modalTitle.textContent = 'Catat Kas Masuk (Debit)';
-            modalIconContainer.className = 'w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold';
-            modalSubmitBtn.className = 'px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-sm transition';
-            modalSubmitBtn.textContent = 'Simpan Kas Masuk';
-            btnSwitchIncome.className = 'py-2 font-bold rounded-lg transition bg-white text-emerald-700 shadow-xs';
-            btnSwitchExpense.className = 'py-2 font-bold rounded-lg transition text-slate-600 hover:text-slate-900';
+            if (modalTitle) modalTitle.textContent = 'Catat Kas Masuk (Debit)';
+            if (modalIconContainer) modalIconContainer.className = 'w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold';
+            if (modalSubmitBtn) {
+                modalSubmitBtn.className = 'px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-sm transition';
+                modalSubmitBtn.textContent = 'Simpan Kas Masuk';
+            }
+            if (btnSwitchIncome) btnSwitchIncome.className = 'py-2 font-bold rounded-lg transition bg-white text-emerald-700 shadow-xs';
+            if (btnSwitchExpense) btnSwitchExpense.className = 'py-2 font-bold rounded-lg transition text-slate-600 hover:text-slate-900';
 
             // Populate income categories
-            formCategory.innerHTML = '';
-            Object.keys(incomeCategoriesMap).forEach(key => {
-                const opt = document.createElement('option');
-                opt.value = key;
-                opt.textContent = incomeCategoriesMap[key];
-                formCategory.appendChild(opt);
-            });
+            if (formCategory) {
+                formCategory.innerHTML = '';
+                Object.keys(incomeCategoriesMap).forEach(key => {
+                    const opt = document.createElement('option');
+                    opt.value = key;
+                    opt.textContent = incomeCategoriesMap[key];
+                    formCategory.appendChild(opt);
+                });
+            }
         } else {
-            modalTitle.textContent = 'Catat Kas Keluar (Kredit)';
-            modalIconContainer.className = 'w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold';
-            modalSubmitBtn.className = 'px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-sm transition';
-            modalSubmitBtn.textContent = 'Simpan Kas Keluar';
-            btnSwitchIncome.className = 'py-2 font-bold rounded-lg transition text-slate-600 hover:text-slate-900';
-            btnSwitchExpense.className = 'py-2 font-bold rounded-lg transition bg-white text-rose-700 shadow-xs';
+            if (modalTitle) modalTitle.textContent = 'Catat Kas Keluar (Kredit)';
+            if (modalIconContainer) modalIconContainer.className = 'w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold';
+            if (modalSubmitBtn) {
+                modalSubmitBtn.className = 'px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-sm transition';
+                modalSubmitBtn.textContent = 'Simpan Kas Keluar';
+            }
+            if (btnSwitchIncome) btnSwitchIncome.className = 'py-2 font-bold rounded-lg transition text-slate-600 hover:text-slate-900';
+            if (btnSwitchExpense) btnSwitchExpense.className = 'py-2 font-bold rounded-lg transition bg-white text-rose-700 shadow-xs';
 
             // Populate expense categories
-            formCategory.innerHTML = '';
-            Object.keys(expenseCategoriesMap).forEach(key => {
-                const opt = document.createElement('option');
-                opt.value = key;
-                opt.textContent = expenseCategoriesMap[key];
-                formCategory.appendChild(opt);
-            });
+            if (formCategory) {
+                formCategory.innerHTML = '';
+                Object.keys(expenseCategoriesMap).forEach(key => {
+                    const opt = document.createElement('option');
+                    opt.value = key;
+                    opt.textContent = expenseCategoriesMap[key];
+                    formCategory.appendChild(opt);
+                });
+            }
         }
 
         if (window.lucide) {
             lucide.createIcons();
         }
-    }
+    };
 
-    function openEditModal(trx) {
+    window.openEditModal = function(trx) {
         const editForm = document.getElementById('editForm');
-        editForm.action = `/admin/cash-book/${trx.id}`;
-        document.getElementById('editModalTitle').textContent = `Edit ${trx.type === 'income' ? 'Kas Masuk' : 'Kas Keluar'}`;
-        document.getElementById('editTrxNumber').textContent = trx.transaction_number;
-        document.getElementById('editTitle').value = trx.title;
-        document.getElementById('editCategory').value = trx.category;
-        document.getElementById('editDate').value = trx.transaction_date.substring(0, 10);
-        document.getElementById('editMethod').value = trx.payment_method;
-        document.getElementById('editNotes').value = trx.notes || '';
+        if (editForm) editForm.action = `/admin/cash-book/${trx.id}`;
+        
+        const titleEl = document.getElementById('editModalTitle');
+        if (titleEl) titleEl.textContent = `Edit ${trx.type === 'income' ? 'Kas Masuk' : 'Kas Keluar'}`;
+        
+        const numEl = document.getElementById('editTrxNumber');
+        if (numEl) numEl.textContent = trx.transaction_number;
+        
+        const editTitle = document.getElementById('editTitle');
+        if (editTitle) editTitle.value = trx.title;
+        
+        const editCat = document.getElementById('editCategory');
+        if (editCat) editCat.value = trx.category;
+        
+        const editDate = document.getElementById('editDate');
+        if (editDate) editDate.value = trx.transaction_date ? trx.transaction_date.substring(0, 10) : '';
+        
+        const editMethod = document.getElementById('editMethod');
+        if (editMethod) editMethod.value = trx.payment_method;
+        
+        const editNotes = document.getElementById('editNotes');
+        if (editNotes) editNotes.value = trx.notes || '';
 
-        openModal('editTransactionModal');
-    }
+        const modal = document.getElementById('editTransactionModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            modal.classList.add('active');
+        }
+    };
 
-    function showProofModal(trxNo, title, proofUrl) {
-        document.getElementById('proofModalTitle').textContent = title;
-        document.getElementById('proofModalSubtitle').textContent = trxNo;
+    window.showProofModal = function(trxNo, title, proofUrl) {
+        const modalTitle = document.getElementById('proofModalTitle');
+        if (modalTitle) modalTitle.textContent = title;
+        
+        const modalSub = document.getElementById('proofModalSubtitle');
+        if (modalSub) modalSub.textContent = trxNo;
+        
         const container = document.getElementById('proofContainer');
         const dlBtn = document.getElementById('proofDownloadBtn');
 
-        dlBtn.href = proofUrl;
-        dlBtn.download = `${trxNo}_bukti`;
-
-        if (proofUrl.startsWith('data:application/pdf')) {
-            container.innerHTML = `<iframe src="${proofUrl}" class="w-full h-80 rounded-xl border-0"></iframe>`;
-        } else {
-            container.innerHTML = `<img src="${proofUrl}" alt="Bukti Transaksi" class="max-h-80 max-w-full rounded-xl object-contain shadow-md">`;
+        if (dlBtn) {
+            dlBtn.href = proofUrl;
+            dlBtn.download = `${trxNo}_bukti`;
         }
 
-        openModal('proofModal');
-    }
+        if (container) {
+            if (proofUrl.startsWith('data:application/pdf')) {
+                container.innerHTML = `<iframe src="${proofUrl}" class="w-full h-80 rounded-xl border-0"></iframe>`;
+            } else {
+                container.innerHTML = `<img src="${proofUrl}" alt="Bukti Transaksi" class="max-h-80 max-w-full rounded-xl object-contain shadow-md">`;
+            }
+        }
+
+        const modal = document.getElementById('proofModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            modal.classList.add('active');
+        }
+    };
+
+    // Auto bind clicks on DOM ready
+    document.addEventListener('DOMContentLoaded', () => {
+        const btnIn = document.getElementById('btnTopKasMasuk');
+        if (btnIn) {
+            btnIn.addEventListener('click', (e) => {
+                e.preventDefault();
+                openCreateModal('income');
+            });
+        }
+        const btnOut = document.getElementById('btnTopKasKeluar');
+        if (btnOut) {
+            btnOut.addEventListener('click', (e) => {
+                e.preventDefault();
+                openCreateModal('expense');
+            });
+        }
+
+        // Initialize categories in form
+        switchModalType('income');
+    });
 </script>
-@endpush
 @endsection
