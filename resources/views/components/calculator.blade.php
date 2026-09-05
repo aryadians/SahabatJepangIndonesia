@@ -93,7 +93,7 @@
                             <label for="calcOvertime" class="text-sm font-bold text-slate-800">
                                 Estimasi Lembur (Zangyou)
                             </label>
-                            <span id="overtimeHoursDisplay" class="px-3 py-1 rounded-full bg-red-100 text-japan-700 text-xs font-extrabold">
+                            <span id="overtimeHoursDisplay" class="px-3 py-1 rounded-full bg-red-100 text-japan-700 text-xs font-extrabold shadow-2xs">
                                 15 Jam / bln
                             </span>
                         </div>
@@ -104,12 +104,29 @@
                             max="40" 
                             step="5" 
                             value="15" 
-                            class="w-full h-2 bg-slate-200 rounded-lg cursor-pointer"
+                            class="w-full h-2 bg-slate-200 rounded-lg cursor-pointer accent-japan-600"
                         >
                         <div class="flex justify-between text-[11px] text-slate-400 font-medium">
                             <span>0 Jam (Standard)</span>
                             <span>20 Jam (Sedang)</span>
                             <span>40 Jam (Maksimal)</span>
+                        </div>
+
+                        <!-- Overtime Quick Presets -->
+                        <div class="flex items-center gap-1.5 flex-wrap pt-1">
+                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mr-1">Preset Cepat:</span>
+                            <button type="button" onclick="setOvertimePreset(0)" class="ot-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-red-50 hover:text-japan-600 text-slate-700 transition border border-slate-200">
+                                0 Jam (Standar)
+                            </button>
+                            <button type="button" onclick="setOvertimePreset(15)" class="ot-preset-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-red-100 text-japan-700 border border-red-200 transition">
+                                15 Jam (Rata-rata)
+                            </button>
+                            <button type="button" onclick="setOvertimePreset(25)" class="ot-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-red-50 hover:text-japan-600 text-slate-700 transition border border-slate-200">
+                                25 Jam (Aktif)
+                            </button>
+                            <button type="button" onclick="setOvertimePreset(40)" class="ot-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-red-50 hover:text-japan-600 text-slate-700 transition border border-slate-200">
+                                40 Jam (Maksimal)
+                            </button>
                         </div>
                     </div>
 
@@ -168,6 +185,27 @@
                         <p class="text-[11px] text-slate-400 leading-relaxed pt-1">
                             *Uang tabungan ini sepenuhnya menjadi hak Anda dan siap ditransfer langsung ke rekening keluarga di Indonesia.
                         </p>
+                    </div>
+
+                    <!-- Long-term Contract Wealth Projection -->
+                    <div class="p-4 rounded-2xl bg-slate-800/80 border border-slate-700/80 space-y-2.5 mt-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-amber-400 flex items-center gap-1">
+                                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+                                <span>Estimasi Akumulasi Tabungan Kontrak Penuh</span>
+                            </span>
+                            <span class="text-[9px] text-slate-400 font-medium">Hak Penuh Siswa</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-center">
+                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-700/60">
+                                <p class="text-[10px] text-slate-400 font-bold uppercase">Kontrak 3 Tahun</p>
+                                <p id="calc3YearIdr" class="text-sm sm:text-base font-black text-amber-300 font-mono mt-0.5">± Rp 534 Juta</p>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-700/60">
+                                <p class="text-[10px] text-slate-400 font-bold uppercase">Kontrak 5 Tahun (SSW)</p>
+                                <p id="calc5YearIdr" class="text-sm sm:text-base font-black text-emerald-400 font-mono mt-0.5">± Rp 890 Juta</p>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Action Button -->
@@ -485,5 +523,21 @@
             salaryBtn.className = inactiveClass;
             costBtn.className = inactiveClass;
         }
+    }
+
+    function setOvertimePreset(hours) {
+        const slider = document.getElementById('calcOvertime');
+        if (!slider) return;
+        slider.value = hours;
+        slider.dispatchEvent(new Event('input'));
+        slider.dispatchEvent(new Event('change'));
+
+        document.querySelectorAll('.ot-preset-btn').forEach(btn => {
+            if (btn.textContent.includes(hours + ' Jam')) {
+                btn.className = 'ot-preset-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-red-100 text-japan-700 border border-red-200 transition';
+            } else {
+                btn.className = 'ot-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-red-50 hover:text-japan-600 text-slate-700 transition border border-slate-200';
+            }
+        });
     }
 </script>

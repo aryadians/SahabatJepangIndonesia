@@ -337,6 +337,14 @@ function initSalaryCalculator() {
             overtimeDisplay.textContent = `${overtimeHours} Jam / bln`;
         }
 
+        document.querySelectorAll('.ot-preset-btn').forEach(btn => {
+            if (btn.textContent.includes(overtimeHours + ' Jam')) {
+                btn.className = 'ot-preset-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-red-100 text-japan-700 border border-red-200 transition';
+            } else {
+                btn.className = 'ot-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-red-50 hover:text-japan-600 text-slate-700 transition border border-slate-200';
+            }
+        });
+
         // Calculations
         const adjustedBase = baseSectorSalary * prefMultiplier;
         const hourlyRate = (adjustedBase / 160) * 1.25; // 1.25x for overtime
@@ -358,9 +366,19 @@ function initSalaryCalculator() {
 
         if (deductionsYenEl) deductionsYenEl.textContent = `- ¥ ${deductions.toLocaleString('id-ID')}`;
         if (livingCostYenEl) livingCostYenEl.textContent = `- ¥ ${livingCost.toLocaleString('id-ID')}`;
-
         animateNumber(netSavingsYenEl, netSavings, '¥ ');
         netSavingsIdrEl.textContent = `≈ Rp ${Math.round((netSavings * JPY_TO_IDR) / 1000).toLocaleString('id-ID')}.000 / bln`;
+
+        const calc3YearIdrEl = document.getElementById('calc3YearIdr');
+        const calc5YearIdrEl = document.getElementById('calc5YearIdr');
+        if (calc3YearIdrEl) {
+            const idr3Y = Math.round((netSavings * 36 * JPY_TO_IDR) / 1000000);
+            calc3YearIdrEl.textContent = `± Rp ${idr3Y.toLocaleString('id-ID')} Juta`;
+        }
+        if (calc5YearIdrEl) {
+            const idr5Y = Math.round((netSavings * 60 * JPY_TO_IDR) / 1000000);
+            calc5YearIdrEl.textContent = `± Rp ${idr5Y.toLocaleString('id-ID')} Juta`;
+        }
     }
 
     if (sectorSelect) sectorSelect.addEventListener('change', calculate);

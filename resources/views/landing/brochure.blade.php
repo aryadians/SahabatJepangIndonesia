@@ -126,18 +126,24 @@
                     <!-- Official Header -->
                     <div class="border-b-2 border-slate-900 pb-6 flex items-start justify-between gap-6">
                         <div class="flex items-start gap-4">
-                            <div class="w-16 h-16 rounded-2xl bg-red-600 text-white flex items-center justify-center font-bold text-3xl shadow-md flex-shrink-0">
-                                友
-                            </div>
+                            @if(!empty($settings['site_logo']))
+                                <div class="h-16 w-auto max-w-[140px] flex items-center justify-center flex-shrink-0">
+                                    <img src="{{ $settings['site_logo'] }}" alt="{{ $settings['site_name'] ?? 'LPK SJI' }}" class="max-h-full max-w-full object-contain">
+                                </div>
+                            @else
+                                <div class="w-16 h-16 rounded-2xl bg-red-600 text-white flex items-center justify-center font-bold text-3xl shadow-md flex-shrink-0">
+                                    友
+                                </div>
+                            @endif
                             <div>
                                 <h2 class="text-xl sm:text-2xl font-black text-slate-900 uppercase tracking-tight">
-                                    LPK SAHABAT JEPANG INDONESIA
+                                    {{ $settings['site_name'] ?? 'LPK SAHABAT JEPANG INDONESIA' }}
                                 </h2>
                                 <p class="text-xs font-bold text-red-600 mt-1">
-                                    Sending Organization (SO) Resmi Kemenaker RI • Izin No: KEP.224/LATTAS/XII/2023
+                                    {{ $settings['site_tagline'] ?? 'Sending Organization (SO) Resmi Kemenaker RI • Izin No: KEP.224/LATTAS/XII/2023' }}
                                 </p>
                                 <p class="text-[11px] text-slate-500 mt-1">
-                                    Jl. Sakura Raya No. 88, Jakarta Selatan • Hotline: +62 812-3456-7890 • Website: sahabatjepangindonesia.com
+                                    {{ $settings['contact_address'] ?? 'Jl. Sakura Raya No. 88, Jakarta Selatan' }} • Hotline: {{ $settings['contact_phone'] ?? ('+' . $cleanWa) }} • Website: {{ parse_url(url('/'), PHP_URL_HOST) }}
                                 </p>
                             </div>
                         </div>
@@ -255,7 +261,7 @@
                     <!-- Footer Stempel -->
                     <div class="border-t border-slate-200 pt-6 flex items-center justify-between text-xs text-slate-500">
                         <div>
-                            <p class="font-bold text-slate-800">LPK Sahabat Jepang Indonesia</p>
+                            <p class="font-bold text-slate-800">{{ $settings['site_name'] ?? 'LPK Sahabat Jepang Indonesia' }}</p>
                             <p class="text-[11px]">Direktorat Penempatan & Kerjasama Luar Negeri</p>
                         </div>
                         <div class="text-right">
