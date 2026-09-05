@@ -102,6 +102,12 @@
                         Reset
                     </button>
                 </div>
+                <!-- Active Prefecture Filter Badge -->
+                <div id="activePrefectureFilterBadge" class="hidden items-center gap-1.5 px-3 py-1 rounded-xl bg-japan-600/20 text-red-400 border border-red-500/40 text-xs font-bold w-fit mt-2 animate-fadeIn">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+                    <span>Filter Aktif: <strong id="activePrefectureFilterName" class="text-white">Tokyo</strong></span>
+                    <button type="button" onclick="clearAlumniSearch()" class="hover:text-white ml-1 text-slate-400">&times;</button>
+                </div>
                 <div class="flex items-center justify-between text-[11px] text-slate-400 mt-2 px-2">
                     <span id="alumniSearchCount">Menampilkan semua alumni & siswa terverifikasi</span>
                     <span class="text-japan-400 font-bold hidden sm:inline">Klik nama prefektur untuk filter instan</span>
@@ -280,11 +286,13 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="testimonialsGrid">
                 @foreach($testimonials as $t)
                     <div 
-                        class="testimonial-card p-6 rounded-3xl bg-slate-900 border border-slate-800 flex flex-col justify-between hover:border-red-500/60 transition-all duration-300 shadow-xl group space-y-4"
+                        class="testimonial-card p-6 rounded-3xl bg-slate-900 border border-slate-800 flex flex-col justify-between hover:border-red-500/60 hover:-translate-y-1.5 transition-all duration-300 shadow-xl hover:shadow-red-600/10 group space-y-4 cursor-pointer"
                         data-name="{{ strtolower($t->name) }}"
                         data-prefecture="{{ strtolower($t->prefecture) }}"
                         data-company="{{ strtolower($t->company) }}"
                         data-program="{{ strtolower($t->program) }}"
+                        onclick='openAlumniStory(@json($t))'
+                        title="Klik untuk membaca kisah lengkap & profil {{ $t->name }}"
                     >
                         <div class="space-y-4">
                             
@@ -293,11 +301,11 @@
                                 <img src="{{ $t->avatar }}" alt="{{ $t->name }}" class="w-14 h-14 rounded-2xl object-cover border-2 border-japan-600 shadow-md flex-shrink-0 group-hover:scale-105 transition">
                                 <div>
                                     <div class="flex items-center gap-2">
-                                        <h4 class="font-extrabold text-white text-base leading-tight">{{ $t->name }}</h4>
+                                        <h4 class="font-extrabold text-white text-base leading-tight group-hover:text-red-400 transition">{{ $t->name }}</h4>
                                         <span class="w-2 h-2 rounded-full bg-emerald-400" title="Alumni Aktif"></span>
                                     </div>
                                     <p 
-                                        onclick="filterByPrefecture('{{ $t->prefecture }}')" 
+                                        onclick="event.stopPropagation(); filterByPrefecture('{{ $t->prefecture }}')" 
                                         class="text-xs text-red-400 font-bold font-japanese flex items-center gap-1 mt-0.5 cursor-pointer hover:underline"
                                         title="Filter di prefektur {{ $t->prefecture }}"
                                     >
@@ -315,7 +323,7 @@
                                 </div>
                                 <div class="flex justify-between items-center text-slate-400">
                                     <span>Perusahaan:</span>
-                                    <span class="text-japan-300 font-bold font-japanese text-[11px]">{{ $t->company }}</span>
+                                    <span class="text-japan-300 font-bold font-japanese text-[11px] truncate max-w-[150px]">{{ $t->company }}</span>
                                 </div>
                                 <div class="flex justify-between items-center text-slate-400 border-t border-slate-700/80 pt-2">
                                     <span>Gaji Bersih / Bulan:</span>
@@ -324,7 +332,7 @@
                             </div>
 
                             <!-- Quote -->
-                            <p class="text-xs sm:text-sm text-slate-300 italic leading-relaxed">
+                            <p class="text-xs sm:text-sm text-slate-300 italic leading-relaxed line-clamp-3">
                                 "{{ $t->quote }}"
                             </p>
                         </div>
@@ -332,8 +340,9 @@
                         <!-- Footer Badge -->
                         <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-500 font-medium">
                             <span class="text-[11px]">Asal: <strong class="text-slate-300">{{ $t->origin }}</strong></span>
-                            <span class="px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-400 font-bold text-[10px] border border-red-500/30">
-                                {{ $t->tag ?? 'Alumni Sukses' }}
+                            <span class="text-japan-400 group-hover:text-white text-[11px] font-bold flex items-center gap-1 transition">
+                                <span>Detail Kisah</span>
+                                <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition"></i>
                             </span>
                         </div>
                     </div>
@@ -427,6 +436,83 @@
     </div>
 </div>
 
+<!-- Interactive Alumni Story Spotlight Modal -->
+<div id="alumniStoryModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md transition-opacity">
+    <div class="bg-slate-900 border border-slate-700 text-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-5 relative overflow-hidden animate-fadeIn">
+        <button 
+            type="button" 
+            onclick="closeAlumniStory()" 
+            class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-xl bg-slate-800 hover:bg-slate-700 transition"
+        >
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+
+        <div class="flex items-center gap-4">
+            <img id="storyModalAvatar" src="" alt="Alumni" class="w-16 h-16 rounded-2xl object-cover border-2 border-japan-600 shadow-lg flex-shrink-0">
+            <div>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase text-red-400 bg-red-500/20 border border-red-500/30 inline-block mb-1" id="storyModalTag">
+                    Alumni Sukses
+                </span>
+                <h3 class="text-xl font-black text-white" id="storyModalName">Nama Alumni</h3>
+                <p class="text-xs text-japan-400 font-bold font-japanese flex items-center gap-1 mt-0.5">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-japan-500"></i>
+                    <span id="storyModalPrefecture">Prefektur, Jepang</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-800/80 border border-slate-700/80 text-xs space-y-2">
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <span class="text-slate-400 text-[10px] uppercase font-bold block">Program</span>
+                    <strong class="text-white text-xs font-mono" id="storyModalProgram">-</strong>
+                </div>
+                <div>
+                    <span class="text-slate-400 text-[10px] uppercase font-bold block">Kaisha / Perusahaan</span>
+                    <strong class="text-japan-300 text-xs font-japanese font-bold" id="storyModalCompany">-</strong>
+                </div>
+                <div class="col-span-2 pt-1 border-t border-slate-700/60 flex items-center justify-between">
+                    <div>
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Gaji Bersih / Bulan</span>
+                        <strong class="text-emerald-400 text-sm font-black" id="storyModalSalary">-</strong>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-slate-400 text-[10px] uppercase font-bold block">Asal Daerah</span>
+                        <strong class="text-slate-200 text-xs" id="storyModalOrigin">-</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Full Quote -->
+        <div class="p-4 rounded-2xl bg-slate-950/60 border border-slate-800 relative">
+            <i data-lucide="quote" class="w-6 h-6 text-red-500/20 absolute top-2 right-3 pointer-events-none"></i>
+            <p class="text-xs sm:text-sm text-slate-200 italic leading-relaxed" id="storyModalQuote">
+                "..."
+            </p>
+        </div>
+
+        <div class="pt-2 flex items-center justify-between gap-3 border-t border-slate-800">
+            <button 
+                type="button" 
+                onclick="closeAlumniStory()" 
+                class="px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-xs font-bold transition"
+            >
+                Tutup
+            </button>
+            <a 
+                id="storyModalWaBtn"
+                href="#"
+                target="_blank"
+                class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-lg shadow-emerald-600/30 flex items-center gap-1.5 transition active:scale-[0.97]"
+            >
+                <i data-lucide="message-circle" class="w-4 h-4"></i>
+                <span>Tanya Alur Lolos Seperti Ini</span>
+            </a>
+        </div>
+    </div>
+</div>
+
 <script>
     const regionsData = @json($regions);
 
@@ -479,6 +565,39 @@
         document.body.classList.remove('overflow-hidden');
     }
 
+    // Alumni Story Spotlight Modal handlers
+    function openAlumniStory(t) {
+        if (!t) return;
+
+        document.getElementById('storyModalAvatar').src = t.avatar || '/images/default-avatar.png';
+        document.getElementById('storyModalTag').innerText = t.tag || 'Alumni Sukses';
+        document.getElementById('storyModalName').innerText = t.name;
+        document.getElementById('storyModalPrefecture').innerText = `${t.prefecture}, Jepang`;
+        document.getElementById('storyModalProgram').innerText = t.program;
+        document.getElementById('storyModalCompany').innerText = t.company;
+        document.getElementById('storyModalSalary').innerText = t.salary;
+        document.getElementById('storyModalOrigin').innerText = t.origin;
+        document.getElementById('storyModalQuote').innerText = `"${t.quote}"`;
+
+        @php
+            $cleanWaMap = preg_replace('/[^0-9]/', '', $settings['contact_whatsapp'] ?? '6281234567890');
+            if (str_starts_with($cleanWaMap, '0')) $cleanWaMap = '62' . substr($cleanWaMap, 1);
+        @endphp
+        const waMsg = encodeURIComponent(`Halo Sensei LPK Sahabat Jepang Indonesia! Saya membaca kisah sukses alumni atas nama ${t.name} di ${t.company} (${t.prefecture}, program ${t.program}). Saya ingin konsultasi alur pendaftaran dan persiapan seleksi agar bisa berkarir seperti ${t.name}.`);
+        document.getElementById('storyModalWaBtn').href = `https://api.whatsapp.com/send?phone={{ $cleanWaMap }}&text=${waMsg}`;
+
+        const modal = document.getElementById('alumniStoryModal');
+        modal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function closeAlumniStory() {
+        const modal = document.getElementById('alumniStoryModal');
+        modal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
+
     // Filter by clicking prefecture tag
     function filterByPrefecture(prefName) {
         if (!prefName) return;
@@ -496,10 +615,23 @@
         const clearBtn = document.getElementById('clearSearchBtn');
         const countText = document.getElementById('alumniSearchCount');
         const emptyState = document.getElementById('noAlumniFoundState');
+        const filterBadge = document.getElementById('activePrefectureFilterBadge');
+        const filterBadgeName = document.getElementById('activePrefectureFilterName');
 
         if (clearBtn) {
             if (q.length > 0) clearBtn.classList.remove('hidden');
             else clearBtn.classList.add('hidden');
+        }
+
+        if (filterBadge && filterBadgeName) {
+            if (q.length > 0) {
+                filterBadgeName.innerText = q.charAt(0).toUpperCase() + q.slice(1);
+                filterBadge.classList.remove('hidden');
+                filterBadge.classList.add('inline-flex');
+            } else {
+                filterBadge.classList.add('hidden');
+                filterBadge.classList.remove('inline-flex');
+            }
         }
 
         let studentMatches = 0;

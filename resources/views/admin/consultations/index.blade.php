@@ -84,8 +84,10 @@
                     <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
                     <input 
                         type="text" 
+                        id="leadClientSearchInput"
                         name="search" 
                         value="{{ request('search') }}" 
+                        oninput="filterLeadsClientTable()"
                         placeholder="Cari nama, nomor WhatsApp, kota..." 
                         class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:border-japan-600 bg-slate-50 focus:bg-white transition"
                     >
@@ -152,9 +154,12 @@
     <!-- Leads Data Table Card -->
     <div class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
+            <table class="w-full text-left text-xs" id="leadsDataTable">
                 <thead>
                     <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-400 text-[11px] uppercase font-black tracking-wider">
+                        <th class="py-4 px-3 w-10 text-center">
+                            <input type="checkbox" id="selectAllLeadsCheckbox" onchange="toggleSelectAllLeads(this.checked)" class="rounded border-slate-300 text-japan-600 focus:ring-red-500 cursor-pointer">
+                        </th>
                         <th class="py-4 px-4">Calon Siswa</th>
                         <th class="py-4 px-4">Program Minat</th>
                         <th class="py-4 px-4">Profil & Asal</th>
@@ -163,7 +168,7 @@
                         <th class="py-4 px-4 text-center">Aksi & Follow-Up</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 font-medium">
+                <tbody class="divide-y divide-slate-100 font-medium" id="leadsTableBody">
                     @forelse($consultations as $lead)
                         @php
                             $cleanPhone = preg_replace('/[^0-9]/', '', $lead->phone);
@@ -172,7 +177,12 @@
                             }
                             $waText = urlencode("Halo {$lead->name}, terima kasih telah mendaftar formulir konsultasi karir program {$lead->program} di LPK Sahabat Jepang Indonesia. Ada yang bisa kami bantu?");
                         @endphp
-                        <tr id="leadRow-{{ $lead->id }}" class="hover:bg-slate-50/80 transition">
+                        <tr id="leadRow-{{ $lead->id }}" class="lead-data-row hover:bg-slate-50/80 transition" data-search-text="{{ strtolower($lead->name . ' ' . $lead->phone . ' ' . $lead->city . ' ' . $lead->program) }}">
+                            
+                            <!-- Checkbox -->
+                            <td class="py-3.5 px-3 text-center">
+                                <input type="checkbox" class="lead-row-checkbox rounded border-slate-300 text-japan-600 focus:ring-red-500 cursor-pointer" value="{{ $lead->id }}" data-phone="{{ $cleanPhone }}" data-name="{{ $lead->name }}" onchange="updateBatchActionDock()">
+                            </td>
                             
                             <!-- Calon Siswa -->
                             <td class="py-3.5 px-4">
@@ -292,7 +302,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="py-12 text-center text-slate-400">
+                            <td colspan="7" class="py-12 text-center text-slate-400">
                                 <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400 mb-2">
                                     <i data-lucide="inbox" class="w-6 h-6"></i>
                                 </div>
@@ -312,6 +322,28 @@
         @endif
     </div>
 
+</div>
+
+<!-- Floating Batch Action Dock -->
+<div id="batchActionDock" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden bg-slate-900/95 backdrop-blur-md text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-700 items-center gap-4 transition-all duration-300">
+    <div class="flex items-center gap-2">
+        <span class="w-6 h-6 rounded-full bg-japan-600 text-white font-black text-xs flex items-center justify-center shadow-xs" id="batchSelectedCount">0</span>
+        <span class="text-xs font-bold text-slate-300">Pendaftar Terpilih</span>
+    </div>
+    <div class="h-5 w-px bg-slate-700"></div>
+    <div class="flex items-center gap-2">
+        <button type="button" onclick="batchSetStatus('contacted')" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 transition active:scale-[0.97] shadow-sm">
+            <i data-lucide="check" class="w-3.5 h-3.5"></i>
+            <span>Tandai Contacted</span>
+        </button>
+        <button type="button" onclick="batchCopyPhones()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 transition active:scale-[0.97] shadow-sm" title="Salin nomor WhatsApp terpilih untuk broadcast">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span id="batchCopyBtnText">Salin No. WA</span>
+        </button>
+        <button type="button" onclick="clearLeadSelection()" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white text-xs font-medium transition">
+            Batal
+        </button>
+    </div>
 </div>
 
 <!-- Lead Detail & Follow-Up Modal -->
@@ -552,6 +584,130 @@
             const fallbackUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(msg)}`;
             window.open(fallbackUrl, '_blank');
         });
+    }
+
+    // Real-Time Instant Filter on Current Table Rows
+    function filterLeadsClientTable() {
+        const query = (document.getElementById('leadClientSearchInput')?.value || '').toLowerCase().trim();
+        const rows = document.querySelectorAll('.lead-data-row');
+
+        rows.forEach(row => {
+            const text = row.getAttribute('data-search-text') || '';
+            if (!query || text.includes(query)) {
+                row.classList.remove('hidden');
+            } else {
+                row.classList.add('hidden');
+            }
+        });
+
+        updateBatchActionDock();
+    }
+
+    // Toggle Select All Visible Checkboxes
+    function toggleSelectAllLeads(isChecked) {
+        document.querySelectorAll('.lead-data-row:not(.hidden) .lead-row-checkbox').forEach(cb => {
+            cb.checked = isChecked;
+        });
+        updateBatchActionDock();
+    }
+
+    // Update Floating Batch Action Dock state
+    function updateBatchActionDock() {
+        const checkedBoxes = document.querySelectorAll('.lead-row-checkbox:checked');
+        const dock = document.getElementById('batchActionDock');
+        const countSpan = document.getElementById('batchSelectedCount');
+
+        if (!dock || !countSpan) return;
+
+        if (checkedBoxes.length > 0) {
+            countSpan.textContent = checkedBoxes.length;
+            dock.classList.remove('hidden');
+            dock.classList.add('flex');
+        } else {
+            dock.classList.add('hidden');
+            dock.classList.remove('flex');
+            const selectAll = document.getElementById('selectAllLeadsCheckbox');
+            if (selectAll) selectAll.checked = false;
+        }
+        if (window.lucide) lucide.createIcons();
+    }
+
+    // Clear Selection
+    function clearLeadSelection() {
+        document.querySelectorAll('.lead-row-checkbox').forEach(cb => cb.checked = false);
+        const selectAll = document.getElementById('selectAllLeadsCheckbox');
+        if (selectAll) selectAll.checked = false;
+        updateBatchActionDock();
+    }
+
+    // Copy Selected Phone Numbers for Broadcast
+    function batchCopyPhones() {
+        const checkedBoxes = document.querySelectorAll('.lead-row-checkbox:checked');
+        const phones = Array.from(checkedBoxes).map(cb => cb.getAttribute('data-phone')).filter(Boolean);
+
+        if (phones.length === 0) return;
+
+        const copyText = phones.join(', ');
+        navigator.clipboard.writeText(copyText).then(() => {
+            const btnText = document.getElementById('batchCopyBtnText');
+            if (btnText) {
+                const oldText = btnText.textContent;
+                btnText.textContent = `✓ ${phones.length} Tersalin!`;
+                setTimeout(() => { btnText.textContent = oldText; }, 2500);
+            }
+            showMiniToast(`${phones.length} nomor WhatsApp berhasil disalin ke clipboard.`);
+        }).catch(() => {
+            prompt('Salin nomor WhatsApp berikut:', copyText);
+        });
+    }
+
+    // Batch Update Status via AJAX
+    async function batchSetStatus(newStatus) {
+        const checkedBoxes = document.querySelectorAll('.lead-row-checkbox:checked');
+        const ids = Array.from(checkedBoxes).map(cb => cb.value);
+
+        if (ids.length === 0) return;
+
+        showMiniToast(`Memperbarui ${ids.length} pendaftar ke status ${newStatus}...`);
+
+        try {
+            await Promise.all(ids.map(id => {
+                return fetch(`/admin/leads/${id}/status`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    const rowSelect = document.querySelector(`select[data-lead-id="${id}"]`);
+                    if (rowSelect) {
+                        rowSelect.value = newStatus;
+                        rowSelect.className = 'text-[11px] font-black px-3 py-1.5 rounded-xl border cursor-pointer focus:outline-none transition shadow-2xs';
+                        if (newStatus === 'contacted') {
+                            rowSelect.classList.add('bg-blue-50', 'text-blue-800', 'border-blue-300');
+                        } else if (newStatus === 'registered') {
+                            rowSelect.classList.add('bg-emerald-50', 'text-emerald-800', 'border-emerald-300');
+                        } else {
+                            rowSelect.classList.add('bg-amber-50', 'text-amber-800', 'border-amber-300');
+                        }
+                    }
+                    if (data.stats && window.updateAdminStatsDom) {
+                        window.updateAdminStatsDom({ leads_kpi: data.stats });
+                    }
+                });
+            }));
+
+            showMiniToast(`Berhasil memperbarui ${ids.length} calon siswa!`);
+            clearLeadSelection();
+        } catch (err) {
+            console.error(err);
+            alert('Terjadi kesalahan saat memproses status massal.');
+        }
     }
 </script>
 @endsection

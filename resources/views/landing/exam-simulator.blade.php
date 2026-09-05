@@ -47,6 +47,42 @@
             </div>
         </div>
 
+        <!-- Live CBT Progress Track Bar & Audio Controls -->
+        <div class="bg-slate-900/90 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 border border-slate-800 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <span class="text-xs font-bold text-slate-300 flex items-center gap-2">
+                    <i data-lucide="activity" class="w-4 h-4 text-japan-500"></i>
+                    <span>Progres CBT:</span>
+                </span>
+                <div class="flex-1 sm:w-64 bg-slate-800 rounded-full h-2.5 overflow-hidden border border-slate-700">
+                    <div id="cbtProgressBar" class="bg-gradient-to-r from-red-600 via-amber-500 to-emerald-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <span id="cbtProgressPercent" class="text-xs font-black text-emerald-400 font-mono">0%</span>
+            </div>
+            
+            <div class="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end text-[11px]">
+                <!-- Audio Synthesis Toggle -->
+                <button 
+                    type="button" 
+                    id="soundToggleBtn" 
+                    onclick="toggleExamAudio()" 
+                    class="px-3 py-1.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold flex items-center gap-1.5 transition active:scale-[0.97]"
+                    title="Aktifkan/nonaktifkan efek suara pengerjaan"
+                >
+                    <i data-lucide="volume-2" class="w-3.5 h-3.5 text-emerald-400" id="soundToggleIcon"></i>
+                    <span id="soundToggleText">Audio: Aktif</span>
+                </button>
+
+                <!-- Nav Grid Filter Pills -->
+                <div class="inline-flex rounded-xl bg-slate-950 p-1 border border-slate-800" id="navFilterPills">
+                    <button type="button" onclick="setNavFilter('all', this)" class="nav-filter-pill px-2.5 py-1 rounded-lg text-[10px] font-bold bg-japan-600 text-white transition shadow-xs" data-filter="all">Semua</button>
+                    <button type="button" onclick="setNavFilter('unanswered', this)" class="nav-filter-pill px-2.5 py-1 rounded-lg text-[10px] font-bold text-slate-400 hover:text-white transition" data-filter="unanswered">Belum</button>
+                    <button type="button" onclick="setNavFilter('flagged', this)" class="nav-filter-pill px-2.5 py-1 rounded-lg text-[10px] font-bold text-amber-400 hover:text-white transition" data-filter="flagged">🚩 Ragu</button>
+                    <button type="button" onclick="setNavFilter('answered', this)" class="nav-filter-pill px-2.5 py-1 rounded-lg text-[10px] font-bold text-slate-400 hover:text-white transition" data-filter="answered">Terjawab</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Exam CBT Container -->
         <div id="examContainer" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
@@ -387,11 +423,134 @@
     let currentIndex = 0;
     let userAnswers = {}; // { questionId: 'A' }
     let flaggedQuestions = {}; // { questionId: true }
+    let activeNavFilter = 'all';
     let totalMinutes = Math.max(30, Math.ceil(questionsData.length * 1.2));
     let timerSeconds = totalMinutes * 60;
     let timerInterval = null;
     let isTimerStarted = false;
     let finalResultData = null;
+
+    // Web Audio Synthesis for Zero-Latency CBT Micro-Interactions
+    let audioCtx = null;
+    let isAudioEnabled = localStorage.getItem('cbt_sound_enabled') !== 'false';
+
+    function initAudio() {
+        if (!audioCtx && (window.AudioContext || window.webkitAudioContext)) {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContextClass();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    }
+
+    function playCbtTone(freq, duration = 0.08, type = 'sine', gainMax = 0.12) {
+        if (!isAudioEnabled) return;
+        try {
+            initAudio();
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(gainMax, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        } catch (err) {
+            console.warn('Audio tone err:', err);
+        }
+    }
+
+    function playVictoryChime() {
+        if (!isAudioEnabled) return;
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+            setTimeout(() => {
+                playCbtTone(freq, 0.35, 'triangle', 0.15);
+            }, idx * 110);
+        });
+    }
+
+    function toggleExamAudio() {
+        isAudioEnabled = !isAudioEnabled;
+        localStorage.setItem('cbt_sound_enabled', isAudioEnabled ? 'true' : 'false');
+        updateAudioBtnUi();
+        if (isAudioEnabled) playCbtTone(660, 0.1, 'sine', 0.1);
+    }
+
+    function updateAudioBtnUi() {
+        const btnText = document.getElementById('soundToggleText');
+        const btnIcon = document.getElementById('soundToggleIcon');
+        const btn = document.getElementById('soundToggleBtn');
+        if (!btnText || !btnIcon || !btn) return;
+
+        if (isAudioEnabled) {
+            btnText.innerText = 'Audio: Aktif';
+            btnIcon.setAttribute('data-lucide', 'volume-2');
+            btnIcon.className = 'w-3.5 h-3.5 text-emerald-400';
+            btn.className = 'px-3 py-1.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold flex items-center gap-1.5 transition active:scale-[0.97]';
+        } else {
+            btnText.innerText = 'Audio: Mute';
+            btnIcon.setAttribute('data-lucide', 'volume-x');
+            btnIcon.className = 'w-3.5 h-3.5 text-slate-500';
+            btn.className = 'px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900 text-slate-500 font-bold flex items-center gap-1.5 transition active:scale-[0.97]';
+        }
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function updateProgressBar() {
+        const total = questionsData.length;
+        const answered = Object.keys(userAnswers).length;
+        const pct = total > 0 ? Math.round((answered / total) * 100) : 0;
+
+        const bar = document.getElementById('cbtProgressBar');
+        const pctText = document.getElementById('cbtProgressPercent');
+        const countText = document.getElementById('answeredCountText');
+
+        if (bar) bar.style.width = `${pct}%`;
+        if (pctText) pctText.innerText = `${pct}%`;
+        if (countText) countText.innerText = `${answered} / ${total} Terjawab`;
+    }
+
+    function setNavFilter(filterType, btnElem) {
+        activeNavFilter = filterType;
+
+        // Update pill active styling
+        document.querySelectorAll('.nav-filter-pill').forEach(pill => {
+            pill.className = 'nav-filter-pill px-2.5 py-1 rounded-lg text-[10px] font-bold text-slate-400 hover:text-white transition';
+        });
+        if (btnElem) {
+            btnElem.className = 'nav-filter-pill px-2.5 py-1 rounded-lg text-[10px] font-bold bg-japan-600 text-white transition shadow-xs';
+        }
+
+        applyNavFilterGrid();
+    }
+
+    function applyNavFilterGrid() {
+        document.querySelectorAll('.nav-q-btn').forEach((btn, i) => {
+            const qId = questionsData[i]?.id;
+            const isAns = !!userAnswers[qId];
+            const isFlg = !!flaggedQuestions[qId];
+
+            let isVisible = true;
+            if (activeNavFilter === 'unanswered') {
+                isVisible = !isAns;
+            } else if (activeNavFilter === 'flagged') {
+                isVisible = isFlg;
+            } else if (activeNavFilter === 'answered') {
+                isVisible = isAns;
+            }
+
+            if (isVisible) {
+                btn.classList.remove('hidden');
+            } else {
+                btn.classList.add('hidden');
+            }
+        });
+    }
 
     function startTimer() {
         if (isTimerStarted) return;
@@ -416,7 +575,7 @@
         const q = questionsData[idx];
         if (!q) return;
 
-        // Animate question transition
+        // Animate question transition with subtle Zen pulse
         const qCard = document.getElementById('questionCard');
         if (qCard) {
             qCard.classList.add('opacity-80', 'scale-[0.99]');
@@ -513,6 +672,8 @@
             }
         });
 
+        applyNavFilterGrid();
+        updateProgressBar();
         lucide.createIcons();
     }
 
@@ -521,10 +682,8 @@
         const q = questionsData[currentIndex];
         userAnswers[q.id] = optKey;
         
-        // Update answered count
-        const ansCount = Object.keys(userAnswers).length;
-        document.getElementById('answeredCountText').innerText = `${ansCount} / ${questionsData.length} Terjawab`;
-
+        playCbtTone(660, 0.08, 'sine', 0.12);
+        updateProgressBar();
         renderQuestion(currentIndex);
     }
 
@@ -534,8 +693,10 @@
 
         if (flaggedQuestions[q.id]) {
             delete flaggedQuestions[q.id];
+            playCbtTone(440, 0.06, 'sine', 0.1);
         } else {
             flaggedQuestions[q.id] = true;
+            playCbtTone(880, 0.09, 'triangle', 0.14);
         }
 
         renderQuestion(currentIndex);
@@ -543,12 +704,14 @@
 
     function prevQuestion() {
         if (currentIndex > 0) {
+            playCbtTone(520, 0.05, 'sine', 0.08);
             renderQuestion(currentIndex - 1);
         }
     }
 
     function nextQuestion() {
         if (currentIndex < questionsData.length - 1) {
+            playCbtTone(580, 0.05, 'sine', 0.08);
             renderQuestion(currentIndex + 1);
         } else {
             confirmFinishExam();
@@ -556,8 +719,13 @@
     }
 
     function goToQuestion(idx) {
+        playCbtTone(550, 0.05, 'sine', 0.08);
         renderQuestion(idx);
     }
+
+    // Initialize Audio UI state on boot
+    updateAudioBtnUi();
+    updateProgressBar();
 
     // Keyboard Shortcuts (A-D, 1-4, Left, Right, R)
     window.addEventListener('keydown', (e) => {
@@ -635,7 +803,8 @@
                         document.getElementById('certScoreDisplay').innerText = `${data.earned_points} / ${data.total_points} (${data.percentage}%)`;
                     }
 
-                    // Fire Japanese Celebratory Confetti
+                    // Fire Japanese Celebratory Confetti & Chime
+                    playVictoryChime();
                     fireJapaneseConfetti();
                 } else {
                     passBadge.className = 'inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-black mb-2 bg-amber-100 text-amber-800 border border-amber-300';
