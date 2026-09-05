@@ -153,6 +153,56 @@ class DigitalArchiveController extends Controller
     }
 
     /**
+     * API: Operasi Massal Berkas & Folder (Bulk Delete / Bulk Move)
+     */
+    public function bulkAction(Request $request)
+    {
+        $validated = $request->validate([
+            'action' => 'required|in:delete,move',
+            'file_ids' => 'nullable|array',
+            'file_ids.*' => 'exists:digital_archives,id',
+            'folder_ids' => 'nullable|array',
+            'folder_ids.*' => 'exists:archive_folders,id',
+            'target_folder_id' => 'nullable|exists:archive_folders,id',
+        ]);
+
+        $action = $validated['action'];
+        $fileIds = $validated['file_ids'] ?? [];
+        $folderIds = $validated['folder_ids'] ?? [];
+        $targetFolderId = $validated['target_folder_id'] ?? null;
+
+        $count = 0;
+        if ($action === 'delete') {
+            if (!empty($fileIds)) {
+                $count += DigitalArchive::whereIn('id', $fileIds)->delete();
+            }
+            if (!empty($folderIds)) {
+                foreach ($folderIds as $fid) {
+                    $f = ArchiveFolder::find($fid);
+                    if ($f) {
+                        DigitalArchive::where('folder_id', $fid)->update(['folder_id' => $f->parent_id]);
+                        $f->delete();
+                        $count++;
+                    }
+                }
+            }
+            $msg = "{$count} item berhasil dihapus dari arsip.";
+        } elseif ($action === 'move') {
+            if (!empty($fileIds)) {
+                $count += DigitalArchive::whereIn('id', $fileIds)->update(['folder_id' => $targetFolderId]);
+            }
+            $destName = $targetFolderId ? (ArchiveFolder::find($targetFolderId)->name ?? 'Folder') : 'Arsip Utama';
+            $msg = "{$count} berkas berhasil dipindahkan ke {$destName}.";
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $msg,
+            'stats' => $this->calculateStats(),
+        ]);
+    }
+
+    /**
      * Simpan Berkas Arsip Baru (Form Submit Standar)
      */
     public function store(Request $request)

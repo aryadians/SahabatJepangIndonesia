@@ -206,6 +206,16 @@
                     >
                         <i data-lucide="list" class="w-4 h-4"></i>
                     </button>
+                    <div class="h-4 w-px bg-slate-200 mx-0.5"></div>
+                    <button 
+                        type="button" 
+                        id="btnToggleDetails" 
+                        onclick="toggleDetailsPane()"
+                        class="p-1.5 rounded-lg text-slate-400 hover:text-japan-600 transition"
+                        title="Tampilkan / Sembunyikan Panel Rincian (Windows Details Pane)"
+                    >
+                        <i data-lucide="sidebar" class="w-4 h-4"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -405,6 +415,24 @@
 
             </div>
 
+            <!-- Right Pane: Windows 11 Details & Properties Inspector -->
+            <div 
+                id="explorerDetailsPane" 
+                class="hidden md:col-span-3 border-l border-slate-200 bg-white p-4 space-y-4 overflow-y-auto max-h-[640px] select-none text-xs"
+            >
+                <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                    <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Rincian &amp; Properti</span>
+                    <button type="button" onclick="toggleDetailsPane(false)" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition" title="Tutup Panel">
+                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+
+                <!-- Content Container: Dynamic for File, Folder, or Directory Summary -->
+                <div id="detailsPaneContent" class="space-y-4">
+                    <!-- Populated dynamically by updateDetailsPane() -->
+                </div>
+            </div>
+
         </div>
 
         <!-- Windows Explorer Status Bar -->
@@ -427,6 +455,28 @@
 
     </div>
 
+</div>
+
+<!-- Floating Bulk Actions Bar -->
+<div id="bulkActionBar" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-slate-900/95 text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-700/80 backdrop-blur-md flex items-center gap-4 text-xs font-bold hidden transition-all duration-300">
+    <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-japan-500 animate-ping"></span>
+        <span id="bulkSelectedCountText">1 item dipilih</span>
+    </div>
+    <div class="h-4 w-px bg-slate-700"></div>
+    <div class="flex items-center gap-2">
+        <button type="button" onclick="bulkActionMovePrompt()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition flex items-center gap-1.5 active:scale-95">
+            <i data-lucide="folder-input" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>Pindahkan</span>
+        </button>
+        <button type="button" onclick="bulkActionDeleteConfirm()" class="px-3 py-1.5 rounded-xl bg-rose-900/60 hover:bg-rose-800 text-rose-200 transition flex items-center gap-1.5 active:scale-95">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-400"></i>
+            <span>Hapus</span>
+        </button>
+        <button type="button" onclick="clearSelection()" class="px-2.5 py-1.5 rounded-xl hover:bg-slate-800 text-slate-400 transition" title="Batal Pilihan">
+            &times; Batal
+        </button>
+    </div>
 </div>
 
 <!-- Windows 11 Right-Click Context Menu -->
@@ -817,6 +867,17 @@
             selStatus.textContent = `| 1 ${type === 'folder' ? 'folder' : 'berkas'} dipilih: "${data.name || data.title}"`;
             selStatus.classList.remove('hidden');
         }
+
+        const bulkBar = document.getElementById('bulkActionBar');
+        const bulkText = document.getElementById('bulkSelectedCountText');
+        if (bulkBar) {
+            if (bulkText) bulkText.textContent = `1 ${type === 'folder' ? 'folder' : 'berkas'} dipilih`;
+            bulkBar.classList.remove('hidden');
+        }
+
+        if (isDetailsPaneOpen) {
+            updateDetailsPane();
+        }
     }
 
     function clearSelection() {
@@ -826,6 +887,214 @@
         selectedItem = null;
         const selStatus = document.getElementById('statusBarSelection');
         if (selStatus) selStatus.classList.add('hidden');
+
+        const bulkBar = document.getElementById('bulkActionBar');
+        if (bulkBar) bulkBar.classList.add('hidden');
+
+        if (isDetailsPaneOpen) {
+            updateDetailsPane();
+        }
+    }
+
+    // 1c-2. Windows 11 Details & Properties Pane Handlers
+    let isDetailsPaneOpen = false;
+
+    function toggleDetailsPane(force = null) {
+        if (force !== null) {
+            isDetailsPaneOpen = force;
+        } else {
+            isDetailsPaneOpen = !isDetailsPaneOpen;
+        }
+
+        const pane = document.getElementById('explorerDetailsPane');
+        const canvas = document.getElementById('explorerCanvas');
+        const btn = document.getElementById('btnToggleDetails');
+
+        if (isDetailsPaneOpen) {
+            if (pane) pane.classList.remove('hidden');
+            if (canvas) {
+                canvas.classList.remove('md:col-span-9');
+                canvas.classList.add('md:col-span-6');
+            }
+            if (btn) {
+                btn.classList.add('bg-japan-50', 'text-japan-600', 'font-bold');
+                btn.classList.remove('text-slate-400');
+            }
+            updateDetailsPane();
+        } else {
+            if (pane) pane.classList.add('hidden');
+            if (canvas) {
+                canvas.classList.remove('md:col-span-6');
+                canvas.classList.add('md:col-span-9');
+            }
+            if (btn) {
+                btn.classList.remove('bg-japan-50', 'text-japan-600', 'font-bold');
+                btn.classList.add('text-slate-400');
+            }
+        }
+    }
+
+    function updateDetailsPane() {
+        const container = document.getElementById('detailsPaneContent');
+        if (!container) return;
+
+        if (selectedItem && selectedItem.type === 'file' && selectedItem.data) {
+            const file = selectedItem.data;
+            const isImg = file.is_image;
+            container.innerHTML = `
+                <div class="w-full h-36 rounded-2xl bg-slate-100 overflow-hidden flex items-center justify-center border border-slate-200/80 relative">
+                    ${isImg 
+                        ? `<img src="${file.file_base64}" class="w-full h-full object-cover">` 
+                        : `<div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center"><i data-lucide="file-text" class="w-6 h-6"></i></div>`
+                    }
+                </div>
+
+                <div class="space-y-1.5">
+                    <h4 class="font-extrabold text-slate-900 text-xs break-words">${file.title}</h4>
+                    <p class="text-[10px] text-slate-400 font-mono">${file.archive_no || 'DOC-SJI'}</p>
+                    <span class="inline-block px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ${file.category_badge ? file.category_badge.bg : 'bg-slate-100 text-slate-700'}">
+                        ${file.category_badge ? file.category_badge.label : file.category}
+                    </span>
+                </div>
+
+                <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                    <div class="flex items-center justify-between text-slate-500">
+                        <span>Ukuran:</span>
+                        <span class="font-bold text-slate-800 font-mono">${file.file_size}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-slate-500">
+                        <span>Format:</span>
+                        <span class="font-bold text-slate-800 uppercase">${file.file_type ? file.file_type.split('/')[1] : 'JPG'}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-slate-500">
+                        <span>Tanggal:</span>
+                        <span class="font-bold text-slate-800">${file.document_date || '-'}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-slate-500">
+                        <span>Pengunggah:</span>
+                        <span class="font-bold text-slate-800 truncate max-w-[120px]">${file.uploader_name || 'Admin'}</span>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 grid grid-cols-2 gap-2">
+                    <button type="button" onclick="openExplorerPreview(selectedItem.data)" class="px-2.5 py-1.5 rounded-xl bg-japan-600 hover:bg-japan-700 text-white font-bold text-xs flex items-center justify-center gap-1 transition">
+                        <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                        <span>Preview</span>
+                    </button>
+                    <button type="button" onclick="contextActionDownload()" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1 transition">
+                        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                        <span>Unduh</span>
+                    </button>
+                    <button type="button" onclick="openMoveModal(selectedItem.data.id, selectedItem.data.title)" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1 transition">
+                        <i data-lucide="folder-input" class="w-3.5 h-3.5"></i>
+                        <span>Pindah</span>
+                    </button>
+                    <button type="button" onclick="confirmDeleteFile(selectedItem.data.id, selectedItem.data.title)" class="px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs flex items-center justify-center gap-1 transition">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        <span>Hapus</span>
+                    </button>
+                </div>
+            `;
+        } else if (selectedItem && selectedItem.type === 'folder' && selectedItem.data) {
+            const f = selectedItem.data;
+            container.innerHTML = `
+                <div class="w-full h-28 rounded-2xl bg-amber-50/70 border border-amber-200/60 flex items-center justify-center">
+                    <div class="w-14 h-14 rounded-2xl bg-amber-400 text-white flex items-center justify-center shadow-md">
+                        <i data-lucide="folder" class="w-8 h-8 fill-white/80"></i>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <h4 class="font-extrabold text-slate-900 text-xs break-words">${f.name}</h4>
+                    <p class="text-[10px] text-amber-700 font-bold">Direktori Folder</p>
+                </div>
+
+                <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                    <div class="flex items-center justify-between text-slate-500">
+                        <span>Jumlah Berkas:</span>
+                        <span class="font-bold text-slate-800 font-mono">${f.archives_count || 0} file</span>
+                    </div>
+                    <div class="flex items-center justify-between text-slate-500">
+                        <span>Sub-folder:</span>
+                        <span class="font-bold text-slate-800 font-mono">${f.children_count || 0} folder</span>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 space-y-2">
+                    <button type="button" onclick="loadExplorerData(${f.id})" class="w-full px-3 py-2 rounded-xl bg-japan-600 hover:bg-japan-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                        <i data-lucide="folder-open" class="w-3.5 h-3.5"></i>
+                        <span>Buka Folder Ini</span>
+                    </button>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" onclick="promptRenameFolder(${f.id}, '${addslashes(f.name)}')" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1 transition">
+                            <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
+                            <span>Rename</span>
+                        </button>
+                        <button type="button" onclick="confirmDeleteFolder(${f.id}, '${addslashes(f.name)}')" class="px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs flex items-center justify-center gap-1 transition">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            <span>Hapus</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        } else {
+            const curFolderName = currentData.current_folder ? currentData.current_folder.name : 'Arsip Utama';
+            const fileCount = currentData.files ? currentData.files.length : 0;
+            const folderCount = currentData.folders ? currentData.folders.length : 0;
+
+            container.innerHTML = `
+                <div class="w-full h-24 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-center">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                        <i data-lucide="hard-drive" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-extrabold text-slate-900 text-xs">${curFolderName}</h4>
+                    <p class="text-[10px] text-slate-400 font-medium mt-0.5">Ringkasan Direktori Aktif</p>
+                </div>
+
+                <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                    <div class="flex items-center justify-between text-slate-500">
+                        <span>Folder di sini:</span>
+                        <span class="font-bold text-slate-800 font-mono">${folderCount}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-slate-500">
+                        <span>Berkas di sini:</span>
+                        <span class="font-bold text-slate-800 font-mono">${fileCount}</span>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100">
+                    <label class="w-full px-3 py-2 rounded-xl bg-japan-600 hover:bg-japan-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition">
+                        <i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i>
+                        <span>Unggah Berkas</span>
+                        <input type="file" multiple accept="image/*,application/pdf" onchange="handleExplorerFilesUpload(this.files)" class="hidden">
+                    </label>
+                </div>
+            `;
+        }
+
+        if (window.lucide) lucide.createIcons();
+    }
+
+    // Bulk Action Handlers
+    function bulkActionMovePrompt() {
+        if (!selectedItem) return;
+        if (selectedItem.type === 'file') {
+            openMoveModal(selectedItem.id, selectedItem.title);
+        } else {
+            showArchiveToast('Pindahkan folder dapat dilakukan melalui klik kanan.', 'error');
+        }
+    }
+
+    function bulkActionDeleteConfirm() {
+        if (!selectedItem) return;
+        if (selectedItem.type === 'folder') {
+            confirmDeleteFolder(selectedItem.id, selectedItem.name);
+        } else {
+            confirmDeleteFile(selectedItem.id, selectedItem.title);
+        }
     }
 
     // 1d. Windows 11 Context Menu Handlers
