@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ArchiveFolder;
+use App\Models\CashTransaction;
 use App\Models\DigitalArchive;
 use App\Models\Reimbursement;
 use App\Models\Teacher;
@@ -200,12 +201,30 @@ class ReimbursementController extends Controller
                 break;
 
             case 'pay':
+                $approvedAmount = $reimbursement->amount_approved > 0 ? $reimbursement->amount_approved : $reimbursement->amount_requested;
                 $reimbursement->update([
                     'status' => 'paid',
-                    'amount_approved' => $reimbursement->amount_approved > 0 ? $reimbursement->amount_approved : $reimbursement->amount_requested,
+                    'amount_approved' => $approvedAmount,
                     'paid_at' => now(),
                     'approved_by' => auth()->user()->name ?? 'Bendahara Keuangan',
                 ]);
+
+                // Auto-record to CashTransaction (General Cash Book)
+                $category = $reimbursement->type === 'cash_advance' ? 'cash_advance' : 'reimbursement';
+                CashTransaction::create([
+                    'transaction_number' => CashTransaction::generateNumber('expense'),
+                    'transaction_date' => now()->toDateString(),
+                    'type' => 'expense',
+                    'category' => $category,
+                    'title' => "Pencairan {$reimbursement->type_label}: {$reimbursement->title} ({$reimbursement->employee_name})",
+                    'amount' => $approvedAmount,
+                    'payment_method' => 'cash_kasir',
+                    'reference_type' => 'reimbursement',
+                    'reference_id' => $reimbursement->id,
+                    'notes' => "Nomor Dokumen: {$reimbursement->reimbursement_no}",
+                    'recorded_by' => auth()->user()->name ?? 'Bendahara Keuangan',
+                ]);
+
                 $actionLabel = $reimbursement->type === 'cash_advance' ? 'Dana Uang Muka berhasil dicairkan' : 'Uang Reimburse berhasil dibayarkan ke karyawan';
                 $msg = "{$actionLabel} untuk dokumen {$reimbursement->reimbursement_no}.";
                 break;

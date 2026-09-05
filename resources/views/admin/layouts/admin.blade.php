@@ -190,6 +190,14 @@
             </a>
 
             <a 
+                href="{{ route('admin.cash-book.index') }}" 
+                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.cash-book.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+            >
+                <i data-lucide="book-open" class="w-4 h-4"></i>
+                <span>Buku Kas & Jurnal LPK</span>
+            </a>
+
+            <a 
                 href="{{ route('admin.reimbursements.index') }}" 
                 class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.reimbursements.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
             >

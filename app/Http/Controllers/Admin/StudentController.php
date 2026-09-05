@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CashTransaction;
 use App\Models\Student;
 use App\Traits\UploadsImage;
 use Illuminate\Http\Request;
@@ -215,7 +216,7 @@ class StudentController extends Controller
             $paymentStatus = 'partial';
         }
 
-        Student::create(array_merge($validated, [
+        $student = Student::create(array_merge($validated, [
             'photo' => $photo,
             'document_ktp' => $docKtp,
             'document_kk' => $docKk,
@@ -227,6 +228,22 @@ class StudentController extends Controller
             'document_coe_visa' => $docCoe,
             'payment_status' => $paymentStatus,
         ]));
+
+        if ($paidAmount > 0) {
+            CashTransaction::create([
+                'transaction_number' => CashTransaction::generateNumber('income'),
+                'transaction_date' => now()->toDateString(),
+                'type' => 'income',
+                'category' => 'tuition_student',
+                'title' => "Pembayaran Awal Siswa: {$student->name} ({$student->nis})",
+                'amount' => $paidAmount,
+                'payment_method' => 'bank_mandiri',
+                'reference_type' => 'student',
+                'reference_id' => $student->id,
+                'notes' => 'Penerimaan biaya pendidikan registrasi awal siswa baru.',
+                'recorded_by' => auth()->user()->name ?? 'Admin Keuangan',
+            ]);
+        }
 
         return redirect()->route('admin.students.index')->with('success', 'Data siswa baru berhasil ditambahkan.');
     }
@@ -380,11 +397,30 @@ class StudentController extends Controller
             $paymentStatus = 'partial';
         }
 
+        $oldPaid = (float) $student->paid_amount;
+        $diff = $paidAmount - $oldPaid;
+
         $student->update([
             'paid_amount' => $paidAmount,
             'payment_status' => $paymentStatus,
             'payment_notes' => $validated['payment_notes'] ?? $student->payment_notes,
         ]);
+
+        if ($diff > 0) {
+            CashTransaction::create([
+                'transaction_number' => CashTransaction::generateNumber('income'),
+                'transaction_date' => now()->toDateString(),
+                'type' => 'income',
+                'category' => 'tuition_student',
+                'title' => "Pembayaran Biaya Pelatihan: {$student->name} ({$student->nis})",
+                'amount' => $diff,
+                'payment_method' => 'bank_mandiri',
+                'reference_type' => 'student',
+                'reference_id' => $student->id,
+                'notes' => $validated['payment_notes'] ?? 'Cicilan/pelunasan biaya pelatihan siswa.',
+                'recorded_by' => auth()->user()->name ?? 'Admin Keuangan',
+            ]);
+        }
 
         return back()->with('success', "Pembayaran siswa {$student->name} berhasil diperbarui.");
     }

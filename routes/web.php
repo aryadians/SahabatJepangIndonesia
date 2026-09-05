@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AffiliateController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\BatchScheduleController;
+use App\Http\Controllers\Admin\CashBookController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DigitalArchiveController;
 use App\Http\Controllers\Admin\FacilityController;
@@ -220,6 +221,11 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // 14. Executive Financial Analytics & Cashflow Forecasting
     Route::get('/finance', [FinancialAnalyticsController::class, 'index'])->name('finance.index');
     Route::get('/finance/export-pdf', [FinancialAnalyticsController::class, 'exportPdf'])->name('finance.export.pdf');
+
+    // 14-GL. Buku Kas Umum & Jurnal Akuntansi Keuangan LPK
+    Route::get('/cash-book/export-csv', [CashBookController::class, 'exportCsv'])->name('cash-book.export.csv');
+    Route::get('/cash-book/export-pdf', [CashBookController::class, 'exportPdf'])->name('cash-book.export.pdf');
+    Route::resource('cash-book', CashBookController::class)->except(['create', 'show', 'edit']);
 
     // 14b. Klaim Reimbursement & Uang Muka Perjalanan Dinas (Cash Advance)
     Route::get('/reimbursements/stats', [ReimbursementController::class, 'stats'])->name('reimbursements.stats');
