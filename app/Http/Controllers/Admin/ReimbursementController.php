@@ -293,11 +293,42 @@ class ReimbursementController extends Controller
                     'notes' => $combinedNotes,
                 ]);
 
+                // Auto-sync ke Buku Kas Umum jika ada selisih uang pengembalian atau penambahan dana
+                if ($diff < 0) {
+                    CashTransaction::create([
+                        'transaction_number' => CashTransaction::generateNumber('income'),
+                        'transaction_date' => now()->toDateString(),
+                        'type' => 'income',
+                        'category' => 'cash_advance_return',
+                        'title' => "Pengembalian Sisa Kasbon [{$reimbursement->reimbursement_no}] - {$reimbursement->employee_name}",
+                        'amount' => abs($diff),
+                        'payment_method' => 'cash_kasir',
+                        'reference_type' => 'reimbursement',
+                        'reference_id' => $reimbursement->id,
+                        'notes' => "Realisasi SPJ: {$reimbursement->title}. Sisa uang muka dinas dikembalikan ke kasir.",
+                        'recorded_by' => auth()->user()->name ?? 'Bendahara Keuangan',
+                    ]);
+                } elseif ($diff > 0) {
+                    CashTransaction::create([
+                        'transaction_number' => CashTransaction::generateNumber('expense'),
+                        'transaction_date' => now()->toDateString(),
+                        'type' => 'expense',
+                        'category' => 'cash_advance',
+                        'title' => "Penggantian Kekurangan Kasbon [{$reimbursement->reimbursement_no}] - {$reimbursement->employee_name}",
+                        'amount' => $diff,
+                        'payment_method' => 'cash_kasir',
+                        'reference_type' => 'reimbursement',
+                        'reference_id' => $reimbursement->id,
+                        'notes' => "Realisasi SPJ: {$reimbursement->title}. Pengeluaran aktual melebihi uang muka awal.",
+                        'recorded_by' => auth()->user()->name ?? 'Bendahara Keuangan',
+                    ]);
+                }
+
                 $diffLabel = '';
                 if ($diff > 0) {
-                    $diffLabel = " Lembaga kurang bayar Rp " . number_format($diff, 0, ',', '.') . " (perlu diganti ke karyawan).";
+                    $diffLabel = " Lembaga kurang bayar Rp " . number_format($diff, 0, ',', '.') . " (telah dicatat di Kas Keluar).";
                 } elseif ($diff < 0) {
-                    $diffLabel = " Karyawan lebih bayar Rp " . number_format(abs($diff), 0, ',', '.') . " (sisa uang dikembalikan ke kasir).";
+                    $diffLabel = " Karyawan lebih bayar Rp " . number_format(abs($diff), 0, ',', '.') . " (sisa uang telah dicatat di Kas Masuk).";
                 } else {
                     $diffLabel = " Realisasi pengeluaran pas sesuai uang muka.";
                 }

@@ -37,6 +37,7 @@ class CashTransaction extends Model
         'talangan_in' => 'Penerimaan Dana Talangan / Bank',
         'subsidy_government' => 'Subsidi Beasiswa Kemenaker/Kemenkes',
         'affiliate_fee_in' => 'Fee Kemitraan Industri / Kaisha',
+        'cash_advance_return' => 'Pengembalian Sisa Kasbon Dinas',
         'other_income' => 'Pemasukan Lain-lain',
     ];
 
@@ -48,6 +49,7 @@ class CashTransaction extends Model
         'student_equipment' => 'Buku Modul, Seragam & ATK Kelas',
         'reimbursement' => 'Klaim Reimbursement Operasional',
         'cash_advance' => 'Uang Muka Perjalanan Dinas',
+        'affiliate_commission' => 'Komisi Kemitraan SMK & BKK',
         'tax_legal' => 'Pajak, Perizinan SO & Akreditasi',
         'other_expense' => 'Beban Operasional Lainnya',
     ];

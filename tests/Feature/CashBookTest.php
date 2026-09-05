@@ -214,6 +214,23 @@ class CashBookTest extends TestCase
             'reference_id' => $reimbursement->id,
             'amount' => 1200000,
         ]);
+
+        // Employee settles with remaining money (amount spent 1.000.000, excess returned 200.000)
+        $settleRes = $this->post("/admin/reimbursements/{$reimbursement->id}/status", [
+            'action' => 'settle',
+            'amount_spent' => 1000000,
+            'settlement_notes' => 'Sisa uang 200.000 dikembalikan ke kasir',
+        ]);
+        $settleRes->assertSessionHas('success');
+
+        // Verify CashTransaction for return was created
+        $this->assertDatabaseHas('cash_transactions', [
+            'type' => 'income',
+            'category' => 'cash_advance_return',
+            'reference_type' => 'reimbursement',
+            'reference_id' => $reimbursement->id,
+            'amount' => 200000,
+        ]);
     }
 
     public function test_admin_can_export_cash_book_to_csv_and_pdf(): void
