@@ -211,6 +211,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
     // 12. Data Pengajar / Sensei
     Route::get('/teachers/export-pdf', [TeacherController::class, 'exportPdf'])->name('teachers.export.pdf');
+    Route::post('/teachers/{id}/pay-salary', [TeacherController::class, 'paySalary'])->name('teachers.pay-salary');
     Route::resource('teachers', TeacherController::class)->except(['show']);
 
     // 13. WhatsApp Gateway & CRM Automation

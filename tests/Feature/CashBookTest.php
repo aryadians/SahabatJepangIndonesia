@@ -395,5 +395,46 @@ class CashBookTest extends TestCase
             'id' => $trx->id,
         ]);
     }
+
+    public function test_teacher_salary_payment_creates_cash_book_expense(): void
+    {
+        $this->actingAs($this->admin);
+
+        $teacher = Teacher::create([
+            'nip' => 'SENSEI-001',
+            'name' => 'Kenjiro Tanaka',
+            'role' => 'sensei',
+            'position_title' => 'Sensei Native N1',
+            'gender' => 'Laki-laki',
+            'status' => 'active',
+            'phone' => '08129876543',
+        ]);
+
+        $response = $this->post("/admin/teachers/{$teacher->id}/pay-salary", [
+            'amount' => 4500000,
+            'payment_method' => 'bank_bni',
+            'payment_date' => now()->toDateString(),
+            'salary_period' => 'September 2026',
+            'notes' => 'Honor mengajar 70 jam + bonus kelulusan N4',
+        ]);
+
+        $response->assertSessionHas('success');
+
+        // Verify CashTransaction was created
+        $this->assertDatabaseHas('cash_transactions', [
+            'type' => 'expense',
+            'category' => 'teacher_salary',
+            'reference_type' => 'teacher',
+            'reference_id' => $teacher->id,
+            'amount' => 4500000,
+            'payment_method' => 'bank_bni',
+        ]);
+
+        // Verify teacher relation
+        $trx = CashTransaction::where('reference_type', 'teacher')->where('reference_id', $teacher->id)->first();
+        $this->assertNotNull($trx);
+        $this->assertEquals($teacher->id, $trx->teacher->id);
+    }
 }
+
 

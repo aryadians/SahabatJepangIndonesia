@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CashTransaction;
+use App\Models\SiteSetting;
 use App\Models\Teacher;
 use App\Traits\UploadsImage;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class TeacherController extends Controller
@@ -56,7 +59,9 @@ class TeacherController extends Controller
             'n1_teachers' => Teacher::where('jlpt_level', 'like', '%N1%')->orWhere('jlpt_level', 'like', '%Native%')->count(),
         ];
 
-        return view('admin.teachers.index', compact('teachers', 'stats'));
+        $paymentMethods = CashTransaction::PAYMENT_METHODS;
+
+        return view('admin.teachers.index', compact('teachers', 'stats', 'paymentMethods'));
     }
 
     /**
@@ -217,4 +222,82 @@ class TeacherController extends Controller
 
         return back()->with('success', 'Data karyawan / sensei berhasil dihapus.');
     }
+
+    /**
+     * Pencatatan Pembayaran Gaji / Honorarium Sensei & Karyawan ke Buku Kas Umum
+     */
+    public function paySalary(Request $request, $id)
+    {
+        $teacher = Teacher::findOrFail($id);
+
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:10000',
+            'payment_method' => 'required|string|in:' . implode(',', array_keys(CashTransaction::PAYMENT_METHODS)),
+            'payment_date' => 'required|date',
+            'salary_period' => 'required|string|max:100',
+            'notes' => 'nullable|string|max:1000',
+            'proof_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
+        ]);
+
+        // Cek proteksi periode tutup buku
+        $lockDate = SiteSetting::get('financial_lock_until');
+        if ($lockDate && $validated['payment_date'] <= $lockDate) {
+            $formattedLock = Carbon::parse($lockDate)->format('d/m/Y');
+            return back()->with('error', "Gagal! Tanggal transaksi berada dalam periode yang telah Ditutup Buku (Lock Period s/d {$formattedLock}).");
+        }
+
+        $proofBase64 = null;
+        if ($request->hasFile('proof_file')) {
+            $file = $request->file('proof_file');
+            $mime = $file->getMimeType();
+            $data = base64_encode(file_get_contents($file->getRealPath()));
+            $proofBase64 = 'data:' . $mime . ';base64,' . $data;
+        }
+
+        $trxNumber = CashTransaction::generateNumber('expense');
+
+        $trx = CashTransaction::create([
+            'transaction_number' => $trxNumber,
+            'transaction_date' => $validated['payment_date'],
+            'type' => 'expense',
+            'category' => 'teacher_salary',
+            'title' => "Gaji / Honorarium Sensei: {$teacher->name} ({$validated['salary_period']})",
+            'amount' => $validated['amount'],
+            'payment_method' => $validated['payment_method'],
+            'reference_type' => 'teacher',
+            'reference_id' => $teacher->id,
+            'proof_file' => $proofBase64,
+            'notes' => $validated['notes'] ?: "Pembayaran honorarium pengajar/staf {$teacher->name} ({$teacher->nip}) periode {$validated['salary_period']}.",
+            'recorded_by' => auth()->user()->name ?? 'Admin Keuangan',
+        ]);
+
+        $formattedAmount = 'Rp ' . number_format($validated['amount'], 0, ',', '.');
+
+        // Notifikasi WhatsApp via Fonnte ke Guru / Sensei
+        $cleanPhone = preg_replace('/[^0-9]/', '', $teacher->phone ?? '');
+        if (str_starts_with($cleanPhone, '0')) {
+            $cleanPhone = '62' . substr($cleanPhone, 1);
+        }
+
+        if (\App\Services\FonnteService::isConfigured() && !empty($cleanPhone)) {
+            $position = $teacher->position_title ?: 'Sensei';
+            $msg = "Konnichiwa, *{$teacher->name}* ({$position}) 🌸\n\n";
+            $msg .= "Gaji / Honorarium Anda untuk periode *{$validated['salary_period']}* telah berhasil diproses dan dicairkan oleh Manajemen *LPK Sahabat Jepang Indonesia*.\n\n";
+            $msg .= "📋 *Detail Pembayaran Honorarium*:\n";
+            $msg .= "🔖 *No. Bukti Kas*: `{$trxNumber}`\n";
+            $msg .= "💵 *Nominal Diterima*: *{$formattedAmount}*\n";
+            $msg .= "💳 *Metode Pembayaran*: " . ($trx->payment_method_label) . "\n";
+            $msg .= "📅 *Tanggal Transaksi*: " . Carbon::parse($validated['payment_date'])->format('d/m/Y') . "\n\n";
+            $msg .= "Terima kasih banyak atas dedikasi dan bimbingan terbaik Anda dalam mencetak calon tenaga kerja unggul ke Jepang 🇯🇵.\n\n";
+            $msg .= "_LPK Sahabat Jepang Indonesia - Lembaga Penyalur & Pelatihan Kerja Resmi Kemenaker RI_";
+
+            \App\Services\FonnteService::send($cleanPhone, $msg, [
+                'type' => 'salary_slip',
+                'teacher_id' => $teacher->id,
+            ]);
+        }
+
+        return back()->with('success', "Gaji {$teacher->name} sebesar {$formattedAmount} berhasil dicatat di Buku Kas Umum (No: {$trxNumber}).");
+    }
 }
+

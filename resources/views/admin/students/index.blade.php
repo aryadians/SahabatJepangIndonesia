@@ -479,7 +479,7 @@
             </button>
         </div>
 
-        <form id="quickPaymentForm" method="POST" class="p-5 space-y-4">
+        <form id="quickPaymentForm" method="POST" enctype="multipart/form-data" class="p-5 space-y-3.5">
             @csrf
             
             <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 grid grid-cols-2 gap-2 text-xs">
@@ -494,22 +494,43 @@
             </div>
 
             <div class="space-y-1">
-                <label class="block text-xs font-bold text-slate-700">Jumlah Terbayar Sekarang (IDR) *</label>
-                <input type="number" name="paid_amount" id="inputPaidAmount" required min="0" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm font-black text-emerald-600 focus:outline-none focus:border-emerald-600">
+                <label class="block text-xs font-bold text-slate-700">Akumulasi Terbayar (IDR) *</label>
+                <input type="number" name="paid_amount" id="inputPaidAmount" required min="0" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm font-black text-emerald-600 focus:outline-none focus:border-emerald-600 font-mono">
+                <p class="text-[10px] text-slate-400">Selisih penambahan akan otomatis dicatat sebagai Kas Masuk (BKM) di Buku Kas Umum.</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <div class="space-y-1">
+                    <label class="block text-[11px] font-bold text-slate-700">Akun Kas / Bank *</label>
+                    <select name="payment_method" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-emerald-600 font-bold">
+                        @foreach($paymentMethods ?? [] as $pmKey => $pmLabel)
+                            <option value="{{ $pmKey }}">{{ $pmLabel }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label class="block text-[11px] font-bold text-slate-700">Tanggal Transaksi *</label>
+                    <input type="date" name="payment_date" value="{{ date('Y-m-d') }}" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold focus:outline-none focus:border-emerald-600">
+                </div>
             </div>
 
             <div class="space-y-1">
-                <label class="block text-xs font-bold text-slate-700">Catatan Termin / Bukti Transfer</label>
-                <textarea name="payment_notes" rows="2" placeholder="Contoh: Transfer BCA pelunasan termin 2..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-emerald-600"></textarea>
+                <label class="block text-[11px] font-bold text-slate-700">Upload Bukti Transfer (Opsional)</label>
+                <input type="file" name="proof_file" accept="image/*,.pdf" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200">
+            </div>
+
+            <div class="space-y-1">
+                <label class="block text-xs font-bold text-slate-700">Catatan Termin / Keterangan</label>
+                <textarea name="payment_notes" rows="2" placeholder="Contoh: Transfer pelunasan termin 2..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-emerald-600"></textarea>
             </div>
 
             <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                <button type="button" onclick="closeModal('quickPaymentModal')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100">
+                <button type="button" onclick="closeModal('quickPaymentModal')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 cursor-pointer">
                     Batal
                 </button>
-                <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md flex items-center gap-1.5">
+                <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md flex items-center gap-1.5 cursor-pointer">
                     <i data-lucide="check" class="w-4 h-4"></i>
-                    <span>Simpan Pembayaran</span>
+                    <span>Simpan & Catat Kas Masuk</span>
                 </button>
             </div>
         </form>

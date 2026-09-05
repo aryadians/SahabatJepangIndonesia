@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\CashTransaction;
+use App\Models\SiteSetting;
 use App\Models\Student;
 use App\Traits\UploadsImage;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class StudentController extends Controller
@@ -83,7 +85,9 @@ class StudentController extends Controller
             'smk_go_japan_count' => Student::where('registration_category', 'smk_go_japan')->count(),
         ];
 
-        return view('admin.students.index', compact('students', 'stats'));
+        $paymentMethods = CashTransaction::PAYMENT_METHODS;
+
+        return view('admin.students.index', compact('students', 'stats', 'paymentMethods'));
     }
 
     /**
@@ -384,8 +388,20 @@ class StudentController extends Controller
 
         $validated = $request->validate([
             'paid_amount' => 'required|numeric|min:0',
+            'payment_method' => 'nullable|string|in:' . implode(',', array_keys(CashTransaction::PAYMENT_METHODS)),
+            'payment_date' => 'nullable|date',
             'payment_notes' => 'nullable|string',
+            'proof_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
         ]);
+
+        $paymentDate = $validated['payment_date'] ?? now()->toDateString();
+
+        // Cek apakah tanggal transaksi berada dalam periode tutup buku
+        $lockDate = SiteSetting::get('financial_lock_until');
+        if ($lockDate && $paymentDate <= $lockDate) {
+            $formattedLock = Carbon::parse($lockDate)->format('d/m/Y');
+            return back()->with('error', "Gagal! Tanggal transaksi berada dalam periode yang telah Ditutup Buku (Lock Period s/d {$formattedLock}).");
+        }
 
         $paidAmount = (float)$validated['paid_amount'];
         $totalCost = (float)$student->total_cost;
@@ -407,22 +423,66 @@ class StudentController extends Controller
         ]);
 
         if ($diff > 0) {
+            $proofBase64 = null;
+            if ($request->hasFile('proof_file')) {
+                $file = $request->file('proof_file');
+                $mime = $file->getMimeType();
+                $data = base64_encode(file_get_contents($file->getRealPath()));
+                $proofBase64 = 'data:' . $mime . ';base64,' . $data;
+            }
+
+            $trxNumber = CashTransaction::generateNumber('income');
+
             CashTransaction::create([
-                'transaction_number' => CashTransaction::generateNumber('income'),
-                'transaction_date' => now()->toDateString(),
+                'transaction_number' => $trxNumber,
+                'transaction_date' => $paymentDate,
                 'type' => 'income',
                 'category' => 'tuition_student',
                 'title' => "Pembayaran Biaya Pelatihan: {$student->name} ({$student->nis})",
                 'amount' => $diff,
-                'payment_method' => 'bank_mandiri',
+                'payment_method' => $validated['payment_method'] ?? 'bank_mandiri',
                 'reference_type' => 'student',
                 'reference_id' => $student->id,
+                'proof_file' => $proofBase64,
                 'notes' => $validated['payment_notes'] ?? 'Cicilan/pelunasan biaya pelatihan siswa.',
                 'recorded_by' => auth()->user()->name ?? 'Admin Keuangan',
             ]);
+
+            // WhatsApp Notification to Student/Parent via Fonnte
+            $cleanPhone = preg_replace('/[^0-9]/', '', $student->phone);
+            if (str_starts_with($cleanPhone, '0')) {
+                $cleanPhone = '62' . substr($cleanPhone, 1);
+            }
+
+            if (\App\Services\FonnteService::isConfigured() && !empty($cleanPhone)) {
+                $formattedDiff = 'Rp ' . number_format($diff, 0, ',', '.');
+                $formattedTotalPaid = 'Rp ' . number_format($paidAmount, 0, ',', '.');
+                $remaining = max(0, $totalCost - $paidAmount);
+                $formattedRemaining = 'Rp ' . number_format($remaining, 0, ',', '.');
+
+                $msg = "Konnichiwa, *{$student->name}* ({$student->nis}) 🌸\n\n";
+                $msg .= "Pembayaran biaya pelatihan Anda telah berhasil kami verifikasi dan tercatat resmi di Buku Kas Umum *LPK Sahabat Jepang Indonesia*.\n\n";
+                $msg .= "📋 *Kuitansi Pembayaran Digital*:\n";
+                $msg .= "🔖 *No. Bukti Kas*: `{$trxNumber}`\n";
+                $msg .= "💵 *Nominal Diterima*: *{$formattedDiff}*\n";
+                $msg .= "📊 *Akumulasi Terbayar*: {$formattedTotalPaid}\n";
+                $msg .= "⏳ *Sisa Tanggungan*: " . ($remaining <= 0 ? '*LUNAS*' : $formattedRemaining) . "\n";
+                $msg .= "📅 *Tanggal Transaksi*: " . Carbon::parse($paymentDate)->format('d/m/Y') . "\n\n";
+                $msg .= "Terima kasih atas kedisiplinan administrasi Anda. Terus semangat dalam menempuh pelatihan bahasa dan budaya Jepang! 🇯🇵\n\n";
+                $msg .= "_LPK Sahabat Jepang Indonesia - Lembaga Penyalur & Pelatihan Kerja Resmi Kemenaker RI_";
+
+                \App\Services\FonnteService::send($cleanPhone, $msg, [
+                    'type' => 'payment_receipt',
+                    'student_id' => $student->id,
+                ]);
+            }
         }
 
-        return back()->with('success', "Pembayaran siswa {$student->name} berhasil diperbarui.");
+        $msgText = $diff > 0 
+            ? "Pembayaran siswa {$student->name} sebesar Rp " . number_format($diff, 0, ',', '.') . " berhasil dicatat di Buku Kas Umum."
+            : "Data pembayaran siswa {$student->name} berhasil diperbarui.";
+
+        return back()->with('success', $msgText);
     }
 
     /**

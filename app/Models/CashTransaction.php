@@ -153,4 +153,13 @@ class CashTransaction extends Model
     {
         return $this->belongsTo(Affiliate::class, 'reference_id');
     }
+
+    /**
+     * Relasi ke Guru / Sensei / Karyawan jika transaksi terkait penggajian
+     */
+    public function teacher(): BelongsTo
+    {
+        return $this->belongsTo(Teacher::class, 'reference_id');
+    }
 }
+

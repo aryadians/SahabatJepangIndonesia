@@ -189,9 +189,19 @@
                     </span>
 
                     <div class="flex items-center gap-1.5">
+                        <button 
+                            type="button" 
+                            data-teacher='@json($tc)'
+                            onclick="openSalaryModal(JSON.parse(this.getAttribute('data-teacher')))" 
+                            class="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold transition cursor-pointer"
+                            title="Bayar Gaji / Honorarium (Kas Keluar)"
+                        >
+                            <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
+                        </button>
+
                         <a 
                             href="{{ route('admin.teachers.edit', $tc->id) }}" 
-                            class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition"
+                            class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition cursor-pointer"
                             title="Edit Data"
                         >
                             <i data-lucide="edit" class="w-3.5 h-3.5"></i>
@@ -200,7 +210,7 @@
                         <form action="{{ route('admin.teachers.destroy', $tc->id) }}" method="POST" class="inline" onsubmit="return confirm('Hapus data karyawan {{ $tc->name }}?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold transition" title="Hapus Data">
+                            <button type="submit" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold transition cursor-pointer" title="Hapus Data">
                                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                             </button>
                         </form>
@@ -232,4 +242,137 @@
     @endif
 
 </div>
+
+<!-- Modal Pembayaran Gaji / Honorarium Sensei -->
+<div id="salaryModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+    <div class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs" onclick="closeSalaryModal()"></div>
+    <div class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-200">
+        <div class="bg-gradient-to-r from-emerald-800 to-teal-800 text-white p-5 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-white/20 text-white flex items-center justify-center font-bold">
+                    <i data-lucide="wallet" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-black text-white">Pembayaran Gaji / Honorarium Sensei</h3>
+                    <p class="text-[10px] text-emerald-200 font-semibold">Tercatat Otomatis di Buku Kas Umum (BKK/Kredit)</p>
+                </div>
+            </div>
+            <button onclick="closeSalaryModal()" class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm cursor-pointer">
+                &times;
+            </button>
+        </div>
+
+        <form id="salaryModalForm" method="POST" enctype="multipart/form-data" class="p-6 space-y-4 text-xs">
+            @csrf
+            
+            <div class="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-100 space-y-1">
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-500 font-medium">Penerima Honorarium:</span>
+                    <span id="salaryModalTeacherName" class="font-extrabold text-slate-900">-</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-500 font-medium">Identitas / NIP:</span>
+                    <span id="salaryModalNip" class="font-mono font-bold text-slate-800">-</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-slate-700 uppercase">Nominal Bersih (IDR) *</label>
+                    <input 
+                        type="number" 
+                        name="amount" 
+                        required 
+                        min="10000" 
+                        step="10000"
+                        placeholder="Contoh: 3500000"
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-600 font-mono font-bold text-sm text-emerald-800"
+                    >
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-slate-700 uppercase">Periode Pembayaran *</label>
+                    <input 
+                        type="text" 
+                        name="salary_period" 
+                        value="{{ \Carbon\Carbon::now()->translatedFormat('F Y') }}"
+                        required 
+                        placeholder="Contoh: September 2026"
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-600 font-bold text-slate-800"
+                    >
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-slate-700 uppercase">Akun Kas / Bank Pembayar *</label>
+                    <select name="payment_method" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-600 font-bold">
+                        @foreach($paymentMethods as $pmKey => $pmLabel)
+                            <option value="{{ $pmKey }}">{{ $pmLabel }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-slate-700 uppercase">Tanggal Pembayaran *</label>
+                    <input 
+                        type="date" 
+                        name="payment_date" 
+                        value="{{ date('Y-m-d') }}" 
+                        required 
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-600 font-bold"
+                    >
+                </div>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block font-bold text-slate-700 uppercase">Upload Bukti Transfer / Slip (Opsional)</label>
+                <input 
+                    type="file" 
+                    name="proof_file" 
+                    accept="image/*,.pdf"
+                    class="w-full text-[11px] text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
+                >
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block font-bold text-slate-700 uppercase">Catatan / Rincian Jam Mengajar</label>
+                <input 
+                    type="text" 
+                    name="notes" 
+                    placeholder="Contoh: Honor mengajar 60 jam + tunjangan modul" 
+                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-600"
+                >
+            </div>
+
+            <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <button type="button" onclick="closeSalaryModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 cursor-pointer">
+                    Batal
+                </button>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-md flex items-center gap-1.5 cursor-pointer">
+                    <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                    <span>Bayar Gaji (Kas Keluar)</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openSalaryModal(t) {
+        const form = document.getElementById('salaryModalForm');
+        form.action = `/admin/teachers/${t.id}/pay-salary`;
+
+        document.getElementById('salaryModalTeacherName').textContent = t.name + ' (' + (t.position_title || t.role) + ')';
+        document.getElementById('salaryModalNip').textContent = 'NIP: ' + t.nip;
+
+        document.getElementById('salaryModal').classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function closeSalaryModal() {
+        document.getElementById('salaryModal').classList.add('hidden');
+    }
+</script>
 @endsection
+

@@ -67,6 +67,15 @@ class Teacher extends Model
     }
 
     /**
+     * Riwayat Pembayaran Gaji / Honorarium dari Buku Kas Umum
+     */
+    public function salaries(): HasMany
+    {
+        return $this->hasMany(CashTransaction::class, 'reference_id')
+            ->where('reference_type', 'teacher');
+    }
+
+    /**
      * Helper Badge Peran / Role
      */
     public function getRoleBadgeAttribute(): array
