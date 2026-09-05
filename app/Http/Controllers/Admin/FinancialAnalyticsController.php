@@ -175,6 +175,59 @@ class FinancialAnalyticsController extends Controller
             ->orderByRaw('(total_cost - paid_amount) DESC')
             ->get();
 
+        // 5. Cash Flow Comparison (Inflow vs Outflow)
+        $totalReimbursements = (float) Reimbursement::where('type', 'reimbursement')
+            ->whereIn('status', ['approved', 'paid', 'settled'])
+            ->sum(DB::raw('COALESCE(amount_approved, amount_requested)'));
+
+        $totalCashAdvances = (float) Reimbursement::where('type', 'cash_advance')
+            ->whereIn('status', ['paid', 'settled'])
+            ->sum(DB::raw('COALESCE(amount_approved, amount_requested)'));
+
+        $totalOutflow = $totalReimbursements + $totalCashAdvances;
+        $netCashflow = $totalRealizedRevenue - $totalOutflow;
+        $expenseRatio = $totalRealizedRevenue > 0 ? round(($totalOutflow / $totalRealizedRevenue) * 100, 1) : 0;
+
+        $currentYear = now()->year;
+        $monthlyComparison = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $monthStart = Carbon::create($currentYear, $m, 1)->startOfMonth();
+            $monthEnd = Carbon::create($currentYear, $m, 1)->endOfMonth();
+
+            $mInflow = (float) Student::whereBetween('created_at', [$monthStart, $monthEnd])->sum('paid_amount');
+
+            $mReimb = (float) Reimbursement::where('type', 'reimbursement')
+                ->whereIn('status', ['paid', 'settled'])
+                ->where(function ($q) use ($monthStart, $monthEnd) {
+                    $q->whereBetween('paid_at', [$monthStart, $monthEnd])
+                      ->orWhere(function ($sub) use ($monthStart, $monthEnd) {
+                          $sub->whereNull('paid_at')->whereBetween('created_at', [$monthStart, $monthEnd]);
+                      });
+                })
+                ->sum('amount_approved');
+
+            $mAdv = (float) Reimbursement::where('type', 'cash_advance')
+                ->whereIn('status', ['paid', 'settled'])
+                ->where(function ($q) use ($monthStart, $monthEnd) {
+                    $q->whereBetween('paid_at', [$monthStart, $monthEnd])
+                      ->orWhere(function ($sub) use ($monthStart, $monthEnd) {
+                          $sub->whereNull('paid_at')->whereBetween('created_at', [$monthStart, $monthEnd]);
+                      });
+                })
+                ->sum('amount_approved');
+
+            $mOutflow = $mReimb + $mAdv;
+            $monthlyComparison[] = [
+                'month' => $m,
+                'month_name' => $monthStart->translatedFormat('M'),
+                'inflow' => $mInflow,
+                'outflow_reimburse' => $mReimb,
+                'outflow_advance' => $mAdv,
+                'outflow' => $mOutflow,
+                'net' => $mInflow - $mOutflow,
+            ];
+        }
+
         return view('admin.finance.export_pdf', compact(
             'totalPotentialRevenue',
             'totalRealizedRevenue',
@@ -185,7 +238,13 @@ class FinancialAnalyticsController extends Controller
             'forecast30Days',
             'forecast60Days',
             'forecast90Days',
-            'outstandingStudents'
+            'outstandingStudents',
+            'totalReimbursements',
+            'totalCashAdvances',
+            'totalOutflow',
+            'netCashflow',
+            'expenseRatio',
+            'monthlyComparison'
         ));
     }
 }

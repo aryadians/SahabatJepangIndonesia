@@ -97,11 +97,76 @@
             </div>
         </div>
 
-        <!-- 2. Proyeksi Penerimaan Kas Masuk (Inflow Forecasting) -->
+        <!-- 2. Rekapitulasi Arus Kas Bersih (Comparative Cash Flow) -->
+        <div class="space-y-3 pt-2">
+            <div class="border-b border-slate-200 pb-1 flex items-center justify-between">
+                <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">
+                    1. Rekapitulasi Arus Kas Riil & Rasio Operasional (Tahun {{ now()->year }})
+                </h3>
+                <span class="text-[10px] text-slate-500 font-bold font-mono">Inflow Siswa vs Outflow Dinas</span>
+            </div>
+
+            <div class="grid grid-cols-4 gap-3 text-xs">
+                <div class="p-3 rounded-2xl bg-emerald-50/70 border border-emerald-200">
+                    <span class="text-[10px] text-emerald-800 font-bold block uppercase">Kas Masuk Riil</span>
+                    <span class="text-base font-black text-emerald-700 block mt-0.5">Rp {{ number_format($totalRealizedRevenue) }}</span>
+                    <span class="text-[9px] text-emerald-600">Realisasi pembayaran siswa</span>
+                </div>
+                <div class="p-3 rounded-2xl bg-rose-50/70 border border-rose-200">
+                    <span class="text-[10px] text-rose-800 font-bold block uppercase">Beban Operasional</span>
+                    <span class="text-base font-black text-rose-700 block mt-0.5">Rp {{ number_format($totalOutflow) }}</span>
+                    <span class="text-[9px] text-rose-600">Reimburse + Kasbon dinas</span>
+                </div>
+                <div class="p-3 rounded-2xl {{ $netCashflow >= 0 ? 'bg-blue-50/70 border-blue-200' : 'bg-red-50/70 border-red-200' }} border">
+                    <span class="text-[10px] font-bold block uppercase {{ $netCashflow >= 0 ? 'text-blue-800' : 'text-red-800' }}">
+                        Arus Kas Bersih ({{ $netCashflow >= 0 ? 'Surplus' : 'Defisit' }})
+                    </span>
+                    <span class="text-base font-black block mt-0.5 {{ $netCashflow >= 0 ? 'text-blue-800' : 'text-rose-700' }}">
+                        {{ $netCashflow >= 0 ? '+' : '' }}Rp {{ number_format($netCashflow) }}
+                    </span>
+                    <span class="text-[9px] text-slate-500">Saldo kas operasional bersih</span>
+                </div>
+                <div class="p-3 rounded-2xl bg-purple-50/70 border border-purple-200">
+                    <span class="text-[10px] text-purple-800 font-bold block uppercase">Rasio Beban Operasional</span>
+                    <span class="text-base font-black text-purple-700 block mt-0.5">{{ $expenseRatio }}%</span>
+                    <span class="text-[9px] text-purple-600">Persentase kas keluar / masuk</span>
+                </div>
+            </div>
+
+            <!-- Tabel Komparasi Bulanan -->
+            <table class="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden mt-2">
+                <thead class="bg-slate-100 text-slate-700 uppercase text-[9px] font-black tracking-wider">
+                    <tr>
+                        <th class="py-2 px-3">Bulan</th>
+                        <th class="py-2 px-3 text-right">Kas Masuk Siswa</th>
+                        <th class="py-2 px-3 text-right">Reimburse Cair</th>
+                        <th class="py-2 px-3 text-right">Kasbon Dinas</th>
+                        <th class="py-2 px-3 text-right">Total Outflow</th>
+                        <th class="py-2 px-3 text-right">Net Cashflow</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 font-mono text-[10px]">
+                    @foreach($monthlyComparison as $m)
+                        <tr class="hover:bg-slate-50">
+                            <td class="py-1.5 px-3 font-sans font-bold text-slate-800">{{ $m['month_name'] }} {{ now()->year }}</td>
+                            <td class="py-1.5 px-3 text-right text-emerald-700 font-bold">Rp {{ number_format($m['inflow']) }}</td>
+                            <td class="py-1.5 px-3 text-right text-slate-600">Rp {{ number_format($m['outflow_reimburse']) }}</td>
+                            <td class="py-1.5 px-3 text-right text-slate-600">Rp {{ number_format($m['outflow_advance']) }}</td>
+                            <td class="py-1.5 px-3 text-right text-rose-700 font-bold">Rp {{ number_format($m['outflow']) }}</td>
+                            <td class="py-1.5 px-3 text-right font-black {{ $m['net'] >= 0 ? 'text-blue-700' : 'text-rose-700' }}">
+                                {{ $m['net'] >= 0 ? '+' : '' }}Rp {{ number_format($m['net']) }}
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 3. Proyeksi Penerimaan Kas Masuk (Inflow Forecasting) -->
         <div class="space-y-2 pt-2">
             <div class="border-b border-slate-200 pb-1 flex items-center justify-between">
                 <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">
-                    1. Proyeksi Penerimaan Kas Masuk (Cashflow Inflow Forecast)
+                    2. Proyeksi Penerimaan Kas Masuk (Cashflow Inflow Forecast)
                 </h3>
                 <span class="text-[10px] text-slate-400">Estimasi Berbasis Termin Pembayaran</span>
             </div>

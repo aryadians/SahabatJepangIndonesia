@@ -564,6 +564,14 @@ class ReimbursementAndEmployeeTest extends TestCase
         $response->assertSee('Total Pengeluaran (Outflow)');
         $response->assertSee('Arus Kas Bersih (Net)');
         $response->assertSee('Beban Pengeluaran');
+
+        // Export PDF
+        $pdfRes = $this->get('/admin/finance/export-pdf');
+        $pdfRes->assertOk();
+        $pdfRes->assertSee('LAPORAN EKSEKUTIF KEUANGAN');
+        $pdfRes->assertSee('Rekapitulasi Arus Kas Riil');
+        $pdfRes->assertSee('Kas Masuk Riil');
+        $pdfRes->assertSee('Beban Operasional');
     }
 
     public function test_admin_can_manage_smk_bkk_affiliates_and_view_student_progress(): void
