@@ -242,6 +242,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::put('/digital-archives/{id}/rename', [DigitalArchiveController::class, 'renameFile'])->name('digital-archives.file.rename');
     Route::put('/digital-archives/{id}/move', [DigitalArchiveController::class, 'moveFile'])->name('digital-archives.file.move');
     Route::delete('/digital-archives/{id}/ajax', [DigitalArchiveController::class, 'deleteFileAjax'])->name('digital-archives.file.delete');
+    Route::post('/digital-archives/storage-config', [DigitalArchiveController::class, 'updateStorageConfig'])->name('digital-archives.storage.config');
     Route::resource('digital-archives', DigitalArchiveController::class)->except(['create', 'show', 'edit', 'update']);
 
     // 15. Program Kemitraan & Referral Afiliasi

@@ -48,13 +48,50 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm flex items-center gap-3.5 group hover:border-slate-400 transition col-span-2 sm:col-span-1">
-            <div class="w-11 h-11 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold group-hover:scale-105 transition">
-                <i data-lucide="database" class="w-5 h-5"></i>
+        <!-- 5. Status & Sisa Kapasitas Penyimpanan (Hosting / Cloud / Lokal) -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm flex flex-col justify-between group hover:border-japan-400 transition col-span-2 sm:col-span-1 relative overflow-hidden">
+            <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div id="statDriverIconWrap" class="w-10 h-10 rounded-xl bg-japan-50 text-japan-600 flex items-center justify-center font-bold flex-shrink-0 group-hover:scale-105 transition">
+                        <i id="statDriverIcon" data-lucide="{{ $stats['storage']['driver_icon'] ?? 'server' }}" class="w-5 h-5"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span id="statDriverBadge" class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">
+                                {{ ($stats['storage']['driver'] ?? 'hosting') === 'cloud' ? 'Cloud S3' : (($stats['storage']['driver'] ?? 'hosting') === 'local' ? 'Lokal Disk' : 'Hosting Web') }}
+                            </span>
+                            <span class="text-slate-400 text-[10px] font-bold uppercase tracking-wider truncate">Sisa Kuota</span>
+                        </div>
+                        <h3 id="statFreeStorage" class="text-base sm:text-lg font-black text-slate-900 mt-0.5 tracking-tight truncate" title="Sisa ruang penyimpanan yang dapat digunakan">
+                            Sisa {{ $stats['storage']['free_formatted'] ?? '0 MB' }}
+                        </h3>
+                    </div>
+                </div>
+                <button 
+                    type="button" 
+                    onclick="openStorageConfigModal()" 
+                    class="p-1.5 rounded-lg text-slate-400 hover:text-japan-600 hover:bg-japan-50 transition active:scale-95" 
+                    title="Konfigurasi Driver Penyimpanan (Hosting, Cloud, atau Lokal)"
+                >
+                    <i data-lucide="settings-2" class="w-4 h-4"></i>
+                </button>
             </div>
-            <div class="min-w-0">
-                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider truncate">Kapasitas Base64</p>
-                <h3 id="statTotalSize" class="text-lg sm:text-xl font-black text-slate-900 mt-0.5">{{ $stats['total_size_mb'] }}</h3>
+
+            <!-- Detail & Progress Bar -->
+            <div class="mt-3 pt-2.5 border-t border-slate-100">
+                <div class="flex items-center justify-between text-[11px] text-slate-500 font-medium">
+                    <span id="statStorageDetail">Terpakai <b id="statTotalSize" class="text-slate-800 font-bold">{{ $stats['storage']['used_formatted'] ?? $stats['total_size_mb'] }}</b> dari {{ $stats['storage']['total_quota_formatted'] ?? '5 GB' }}</span>
+                    <span id="statStoragePercent" class="font-black {{ ($stats['storage']['used_percentage'] ?? 0) > 85 ? 'text-red-500' : 'text-slate-700' }}">
+                        {{ $stats['storage']['used_percentage'] ?? 0 }}%
+                    </span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-1.5 mt-1.5 overflow-hidden">
+                    <div 
+                        id="statStorageBar" 
+                        class="h-full rounded-full transition-all duration-500 {{ ($stats['storage']['used_percentage'] ?? 0) > 90 ? 'bg-red-500' : (($stats['storage']['used_percentage'] ?? 0) > 75 ? 'bg-amber-500' : 'bg-japan-600') }}" 
+                        style="width: {{ min(100, $stats['storage']['used_percentage'] ?? 0) }}%"
+                    ></div>
+                </div>
             </div>
         </div>
     </div>
@@ -460,6 +497,139 @@
             <button type="button" onclick="document.getElementById('moveFileModal').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">Batal</button>
             <button type="button" id="confirmMoveBtn" class="px-4 py-2 rounded-xl bg-japan-600 hover:bg-japan-700 text-white text-xs font-bold">Pindahkan</button>
         </div>
+    </div>
+</div>
+
+<!-- Storage Configuration Modal (Hosting / Cloud / Lokal) -->
+<div id="storageConfigModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-japan-50 text-japan-600 flex items-center justify-center font-bold">
+                    <i data-lucide="hard-drive-download" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="font-extrabold text-slate-900 text-base">Target & Kuota Penyimpanan</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Pilih acuan penyimpanan: Hosting, Cloud, atau Lokal Server</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeStorageConfigModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <form id="storageConfigForm" onsubmit="handleStorageConfigSubmit(event)" class="space-y-4">
+            <!-- Driver Selection Cards -->
+            <div class="space-y-2.5">
+                <label class="block text-xs font-black uppercase tracking-wider text-slate-500">Pilih Target Acuan Penyimpanan</label>
+                
+                <div class="grid grid-cols-1 gap-2.5">
+                    <!-- Option 1: Hosting Web (cPanel/VPS) -->
+                    <label class="flex items-start gap-3 p-3.5 rounded-2xl border-2 border-slate-200 cursor-pointer transition has-checked:border-japan-600 has-checked:bg-japan-50/40 hover:border-slate-300">
+                        <input type="radio" name="storage_driver" value="hosting" class="mt-1 accent-japan-600" {{ ($stats['storage']['driver'] ?? 'hosting') === 'hosting' ? 'checked' : '' }} onchange="onDriverRadioChange(this.value)">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-extrabold text-slate-900 flex items-center gap-1.5">
+                                    <i data-lucide="server" class="w-3.5 h-3.5 text-japan-600"></i>
+                                    <span>Hosting Server Web (cPanel / VPS)</span>
+                                </span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">Shared Quota</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                                Mengacu pada kuota paket hosting atau shared disk cPanel tempat website berjalan.
+                            </p>
+                        </div>
+                    </label>
+
+                    <!-- Option 2: Cloud Object Storage -->
+                    <label class="flex items-start gap-3 p-3.5 rounded-2xl border-2 border-slate-200 cursor-pointer transition has-checked:border-blue-600 has-checked:bg-blue-50/40 hover:border-slate-300">
+                        <input type="radio" name="storage_driver" value="cloud" class="mt-1 accent-blue-600" {{ ($stats['storage']['driver'] ?? '') === 'cloud' ? 'checked' : '' }} onchange="onDriverRadioChange(this.value)">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-extrabold text-slate-900 flex items-center gap-1.5">
+                                    <i data-lucide="cloud" class="w-3.5 h-3.5 text-blue-600"></i>
+                                    <span>Cloud Object Storage (S3 / Wasabi / GCS)</span>
+                                </span>
+                                <span class="text-[10px] font-bold text-blue-500 uppercase">Cloud Tier</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                                Mengacu pada batas kuota bucket cloud storage eksternal (AWS S3, Google Cloud, Cloudflare R2).
+                            </p>
+                        </div>
+                    </label>
+
+                    <!-- Option 3: Lokal Server Disk -->
+                    <label class="flex items-start gap-3 p-3.5 rounded-2xl border-2 border-slate-200 cursor-pointer transition has-checked:border-emerald-600 has-checked:bg-emerald-50/40 hover:border-slate-300">
+                        <input type="radio" name="storage_driver" value="local" class="mt-1 accent-emerald-600" {{ ($stats['storage']['driver'] ?? '') === 'local' ? 'checked' : '' }} onchange="onDriverRadioChange(this.value)">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-extrabold text-slate-900 flex items-center gap-1.5">
+                                    <i data-lucide="hard-drive" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                    <span>Penyimpanan Lokal Disk Server</span>
+                                </span>
+                                <span class="text-[10px] font-bold text-emerald-600 uppercase">Disk Fisik</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                                Membaca ruang kosong hard disk / SSD fisik server langsung secara otomatis.
+                            </p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Quota Limit Input & Quick Presets -->
+            <div id="quotaInputWrapper" class="space-y-2 pt-2 border-t border-slate-100">
+                <div class="flex items-center justify-between">
+                    <label for="storageQuotaMb" class="text-xs font-black uppercase tracking-wider text-slate-600">Batas Kuota Kapasitas (MB)</label>
+                    <span id="quotaHumanPreview" class="text-xs font-bold text-japan-600">5.00 GB</span>
+                </div>
+                <div class="relative">
+                    <input 
+                        type="number" 
+                        id="storageQuotaMb" 
+                        name="quota_mb" 
+                        min="100" 
+                        max="1048576" 
+                        step="100"
+                        value="{{ round(($stats['storage']['total_quota_bytes'] ?? 5368709120) / (1024 * 1024)) }}" 
+                        oninput="previewQuotaGB(this.value)"
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-japan-500"
+                        required
+                    >
+                    <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">MB</span>
+                </div>
+
+                <!-- Quick Presets -->
+                <div class="flex items-center gap-1.5 flex-wrap pt-1">
+                    <span class="text-[10px] font-semibold text-slate-400">Pilihan Cepat:</span>
+                    <button type="button" onclick="setQuotaPreset(1024)" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-slate-700 transition">1 GB</button>
+                    <button type="button" onclick="setQuotaPreset(2048)" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-slate-700 transition">2 GB</button>
+                    <button type="button" onclick="setQuotaPreset(5120)" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-slate-700 transition">5 GB</button>
+                    <button type="button" onclick="setQuotaPreset(10240)" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-slate-700 transition">10 GB</button>
+                    <button type="button" onclick="setQuotaPreset(20480)" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-slate-700 transition">20 GB</button>
+                    <button type="button" onclick="setQuotaPreset(51200)" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-bold text-slate-700 transition">50 GB</button>
+                </div>
+            </div>
+
+            <!-- Submit Buttons -->
+            <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+                <button 
+                    type="button" 
+                    onclick="closeStorageConfigModal()" 
+                    class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition"
+                >
+                    Batal
+                </button>
+                <button 
+                    type="submit" 
+                    id="saveStorageConfigBtn"
+                    class="px-4 py-2 rounded-xl bg-japan-600 hover:bg-japan-700 text-white text-xs font-bold shadow-md transition flex items-center gap-1.5 active:scale-95"
+                >
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                    <span>Terapkan Konfigurasi</span>
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -1209,6 +1379,171 @@
 
     function addslashes(str) {
         return (str + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
+    }
+
+    // 18. Mini Dashboard Stats Synchronizer
+    function updateMiniDashboard(stats) {
+        if (!stats) return;
+        const statFiles = document.getElementById('statTotalFiles');
+        const statFolders = document.getElementById('statTotalFolders');
+        const statReceipts = document.getElementById('statTotalReceipts');
+        const statMou = document.getElementById('statTotalMou');
+        const statSize = document.getElementById('statTotalSize');
+        const statFree = document.getElementById('statFreeStorage');
+        const statDetail = document.getElementById('statStorageDetail');
+        const statPercent = document.getElementById('statStoragePercent');
+        const statBar = document.getElementById('statStorageBar');
+        const driverBadge = document.getElementById('statDriverBadge');
+        const driverIcon = document.getElementById('statDriverIcon');
+
+        if (statFiles && stats.total_files !== undefined) statFiles.textContent = Number(stats.total_files).toLocaleString('id-ID');
+        if (statFolders && stats.total_folders !== undefined) statFolders.textContent = Number(stats.total_folders).toLocaleString('id-ID');
+        if (statReceipts && stats.total_receipts !== undefined) statReceipts.textContent = Number(stats.total_receipts).toLocaleString('id-ID');
+        if (statMou && stats.total_mou !== undefined) statMou.textContent = Number(stats.total_mou).toLocaleString('id-ID');
+
+        if (stats.storage) {
+            const st = stats.storage;
+            if (statSize) statSize.textContent = st.used_formatted;
+            if (statFree) statFree.textContent = `Sisa ${st.free_formatted}`;
+            if (statDetail) {
+                statDetail.innerHTML = `Terpakai <b id="statTotalSize" class="text-slate-800 font-bold">${st.used_formatted}</b> dari ${st.total_quota_formatted}`;
+            }
+            if (statPercent) {
+                statPercent.textContent = `${st.used_percentage}%`;
+                statPercent.className = `font-black ${st.used_percentage > 85 ? 'text-red-500' : 'text-slate-700'}`;
+            }
+            if (statBar) {
+                statBar.style.width = `${Math.min(100, st.used_percentage)}%`;
+                statBar.className = `h-full rounded-full transition-all duration-500 ${st.used_percentage > 90 ? 'bg-red-500' : (st.used_percentage > 75 ? 'bg-amber-500' : 'bg-japan-600')}`;
+            }
+            if (driverBadge) {
+                driverBadge.textContent = st.driver === 'cloud' ? 'Cloud S3' : (st.driver === 'local' ? 'Lokal Disk' : 'Hosting Web');
+            }
+            if (driverIcon && st.driver_icon) {
+                driverIcon.setAttribute('data-lucide', st.driver_icon);
+                if (window.lucide) lucide.createIcons();
+            }
+        } else if (statSize && stats.total_size_mb) {
+            statSize.textContent = stats.total_size_mb;
+        }
+    }
+
+    // 19. Storage Configuration Modal Handlers
+    function openStorageConfigModal() {
+        const modal = document.getElementById('storageConfigModal');
+        if (modal) modal.classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function closeStorageConfigModal() {
+        const modal = document.getElementById('storageConfigModal');
+        if (modal) modal.classList.add('hidden');
+    }
+
+    function onDriverRadioChange(driver) {
+        const quotaInput = document.getElementById('storageQuotaMb');
+        if (!quotaInput) return;
+
+        if (driver === 'cloud' && (!quotaInput.value || quotaInput.value == '5120')) {
+            quotaInput.value = 10240; // 10 GB
+        } else if (driver === 'hosting' && (!quotaInput.value || quotaInput.value == '10240')) {
+            quotaInput.value = 5120; // 5 GB
+        } else if (driver === 'local' && (!quotaInput.value || quotaInput.value == '5120')) {
+            quotaInput.value = 20480; // 20 GB
+        }
+        previewQuotaGB(quotaInput.value);
+    }
+
+    function setQuotaPreset(mb) {
+        const quotaInput = document.getElementById('storageQuotaMb');
+        if (quotaInput) {
+            quotaInput.value = mb;
+            previewQuotaGB(mb);
+        }
+    }
+
+    function previewQuotaGB(mb) {
+        const previewEl = document.getElementById('quotaHumanPreview');
+        if (!previewEl) return;
+        const num = parseFloat(mb) || 0;
+        if (num >= 1024) {
+            previewEl.textContent = (num / 1024).toFixed(2) + ' GB';
+        } else {
+            previewEl.textContent = num + ' MB';
+        }
+    }
+
+    function handleStorageConfigSubmit(event) {
+        event.preventDefault();
+        const btn = document.getElementById('saveStorageConfigBtn');
+        const originalBtnHtml = btn ? btn.innerHTML : '';
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<span class="animate-spin mr-1">⏳</span> Menerapkan...`;
+        }
+
+        const form = document.getElementById('storageConfigForm');
+        const formData = new FormData(form);
+        const payload = {
+            driver: formData.get('storage_driver'),
+            quota_mb: formData.get('quota_mb'),
+        };
+
+        fetch('{{ route('admin.digital-archives.storage.config') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (res.success) {
+                closeStorageConfigModal();
+                showArchiveToast(res.message || 'Konfigurasi penyimpanan berhasil diperbarui.');
+                if (res.stats) {
+                    updateMiniDashboard(res.stats);
+                }
+            } else {
+                showArchiveToast(res.message || 'Gagal menyimpan konfigurasi.', 'error');
+            }
+        })
+        .catch(err => {
+            console.error('Storage config error:', err);
+            showArchiveToast('Terjadi kesalahan saat menghubungi server.', 'error');
+        })
+        .finally(() => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+            }
+        });
+    }
+
+    // 20. Simple Toast Notification
+    function showArchiveToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `fixed bottom-5 right-5 z-[100] px-4 py-3 rounded-2xl shadow-xl border text-xs font-bold flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0 ${
+            type === 'error' 
+                ? 'bg-rose-50 border-rose-200 text-rose-800' 
+                : 'bg-slate-900 border-slate-800 text-white'
+        }`;
+        toast.innerHTML = `
+            <span>${type === 'error' ? '⚠️' : '✅'}</span>
+            <span>${message}</span>
+        `;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.remove('translate-y-2', 'opacity-0');
+        }, 10);
+
+        setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-2');
+            setTimeout(() => toast.remove(), 300);
+        }, 3500);
     }
 
     // Initialize Explorer on load

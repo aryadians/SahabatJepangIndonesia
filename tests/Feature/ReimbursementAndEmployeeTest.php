@@ -359,6 +359,136 @@ class ReimbursementAndEmployeeTest extends TestCase
                 'total_mou',
                 'total_base64_chars',
                 'total_size_mb',
+                'storage' => [
+                    'driver',
+                    'driver_label',
+                    'driver_icon',
+                    'used_bytes',
+                    'used_formatted',
+                    'free_bytes',
+                    'free_formatted',
+                    'total_quota_bytes',
+                    'total_quota_formatted',
+                    'used_percentage',
+                    'free_percentage',
+                ],
+            ]
+        ]);
+    }
+
+    public function test_reimbursement_period_filtering_and_export(): void
+    {
+        $this->actingAs($this->admin);
+
+        $teacher = Teacher::create([
+            'nip' => 'TCH-999',
+            'role' => 'sensei',
+            'name' => 'Yamada Sensei',
+            'gender' => 'Laki-laki',
+            'status' => 'active',
+        ]);
+
+        // Today reimbursement
+        Reimbursement::create([
+            'reimbursement_no' => 'RMB-TODAY-001',
+            'teacher_id' => $teacher->id,
+            'employee_name' => $teacher->name,
+            'type' => 'reimbursement',
+            'category' => 'operasional_kantor',
+            'title' => 'Pengeluaran ATK Hari Ini',
+            'start_date' => now()->toDateString(),
+            'amount_requested' => 150000,
+            'status' => 'approved',
+        ]);
+
+        // Past reimbursement (3 weeks ago)
+        Reimbursement::create([
+            'reimbursement_no' => 'RMB-PAST-002',
+            'teacher_id' => $teacher->id,
+            'employee_name' => $teacher->name,
+            'type' => 'reimbursement',
+            'category' => 'operasional_kantor',
+            'title' => 'Pengeluaran Konsumsi 3 Minggu Lalu',
+            'start_date' => now()->subWeeks(3)->toDateString(),
+            'amount_requested' => 250000,
+            'status' => 'approved',
+        ]);
+
+        // 1. Filter Today
+        $todayRes = $this->get('/admin/reimbursements?period=today');
+        $todayRes->assertOk();
+        $todayRes->assertSee('RMB-TODAY-001');
+        $todayRes->assertDontSee('RMB-PAST-002');
+
+        // 2. Filter Weekly
+        $weeklyRes = $this->get('/admin/reimbursements?period=weekly');
+        $weeklyRes->assertOk();
+        $weeklyRes->assertSee('RMB-TODAY-001');
+        $weeklyRes->assertDontSee('RMB-PAST-002');
+
+        // 3. Filter Custom Date Range
+        $rangeRes = $this->get('/admin/reimbursements?date_from=' . now()->subMonth()->toDateString() . '&date_to=' . now()->toDateString());
+        $rangeRes->assertOk();
+        $rangeRes->assertSee('RMB-TODAY-001');
+        $rangeRes->assertSee('RMB-PAST-002');
+
+        // 4. Test Export PDF and CSV with Period Filter
+        $pdfRes = $this->get(route('admin.reimbursements.export.pdf', ['period' => 'today']));
+        $pdfRes->assertOk();
+        $pdfRes->assertSee('RMB-TODAY-001');
+        $pdfRes->assertDontSee('RMB-PAST-002');
+
+        $csvRes = $this->get(route('admin.reimbursements.export', ['period' => 'today']));
+        $csvRes->assertOk();
+        $this->assertEquals('text/csv; charset=UTF-8', $csvRes->headers->get('Content-Type'));
+    }
+
+    public function test_digital_archive_storage_config_and_drivers(): void
+    {
+        $this->actingAs($this->admin);
+
+        // 1. Switch to Cloud Driver with 10 GB quota (10240 MB)
+        $cloudRes = $this->postJson('/admin/digital-archives/storage-config', [
+            'driver' => 'cloud',
+            'quota_mb' => 10240,
+        ]);
+        $cloudRes->assertOk()->assertJson([
+            'success' => true,
+            'stats' => [
+                'storage' => [
+                    'driver' => 'cloud',
+                    'driver_icon' => 'cloud',
+                ]
+            ]
+        ]);
+
+        // 2. Switch to Local Server Disk Driver
+        $localRes = $this->postJson('/admin/digital-archives/storage-config', [
+            'driver' => 'local',
+            'quota_mb' => 20480,
+        ]);
+        $localRes->assertOk()->assertJson([
+            'success' => true,
+            'stats' => [
+                'storage' => [
+                    'driver' => 'local',
+                    'driver_icon' => 'hard-drive',
+                ]
+            ]
+        ]);
+
+        // 3. Switch back to Hosting Web cPanel Driver
+        $hostingRes = $this->postJson('/admin/digital-archives/storage-config', [
+            'driver' => 'hosting',
+            'quota_mb' => 5120,
+        ]);
+        $hostingRes->assertOk()->assertJson([
+            'success' => true,
+            'stats' => [
+                'storage' => [
+                    'driver' => 'hosting',
+                    'driver_icon' => 'server',
+                ]
             ]
         ]);
     }

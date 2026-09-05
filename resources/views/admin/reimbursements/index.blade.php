@@ -141,55 +141,137 @@
 
         </div>
 
-        <!-- Filter Fields -->
-        <form action="{{ route('admin.reimbursements.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-2 border-t border-slate-100">
+        <!-- Quick Period Filter Pills -->
+        <div class="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-slate-100">
+            <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[11px] font-black uppercase tracking-wider text-slate-400 mr-1 flex items-center gap-1">
+                    <i data-lucide="calendar-range" class="w-3.5 h-3.5"></i>
+                    <span>Periode:</span>
+                </span>
+
+                @php
+                    $currPeriod = request('period');
+                    $baseParams = request()->except(['period', 'page']);
+                @endphp
+
+                <a 
+                    href="{{ route('admin.reimbursements.index', array_merge($baseParams, ['period' => ''])) }}"
+                    class="px-2.5 py-1 rounded-lg text-xs font-bold transition {{ !$currPeriod && !request('date_from') && !request('date_to') ? 'bg-slate-900 text-white shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-600' }}"
+                >
+                    Semua Waktu
+                </a>
+
+                <a 
+                    href="{{ route('admin.reimbursements.index', array_merge($baseParams, ['period' => 'today'])) }}"
+                    class="px-2.5 py-1 rounded-lg text-xs font-bold transition {{ $currPeriod === 'today' ? 'bg-japan-600 text-white shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-600' }}"
+                >
+                    Hari Ini (Harian)
+                </a>
+
+                <a 
+                    href="{{ route('admin.reimbursements.index', array_merge($baseParams, ['period' => 'weekly'])) }}"
+                    class="px-2.5 py-1 rounded-lg text-xs font-bold transition {{ $currPeriod === 'weekly' ? 'bg-japan-600 text-white shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-600' }}"
+                >
+                    Minggu Ini
+                </a>
+
+                <a 
+                    href="{{ route('admin.reimbursements.index', array_merge($baseParams, ['period' => 'monthly'])) }}"
+                    class="px-2.5 py-1 rounded-lg text-xs font-bold transition {{ $currPeriod === 'monthly' ? 'bg-japan-600 text-white shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-600' }}"
+                >
+                    Bulan Ini
+                </a>
+
+                @if(request('date_from') || request('date_to'))
+                    <span class="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[10px] font-black uppercase tracking-wider">
+                        Rentang Kustom Aktif
+                    </span>
+                @endif
+            </div>
+
+            <div class="text-[11px] text-slate-400 font-medium">
+                Total data terfilter: <span class="font-bold text-slate-700">{{ $reimbursements->total() }}</span>
+            </div>
+        </div>
+
+        <!-- Filter Fields Form -->
+        <form action="{{ route('admin.reimbursements.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2.5 pt-2 border-t border-slate-100">
             @if(request('type'))
                 <input type="hidden" name="type" value="{{ request('type') }}">
             @endif
+            @if(request('period'))
+                <input type="hidden" name="period" value="{{ request('period') }}">
+            @endif
 
-            <div class="relative">
+            <!-- Search -->
+            <div class="relative lg:col-span-3">
                 <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
                 <input 
                     type="text" 
                     name="search" 
                     value="{{ request('search') }}" 
                     placeholder="No. Dokumen / Judul / Nama..." 
-                    class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600"
+                    class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600 font-medium"
                 >
             </div>
 
-            <select name="status" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-japan-600">
-                <option value="">Semua Status</option>
-                <option value="submitted" {{ request('status') === 'submitted' ? 'selected' : '' }}>Menunggu Verifikasi</option>
-                <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Disetujui</option>
-                <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Dana Dicairkan</option>
-                <option value="settled" {{ request('status') === 'settled' ? 'selected' : '' }}>Selesai (SPJ Valid)</option>
-                <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Ditolak</option>
-            </select>
+            <!-- Status -->
+            <div class="lg:col-span-2">
+                <select name="status" class="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-japan-600 bg-white">
+                    <option value="">Semua Status</option>
+                    <option value="submitted" {{ request('status') === 'submitted' ? 'selected' : '' }}>Menunggu Verifikasi</option>
+                    <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Disetujui</option>
+                    <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Dana Dicairkan</option>
+                    <option value="settled" {{ request('status') === 'settled' ? 'selected' : '' }}>Selesai (SPJ Valid)</option>
+                    <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                </select>
+            </div>
 
-            <select name="category" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-japan-600">
-                <option value="">Semua Kategori</option>
-                <option value="mou_perjalanan_dinas" {{ request('category') === 'mou_perjalanan_dinas' ? 'selected' : '' }}>Perjalanan Dinas MoU</option>
-                <option value="transportasi" {{ request('category') === 'transportasi' ? 'selected' : '' }}>Transportasi (Tiket/Bensin)</option>
-                <option value="akomodasi_hotel" {{ request('category') === 'akomodasi_hotel' ? 'selected' : '' }}>Akomodasi Hotel</option>
-                <option value="konsumsi_meeting" {{ request('category') === 'konsumsi_meeting' ? 'selected' : '' }}>Konsumsi & Jamuan</option>
-                <option value="operasional_kantor" {{ request('category') === 'operasional_kantor' ? 'selected' : '' }}>Operasional Lembaga</option>
-            </select>
+            <!-- Kategori -->
+            <div class="lg:col-span-2">
+                <select name="category" class="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-japan-600 bg-white">
+                    <option value="">Semua Kategori</option>
+                    <option value="mou_perjalanan_dinas" {{ request('category') === 'mou_perjalanan_dinas' ? 'selected' : '' }}>Perjalanan Dinas MoU</option>
+                    <option value="transportasi" {{ request('category') === 'transportasi' ? 'selected' : '' }}>Transportasi (Tiket/Bensin)</option>
+                    <option value="akomodasi_hotel" {{ request('category') === 'akomodasi_hotel' ? 'selected' : '' }}>Akomodasi Hotel</option>
+                    <option value="konsumsi_meeting" {{ request('category') === 'konsumsi_meeting' ? 'selected' : '' }}>Konsumsi & Jamuan</option>
+                    <option value="operasional_kantor" {{ request('category') === 'operasional_kantor' ? 'selected' : '' }}>Operasional Lembaga</option>
+                </select>
+            </div>
 
-            <input 
-                type="date" 
-                name="date_from" 
-                value="{{ request('date_from') }}" 
-                title="Tanggal Dari"
-                class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600"
-            >
+            <!-- Rentang Tanggal Dari -->
+            <div class="lg:col-span-2">
+                <div class="relative">
+                    <input 
+                        type="date" 
+                        name="date_from" 
+                        value="{{ request('date_from') }}" 
+                        title="Tanggal Mulai / Dari"
+                        class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600 bg-white font-medium"
+                    >
+                </div>
+            </div>
 
-            <div class="flex items-center gap-2">
-                <button type="submit" class="flex-1 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition">
+            <!-- Rentang Tanggal Sampai -->
+            <div class="lg:col-span-2">
+                <div class="relative">
+                    <input 
+                        type="date" 
+                        name="date_to" 
+                        value="{{ request('date_to') }}" 
+                        title="Tanggal Selesai / Sampai"
+                        class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600 bg-white font-medium"
+                    >
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="lg:col-span-1 flex items-center gap-1.5">
+                <button type="submit" class="flex-1 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition shadow-xs">
                     Cari
                 </button>
-                @if(request()->anyFilled(['search', 'status', 'category', 'date_from']))
-                    <a href="{{ route('admin.reimbursements.index', ['type' => request('type')]) }}" class="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600" title="Reset">
+                @if(request()->anyFilled(['search', 'status', 'category', 'date_from', 'date_to', 'period']))
+                    <a href="{{ route('admin.reimbursements.index', ['type' => request('type')]) }}" class="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition" title="Reset Semua Filter">
                         <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                     </a>
                 @endif

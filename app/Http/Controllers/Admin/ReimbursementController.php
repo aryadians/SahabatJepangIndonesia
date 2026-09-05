@@ -17,51 +17,12 @@ class ReimbursementController extends Controller
 
     /**
      * Tampilkan Dashboard & Daftar Klaim Reimburse / Kasbon Dinas
+    /**
+     * Tampilkan Dashboard & Daftar Klaim Reimburse / Kasbon Dinas
      */
     public function index(Request $request)
     {
-        $query = Reimbursement::with('employee')->latest();
-
-        // 1. Filter Tipe (Reimburse vs Kasbon)
-        if ($request->filled('type')) {
-            $query->where('type', $request->input('type'));
-        }
-
-        // 2. Filter Status
-        if ($request->filled('status')) {
-            $query->where('status', $request->input('status'));
-        }
-
-        // 3. Filter Pegawai
-        if ($request->filled('teacher_id')) {
-            $query->where('teacher_id', $request->input('teacher_id'));
-        }
-
-        // 4. Filter Kategori
-        if ($request->filled('category')) {
-            $query->where('category', $request->input('category'));
-        }
-
-        // 5. Pencarian Teks (No Dokumen, Judul, Karyawan, Tujuan)
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('reimbursement_no', 'like', "%{$search}%")
-                  ->orWhere('title', 'like', "%{$search}%")
-                  ->orWhere('employee_name', 'like', "%{$search}%")
-                  ->orWhere('destination', 'like', "%{$search}%");
-            });
-        }
-
-        // 6. Filter Tanggal
-        if ($request->filled('date_from')) {
-            $query->whereDate('start_date', '>=', $request->input('date_from'));
-        }
-        if ($request->filled('date_to')) {
-            $query->whereDate('start_date', '<=', $request->input('date_to'));
-        }
-
-        $reimbursements = $query->paginate(15)->withQueryString();
+        $reimbursements = $this->filterQuery($request)->paginate(15)->withQueryString();
 
         // Statistik KPI Keuangan Dinas
         $stats = [
@@ -351,23 +312,105 @@ class ReimbursementController extends Controller
     }
 
     /**
-     * Export PDF Rekapitulasi Keuangan Dinas
+     * Helper Query Filter Terpadu (Tipe, Status, Karyawan, Kategori, Search, Periode Cepat & Rentang Tanggal)
      */
-    public function exportPdf(Request $request)
+    protected function filterQuery(Request $request)
     {
         $query = Reimbursement::with('employee')->latest();
 
+        // 1. Filter Tipe (Reimburse vs Kasbon)
         if ($request->filled('type')) {
             $query->where('type', $request->input('type'));
         }
+
+        // 2. Filter Status
         if ($request->filled('status')) {
             $query->where('status', $request->input('status'));
         }
+
+        // 3. Filter Pegawai
+        if ($request->filled('teacher_id')) {
+            $query->where('teacher_id', $request->input('teacher_id'));
+        }
+
+        // 4. Filter Kategori
         if ($request->filled('category')) {
             $query->where('category', $request->input('category'));
         }
 
-        $reimbursements = $query->get();
+        // 5. Pencarian Teks
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('reimbursement_no', 'like', "%{$search}%")
+                  ->orWhere('title', 'like', "%{$search}%")
+                  ->orWhere('employee_name', 'like', "%{$search}%")
+                  ->orWhere('destination', 'like', "%{$search}%");
+            });
+        }
+
+        // 6. Filter Periode Cepat (Harian, Mingguan, Bulanan)
+        if ($request->filled('period')) {
+            $period = $request->input('period');
+            if ($period === 'today') {
+                $today = now()->toDateString();
+                $query->where(function ($q) use ($today) {
+                    $q->whereDate('start_date', $today)
+                      ->orWhere(function ($sub) use ($today) {
+                          $sub->whereNull('start_date')->whereDate('created_at', $today);
+                      });
+                });
+            } elseif ($period === 'weekly') {
+                $startOfWeek = now()->startOfWeek()->toDateString();
+                $endOfWeek = now()->endOfWeek()->toDateString();
+                $query->where(function ($q) use ($startOfWeek, $endOfWeek) {
+                    $q->whereBetween('start_date', [$startOfWeek, $endOfWeek])
+                      ->orWhere(function ($sub) {
+                          $sub->whereNull('start_date')->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                      });
+                });
+            } elseif ($period === 'monthly') {
+                $month = now()->month;
+                $year = now()->year;
+                $query->where(function ($q) use ($month, $year) {
+                    $q->where(function ($sq) use ($month, $year) {
+                        $sq->whereMonth('start_date', $month)->whereYear('start_date', $year);
+                    })->orWhere(function ($sq) use ($month, $year) {
+                        $sq->whereNull('start_date')->whereMonth('created_at', $month)->whereYear('created_at', $year);
+                    });
+                });
+            }
+        }
+
+        // 7. Filter Rentang Tanggal Spesifik (Custom Date Range)
+        if ($request->filled('date_from')) {
+            $from = $request->input('date_from');
+            $query->where(function ($q) use ($from) {
+                $q->whereDate('start_date', '>=', $from)
+                  ->orWhere(function ($sub) use ($from) {
+                      $sub->whereNull('start_date')->whereDate('created_at', '>=', $from);
+                  });
+            });
+        }
+        if ($request->filled('date_to')) {
+            $to = $request->input('date_to');
+            $query->where(function ($q) use ($to) {
+                $q->whereDate('start_date', '<=', $to)
+                  ->orWhere(function ($sub) use ($to) {
+                      $sub->whereNull('start_date')->whereDate('created_at', '<=', $to);
+                  });
+            });
+        }
+
+        return $query;
+    }
+
+    /**
+     * Export PDF Rekapitulasi Keuangan Dinas
+     */
+    public function exportPdf(Request $request)
+    {
+        $reimbursements = $this->filterQuery($request)->get();
 
         return view('admin.reimbursements.export_pdf', compact('reimbursements'));
     }
@@ -377,16 +420,7 @@ class ReimbursementController extends Controller
      */
     public function exportCsv(Request $request): StreamedResponse
     {
-        $query = Reimbursement::with('employee')->latest();
-
-        if ($request->filled('type')) {
-            $query->where('type', $request->input('type'));
-        }
-        if ($request->filled('status')) {
-            $query->where('status', $request->input('status'));
-        }
-
-        $reimbursements = $query->get();
+        $reimbursements = $this->filterQuery($request)->get();
 
         $headers = [
             'Content-Type' => 'text/csv; charset=UTF-8',

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ArchiveFolder;
 use App\Models\DigitalArchive;
+use App\Models\SiteSetting;
 use App\Traits\UploadsImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,6 +29,81 @@ class DigitalArchiveController extends Controller
     }
 
     /**
+     * Hitung Kapasitas & Sisa Penyimpanan Arsip Digital (Hosting / Cloud / Lokal Disk)
+     */
+    protected function calculateStorageInfo(): array
+    {
+        $driver = SiteSetting::get('archive_storage_driver', 'hosting'); // hosting, cloud, local
+
+        // 1. Hitung total penggunaan data di database (Base64 LONGTEXT)
+        $usedBytes = (float) (DigitalArchive::selectRaw('SUM(LENGTH(file_base64)) as total_bytes')->value('total_bytes') ?? 0);
+
+        // 2. Tentukan Total Quota & Free Space sesuai Driver
+        $totalQuotaBytes = 0;
+        $freeBytes = 0;
+        $driverLabel = '';
+        $driverIcon = '';
+
+        if ($driver === 'local') {
+            $driverLabel = 'Penyimpanan Lokal Server';
+            $driverIcon = 'hard-drive';
+            $diskTotal = @disk_total_space(base_path());
+            $diskFree = @disk_free_space(base_path());
+
+            if ($diskTotal && $diskTotal > 0) {
+                $totalQuotaBytes = (float) $diskTotal;
+                $freeBytes = $diskFree ? max(0, (float) $diskFree) : max(0, $totalQuotaBytes - $usedBytes);
+            } else {
+                $quotaMb = (float) SiteSetting::get('archive_local_quota_mb', 20480); // 20 GB default
+                $totalQuotaBytes = $quotaMb * 1024 * 1024;
+                $freeBytes = max(0, $totalQuotaBytes - $usedBytes);
+            }
+        } elseif ($driver === 'cloud') {
+            $driverLabel = 'Cloud Object Storage (S3 / Cloud Tier)';
+            $driverIcon = 'cloud';
+            $quotaMb = (float) SiteSetting::get('archive_cloud_quota_mb', 10240); // 10 GB default
+            $totalQuotaBytes = $quotaMb * 1024 * 1024;
+            $freeBytes = max(0, $totalQuotaBytes - $usedBytes);
+        } else {
+            // Default: Hosting Web / cPanel Shared Quota
+            $driver = 'hosting';
+            $driverLabel = 'Hosting Server Web (cPanel / VPS)';
+            $driverIcon = 'server';
+            $quotaMb = (float) SiteSetting::get('archive_hosting_quota_mb', 5120); // 5 GB default
+            $totalQuotaBytes = $quotaMb * 1024 * 1024;
+            $freeBytes = max(0, $totalQuotaBytes - $usedBytes);
+        }
+
+        $usedPercentage = $totalQuotaBytes > 0 ? min(100, round(($usedBytes / $totalQuotaBytes) * 100, 1)) : 0;
+        $freePercentage = max(0, round(100 - $usedPercentage, 1));
+
+        return [
+            'driver' => $driver,
+            'driver_label' => $driverLabel,
+            'driver_icon' => $driverIcon,
+            'used_bytes' => $usedBytes,
+            'used_formatted' => $this->formatBytes($usedBytes),
+            'free_bytes' => $freeBytes,
+            'free_formatted' => $this->formatBytes($freeBytes),
+            'total_quota_bytes' => $totalQuotaBytes,
+            'total_quota_formatted' => $this->formatBytes($totalQuotaBytes),
+            'used_percentage' => $usedPercentage,
+            'free_percentage' => $freePercentage,
+        ];
+    }
+
+    protected function formatBytes($bytes, $precision = 2): string
+    {
+        if ($bytes <= 0) return '0 MB';
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        $bytes /= pow(1024, $pow);
+        return round($bytes, $precision) . ' ' . $units[$pow];
+    }
+
+    /**
      * Hitung Statistik Mini Dashboard Arsip Digital
      */
     protected function calculateStats(): array
@@ -37,18 +113,43 @@ class DigitalArchiveController extends Controller
         $totalMou = DigitalArchive::where('category', 'dokumen_mou')->count();
         $totalReceipts = DigitalArchive::where('category', 'nota_reimburse')->count();
 
-        // Hitung estimasi ukuran berkas Base64 di database
-        $totalSizeBytes = DigitalArchive::selectRaw('SUM(LENGTH(file_base64)) as total_bytes')->value('total_bytes') ?? 0;
-        $totalSizeMb = round($totalSizeBytes / (1024 * 1024), 2);
+        $storage = $this->calculateStorageInfo();
 
         return [
             'total_files' => $totalFiles,
             'total_folders' => $totalFolders,
-            'total_size_mb' => $totalSizeMb > 0 ? $totalSizeMb . ' MB' : '< 1 MB',
+            'total_size_mb' => $storage['used_formatted'],
             'total_mou' => $totalMou,
             'total_receipts' => $totalReceipts,
-            'total_base64_chars' => $totalSizeBytes,
+            'total_base64_chars' => $storage['used_bytes'],
+            'storage' => $storage,
         ];
+    }
+
+    /**
+     * API: Update Konfigurasi Driver & Kuota Penyimpanan Arsip Digital
+     */
+    public function updateStorageConfig(Request $request)
+    {
+        $validated = $request->validate([
+            'driver' => 'required|in:hosting,cloud,local',
+            'quota_mb' => 'required|numeric|min:100|max:1048576',
+        ]);
+
+        SiteSetting::set('archive_storage_driver', $validated['driver'], 'archive');
+        if ($validated['driver'] === 'hosting') {
+            SiteSetting::set('archive_hosting_quota_mb', $validated['quota_mb'], 'archive');
+        } elseif ($validated['driver'] === 'cloud') {
+            SiteSetting::set('archive_cloud_quota_mb', $validated['quota_mb'], 'archive');
+        } elseif ($validated['driver'] === 'local') {
+            SiteSetting::set('archive_local_quota_mb', $validated['quota_mb'], 'archive');
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Konfigurasi target & kuota penyimpanan berhasil diperbarui.',
+            'stats' => $this->calculateStats(),
+        ]);
     }
 
     /**
