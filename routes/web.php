@@ -222,6 +222,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/finance/export-pdf', [FinancialAnalyticsController::class, 'exportPdf'])->name('finance.export.pdf');
 
     // 14b. Klaim Reimbursement & Uang Muka Perjalanan Dinas (Cash Advance)
+    Route::get('/reimbursements/stats', [ReimbursementController::class, 'stats'])->name('reimbursements.stats');
     Route::get('/reimbursements/export', [ReimbursementController::class, 'exportCsv'])->name('reimbursements.export');
     Route::get('/reimbursements/export-pdf', [ReimbursementController::class, 'exportPdf'])->name('reimbursements.export.pdf');
     Route::get('/reimbursements/template', [ReimbursementController::class, 'exportTemplate'])->name('reimbursements.template');
@@ -230,7 +231,17 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('/reimbursements/{id}/status', [ReimbursementController::class, 'updateStatus'])->name('reimbursements.status');
     Route::resource('reimbursements', ReimbursementController::class)->except(['create', 'show', 'edit']);
 
-    // 14c. Panel Arsip Digital Dokumen & Nota (Base64 LONGTEXT)
+    // 14c. Panel Arsip Digital Dokumen & Nota (Windows File Explorer SPA)
+    Route::get('/digital-archives/explorer-data', [DigitalArchiveController::class, 'explorerData'])->name('digital-archives.explorer.data');
+    Route::get('/digital-archives/stats', [DigitalArchiveController::class, 'stats'])->name('digital-archives.stats');
+    Route::post('/digital-archives/folders', [DigitalArchiveController::class, 'createFolder'])->name('digital-archives.folder.create');
+    Route::put('/digital-archives/folders/{id}/rename', [DigitalArchiveController::class, 'renameFolder'])->name('digital-archives.folder.rename.alias');
+    Route::put('/digital-archives/folders/{id}', [DigitalArchiveController::class, 'renameFolder'])->name('digital-archives.folder.rename');
+    Route::delete('/digital-archives/folders/{id}', [DigitalArchiveController::class, 'deleteFolder'])->name('digital-archives.folder.delete');
+    Route::post('/digital-archives/upload-ajax', [DigitalArchiveController::class, 'uploadAjax'])->name('digital-archives.upload.ajax');
+    Route::put('/digital-archives/{id}/rename', [DigitalArchiveController::class, 'renameFile'])->name('digital-archives.file.rename');
+    Route::put('/digital-archives/{id}/move', [DigitalArchiveController::class, 'moveFile'])->name('digital-archives.file.move');
+    Route::delete('/digital-archives/{id}/ajax', [DigitalArchiveController::class, 'deleteFileAjax'])->name('digital-archives.file.delete');
     Route::resource('digital-archives', DigitalArchiveController::class)->except(['create', 'show', 'edit', 'update']);
 
     // 15. Program Kemitraan & Referral Afiliasi

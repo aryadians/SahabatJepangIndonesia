@@ -14,6 +14,7 @@ class DigitalArchive extends Model
         'archive_no',
         'title',
         'category',
+        'folder_id',
         'reimbursement_id',
         'uploader_name',
         'document_date',
@@ -27,6 +28,14 @@ class DigitalArchive extends Model
     protected $casts = [
         'document_date' => 'date',
     ];
+
+    /**
+     * Relasi ke folder tempat berkas berada
+     */
+    public function folder(): BelongsTo
+    {
+        return $this->belongsTo(ArchiveFolder::class, 'folder_id');
+    }
 
     /**
      * Relasi ke transaksi reimburse jika berkaitan

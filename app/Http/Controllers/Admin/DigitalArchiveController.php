@@ -3,80 +3,81 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ArchiveFolder;
 use App\Models\DigitalArchive;
 use App\Traits\UploadsImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DigitalArchiveController extends Controller
 {
     use UploadsImage;
 
     /**
-     * Tampilkan Galeri Arsip Digital Nota & Dokumen Berbasis Base64
+     * Tampilkan Halaman Utama Windows File Explorer Arsip Digital
      */
     public function index(Request $request)
     {
-        $query = DigitalArchive::with('reimbursement')->latest();
+        $rootFolders = ArchiveFolder::whereNull('parent_id')->withCount(['children', 'archives'])->orderBy('name', 'asc')->get();
+        $allFolders = ArchiveFolder::withCount('archives')->orderBy('name', 'asc')->get();
+        $recentArchives = DigitalArchive::latest()->take(30)->get();
 
-        // 1. Filter Kategori
-        if ($request->filled('category')) {
-            $query->where('category', $request->input('category'));
-        }
+        $stats = $this->calculateStats();
 
-        // 2. Pencarian
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('archive_no', 'like', "%{$search}%")
-                  ->orWhere('title', 'like', "%{$search}%")
-                  ->orWhere('uploader_name', 'like', "%{$search}%");
-            });
-        }
-
-        // 3. Filter Tanggal
-        if ($request->filled('date_from')) {
-            $query->whereDate('document_date', '>=', $request->input('date_from'));
-        }
-        if ($request->filled('date_to')) {
-            $query->whereDate('document_date', '<=', $request->input('date_to'));
-        }
-
-        $archives = $query->paginate(24)->withQueryString();
-
-        $stats = [
-            'total_archives' => DigitalArchive::count(),
-            'total_receipts' => DigitalArchive::where('category', 'nota_reimburse')->count(),
-            'total_mou' => DigitalArchive::where('category', 'dokumen_mou')->count(),
-            'total_tickets' => DigitalArchive::where('category', 'kuitansi_hotel_tiket')->count(),
-        ];
-
-        return view('admin.digital_archives.index', compact('archives', 'stats'));
+        return view('admin.digital_archives.index', compact('rootFolders', 'allFolders', 'recentArchives', 'stats'));
     }
 
     /**
-     * Unggah Berkas Arsip Digital Baru (Konversi Otomatis ke Base64 LONGTEXT)
+     * Hitung Statistik Mini Dashboard Arsip Digital
+     */
+    protected function calculateStats(): array
+    {
+        $totalFiles = DigitalArchive::count();
+        $totalFolders = ArchiveFolder::count();
+        $totalMou = DigitalArchive::where('category', 'dokumen_mou')->count();
+        $totalReceipts = DigitalArchive::where('category', 'nota_reimburse')->count();
+
+        // Hitung estimasi ukuran berkas Base64 di database
+        $totalSizeBytes = DigitalArchive::selectRaw('SUM(LENGTH(file_base64)) as total_bytes')->value('total_bytes') ?? 0;
+        $totalSizeMb = round($totalSizeBytes / (1024 * 1024), 2);
+
+        return [
+            'total_files' => $totalFiles,
+            'total_folders' => $totalFolders,
+            'total_size_mb' => $totalSizeMb > 0 ? $totalSizeMb . ' MB' : '< 1 MB',
+            'total_mou' => $totalMou,
+            'total_receipts' => $totalReceipts,
+            'total_base64_chars' => $totalSizeBytes,
+        ];
+    }
+
+    /**
+     * Simpan Berkas Arsip Baru (Form Submit Standar)
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'category' => 'required|string|max:60',
+            'category' => 'required|string|max:50',
+            'folder_id' => 'nullable|exists:archive_folders,id',
             'document_date' => 'nullable|date',
-            'document_file' => 'required|file|mimes:jpeg,png,jpg,webp,pdf|max:12288', // Maks 12MB
+            'document_file' => 'required|file|mimes:jpeg,png,jpg,webp,pdf|max:15360',
             'notes' => 'nullable|string|max:1000',
         ]);
 
         $file = $request->file('document_file');
         $mime = $file->getMimeType();
         $base64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($file->getRealPath()));
+        $fileName = $file->getClientOriginalName();
 
-        $archive = DigitalArchive::create([
+        DigitalArchive::create([
             'archive_no' => DigitalArchive::generateNumber(),
+            'folder_id' => $validated['folder_id'] ?? null,
             'title' => $validated['title'],
             'category' => $validated['category'],
             'uploader_name' => auth()->user()->name ?? 'Admin Keuangan',
             'document_date' => $validated['document_date'] ?? now()->toDateString(),
-            'file_name' => $file->getClientOriginalName(),
+            'file_name' => $fileName,
             'file_type' => $mime,
             'file_size' => round($file->getSize() / 1024, 1) . ' KB',
             'file_base64' => $base64,
@@ -84,11 +85,347 @@ class DigitalArchiveController extends Controller
         ]);
 
         return redirect()->route('admin.digital-archives.index')
-            ->with('success', "Dokumen arsip {$archive->archive_no} berhasil disimpan dalam format Base64.");
+            ->with('success', 'Berkas arsip digital berhasil disimpan.');
     }
 
     /**
-     * Hapus Dokumen Arsip
+     * API: Ambil Data Konten Folder (Breadcrumbs, Subfolder, Berkas, Stats)
+     */
+    public function explorerData(Request $request)
+    {
+        $folderId = $request->query('folder_id');
+        $search = $request->query('search');
+        $category = $request->query('category');
+
+        $currentFolder = null;
+        $breadcrumbs = [
+            ['id' => null, 'name' => 'Arsip Utama', 'icon' => 'hard-drive']
+        ];
+
+        if ($folderId) {
+            $currentFolder = ArchiveFolder::find($folderId);
+            if ($currentFolder) {
+                $crumbs = $currentFolder->getBreadcrumbs();
+                foreach ($crumbs as $c) {
+                    $breadcrumbs[] = ['id' => $c['id'], 'name' => $c['name'], 'icon' => 'folder'];
+                }
+            }
+        }
+
+        // 1. Query Sub-Folders
+        $folderQuery = ArchiveFolder::withCount(['children', 'archives']);
+        if ($folderId) {
+            $folderQuery->where('parent_id', $folderId);
+        } else {
+            $folderQuery->whereNull('parent_id');
+        }
+
+        if (!empty($search)) {
+            $folderQuery->where('name', 'like', "%{$search}%");
+        }
+        $subFolders = $folderQuery->orderBy('name', 'asc')->get();
+
+        // 2. Query Berkas dalam folder
+        $fileQuery = DigitalArchive::with('folder');
+        if (!empty($search)) {
+            // Pencarian global jika mencari
+            $fileQuery->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('file_name', 'like', "%{$search}%")
+                  ->orWhere('archive_no', 'like', "%{$search}%")
+                  ->orWhere('uploader_name', 'like', "%{$search}%");
+            });
+        } else {
+            if ($folderId) {
+                $fileQuery->where('folder_id', $folderId);
+            } else {
+                $fileQuery->whereNull('folder_id');
+            }
+        }
+
+        if (!empty($category) && $category !== 'all') {
+            $fileQuery->where('category', $category);
+        }
+
+        $files = $fileQuery->latest()->get()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'archive_no' => $item->archive_no,
+                'title' => $item->title,
+                'folder_id' => $item->folder_id,
+                'category' => $item->category,
+                'category_badge' => $item->category_badge,
+                'file_name' => $item->file_name,
+                'file_type' => $item->file_type,
+                'file_size' => $item->file_size,
+                'document_date' => $item->document_date ? $item->document_date->format('d M Y') : '-',
+                'uploader_name' => $item->uploader_name,
+                'is_image' => $item->isImage(),
+                'file_base64' => $item->file_base64,
+                'notes' => $item->notes,
+                'created_at' => $item->created_at->format('d/m/Y H:i'),
+            ];
+        });
+
+        // 3. Folder Tree untuk Sidebar
+        $tree = ArchiveFolder::with(['children' => function ($q) {
+            $q->withCount(['children', 'archives'])->orderBy('name', 'asc');
+        }])
+        ->whereNull('parent_id')
+        ->withCount(['children', 'archives'])
+        ->orderBy('name', 'asc')
+        ->get();
+
+        return response()->json([
+            'success' => true,
+            'current_folder_id' => $folderId ? (int)$folderId : null,
+            'current_folder' => $currentFolder,
+            'breadcrumbs' => $breadcrumbs,
+            'folders' => $subFolders,
+            'files' => $files,
+            'tree' => $tree,
+            'stats' => $this->calculateStats(),
+        ]);
+    }
+
+    /**
+     * API: Buat Folder Baru
+     */
+    public function createFolder(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:150',
+            'parent_id' => 'nullable|exists:archive_folders,id',
+            'color' => 'nullable|string|max:50',
+        ]);
+
+        $folder = ArchiveFolder::create([
+            'name' => trim($validated['name']),
+            'parent_id' => $validated['parent_id'] ?? null,
+            'color' => $validated['color'] ?? 'amber',
+            'created_by' => auth()->user()->name ?? 'Admin',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Folder \"{$folder->name}\" berhasil dibuat.",
+            'folder' => $folder,
+            'stats' => $this->calculateStats(),
+        ]);
+    }
+
+    /**
+     * API: Rename Folder
+     */
+    public function renameFolder(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:150',
+        ]);
+
+        $folder = ArchiveFolder::findOrFail($id);
+        $oldName = $folder->name;
+        $folder->update(['name' => trim($validated['name'])]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Folder \"{$oldName}\" diubah menjadi \"{$folder->name}\".",
+            'folder' => $folder,
+        ]);
+    }
+
+    /**
+     * API: Hapus Folder
+     */
+    public function deleteFolder($id)
+    {
+        $folder = ArchiveFolder::findOrFail($id);
+        $name = $folder->name;
+
+        // Pindahkan berkas di dalam folder ini ke parent folder agar tidak hilang
+        DigitalArchive::where('folder_id', $id)->update(['folder_id' => $folder->parent_id]);
+
+        $folder->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Folder \"{$name}\" berhasil dihapus.",
+            'stats' => $this->calculateStats(),
+        ]);
+    }
+
+    /**
+     * API: Upload Berkas Drag & Drop / File Input Langsung ke Base64 (Tanpa Reload)
+     */
+    public function uploadAjax(Request $request)
+    {
+        $folderId = $request->input('folder_id');
+        if ($folderId === 'null' || empty($folderId)) {
+            $folderId = null;
+        }
+
+        $category = $request->input('category', 'nota_reimburse');
+        $title = $request->input('title');
+        $notes = $request->input('notes');
+        $docDate = $request->input('document_date', now()->toDateString());
+
+        $createdArchives = [];
+
+        // Kasus 1: Upload langsung via multipart files
+        if ($request->hasFile('files') || $request->hasFile('file')) {
+            $files = $request->file('files') ?: $request->file('file');
+            if (!is_array($files)) {
+                $files = [$files];
+            }
+
+            foreach ($files as $file) {
+                $mime = $file->getMimeType();
+                $base64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($file->getRealPath()));
+                $fileName = $file->getClientOriginalName();
+                $fileTitle = !empty($title) ? $title : pathinfo($fileName, PATHINFO_FILENAME);
+
+                $archive = DigitalArchive::create([
+                    'archive_no' => DigitalArchive::generateNumber(),
+                    'folder_id' => $folderId,
+                    'title' => $fileTitle,
+                    'category' => $category,
+                    'uploader_name' => auth()->user()->name ?? 'Admin Keuangan',
+                    'document_date' => $docDate,
+                    'file_name' => $fileName,
+                    'file_type' => $mime,
+                    'file_size' => round($file->getSize() / 1024, 1) . ' KB',
+                    'file_base64' => $base64,
+                    'notes' => $notes,
+                ]);
+
+                $createdArchives[] = $archive;
+            }
+        } elseif ($request->hasFile('document_file')) {
+            $file = $request->file('document_file');
+            $mime = $file->getMimeType();
+            $base64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($file->getRealPath()));
+            $fileName = $file->getClientOriginalName();
+
+            $archive = DigitalArchive::create([
+                'archive_no' => DigitalArchive::generateNumber(),
+                'folder_id' => $folderId,
+                'title' => $title ?: pathinfo($fileName, PATHINFO_FILENAME),
+                'category' => $category,
+                'uploader_name' => auth()->user()->name ?? 'Admin Keuangan',
+                'document_date' => $docDate,
+                'file_name' => $fileName,
+                'file_type' => $mime,
+                'file_size' => round($file->getSize() / 1024, 1) . ' KB',
+                'file_base64' => $base64,
+                'notes' => $notes,
+            ]);
+
+            $createdArchives[] = $archive;
+        } elseif ($request->filled('file_base64')) {
+            // Kasus 2: Upload Base64 langsung dari client-side canvas / drag-drop reader
+            $fileName = $request->input('file_name', 'berkas_arsip_' . time() . '.png');
+            $archive = DigitalArchive::create([
+                'archive_no' => DigitalArchive::generateNumber(),
+                'folder_id' => $folderId,
+                'title' => $title ?: pathinfo($fileName, PATHINFO_FILENAME),
+                'category' => $category,
+                'uploader_name' => auth()->user()->name ?? 'Admin Keuangan',
+                'document_date' => $docDate,
+                'file_name' => $fileName,
+                'file_type' => $request->input('file_type', 'image/png'),
+                'file_size' => $request->input('file_size', '150 KB'),
+                'file_base64' => $request->input('file_base64'),
+                'notes' => $notes,
+            ]);
+
+            $createdArchives[] = $archive;
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada berkas yang diunggah.',
+            ], 422);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => count($createdArchives) . ' berkas berhasil diunggah ke arsip digital.',
+            'archive' => $createdArchives[0] ?? null,
+            'archives' => $createdArchives,
+            'stats' => $this->calculateStats(),
+        ]);
+    }
+
+    /**
+     * API: Rename Berkas
+     */
+    public function renameFile(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+        ]);
+
+        $archive = DigitalArchive::findOrFail($id);
+        $archive->update(['title' => trim($validated['title'])]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Nama dokumen berhasil diperbarui.",
+            'archive' => $archive,
+        ]);
+    }
+
+    /**
+     * API: Pindahkan Berkas ke Folder Lain (Drag & Drop Move)
+     */
+    public function moveFile(Request $request, $id)
+    {
+        $targetFolderId = $request->input('target_folder_id');
+        if ($targetFolderId === 'null' || empty($targetFolderId)) {
+            $targetFolderId = null;
+        }
+
+        $archive = DigitalArchive::findOrFail($id);
+        $archive->update(['folder_id' => $targetFolderId]);
+
+        $destName = $targetFolderId ? (ArchiveFolder::find($targetFolderId)->name ?? 'Folder') : 'Arsip Utama';
+
+        return response()->json([
+            'success' => true,
+            'message' => "Dokumen \"{$archive->title}\" berhasil dipindahkan ke {$destName}.",
+            'archive' => $archive,
+            'stats' => $this->calculateStats(),
+        ]);
+    }
+
+    /**
+     * API: Hapus Berkas via AJAX
+     */
+    public function deleteFileAjax($id)
+    {
+        $archive = DigitalArchive::findOrFail($id);
+        $no = $archive->archive_no;
+        $archive->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Dokumen {$no} berhasil dihapus dari arsip.",
+            'stats' => $this->calculateStats(),
+        ]);
+    }
+
+    /**
+     * API: Ambil Statistik Mini Dashboard Real-Time
+     */
+    public function stats()
+    {
+        return response()->json([
+            'success' => true,
+            'stats' => $this->calculateStats(),
+        ]);
+    }
+
+    /**
+     * Hapus Arsip Konvensional (Fallback)
      */
     public function destroy($id)
     {

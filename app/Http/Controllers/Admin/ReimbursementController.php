@@ -84,6 +84,31 @@ class ReimbursementController extends Controller
     }
 
     /**
+     * API: Ambil Data Statistik Mini Dashboard Real-time
+     */
+    public function stats()
+    {
+        $reimbursed = Reimbursement::where('type', 'reimbursement')->whereIn('status', ['paid', 'settled'])->sum('amount_approved');
+        $advances = Reimbursement::where('type', 'cash_advance')->whereIn('status', ['approved', 'paid'])->sum('amount_approved');
+        $pending = Reimbursement::where('status', 'submitted')->count();
+        $unsettled = Reimbursement::where('type', 'cash_advance')->whereIn('status', ['approved', 'paid'])->count();
+        $total = Reimbursement::count();
+
+        return response()->json([
+            'success' => true,
+            'stats' => [
+                'total_reimbursed' => $reimbursed,
+                'total_reimbursed_formatted' => 'Rp ' . number_format($reimbursed, 0, ',', '.'),
+                'active_advances' => $advances,
+                'active_advances_formatted' => 'Rp ' . number_format($advances, 0, ',', '.'),
+                'pending_count' => $pending,
+                'unsettled_advances_count' => $unsettled,
+                'total_transactions' => $total,
+            ],
+        ]);
+    }
+
+    /**
      * Simpan Pengajuan Reimbursement / Kasbon Baru
      */
     public function store(Request $request)

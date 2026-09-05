@@ -378,25 +378,51 @@
                 >{{ $settings['hero_subtitle'] ?? '' }}</textarea>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
-                <div class="space-y-1.5">
-                    <label class="block text-xs font-bold text-slate-700 uppercase">Upload Gambar Banner Hero (Base64)</label>
+            <!-- Hero Image Drag and Drop & Input Controls -->
+            <div class="space-y-3 pt-2">
+                <div class="flex items-center justify-between">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">1. Unggah Gambar Banner Hero Baru (Drag & Drop atau Klik)</label>
+                    <button 
+                        type="button" 
+                        onclick="resetHeroImageToDefault()" 
+                        class="text-[10px] font-bold text-slate-500 hover:text-japan-600 transition underline decoration-slate-300"
+                        title="Kembalikan ke gambar banner default"
+                    >
+                        Gunakan Foto Default
+                    </button>
+                </div>
+
+                <div 
+                    id="heroDropZone" 
+                    class="border-2 border-dashed border-slate-200 hover:border-japan-400 bg-slate-50/60 hover:bg-japan-50/20 rounded-2xl p-5 transition text-center cursor-pointer relative group"
+                >
                     <input 
                         type="file" 
+                        id="heroFileInput"
                         name="hero_image_file" 
                         accept="image/*" 
-                        onchange="previewImageFile(this, 'previewHeroImg')"
-                        class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:outline-none focus:border-japan-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-japan-600 file:text-white hover:file:bg-japan-700 cursor-pointer"
+                        onchange="handleHeroFileSelect(this)"
+                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     >
+                    <div class="flex flex-col items-center justify-center space-y-1.5 pointer-events-none">
+                        <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 text-japan-600 flex items-center justify-center group-hover:scale-110 transition shadow-2xs">
+                            <i data-lucide="upload-cloud" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-700">Tarik & Lepaskan gambar banner di sini, atau <span class="text-japan-600 underline">pilih berkas</span></p>
+                            <p id="heroFileFeedback" class="text-[10px] text-slate-400 mt-0.5">Format JPG/PNG/WEBP (Otomatis dikonversi ke Base64 berkualitas tinggi)</p>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="space-y-1.5">
-                    <label class="block text-xs font-bold text-slate-700 uppercase">Atau URL Gambar Hero</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase">2. Atau Masukkan URL Gambar Hero Manual</label>
                     <input 
                         type="text" 
                         id="inputHeroImage"
                         name="hero_image" 
                         value="{{ $settings['hero_image'] ?? '' }}" 
-                        placeholder="https://images.unsplash.com/..." 
+                        placeholder="https://images.unsplash.com/... atau data:image/jpeg;base64,..." 
                         class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600 font-mono"
                     >
                 </div>
@@ -921,36 +947,108 @@
 </form>
 
 <script>
+    /**
+     * Client-Side Image Compressor & Base64 Synchronizer
+     * Menghasilkan Data URI Base64 berkualitas tinggi (<600KB) langsung di browser,
+     * sehingga dijamin lolos batas upload PHP dan seketika tampil di live preview dan halaman depan.
+     */
+    function compressAndConvertImage(file, maxWidth, quality, callback) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const isPng = file.type === 'image/png';
+                const outputType = isPng ? 'image/png' : 'image/jpeg';
+                const base64Data = canvas.toDataURL(outputType, quality);
+                callback(base64Data, Math.round(base64Data.length / 1024));
+            };
+            img.onerror = function() {
+                // Fallback jika canvas gagal render
+                callback(e.target.result, Math.round(file.size / 1024));
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
     function previewImageFile(input, targetImgId) {
-        if (input.files && input.files[0]) {
+        if (input && input.files && input.files[0]) {
             const file = input.files[0];
-            const reader = new FileReader();
-            reader.onload = function(e) {
+            const isLogo = targetImgId === 'logoPreviewImg';
+            const isHero = targetImgId === 'previewHeroImg';
+
+            const feedbackEl = isLogo ? document.getElementById('logoFileFeedback') : document.getElementById('heroFileFeedback');
+            if (feedbackEl) {
+                feedbackEl.innerHTML = `<span class="text-japan-600 font-bold animate-pulse">⏳ Memproses & mengompresi gambar...</span>`;
+            }
+
+            compressAndConvertImage(file, isLogo ? 800 : 1600, 0.85, function(base64Uri, sizeKb) {
                 const img = document.getElementById(targetImgId);
-                const defaultBadge = document.getElementById('logoDefaultBadge');
                 if (img) {
-                    img.src = e.target.result;
+                    img.src = base64Uri;
                     img.classList.remove('hidden');
                 }
-                if (defaultBadge) {
-                    defaultBadge.classList.add('hidden');
-                }
-                if (targetImgId === 'logoPreviewImg') {
+
+                if (isLogo) {
+                    const defaultBadge = document.getElementById('logoDefaultBadge');
+                    if (defaultBadge) defaultBadge.classList.add('hidden');
+                    const textInput = document.getElementById('siteLogoTextInput');
+                    if (textInput) textInput.value = base64Uri;
                     const headerBox = document.getElementById('headerSimBox');
                     if (headerBox) {
-                        headerBox.innerHTML = `<img src="${e.target.result}" class="h-full w-full object-contain" alt="Logo">`;
+                        headerBox.innerHTML = `<img src="${base64Uri}" class="h-full w-full object-contain" alt="Logo">`;
                     }
-                    const feedback = document.getElementById('logoFileFeedback');
-                    if (feedback) {
-                        const sizeKb = Math.round(file.size / 1024);
-                        feedback.innerHTML = `<span class="text-emerald-600 font-bold">✓ Terpilih: ${file.name} (${sizeKb} KB)</span>`;
+                    if (feedbackEl) {
+                        feedbackEl.innerHTML = `<span class="text-emerald-600 font-bold">✓ Siap Disimpan: ${file.name} (Optimal: ~${sizeKb} KB)</span>`;
+                    }
+                } else if (isHero) {
+                    const heroTextInput = document.getElementById('inputHeroImage');
+                    if (heroTextInput) heroTextInput.value = base64Uri;
+                    if (feedbackEl) {
+                        feedbackEl.innerHTML = `<span class="text-emerald-600 font-bold">✓ Siap Disimpan: ${file.name} (Optimal: ~${sizeKb} KB)</span>`;
                     }
                 }
+
                 if (typeof checkFormDirty === 'function') {
                     checkFormDirty();
                 }
-            };
-            reader.readAsDataURL(file);
+            });
+        }
+    }
+
+    function handleHeroFileSelect(input) {
+        previewImageFile(input, 'previewHeroImg');
+    }
+
+    function resetHeroImageToDefault() {
+        const defaultHeroUrl = 'https://images.unsplash.com/photo-1528164344705-475426879c0d?auto=format&fit=crop&w=900&q=80';
+        const heroTextInput = document.getElementById('inputHeroImage');
+        const heroFileInput = document.getElementById('heroFileInput');
+        const previewImg = document.getElementById('previewHeroImg');
+        const feedbackEl = document.getElementById('heroFileFeedback');
+
+        if (heroTextInput) heroTextInput.value = defaultHeroUrl;
+        if (heroFileInput) heroFileInput.value = '';
+        if (previewImg) previewImg.src = defaultHeroUrl;
+        if (feedbackEl) {
+            feedbackEl.innerHTML = `<span class="text-slate-500 font-semibold">Menggunakan foto Jepang resmi default. Klik Simpan untuk menerapkan.</span>`;
+        }
+        if (typeof checkFormDirty === 'function') {
+            checkFormDirty();
         }
     }
 
@@ -972,15 +1070,16 @@
             defaultBadge.classList.remove('hidden');
         }
         if (headerBox) {
-            headerBox.innerHTML = `<span id="headerSimKanji">友</span>`;
+            headerBox.innerHTML = '<span id="headerSimKanji">友</span>';
         }
         if (feedback) {
-            feedback.innerHTML = `<span class="text-amber-600 font-bold">✓ Menggunakan Badge Default Kanji 友</span>`;
+            feedback.innerHTML = '<span class="text-slate-500 font-semibold">Menggunakan badge kanji default 友. Klik Simpan untuk menerapkan.</span>';
         }
         if (typeof checkFormDirty === 'function') {
             checkFormDirty();
         }
     }
+
 
     /* ==========================================================
        POP-UP TICKER (SOCIAL PROOF) INTERACTIVE REPEATER
@@ -1342,34 +1441,36 @@
     }
 
     /* ==========================================================
-       IMAGE FILE PREVIEW (BASE64 LIVE PREVIEW)
+       DRAG AND DROP HERO BANNER UPLOAD ZONE
        ========================================================== */
-    function previewImageFile(input, previewId) {
-        if (input && input.files && input.files[0]) {
-            const file = input.files[0];
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const targetImg = document.getElementById(previewId);
-                if (targetImg) {
-                    targetImg.src = e.target.result;
-                }
-                if (previewId === 'previewHeroImg') {
-                    const heroUrlInput = document.getElementById('inputHeroImage');
-                    if (heroUrlInput) {
-                        heroUrlInput.value = ''; // Kosongkan text field agar upload file diutamakan
-                    }
-                } else if (previewId === 'logoPreviewImg') {
-                    const logoUrlInput = document.getElementById('inputSiteLogo');
-                    if (logoUrlInput) {
-                        logoUrlInput.value = '';
-                    }
-                }
-                if (typeof checkFormDirty === 'function') {
-                    checkFormDirty();
-                }
-            };
-            reader.readAsDataURL(file);
-        }
+    function initHeroDropZone() {
+        const dropZone = document.getElementById('heroDropZone');
+        const fileInput = document.getElementById('heroFileInput');
+        if (!dropZone || !fileInput) return;
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('border-japan-500', 'bg-japan-50/70', 'ring-2', 'ring-japan-200');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('border-japan-500', 'bg-japan-50/70', 'ring-2', 'ring-japan-200');
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            if (dt && dt.files && dt.files.length > 0) {
+                fileInput.files = dt.files;
+                previewImageFile(fileInput, 'previewHeroImg');
+            }
+        }, false);
     }
 
     /* ==========================================================
@@ -1652,6 +1753,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         renderTickerRows();
         initLogoDropZone();
+        initHeroDropZone();
         initHeroLivePreview();
         initStatsLivePreview();
         initAnnouncementAndBrandLivePreview();

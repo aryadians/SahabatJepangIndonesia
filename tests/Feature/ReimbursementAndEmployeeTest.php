@@ -264,4 +264,102 @@ class ReimbursementAndEmployeeTest extends TestCase
         $guestRes->assertSee('Osaka Precision Machinery Co.');
         $guestRes->assertSee('6 Kuota');
     }
+
+    public function test_windows_file_explorer_ajax_endpoints(): void
+    {
+        $this->actingAs($this->admin);
+
+        // 1. Create Folder
+        $folderRes = $this->postJson('/admin/digital-archives/folders', [
+            'name' => 'MoU Jawa Tengah 2026',
+            'parent_id' => null,
+            'color' => 'blue',
+        ]);
+        $folderRes->assertOk()->assertJson(['success' => true]);
+        $folderId = $folderRes->json('folder.id');
+        $this->assertDatabaseHas('archive_folders', ['name' => 'MoU Jawa Tengah 2026']);
+
+        // 2. Rename Folder
+        $renameFolderRes = $this->putJson("/admin/digital-archives/folders/{$folderId}/rename", [
+            'name' => 'MoU Jawa Tengah & DIY 2026',
+        ]);
+        $renameFolderRes->assertOk()->assertJson(['success' => true]);
+        $this->assertDatabaseHas('archive_folders', ['name' => 'MoU Jawa Tengah & DIY 2026']);
+
+        // 3. Upload File via AJAX into Folder
+        $dummyFile = UploadedFile::fake()->image('mou_smk1.jpg', 640, 480);
+        $uploadRes = $this->postJson('/admin/digital-archives/upload-ajax', [
+            'folder_id' => $folderId,
+            'category' => 'dokumen_mou',
+            'file' => $dummyFile,
+        ]);
+        $uploadRes->assertOk()->assertJson(['success' => true]);
+        $fileId = $uploadRes->json('archive.id');
+        $this->assertDatabaseHas('digital_archives', [
+            'id' => $fileId,
+            'folder_id' => $folderId,
+            'file_name' => 'mou_smk1.jpg',
+        ]);
+
+        // 4. Explorer Data API
+        $dataRes = $this->getJson("/admin/digital-archives/explorer-data?folder_id={$folderId}");
+        $dataRes->assertOk()->assertJson(['success' => true]);
+        $this->assertCount(1, $dataRes->json('files'));
+
+        // 5. Rename File
+        $renameFileRes = $this->putJson("/admin/digital-archives/{$fileId}/rename", [
+            'title' => 'MoU Resmi SMK 1 Semarang Final',
+        ]);
+        $renameFileRes->assertOk()->assertJson(['success' => true]);
+        $this->assertDatabaseHas('digital_archives', [
+            'id' => $fileId,
+            'title' => 'MoU Resmi SMK 1 Semarang Final',
+        ]);
+
+        // 6. Delete File
+        $deleteFileRes = $this->deleteJson("/admin/digital-archives/{$fileId}/ajax");
+        $deleteFileRes->assertOk()->assertJson(['success' => true]);
+        $this->assertDatabaseMissing('digital_archives', ['id' => $fileId]);
+
+        // 7. Delete Folder
+        $delFolderRes = $this->deleteJson("/admin/digital-archives/folders/{$folderId}");
+        $delFolderRes->assertOk()->assertJson(['success' => true]);
+        $this->assertDatabaseMissing('archive_folders', ['id' => $folderId]);
+    }
+
+    public function test_reimbursement_and_archive_stats_endpoints(): void
+    {
+        $this->actingAs($this->admin);
+
+        // Test Reimbursements Stats API
+        $rmbStatsRes = $this->getJson('/admin/reimbursements/stats');
+        $rmbStatsRes->assertOk()->assertJson(['success' => true]);
+        $rmbStatsRes->assertJsonStructure([
+            'success',
+            'stats' => [
+                'total_reimbursed',
+                'total_reimbursed_formatted',
+                'active_advances',
+                'active_advances_formatted',
+                'pending_count',
+                'unsettled_advances_count',
+                'total_transactions',
+            ]
+        ]);
+
+        // Test Digital Archives Stats API
+        $arcStatsRes = $this->getJson('/admin/digital-archives/stats');
+        $arcStatsRes->assertOk()->assertJson(['success' => true]);
+        $arcStatsRes->assertJsonStructure([
+            'success',
+            'stats' => [
+                'total_files',
+                'total_folders',
+                'total_receipts',
+                'total_mou',
+                'total_base64_chars',
+                'total_size_mb',
+            ]
+        ]);
+    }
 }

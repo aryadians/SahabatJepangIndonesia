@@ -48,6 +48,13 @@ class DashboardController extends Controller
             'pipe_passed' => \App\Models\Student::where('status', 'passed_interview')->count(),
             'pipe_departed' => \App\Models\Student::where('status', 'departed')->count(),
             'pipe_graduated' => \App\Models\Student::where('status', 'graduated')->count(),
+            // Keuangan Reimburse & Arsip Digital
+            'reimbursements_pending' => \App\Models\Reimbursement::where('status', 'submitted')->count(),
+            'reimbursements_paid' => \App\Models\Reimbursement::where('type', 'reimbursement')->whereIn('status', ['paid', 'settled'])->sum('amount_approved'),
+            'advances_active' => \App\Models\Reimbursement::where('type', 'cash_advance')->whereIn('status', ['approved', 'paid'])->sum('amount_approved'),
+            'unsettled_advances' => \App\Models\Reimbursement::where('type', 'cash_advance')->whereIn('status', ['approved', 'paid'])->count(),
+            'archives_total' => \App\Models\DigitalArchive::count(),
+            'folders_total' => \App\Models\ArchiveFolder::count(),
         ];
 
         // 6-Month Intake Trend (DB agnostic using Carbon)

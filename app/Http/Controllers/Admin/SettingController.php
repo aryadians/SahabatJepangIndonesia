@@ -89,11 +89,12 @@ class SettingController extends Controller
         \Illuminate\Support\Facades\Cache::forget('site_settings_all');
         try {
             \Illuminate\Support\Facades\Cache::flush();
+            \Illuminate\Support\Facades\Artisan::call('view:clear');
         } catch (\Throwable $e) {
             // ignore if redis/tag cache not supporting full flush
         }
 
-        return back()->with('success', 'Pengaturan website, banner hero, dan logo berhasil disimpan dan otomatis disinkronkan ke halaman utama.');
+        return back()->with('success', 'Pengaturan website, banner hero, dan logo berhasil disimpan dan seketika disinkronkan ke seluruh halaman publik.');
     }
 
     /**

@@ -362,6 +362,71 @@
         </div>
     </div>
 
+    <!-- 4b. Executive Operational Finance & Digital Archives (Reimbursement & Arsip Explorer) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Reimburse Dicairkan -->
+        <div class="bg-gradient-to-br from-white to-emerald-50/40 rounded-2xl p-4 border border-emerald-200/80 shadow-xs flex items-center justify-between hover:border-emerald-300 transition">
+            <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <p class="text-[11px] font-bold text-emerald-800 uppercase tracking-wider truncate">Reimburse Cair</p>
+                </div>
+                <h4 class="text-lg font-black text-slate-900 mt-1 truncate">Rp {{ number_format($counts['reimbursements_paid'], 0, ',', '.') }}</h4>
+                <a href="{{ route('admin.reimbursements.index', ['type' => 'reimbursement']) }}" class="text-[11px] font-bold text-emerald-700 hover:underline inline-block mt-0.5">Kelola Reimburse &rarr;</a>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold shrink-0">
+                <i data-lucide="wallet" class="w-5 h-5"></i>
+            </div>
+        </div>
+
+        <!-- Uang Muka / Kasbon Berjalan -->
+        <div class="bg-gradient-to-br from-white to-purple-50/40 rounded-2xl p-4 border border-purple-200/80 shadow-xs flex items-center justify-between hover:border-purple-300 transition">
+            <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                    <p class="text-[11px] font-bold text-purple-800 uppercase tracking-wider truncate">Kasbon Dinas Aktif</p>
+                </div>
+                <h4 class="text-lg font-black text-purple-900 mt-1 truncate">Rp {{ number_format($counts['advances_active'], 0, ',', '.') }}</h4>
+                <a href="{{ route('admin.reimbursements.index', ['type' => 'cash_advance']) }}" class="text-[11px] font-bold text-purple-700 hover:underline inline-block mt-0.5">{{ $counts['unsettled_advances'] }} Belum SPJ &rarr;</a>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold shrink-0">
+                <i data-lucide="plane-takeoff" class="w-5 h-5"></i>
+            </div>
+        </div>
+
+        <!-- Verifikasi Menunggu -->
+        <div class="bg-gradient-to-br from-white to-amber-50/40 rounded-2xl p-4 border border-amber-200/80 shadow-xs flex items-center justify-between hover:border-amber-300 transition">
+            <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    <p class="text-[11px] font-bold text-amber-800 uppercase tracking-wider truncate">Klaim Menunggu</p>
+                </div>
+                <h4 class="text-lg font-black text-amber-900 mt-1 truncate">{{ $counts['reimbursements_pending'] }} Berkas</h4>
+                <a href="{{ route('admin.reimbursements.index', ['status' => 'submitted']) }}" class="text-[11px] font-bold text-amber-700 hover:underline inline-block mt-0.5">Verifikasi Segera &rarr;</a>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold shrink-0">
+                <i data-lucide="clock" class="w-5 h-5"></i>
+            </div>
+        </div>
+
+        <!-- Arsip Digital Explorer -->
+        <div class="bg-gradient-to-br from-white to-blue-50/40 rounded-2xl p-4 border border-blue-200/80 shadow-xs flex items-center justify-between hover:border-blue-300 transition">
+            <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <p class="text-[11px] font-bold text-blue-800 uppercase tracking-wider truncate">Arsip Explorer SPA</p>
+                </div>
+                <h4 class="text-lg font-black text-slate-900 mt-1 truncate">{{ $counts['archives_total'] }} Berkas</h4>
+                <a href="{{ route('admin.digital-archives.index') }}" class="text-[11px] font-bold text-blue-700 hover:underline inline-block mt-0.5">{{ $counts['folders_total'] }} Folder (Windows UI) &rarr;</a>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold shrink-0">
+                <i data-lucide="folder-git-2" class="w-5 h-5"></i>
+            </div>
+        </div>
+
+    </div>
+
     <!-- 3b. Executive PDF Export Quick Hub (Pusat Cetak Dokumen Resmi) -->
     <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-6 text-white shadow-md border border-slate-700/50 space-y-4">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-700/60 pb-3">
@@ -377,10 +442,10 @@
                     <p class="text-xs text-slate-400">Unduh atau cetak laporan resmi berstempel dan kop surat standar Kemnaker RI dalam format A4</p>
                 </div>
             </div>
-            <span class="text-[11px] text-slate-400 font-mono hidden sm:inline">5 Laporan Tersedia</span>
+            <span class="text-[11px] text-slate-400 font-mono hidden sm:inline">6 Laporan Tersedia</span>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             
             <!-- 1. PDF Buku Induk Siswa -->
             <a 
@@ -458,7 +523,7 @@
             <a 
                 href="{{ route('admin.teachers.export.pdf') }}" 
                 target="_blank"
-                class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/50 transition flex flex-col justify-between group space-y-2 col-span-2 sm:col-span-1"
+                class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/50 transition flex flex-col justify-between group space-y-2"
             >
                 <div class="flex items-center justify-between">
                     <span class="w-7 h-7 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-bold">
@@ -469,6 +534,24 @@
                 <div>
                     <p class="text-xs font-bold text-white group-hover:text-purple-400 transition">Dewan Sensei</p>
                     <p class="text-[10px] text-slate-400 mt-0.5 truncate">Instruktur JLPT N1/Native</p>
+                </div>
+            </a>
+
+            <!-- 6. PDF Rekapitulasi Reimburse & Kasbon SPJ -->
+            <a 
+                href="{{ route('admin.reimbursements.export.pdf') }}" 
+                target="_blank"
+                class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-sky-500/50 transition flex flex-col justify-between group space-y-2"
+            >
+                <div class="flex items-center justify-between">
+                    <span class="w-7 h-7 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-xs font-bold">
+                        <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
+                    </span>
+                    <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-P</span>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-white group-hover:text-sky-400 transition">Klaim Reimburse</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5 truncate">SPJ dinas & uang muka</p>
                 </div>
             </a>
 
