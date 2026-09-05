@@ -173,6 +173,19 @@
                     >
                 </div>
 
+                <!-- Sort Filter Dropdown -->
+                <select 
+                    id="explorerSortSelect" 
+                    onchange="onSortChange(this.value)"
+                    class="px-2.5 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:border-japan-500 shadow-2xs"
+                    title="Urutkan Berkas"
+                >
+                    <option value="date_desc">🕒 Terbaru</option>
+                    <option value="name_asc">🔤 Nama (A-Z)</option>
+                    <option value="name_desc">🔤 Nama (Z-A)</option>
+                    <option value="date_asc">⏳ Terlama</option>
+                </select>
+
                 <!-- View Toggle: Grid vs List -->
                 <div class="flex items-center bg-white border border-slate-200 rounded-xl p-0.5 shadow-2xs">
                     <button 
@@ -308,6 +321,8 @@
                 ondragover="handleCanvasDragOver(event)"
                 ondragleave="handleCanvasDragLeave(event)"
                 ondrop="handleCanvasDrop(event)"
+                oncontextmenu="handleCanvasContextMenu(event)"
+                onclick="handleCanvasClick(event)"
             >
                 <!-- Drag-over Drop Overlay -->
                 <div 
@@ -401,6 +416,7 @@
                 </span>
                 <span class="text-slate-300">|</span>
                 <span id="statusBarItems">0 item ditampilkan</span>
+                <span id="statusBarSelection" class="text-japan-600 font-bold hidden"></span>
             </div>
             <div class="flex items-center gap-3">
                 <span class="text-slate-400 font-mono">Format: Base64 LONGTEXT</span>
@@ -411,6 +427,87 @@
 
     </div>
 
+</div>
+
+<!-- Windows 11 Right-Click Context Menu -->
+<div id="explorerContextMenu" class="fixed z-[120] bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 shadow-2xl p-1.5 text-xs text-slate-700 min-w-[210px] hidden select-none animate-in fade-in zoom-in-95 duration-100">
+    <div id="contextFolderItems" class="space-y-0.5">
+        <button type="button" onclick="contextActionOpen()" class="w-full px-3 py-2 rounded-xl text-left font-bold hover:bg-slate-100 flex items-center justify-between group">
+            <span class="flex items-center gap-2">
+                <i data-lucide="folder-open" class="w-4 h-4 text-amber-500"></i>
+                <span>Buka Folder</span>
+            </span>
+            <span class="text-[10px] text-slate-400 font-mono">Enter</span>
+        </button>
+        <button type="button" onclick="contextActionRename()" class="w-full px-3 py-2 rounded-xl text-left font-semibold hover:bg-slate-100 flex items-center justify-between group">
+            <span class="flex items-center gap-2">
+                <i data-lucide="edit-3" class="w-4 h-4 text-blue-500"></i>
+                <span>Ganti Nama</span>
+            </span>
+            <span class="text-[10px] text-slate-400 font-mono">F2</span>
+        </button>
+        <div class="h-px bg-slate-100 my-1"></div>
+        <button type="button" onclick="contextActionDelete()" class="w-full px-3 py-2 rounded-xl text-left font-semibold text-rose-600 hover:bg-rose-50 flex items-center justify-between group">
+            <span class="flex items-center gap-2">
+                <i data-lucide="trash-2" class="w-4 h-4 text-rose-500"></i>
+                <span>Hapus Folder</span>
+            </span>
+            <span class="text-[10px] text-rose-300 font-mono">Del</span>
+        </button>
+    </div>
+
+    <div id="contextFileItems" class="space-y-0.5">
+        <button type="button" onclick="contextActionOpen()" class="w-full px-3 py-2 rounded-xl text-left font-bold hover:bg-slate-100 flex items-center justify-between group">
+            <span class="flex items-center gap-2">
+                <i data-lucide="eye" class="w-4 h-4 text-japan-600"></i>
+                <span>Lihat / Preview</span>
+            </span>
+            <span class="text-[10px] text-slate-400 font-mono">Enter</span>
+        </button>
+        <button type="button" onclick="contextActionDownload()" class="w-full px-3 py-2 rounded-xl text-left font-semibold hover:bg-slate-100 flex items-center justify-between group">
+            <span class="flex items-center gap-2">
+                <i data-lucide="download" class="w-4 h-4 text-emerald-600"></i>
+                <span>Unduh Berkas</span>
+            </span>
+        </button>
+        <button type="button" onclick="contextActionMove()" class="w-full px-3 py-2 rounded-xl text-left font-semibold hover:bg-slate-100 flex items-center justify-between group">
+            <span class="flex items-center gap-2">
+                <i data-lucide="folder-input" class="w-4 h-4 text-amber-500"></i>
+                <span>Pindahkan ke Folder...</span>
+            </span>
+        </button>
+        <button type="button" onclick="contextActionRename()" class="w-full px-3 py-2 rounded-xl text-left font-semibold hover:bg-slate-100 flex items-center justify-between group">
+            <span class="flex items-center gap-2">
+                <i data-lucide="edit-3" class="w-4 h-4 text-blue-500"></i>
+                <span>Ganti Nama</span>
+            </span>
+            <span class="text-[10px] text-slate-400 font-mono">F2</span>
+        </button>
+        <div class="h-px bg-slate-100 my-1"></div>
+        <button type="button" onclick="contextActionDelete()" class="w-full px-3 py-2 rounded-xl text-left font-semibold text-rose-600 hover:bg-rose-50 flex items-center justify-between group">
+            <span class="flex items-center gap-2">
+                <i data-lucide="trash-2" class="w-4 h-4 text-rose-500"></i>
+                <span>Hapus Berkas</span>
+            </span>
+            <span class="text-[10px] text-rose-300 font-mono">Del</span>
+        </button>
+    </div>
+
+    <div id="contextCanvasItems" class="space-y-0.5">
+        <button type="button" onclick="promptCreateFolder(); hideContextMenu();" class="w-full px-3 py-2 rounded-xl text-left font-semibold hover:bg-slate-100 flex items-center gap-2">
+            <i data-lucide="folder-plus" class="w-4 h-4 text-amber-500"></i>
+            <span>Folder Baru</span>
+        </button>
+        <button type="button" onclick="document.getElementById('explorerFileInput').click(); hideContextMenu();" class="w-full px-3 py-2 rounded-xl text-left font-semibold hover:bg-slate-100 flex items-center gap-2">
+            <i data-lucide="upload-cloud" class="w-4 h-4 text-japan-600"></i>
+            <span>Unggah Berkas</span>
+        </button>
+        <div class="h-px bg-slate-100 my-1"></div>
+        <button type="button" onclick="loadExplorerData(currentFolderId); hideContextMenu();" class="w-full px-3 py-2 rounded-xl text-left font-semibold hover:bg-slate-100 flex items-center gap-2">
+            <i data-lucide="rotate-cw" class="w-4 h-4 text-slate-500"></i>
+            <span>Muat Ulang (Refresh)</span>
+        </button>
+    </div>
 </div>
 
 <!-- Lightbox Zoom & Document Preview Modal -->
@@ -641,8 +738,11 @@
     let currentCategory = 'all';
     let currentSearchTerm = '';
     let currentViewMode = 'grid'; // 'grid' or 'list'
+    let currentSortMode = 'date_desc';
     let currentData = { folders: [], files: [], tree: [], stats: {} };
     let searchDebounceTimeout = null;
+    let contextTarget = null;
+    let selectedItem = null;
 
     // 1. Load Folder Data via AJAX
     function loadExplorerData(folderId = null) {
@@ -667,7 +767,8 @@
             currentData = res;
             renderBreadcrumbs(res.breadcrumbs);
             renderFolderTree(res.tree, folderId);
-            renderContent(res.folders, res.files);
+            clearSelection();
+            applySortingAndRender();
             updateMiniDashboard(res.stats);
             if (statusEl) statusEl.textContent = 'File Explorer Siap';
         })
@@ -676,6 +777,201 @@
             if (statusEl) statusEl.textContent = 'Gagal memuat berkas';
         });
     }
+
+    // 1b. Sorting Handlers
+    function onSortChange(val) {
+        currentSortMode = val;
+        applySortingAndRender();
+    }
+
+    function applySortingAndRender() {
+        if (!currentData || !currentData.folders || !currentData.files) return;
+        let sortedFolders = [...currentData.folders];
+        let sortedFiles = [...currentData.files];
+
+        if (currentSortMode === 'name_asc') {
+            sortedFolders.sort((a, b) => a.name.localeCompare(b.name));
+            sortedFiles.sort((a, b) => a.title.localeCompare(b.title));
+        } else if (currentSortMode === 'name_desc') {
+            sortedFolders.sort((a, b) => b.name.localeCompare(a.name));
+            sortedFiles.sort((a, b) => b.title.localeCompare(a.title));
+        } else if (currentSortMode === 'date_asc') {
+            sortedFolders.sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
+            sortedFiles.sort((a, b) => new Date(a.document_date || a.created_at || 0) - new Date(b.document_date || b.created_at || 0));
+        } else { // 'date_desc'
+            sortedFolders.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+            sortedFiles.sort((a, b) => new Date(b.document_date || b.created_at || 0) - new Date(a.document_date || a.created_at || 0));
+        }
+
+        renderContent(sortedFolders, sortedFiles);
+    }
+
+    // 1c. Selection Management
+    function selectExplorerItem(type, data, el) {
+        clearSelection();
+        selectedItem = { type, id: data.id, name: data.name, title: data.title, data, element: el };
+        el.classList.add('ring-2', 'ring-blue-500', 'bg-blue-50/50', 'shadow-md');
+
+        const selStatus = document.getElementById('statusBarSelection');
+        if (selStatus) {
+            selStatus.textContent = `| 1 ${type === 'folder' ? 'folder' : 'berkas'} dipilih: "${data.name || data.title}"`;
+            selStatus.classList.remove('hidden');
+        }
+    }
+
+    function clearSelection() {
+        document.querySelectorAll('.ring-blue-500').forEach(el => {
+            el.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-50/50', 'shadow-md');
+        });
+        selectedItem = null;
+        const selStatus = document.getElementById('statusBarSelection');
+        if (selStatus) selStatus.classList.add('hidden');
+    }
+
+    // 1d. Windows 11 Context Menu Handlers
+    function showContextMenu(e, type, data = null) {
+        e.preventDefault();
+        e.stopPropagation();
+        contextTarget = { type, data };
+
+        const menu = document.getElementById('explorerContextMenu');
+        const folderItems = document.getElementById('contextFolderItems');
+        const fileItems = document.getElementById('contextFileItems');
+        const canvasItems = document.getElementById('contextCanvasItems');
+
+        if (folderItems) folderItems.classList.toggle('hidden', type !== 'folder');
+        if (fileItems) fileItems.classList.toggle('hidden', type !== 'file');
+        if (canvasItems) canvasItems.classList.toggle('hidden', type !== 'canvas');
+
+        if (!menu) return;
+        menu.classList.remove('hidden');
+
+        // Position within viewport boundaries
+        const menuWidth = 220;
+        const menuHeight = 240;
+        let x = e.clientX;
+        let y = e.clientY;
+
+        if (x + menuWidth > window.innerWidth) {
+            x = window.innerWidth - menuWidth - 15;
+        }
+        if (y + menuHeight > window.innerHeight) {
+            y = window.innerHeight - menuHeight - 15;
+        }
+
+        menu.style.left = `${Math.max(10, x)}px`;
+        menu.style.top = `${Math.max(10, y)}px`;
+
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function hideContextMenu() {
+        const menu = document.getElementById('explorerContextMenu');
+        if (menu) menu.classList.add('hidden');
+    }
+
+    function handleCanvasContextMenu(e) {
+        if (e.target.closest('[data-explorer-item]')) return;
+        showContextMenu(e, 'canvas');
+    }
+
+    function handleCanvasClick(e) {
+        if (e.target.closest('[data-explorer-item]')) return;
+        clearSelection();
+    }
+
+    function contextActionOpen() {
+        hideContextMenu();
+        if (!contextTarget || !contextTarget.data) return;
+        if (contextTarget.type === 'folder') {
+            loadExplorerData(contextTarget.data.id);
+        } else if (contextTarget.type === 'file') {
+            openExplorerPreview(contextTarget.data);
+        }
+    }
+
+    function contextActionRename() {
+        hideContextMenu();
+        if (!contextTarget || !contextTarget.data) return;
+        if (contextTarget.type === 'folder') {
+            promptRenameFolder(contextTarget.data.id, contextTarget.data.name);
+        } else if (contextTarget.type === 'file') {
+            promptRenameFile(contextTarget.data.id, contextTarget.data.title);
+        }
+    }
+
+    function contextActionDelete() {
+        hideContextMenu();
+        if (!contextTarget || !contextTarget.data) return;
+        if (contextTarget.type === 'folder') {
+            confirmDeleteFolder(contextTarget.data.id, contextTarget.data.name);
+        } else if (contextTarget.type === 'file') {
+            confirmDeleteFile(contextTarget.data.id, contextTarget.data.title);
+        }
+    }
+
+    function contextActionDownload() {
+        hideContextMenu();
+        if (!contextTarget || !contextTarget.data || contextTarget.type !== 'file') return;
+        const a = document.createElement('a');
+        a.href = contextTarget.data.file_base64;
+        a.download = contextTarget.data.file_name || `${contextTarget.data.title}.jpg`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    }
+
+    function contextActionMove() {
+        hideContextMenu();
+        if (!contextTarget || !contextTarget.data || contextTarget.type !== 'file') return;
+        openMoveModal(contextTarget.data.id, contextTarget.data.title);
+    }
+
+    // 1e. Global Keyboard Shortcuts & Document Listeners
+    document.addEventListener('keydown', (e) => {
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
+
+        if (e.key === 'Escape') {
+            hideContextMenu();
+            closeExplorerPreview();
+            closeStorageConfigModal();
+            clearSelection();
+        } else if (e.key === 'F2') {
+            if (selectedItem) {
+                e.preventDefault();
+                if (selectedItem.type === 'folder') {
+                    promptRenameFolder(selectedItem.id, selectedItem.name);
+                } else if (selectedItem.type === 'file') {
+                    promptRenameFile(selectedItem.id, selectedItem.title);
+                }
+            }
+        } else if (e.key === 'Delete') {
+            if (selectedItem) {
+                e.preventDefault();
+                if (selectedItem.type === 'folder') {
+                    confirmDeleteFolder(selectedItem.id, selectedItem.name);
+                } else if (selectedItem.type === 'file') {
+                    confirmDeleteFile(selectedItem.id, selectedItem.title);
+                }
+            }
+        } else if (e.key === 'Enter') {
+            if (selectedItem) {
+                e.preventDefault();
+                if (selectedItem.type === 'folder') {
+                    loadExplorerData(selectedItem.id);
+                } else if (selectedItem.type === 'file') {
+                    openExplorerPreview(selectedItem.data);
+                }
+            }
+        }
+    });
+
+    // Hide context menu when clicking anywhere outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('#explorerContextMenu')) {
+            hideContextMenu();
+        }
+    });
 
     // 2. Render Breadcrumbs
     function renderBreadcrumbs(crumbs) {
@@ -782,12 +1078,26 @@
             folders.forEach(f => {
                 const card = document.createElement('div');
                 card.className = 'p-3.5 rounded-2xl bg-amber-50/50 hover:bg-amber-100/70 border border-amber-200/80 transition cursor-pointer flex items-center justify-between group shadow-2xs hover:shadow hover:-translate-y-0.5 select-none relative';
+                card.setAttribute('data-explorer-item', 'true');
                 card.setAttribute('ondragover', 'handleFolderDragOver(event)');
                 card.setAttribute('ondragleave', 'handleFolderDragLeave(event)');
                 card.setAttribute('ondrop', `handleFolderDrop(event, ${f.id})`);
                 
+                card.onclick = (e) => {
+                    e.stopPropagation();
+                    selectExplorerItem('folder', f, card);
+                };
+                card.ondblclick = (e) => {
+                    e.stopPropagation();
+                    loadExplorerData(f.id);
+                };
+                card.oncontextmenu = (e) => {
+                    selectExplorerItem('folder', f, card);
+                    showContextMenu(e, 'folder', f);
+                };
+
                 card.innerHTML = `
-                    <div class="flex items-center gap-2.5 min-w-0 flex-1" onclick="loadExplorerData(${f.id})">
+                    <div class="flex items-center gap-2.5 min-w-0 flex-1">
                         <div class="w-9 h-9 rounded-xl bg-amber-400 text-white flex items-center justify-center shadow-xs flex-shrink-0">
                             <i data-lucide="folder" class="w-5 h-5 fill-white/80"></i>
                         </div>
@@ -796,11 +1106,11 @@
                             <p class="text-[10px] text-slate-500 font-medium">${f.archives_count || 0} berkas</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition flex-shrink-0">
-                        <button type="button" onclick="event.stopPropagation(); promptRenameFolder(${f.id}, '${addslashes(f.name)}')" class="p-1 text-slate-400 hover:text-amber-700" title="Ganti Nama">
+                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition flex-shrink-0" onclick="event.stopPropagation()">
+                        <button type="button" onclick="promptRenameFolder(${f.id}, '${addslashes(f.name)}')" class="p-1 text-slate-400 hover:text-amber-700" title="Ganti Nama (F2)">
                             <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
                         </button>
-                        <button type="button" onclick="event.stopPropagation(); confirmDeleteFolder(${f.id}, '${addslashes(f.name)}')" class="p-1 text-slate-400 hover:text-rose-600" title="Hapus Folder">
+                        <button type="button" onclick="confirmDeleteFolder(${f.id}, '${addslashes(f.name)}')" class="p-1 text-slate-400 hover:text-rose-600" title="Hapus Folder (Del)">
                             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
@@ -818,9 +1128,21 @@
             // 1. Grid Card View
             const card = document.createElement('div');
             card.className = 'bg-white rounded-2xl border border-slate-200/90 hover:border-blue-400 shadow-sm hover:shadow-md transition flex flex-col justify-between overflow-hidden group cursor-pointer relative';
+            card.setAttribute('data-explorer-item', 'true');
             card.draggable = true;
             card.ondragstart = (e) => handleFileDragStart(e, file.id, file.title);
-            card.onclick = () => openExplorerPreview(file);
+            card.onclick = (e) => {
+                e.stopPropagation();
+                selectExplorerItem('file', file, card);
+            };
+            card.ondblclick = (e) => {
+                e.stopPropagation();
+                openExplorerPreview(file);
+            };
+            card.oncontextmenu = (e) => {
+                selectExplorerItem('file', file, card);
+                showContextMenu(e, 'file', file);
+            };
 
             const isImg = file.is_image;
             const thumbHtml = isImg ? `
@@ -857,13 +1179,13 @@
                     <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
                         <span>${file.document_date}</span>
                         <div class="flex items-center gap-1.5" onclick="event.stopPropagation()">
-                            <button type="button" onclick="promptRenameFile(${file.id}, '${addslashes(file.title)}')" class="p-1 hover:text-blue-600" title="Ganti Judul">
+                            <button type="button" onclick="promptRenameFile(${file.id}, '${addslashes(file.title)}')" class="p-1 hover:text-blue-600" title="Ganti Judul (F2)">
                                 <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
                             </button>
                             <button type="button" onclick="openMoveModal(${file.id}, '${addslashes(file.title)}')" class="p-1 hover:text-amber-600" title="Pindah Folder">
                                 <i data-lucide="folder-input" class="w-3.5 h-3.5"></i>
                             </button>
-                            <button type="button" onclick="confirmDeleteFile(${file.id}, '${addslashes(file.title)}')" class="p-1 hover:text-rose-600" title="Hapus Berkas">
+                            <button type="button" onclick="confirmDeleteFile(${file.id}, '${addslashes(file.title)}')" class="p-1 hover:text-rose-600" title="Hapus Berkas (Del)">
                                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                             </button>
                         </div>
@@ -874,8 +1196,21 @@
 
             // 2. List Row View
             const row = document.createElement('tr');
-            row.className = 'hover:bg-blue-50/40 cursor-pointer transition';
-            row.onclick = () => openExplorerPreview(file);
+            row.className = 'hover:bg-blue-50/40 cursor-pointer transition select-none';
+            row.setAttribute('data-explorer-item', 'true');
+            row.onclick = (e) => {
+                e.stopPropagation();
+                selectExplorerItem('file', file, row);
+            };
+            row.ondblclick = (e) => {
+                e.stopPropagation();
+                openExplorerPreview(file);
+            };
+            row.oncontextmenu = (e) => {
+                selectExplorerItem('file', file, row);
+                showContextMenu(e, 'file', file);
+            };
+
             row.innerHTML = `
                 <td class="p-3 pl-4">
                     <div class="flex items-center gap-2.5">
@@ -897,13 +1232,13 @@
                 <td class="p-3 text-slate-500 font-mono">${file.file_size}</td>
                 <td class="p-3 pr-4 text-right" onclick="event.stopPropagation()">
                     <div class="inline-flex items-center gap-1">
-                        <button type="button" onclick="promptRenameFile(${file.id}, '${addslashes(file.title)}')" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-blue-600" title="Ganti Judul">
+                        <button type="button" onclick="promptRenameFile(${file.id}, '${addslashes(file.title)}')" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-blue-600" title="Ganti Judul (F2)">
                             <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
                         </button>
                         <button type="button" onclick="openMoveModal(${file.id}, '${addslashes(file.title)}')" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-amber-600" title="Pindah Folder">
                             <i data-lucide="folder-input" class="w-3.5 h-3.5"></i>
                         </button>
-                        <button type="button" onclick="confirmDeleteFile(${file.id}, '${addslashes(file.title)}')" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-rose-600" title="Hapus Berkas">
+                        <button type="button" onclick="confirmDeleteFile(${file.id}, '${addslashes(file.title)}')" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-rose-600" title="Hapus Berkas (Del)">
                             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
