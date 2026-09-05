@@ -7,6 +7,7 @@ use App\Models\ArchiveFolder;
 use App\Models\DigitalArchive;
 use App\Models\Reimbursement;
 use App\Models\Teacher;
+use App\Services\FonnteService;
 use App\Traits\UploadsImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -297,7 +298,132 @@ class ReimbursementController extends Controller
                 return back()->with('error', 'Aksi status tidak valid.');
         }
 
-        return back()->with('success', $msg);
+        // Otomatis kirim notifikasi WhatsApp via Fonnte jika diaktifkan
+        $waSentNote = '';
+        if ($request->input('notify_wa', '1') !== '0') {
+            $waRes = $this->sendStatusWhatsAppNotification($reimbursement, $action, [
+                'notes' => match($action) {
+                    'reject' => $request->input('reason'),
+                    'settle' => $request->input('settlement_notes'),
+                    default => null,
+                }
+            ]);
+            if (!empty($waRes['success'])) {
+                $waSentNote = ' • Notifikasi WhatsApp terkirim ke pemohon.';
+            }
+        }
+
+        return back()->with('success', $msg . $waSentNote);
+    }
+
+    /**
+     * Kirim Notifikasi Manual WhatsApp via Fonnte Gateway ke Pemohon
+     */
+    public function sendWaNotification(Request $request, $id)
+    {
+        $reimbursement = Reimbursement::findOrFail($id);
+        $targetPhone = $request->input('phone');
+        $customNotes = $request->input('custom_notes');
+
+        $result = $this->sendStatusWhatsAppNotification($reimbursement, 'manual_reminder', [
+            'target_phone' => $targetPhone,
+            'notes' => $customNotes
+        ]);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json($result);
+        }
+
+        if (!empty($result['success'])) {
+            return back()->with('success', "Notifikasi WhatsApp untuk {$reimbursement->reimbursement_no} berhasil dikirim.");
+        } elseif (!empty($result['manual_url'])) {
+            return redirect()->away($result['manual_url']);
+        }
+
+        return back()->with('error', $result['message'] ?? 'Gagal mengirim notifikasi WhatsApp.');
+    }
+
+    /**
+     * Kirim Notifikasi WhatsApp via Fonnte Gateway untuk Status / Pengajuan Reimbursement
+     */
+    public function sendStatusWhatsAppNotification(Reimbursement $reimbursement, string $event, array $extra = []): array
+    {
+        $phone = null;
+        $recipientName = $reimbursement->employee_name;
+
+        if ($reimbursement->teacher_id) {
+            $teacher = Teacher::find($reimbursement->teacher_id);
+            if ($teacher && !empty($teacher->phone)) {
+                $phone = $teacher->phone;
+                $recipientName = $teacher->name;
+            }
+        }
+
+        if (empty($phone) && !empty($extra['target_phone'])) {
+            $phone = $extra['target_phone'];
+        }
+
+        if (empty($phone)) {
+            return [
+                'success' => false, 
+                'message' => 'Nomor WhatsApp pemohon tidak ditemukan. Pastikan data karyawan memiliki nomor telepon.'
+            ];
+        }
+
+        $typeLabel = $reimbursement->type === 'cash_advance' ? 'Kasbon Dinas (Uang Muka)' : 'Klaim Reimbursement';
+        $nominal = number_format($reimbursement->amount_approved > 0 ? $reimbursement->amount_approved : $reimbursement->amount_requested, 0, ',', '.');
+        $statusText = match($reimbursement->status) {
+            'submitted' => 'Menunggu Verifikasi Bendahara ⏳',
+            'approved' => 'Telah Disetujui (Approved) ✅',
+            'paid' => 'Dana Telah Dicairkan / Dibayar 💰',
+            'settled' => 'Pertanggungjawaban Selesai (Settled SPJ) 📜',
+            'rejected' => 'Ditolak ❌',
+            default => ucfirst($reimbursement->status),
+        };
+
+        $waMessage = "Konnichiwa, Bapak/Ibu *{$recipientName}* 🌸\n\n";
+        $waMessage .= "Berikut adalah pembaruan status pengajuan dana operasional di *LPK Sahabat Jepang Indonesia*:\n\n";
+        $waMessage .= "📄 *No. Dokumen*: `{$reimbursement->reimbursement_no}`\n";
+        $waMessage .= "🏷️ *Tipe*: {$typeLabel}\n";
+        $waMessage .= "📌 *Perihal*: {$reimbursement->title}\n";
+        $waMessage .= "💵 *Nominal*: Rp {$nominal}\n";
+        $waMessage .= "🔄 *Status Terkini*: *{$statusText}*\n";
+
+        if (!empty($extra['notes'])) {
+            $waMessage .= "📝 *Catatan*: {$extra['notes']}\n";
+        }
+
+        if ($reimbursement->status === 'paid' && $reimbursement->type === 'cash_advance') {
+            $waMessage .= "\n⚠️ *Penting*: Harap simpan seluruh bukti/nota perjalanan dinas dan serahkan formulir SPJ paling lambat 3 hari setelah dinas selesai.\n";
+        } elseif ($reimbursement->status === 'settled') {
+            $diff = (float) $reimbursement->amount_diff;
+            if ($diff > 0) {
+                $waMessage .= "\nℹ️ Lembaga masih perlu mengganti kekurangan biaya sebesar Rp " . number_format($diff, 0, ',', '.') . ".\n";
+            } elseif ($diff < 0) {
+                $waMessage .= "\nℹ️ Terdapat sisa dana yang perlu dikembalikan ke kasir sebesar Rp " . number_format(abs($diff), 0, ',', '.') . ".\n";
+            }
+        }
+
+        $waMessage .= "\n_Pesan otomatis dikirim oleh Sistem Keuangan LPK Sahabat Jepang Indonesia._";
+
+        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+        if (str_starts_with($cleanPhone, '0')) {
+            $cleanPhone = '62' . substr($cleanPhone, 1);
+        }
+
+        if (FonnteService::isConfigured()) {
+            return FonnteService::send($cleanPhone, $waMessage, [
+                'type' => 'reimbursement_status',
+                'reimbursement_no' => $reimbursement->reimbursement_no,
+                'status' => $reimbursement->status,
+            ]);
+        }
+
+        return [
+            'success' => false,
+            'manual_url' => 'https://wa.me/' . $cleanPhone . '?text=' . urlencode($waMessage),
+            'message' => 'Fonnte belum diaktifkan, gunakan tautan WhatsApp manual.'
+        ];
     }
 
     /**

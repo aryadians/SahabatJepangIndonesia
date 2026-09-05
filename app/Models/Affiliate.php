@@ -53,4 +53,34 @@ class Affiliate extends Model
         $enrolledCount = $this->students()->count();
         return (float) ($enrolledCount * $this->reward_per_lead);
     }
+
+    /**
+     * Label Kategori Kemitraan SMK / BKK
+     */
+    public function getTypeLabelAttribute(): string
+    {
+        return match($this->type) {
+            'smk_bkk' => 'SMK & Bursa Kerja Khusus (BKK)',
+            'sekolah' => 'SMK / Sekolah Menengah',
+            'kampus_poltekkes' => 'Perguruan Tinggi / Poltekkes',
+            'guru_bk' => 'Guru BK (Bimbingan Konseling)',
+            'alumni' => 'Ikatan Alumni Jepang',
+            default => 'Komunitas & Umum',
+        };
+    }
+
+    /**
+     * Badge visual warna kategori
+     */
+    public function getTypeBadgeAttribute(): array
+    {
+        return match($this->type) {
+            'smk_bkk' => ['bg' => 'bg-indigo-100 text-indigo-800 border-indigo-200', 'icon' => 'school'],
+            'sekolah' => ['bg' => 'bg-blue-100 text-blue-800 border-blue-200', 'icon' => 'building-2'],
+            'kampus_poltekkes' => ['bg' => 'bg-emerald-100 text-emerald-800 border-emerald-200', 'icon' => 'graduation-cap'],
+            'guru_bk' => ['bg' => 'bg-purple-100 text-purple-800 border-purple-200', 'icon' => 'user-check'],
+            'alumni' => ['bg' => 'bg-amber-100 text-amber-800 border-amber-200', 'icon' => 'award'],
+            default => ['bg' => 'bg-slate-100 text-slate-800 border-slate-200', 'icon' => 'users'],
+        };
+    }
 }

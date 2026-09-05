@@ -62,6 +62,7 @@ class Student extends Model
         'document_mcu',
         'document_coe_visa',
         'admin_notes',
+        'affiliate_code',
     ];
 
     protected $casts = [

@@ -453,6 +453,19 @@
                                         </button>
                                     @endif
 
+                                    <!-- Kirim Notifikasi WhatsApp Fonnte -->
+                                    @php
+                                        $empPhone = $item->employee ? $item->employee->phone : '';
+                                    @endphp
+                                    <button 
+                                        type="button" 
+                                        onclick="openWaModal('{{ $item->id }}', '{{ $item->reimbursement_no }}', '{{ addslashes($item->employee_name) }}', '{{ $empPhone }}', '{{ addslashes($item->title) }}')"
+                                        class="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-600 font-bold transition" 
+                                        title="Kirim Notifikasi WhatsApp Pemohon via Fonnte"
+                                    >
+                                        <i data-lucide="message-circle" class="w-4 h-4"></i>
+                                    </button>
+
                                     <!-- Hapus Dokumen -->
                                     <form action="{{ route('admin.reimbursements.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirm('Hapus pengajuan {{ $item->reimbursement_no }}?')">
                                         @csrf
@@ -768,6 +781,13 @@
                 ></textarea>
             </div>
 
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="notify_wa" value="1" checked class="w-4 h-4 rounded text-japan-600 focus:ring-japan-500">
+                    <span class="text-xs font-semibold text-slate-700">Kirim notifikasi pembaruan status ke WhatsApp pemohon</span>
+                </label>
+            </div>
+
             <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
                 <button type="button" onclick="closeSettlementModal()" class="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-bold">
                     Batal
@@ -818,7 +838,95 @@
     </div>
 </div>
 
+<!-- MODAL 4: KIRIM NOTIFIKASI WHATSAPP MANUAL -->
+<div id="sendWaModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-emerald-50/70">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center">
+                    <i data-lucide="message-circle" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h3 class="font-black text-slate-900 text-sm">Kirim Notifikasi WhatsApp</h3>
+                    <p class="text-[10px] text-emerald-800 font-semibold">Integrasi Gateway Fonnte</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeWaModal()" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <form id="sendWaForm" method="POST" class="p-6 space-y-4">
+            @csrf
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-xs space-y-1">
+                <div class="flex justify-between">
+                    <span class="text-slate-500">No. Dokumen:</span>
+                    <span class="font-black text-slate-800 font-mono" id="modalWaDocNo">-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-500">Pemohon:</span>
+                    <span class="font-bold text-slate-800" id="modalWaName">-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-500">Perihal:</span>
+                    <span class="font-medium text-slate-700 truncate max-w-[200px]" id="modalWaTitle">-</span>
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <label class="block text-xs font-bold text-slate-700">Nomor WhatsApp Tujuan <span class="text-rose-500">*</span></label>
+                <input 
+                    type="text" 
+                    name="phone" 
+                    id="modalWaPhone" 
+                    required 
+                    placeholder="Contoh: 08123456789 atau 628123456789" 
+                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-emerald-600"
+                >
+                <p class="text-[10px] text-slate-400">Pastikan nomor aktif di WhatsApp.</p>
+            </div>
+
+            <div class="space-y-1">
+                <label class="block text-xs font-bold text-slate-700">Catatan Tambahan (Opsional)</label>
+                <textarea 
+                    name="custom_notes" 
+                    id="modalWaNotes" 
+                    rows="2" 
+                    placeholder="Contoh: Dana sudah ditransfer ke rekening BCA Anda..." 
+                    class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
+                ></textarea>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button type="button" onclick="closeWaModal()" class="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-bold">
+                    Batal
+                </button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md flex items-center gap-1.5">
+                    <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                    <span>Kirim Pesan WA</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+    function openWaModal(id, docNo, name, phone, title) {
+        const form = document.getElementById('sendWaForm');
+        form.action = `/admin/reimbursements/${id}/send-wa`;
+        document.getElementById('modalWaDocNo').textContent = docNo;
+        document.getElementById('modalWaName').textContent = name;
+        document.getElementById('modalWaTitle').textContent = title;
+        document.getElementById('modalWaPhone').value = phone || '';
+        document.getElementById('modalWaNotes').value = '';
+        document.getElementById('sendWaModal').classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function closeWaModal() {
+        document.getElementById('sendWaModal').classList.add('hidden');
+    }
+
     function openCreateReimbursementModal() {
         document.getElementById('createReimbursementModal').classList.remove('hidden');
         if (window.lucide) lucide.createIcons();

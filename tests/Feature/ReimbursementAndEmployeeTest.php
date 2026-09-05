@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\Affiliate;
 use App\Models\DigitalArchive;
 use App\Models\JobInterview;
 use App\Models\Reimbursement;
+use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -491,5 +493,151 @@ class ReimbursementAndEmployeeTest extends TestCase
                 ]
             ]
         ]);
+    }
+
+    public function test_admin_can_send_whatsapp_notification_for_reimbursement(): void
+    {
+        $this->actingAs($this->admin);
+
+        $employee = Teacher::create([
+            'nip' => 'STAFF-WA-01',
+            'role' => 'staff',
+            'name' => 'Budi Santoso, S.Kom.',
+            'phone' => '081234567890',
+            'gender' => 'Laki-laki',
+            'status' => 'active',
+        ]);
+
+        $reimbursement = Reimbursement::create([
+            'teacher_id' => $employee->id,
+            'employee_name' => $employee->name,
+            'reimbursement_no' => 'RMB-WA-2026-001',
+            'type' => 'reimbursement',
+            'category' => 'transportasi',
+            'title' => 'Penggantian Transport Monev',
+            'amount_requested' => 350000,
+            'status' => 'approved',
+        ]);
+
+        $response = $this->postJson("/admin/reimbursements/{$reimbursement->id}/send-wa", [
+            'notes' => 'Telah disetujui bagian keuangan, menunggu pencairan.',
+        ]);
+
+        $response->assertOk();
+        $response->assertJsonStructure([
+            'success',
+            'message',
+            'manual_url',
+        ]);
+    }
+
+    public function test_admin_can_view_centralized_financial_analytics_with_cashflow_comparison(): void
+    {
+        $this->actingAs($this->admin);
+
+        $employee = Teacher::create([
+            'nip' => 'STAFF-FIN-01',
+            'role' => 'staff',
+            'name' => 'Finance Staff',
+            'gender' => 'Laki-laki',
+            'status' => 'active',
+        ]);
+
+        Reimbursement::create([
+            'teacher_id' => $employee->id,
+            'employee_name' => $employee->name,
+            'reimbursement_no' => 'RMB-FIN-001',
+            'type' => 'reimbursement',
+            'category' => 'operasional',
+            'title' => 'Pembelian ATK Kantor',
+            'amount_requested' => 150000,
+            'amount_approved' => 150000,
+            'status' => 'paid',
+            'disbursed_at' => now(),
+        ]);
+
+        $response = $this->get('/admin/finance');
+        $response->assertOk();
+        $response->assertSee('Pusat Rekapitulasi');
+        $response->assertSee('Grafik Komparasi Bulanan');
+        $response->assertSee('Total Kas Masuk (Inflow)');
+        $response->assertSee('Total Pengeluaran (Outflow)');
+        $response->assertSee('Arus Kas Bersih (Net)');
+        $response->assertSee('Beban Pengeluaran');
+    }
+
+    public function test_admin_can_manage_smk_bkk_affiliates_and_view_student_progress(): void
+    {
+        $this->actingAs($this->admin);
+
+        // 1. Create SMK / BKK Affiliate
+        $partner = Affiliate::create([
+            'code' => 'BKK-SMK-2026',
+            'name' => 'Drs. Supardi (Koordinator BKK)',
+            'type' => 'smk_bkk',
+            'institution_name' => 'SMK Negeri 2 Indramayu',
+            'phone' => '087712345678',
+            'email' => 'bkk.smkn2@example.com',
+            'reward_per_lead' => 500000,
+            'is_active' => true,
+        ]);
+
+        $this->assertEquals('SMK & Bursa Kerja Khusus (BKK)', $partner->type_label);
+
+        // 2. Add referred student
+        $student = Student::create([
+            'nis' => '2026-NIS-001',
+            'name' => 'Ahmad Rizki',
+            'gender' => 'Laki-laki',
+            'birth_place' => 'Indramayu',
+            'birth_date' => '2005-08-17',
+            'phone' => '081299887766',
+            'status' => 'active',
+            'affiliate_code' => $partner->code,
+        ]);
+
+        // 3. Query affiliate students breakdown JSON
+        $studentsRes = $this->getJson("/admin/affiliates/{$partner->id}/students");
+        $studentsRes->assertOk();
+        $studentsRes->assertJsonFragment([
+            'name' => 'Ahmad Rizki',
+        ]);
+
+        // 4. Send WhatsApp Greeting / Progress Recap
+        $waRes = $this->postJson("/admin/affiliates/{$partner->id}/send-wa", [
+            'message' => 'Laporan perkembangan siswa bimbingan dari SMKN 2 Indramayu.',
+        ]);
+        $waRes->assertOk();
+        $waRes->assertJsonStructure([
+            'success',
+            'message',
+            'manual_url',
+        ]);
+    }
+
+    public function test_admin_can_export_affiliates_to_csv_and_pdf(): void
+    {
+        $this->actingAs($this->admin);
+
+        Affiliate::create([
+            'code' => 'EXP-SMK-01',
+            'name' => 'BKK SMK Karya Mandiri',
+            'type' => 'smk_bkk',
+            'institution_name' => 'SMK Karya Mandiri',
+            'phone' => '089988776655',
+            'reward_per_lead' => 450000,
+            'is_active' => true,
+        ]);
+
+        // 1. Export CSV
+        $csvRes = $this->get('/admin/affiliates/export-csv');
+        $csvRes->assertOk();
+        $this->assertTrue(str_contains($csvRes->headers->get('Content-Disposition') ?? '', 'rekap_kemitraan_smk_bkk_'));
+
+        // 2. Export PDF
+        $pdfRes = $this->get('/admin/affiliates/export-pdf');
+        $pdfRes->assertOk();
+        $pdfRes->assertSee('Rekapitulasi Kemitraan SMK & BKK', false);
+        $pdfRes->assertSee('SMK Karya Mandiri');
     }
 }

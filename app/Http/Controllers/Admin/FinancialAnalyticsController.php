@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\BatchSchedule;
+use App\Models\Reimbursement;
 use App\Models\Student;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -12,11 +14,65 @@ class FinancialAnalyticsController extends Controller
 {
     public function index()
     {
-        // 1. Core Financial Metrics
-        $totalPotentialRevenue = Student::sum('total_cost');
-        $totalRealizedRevenue = Student::sum('paid_amount');
+        // 1. Core Financial Metrics (Pendapatan Siswa)
+        $totalPotentialRevenue = (float) Student::sum('total_cost');
+        $totalRealizedRevenue = (float) Student::sum('paid_amount');
         $totalReceivables = $totalPotentialRevenue - $totalRealizedRevenue;
         $collectionRate = $totalPotentialRevenue > 0 ? round(($totalRealizedRevenue / $totalPotentialRevenue) * 100, 1) : 0;
+
+        // 1b. Arus Kas Keluar (Pengeluaran Reimburse & Kasbon Dinas)
+        $totalReimbursements = (float) Reimbursement::where('type', 'reimbursement')
+            ->whereIn('status', ['paid', 'settled'])
+            ->sum('amount_approved');
+
+        $totalCashAdvances = (float) Reimbursement::where('type', 'cash_advance')
+            ->whereIn('status', ['paid', 'settled'])
+            ->sum('amount_approved');
+
+        $totalOutflow = $totalReimbursements + $totalCashAdvances;
+        $netCashflow = $totalRealizedRevenue - $totalOutflow;
+        $expenseRatio = $totalRealizedRevenue > 0 ? round(($totalOutflow / $totalRealizedRevenue) * 100, 1) : 0;
+
+        // 1c. Grafik Komparatif 12 Bulan (Arus Kas Masuk vs Kas Keluar)
+        $currentYear = now()->year;
+        $monthlyComparison = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $monthStart = Carbon::create($currentYear, $m, 1)->startOfMonth();
+            $monthEnd = Carbon::create($currentYear, $m, 1)->endOfMonth();
+
+            $mInflow = (float) Student::whereBetween('created_at', [$monthStart, $monthEnd])->sum('paid_amount');
+
+            $mReimb = (float) Reimbursement::where('type', 'reimbursement')
+                ->whereIn('status', ['paid', 'settled'])
+                ->where(function ($q) use ($monthStart, $monthEnd) {
+                    $q->whereBetween('paid_at', [$monthStart, $monthEnd])
+                      ->orWhere(function ($sub) use ($monthStart, $monthEnd) {
+                          $sub->whereNull('paid_at')->whereBetween('created_at', [$monthStart, $monthEnd]);
+                      });
+                })
+                ->sum('amount_approved');
+
+            $mAdv = (float) Reimbursement::where('type', 'cash_advance')
+                ->whereIn('status', ['paid', 'settled'])
+                ->where(function ($q) use ($monthStart, $monthEnd) {
+                    $q->whereBetween('paid_at', [$monthStart, $monthEnd])
+                      ->orWhere(function ($sub) use ($monthStart, $monthEnd) {
+                          $sub->whereNull('paid_at')->whereBetween('created_at', [$monthStart, $monthEnd]);
+                      });
+                })
+                ->sum('amount_approved');
+
+            $mOutflow = $mReimb + $mAdv;
+            $monthlyComparison[] = [
+                'month' => $m,
+                'month_name' => $monthStart->translatedFormat('M'),
+                'inflow' => $mInflow,
+                'outflow_reimburse' => $mReimb,
+                'outflow_advance' => $mAdv,
+                'outflow' => $mOutflow,
+                'net' => $mInflow - $mOutflow,
+            ];
+        }
 
         // 2. Program Breakdown
         $programRevenue = Student::select('program', 
@@ -61,6 +117,12 @@ class FinancialAnalyticsController extends Controller
             'totalRealizedRevenue',
             'totalReceivables',
             'collectionRate',
+            'totalReimbursements',
+            'totalCashAdvances',
+            'totalOutflow',
+            'netCashflow',
+            'expenseRatio',
+            'monthlyComparison',
             'programRevenue',
             'statusCounts',
             'activeBatches',

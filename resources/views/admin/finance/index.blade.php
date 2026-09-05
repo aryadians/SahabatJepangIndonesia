@@ -64,6 +64,160 @@
             <p class="text-[10px] text-slate-400">Total data siswa terdaftar</p>
         </div>
 
+    <!-- Centralized Cashflow Comparison (Inflow Siswa vs Outflow Reimburse & Kasbon) -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-japan-50 text-japan-600 flex items-center justify-center font-bold">
+                    <i data-lucide="scale" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="font-extrabold text-slate-900 text-base sm:text-lg">Pusat Rekapitulasi & Grafik Arus Kas Komparatif</h3>
+                    <p class="text-xs text-slate-400">Perbandingan realisasi kas masuk pendaftaran siswa vs pengeluaran operasional (reimburse & kasbon dinas)</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200 flex items-center gap-1.5">
+                    <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-500"></i>
+                    <span>Tahun Kalender {{ now()->year }}</span>
+                </span>
+                <a 
+                    href="{{ route('admin.reimbursements.index') }}" 
+                    class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center gap-1.5"
+                >
+                    <i data-lucide="receipt" class="w-3.5 h-3.5 text-red-400"></i>
+                    <span>Buka Reimburse</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 4 Comparative Cash Flow Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- 1. Total Inflow -->
+            <div class="p-5 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 space-y-2">
+                <div class="flex items-center justify-between text-emerald-800">
+                    <span class="text-[11px] font-black uppercase tracking-wider">Total Kas Masuk (Inflow)</span>
+                    <i data-lucide="arrow-down-left" class="w-4 h-4"></i>
+                </div>
+                <h4 class="text-xl sm:text-2xl font-black text-emerald-700">Rp {{ number_format($totalRealizedRevenue) }}</h4>
+                <p class="text-[11px] text-emerald-800 font-medium">Realisasi pendaftaran & cicilan siswa</p>
+            </div>
+
+            <!-- 2. Total Outflow -->
+            <div class="p-5 rounded-2xl bg-rose-50/60 border border-rose-200/80 space-y-2">
+                <div class="flex items-center justify-between text-rose-800">
+                    <span class="text-[11px] font-black uppercase tracking-wider">Total Pengeluaran (Outflow)</span>
+                    <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                </div>
+                <h4 class="text-xl sm:text-2xl font-black text-rose-700">Rp {{ number_format($totalOutflow) }}</h4>
+                <div class="text-[11px] text-rose-800 flex items-center justify-between font-semibold">
+                    <span>Reimburse: Rp {{ number_format($totalReimbursements) }}</span>
+                    <span>Kasbon: Rp {{ number_format($totalCashAdvances) }}</span>
+                </div>
+            </div>
+
+            <!-- 3. Net Cash Flow -->
+            <div class="p-5 rounded-2xl {{ $netCashflow >= 0 ? 'bg-blue-50/60 border-blue-200/80 text-blue-900' : 'bg-red-50/60 border-red-200/80 text-red-900' }} border space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-black uppercase tracking-wider">Arus Kas Bersih (Net)</span>
+                    <span class="px-2 py-0.5 rounded-md {{ $netCashflow >= 0 ? 'bg-blue-200/70 text-blue-900' : 'bg-red-200/70 text-red-900' }} text-[10px] font-black uppercase">
+                        {{ $netCashflow >= 0 ? 'Surplus Kas' : 'Defisit Kas' }}
+                    </span>
+                </div>
+                <h4 class="text-xl sm:text-2xl font-black {{ $netCashflow >= 0 ? 'text-blue-800' : 'text-rose-700' }}">
+                    {{ $netCashflow >= 0 ? '+' : '' }}Rp {{ number_format($netCashflow) }}
+                </h4>
+                <p class="text-[11px] font-medium opacity-80">Saldo operasional tersisa setelah klaim dinas</p>
+            </div>
+
+            <!-- 4. Expense Ratio -->
+            <div class="p-5 rounded-2xl bg-purple-50/60 border border-purple-200/80 space-y-2">
+                <div class="flex items-center justify-between text-purple-800">
+                    <span class="text-[11px] font-black uppercase tracking-wider">Beban Pengeluaran</span>
+                    <i data-lucide="percent" class="w-4 h-4"></i>
+                </div>
+                <h4 class="text-xl sm:text-2xl font-black text-purple-700">{{ $expenseRatio }}%</h4>
+                <div class="w-full bg-purple-200/60 rounded-full h-1.5 overflow-hidden">
+                    <div class="bg-purple-600 h-full rounded-full" style="width: {{ min(100, $expenseRatio) }}%"></div>
+                </div>
+                <p class="text-[10px] text-purple-800 font-medium">Persentase kas keluar terhadap penerimaan</p>
+            </div>
+        </div>
+
+        <!-- Monthly Comparative Visual Bars & Summary Table -->
+        <div class="pt-4 border-t border-slate-100 space-y-4">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+                <h4 class="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4 text-japan-600"></i>
+                    <span>Grafik Komparasi Bulanan (Inflow vs Outflow {{ now()->year }})</span>
+                </h4>
+                <div class="flex items-center gap-4 text-xs font-bold">
+                    <span class="flex items-center gap-1.5 text-emerald-700"><span class="w-3 h-3 rounded-sm bg-emerald-500 inline-block"></span> Kas Masuk Siswa</span>
+                    <span class="flex items-center gap-1.5 text-rose-700"><span class="w-3 h-3 rounded-sm bg-rose-500 inline-block"></span> Pengeluaran Operasional</span>
+                </div>
+            </div>
+
+            <!-- Visual Bar Grid -->
+            @php
+                $maxVal = 1;
+                foreach($monthlyComparison as $m) {
+                    $maxVal = max($maxVal, $m['inflow'], $m['outflow']);
+                }
+            @endphp
+            <div class="grid grid-cols-6 sm:grid-cols-12 gap-2 pt-2 items-end h-48 bg-slate-50/70 p-4 rounded-2xl border border-slate-200/70">
+                @foreach($monthlyComparison as $m)
+                    @php
+                        $inflowHeight = round(($m['inflow'] / $maxVal) * 100);
+                        $outflowHeight = round(($m['outflow'] / $maxVal) * 100);
+                    @endphp
+                    <div class="flex flex-col items-center h-full justify-end group relative">
+                        <!-- Tooltip -->
+                        <div class="absolute -top-12 z-20 hidden group-hover:flex flex-col items-center bg-slate-900 text-white text-[10px] p-2 rounded-xl shadow-lg whitespace-nowrap pointer-events-none">
+                            <span class="font-bold">{{ $m['month_name'] }}:</span>
+                            <span class="text-emerald-300">In: Rp {{ number_format($m['inflow']) }}</span>
+                            <span class="text-rose-300">Out: Rp {{ number_format($m['outflow']) }}</span>
+                        </div>
+                        <div class="flex items-end gap-1 w-full justify-center h-32">
+                            <!-- Inflow Bar -->
+                            <div class="w-2.5 sm:w-3.5 bg-emerald-500 rounded-t-md hover:bg-emerald-600 transition" style="height: {{ max(4, $inflowHeight) }}%" title="Inflow: Rp {{ number_format($m['inflow']) }}"></div>
+                            <!-- Outflow Bar -->
+                            <div class="w-2.5 sm:w-3.5 bg-rose-500 rounded-t-md hover:bg-rose-600 transition" style="height: {{ max(4, $outflowHeight) }}%" title="Outflow: Rp {{ number_format($m['outflow']) }}"></div>
+                        </div>
+                        <span class="text-[10px] font-bold text-slate-600 mt-2">{{ $m['month_name'] }}</span>
+                    </div>
+                @endforeach
+            </div>
+
+            <!-- Collapsible Monthly Table -->
+            <div class="overflow-x-auto rounded-2xl border border-slate-200">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 text-[10px] uppercase font-black">
+                            <th class="py-2.5 px-3">Bulan</th>
+                            <th class="py-2.5 px-3 text-right">Kas Masuk Siswa</th>
+                            <th class="py-2.5 px-3 text-right">Reimburse Cair</th>
+                            <th class="py-2.5 px-3 text-right">Kasbon Dinas</th>
+                            <th class="py-2.5 px-3 text-right">Total Kas Keluar</th>
+                            <th class="py-2.5 px-3 text-right">Net Cashflow</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 font-mono text-[11px]">
+                        @foreach($monthlyComparison as $m)
+                            <tr class="hover:bg-slate-50/80 transition">
+                                <td class="py-2 px-3 font-sans font-bold text-slate-800">{{ $m['month_name'] }} {{ now()->year }}</td>
+                                <td class="py-2 px-3 text-right font-bold text-emerald-600">Rp {{ number_format($m['inflow']) }}</td>
+                                <td class="py-2 px-3 text-right text-slate-600">Rp {{ number_format($m['outflow_reimburse']) }}</td>
+                                <td class="py-2 px-3 text-right text-slate-600">Rp {{ number_format($m['outflow_advance']) }}</td>
+                                <td class="py-2 px-3 text-right font-bold text-rose-600">Rp {{ number_format($m['outflow']) }}</td>
+                                <td class="py-2 px-3 text-right font-black {{ $m['net'] >= 0 ? 'text-blue-600' : 'text-rose-600' }}">
+                                    {{ $m['net'] >= 0 ? '+' : '' }}Rp {{ number_format($m['net']) }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <!-- Cashflow Inflow Forecasting (30, 60, 90 Days) -->

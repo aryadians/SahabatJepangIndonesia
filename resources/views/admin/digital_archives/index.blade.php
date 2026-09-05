@@ -780,6 +780,40 @@
     </div>
 </div>
 
+<!-- FLOATING MULTI-FILE UPLOAD QUEUE MANAGER (Google Drive / OneDrive style) -->
+<div id="uploadQueueWidget" class="fixed bottom-6 right-6 z-50 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200/90 overflow-hidden hidden transition-all duration-300">
+    <!-- Header -->
+    <div class="px-4 py-3 bg-slate-900 text-white flex items-center justify-between">
+        <div class="flex items-center gap-2.5 min-w-0">
+            <div id="uploadQueueSpinIcon" class="w-6 h-6 rounded-lg bg-white/10 text-white flex items-center justify-center">
+                <i data-lucide="cloud-upload" class="w-4 h-4 animate-pulse"></i>
+            </div>
+            <div class="min-w-0">
+                <h4 id="uploadQueueTitle" class="text-xs font-black truncate">Mengunggah berkas...</h4>
+                <p id="uploadQueueSubtitle" class="text-[10px] text-slate-300 font-medium truncate">0 dari 0 selesai</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-1">
+            <button type="button" onclick="toggleUploadQueueCollapse()" class="p-1 rounded-lg hover:bg-white/10 text-slate-300 hover:text-white transition" title="Minimize / Expand">
+                <i id="uploadQueueCollapseIcon" data-lucide="chevron-down" class="w-4 h-4"></i>
+            </button>
+            <button type="button" onclick="closeUploadQueueWidget()" class="p-1 rounded-lg hover:bg-white/10 text-slate-300 hover:text-white transition" title="Tutup">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Overall Progress Bar Line -->
+    <div class="w-full bg-slate-100 h-1 overflow-hidden">
+        <div id="uploadQueueTotalBar" class="bg-emerald-500 h-full transition-all duration-200" style="width: 0%"></div>
+    </div>
+
+    <!-- Body / Items List -->
+    <div id="uploadQueueBody" class="max-h-64 overflow-y-auto divide-y divide-slate-100 p-2 space-y-2 bg-slate-50/50 text-xs">
+        <!-- Item rows dynamically injected -->
+    </div>
+</div>
+
 <script>
     /**
      * Windows File Explorer SPA Engine (Vanilla JavaScript, 0 Page Reloads)
@@ -1292,6 +1326,9 @@
                 <button 
                     type="button" 
                     onclick="loadExplorerData(${f.id})"
+                    ondragover="handleFolderDragOver(event)"
+                    ondragleave="handleFolderDragLeave(event)"
+                    ondrop="handleFolderDrop(event, ${f.id})"
                     class="w-full px-2.5 py-1.5 rounded-xl text-left text-xs font-bold flex items-center justify-between transition ${
                         isActive ? 'bg-amber-100/70 text-amber-900 shadow-2xs font-extrabold' : 'text-slate-700 hover:bg-white hover:text-amber-700'
                     }"
@@ -1767,53 +1804,184 @@
         }
     }
 
-    // 14. Upload Files directly to current folder via AJAX
-    function handleExplorerFilesUpload(files) {
+    // 14. Batch Multi-File Upload with Individual Progress Bars
+    let uploadQueue = [];
+    let isUploading = false;
+    let completedUploadCount = 0;
+    let totalUploadCount = 0;
+
+    function handleExplorerFilesUpload(files, targetFolderOverride = null) {
         if (!files || files.length === 0) return;
 
-        Swal.fire({
-            title: 'Mengunggah Berkas...',
-            html: `Sedang mengonversi ${files.length} berkas ke Base64 dan menyimpan ke arsip...`,
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
+        const fileArray = Array.from(files);
+        const folderId = targetFolderOverride !== null ? targetFolderOverride : (currentFolderId || '');
+        const targetCategory = currentCategory !== 'all' ? currentCategory : 'nota_reimburse';
+
+        const widget = document.getElementById('uploadQueueWidget');
+        const body = document.getElementById('uploadQueueBody');
+
+        if (widget) widget.classList.remove('hidden');
+
+        totalUploadCount += fileArray.length;
+        updateUploadQueueHeader();
+
+        fileArray.forEach(file => {
+            const uploadId = 'up_' + Math.random().toString(36).substr(2, 9);
+            const sizeStr = file.size > 1024 * 1024 
+                ? (file.size / (1024 * 1024)).toFixed(1) + ' MB' 
+                : Math.round(file.size / 1024) + ' KB';
+
+            const itemEl = document.createElement('div');
+            itemEl.id = `queue_item_${uploadId}`;
+            itemEl.className = 'p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-2xs space-y-1.5 transition';
+            itemEl.innerHTML = `
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 min-w-0 flex-1">
+                        <div class="w-6 h-6 rounded-lg bg-japan-50 text-japan-600 flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="file" class="w-3.5 h-3.5"></i>
+                        </div>
+                        <span class="font-bold text-slate-800 text-[11px] truncate" title="${file.name}">${file.name}</span>
+                    </div>
+                    <span id="queue_size_${uploadId}" class="text-[10px] text-slate-400 font-mono font-medium flex-shrink-0">${sizeStr}</span>
+                </div>
+                <div class="flex items-center justify-between text-[10px] text-slate-500 font-medium">
+                    <span id="queue_status_${uploadId}" class="text-slate-500 font-semibold">Menunggu antrean...</span>
+                    <span id="queue_pct_${uploadId}" class="font-mono font-bold text-slate-700">0%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                    <div id="queue_bar_${uploadId}" class="h-full bg-japan-600 rounded-full transition-all duration-150" style="width: 0%"></div>
+                </div>
+            `;
+            if (body) body.appendChild(itemEl);
+            if (window.lucide) lucide.createIcons();
+
+            uploadQueue.push({
+                id: uploadId,
+                file: file,
+                folderId: folderId,
+                category: targetCategory
+            });
         });
 
-        const formData = new FormData();
-        formData.append('folder_id', currentFolderId || '');
-        formData.append('category', currentCategory !== 'all' ? currentCategory : 'nota_reimburse');
+        processUploadQueue();
+    }
 
-        for (let i = 0; i < files.length; i++) {
-            formData.append('files[]', files[i]);
+    async function processUploadQueue() {
+        if (isUploading) return;
+        if (uploadQueue.length === 0) return;
+
+        isUploading = true;
+
+        while (uploadQueue.length > 0) {
+            const item = uploadQueue.shift();
+            await uploadSingleFileWithProgress(item);
         }
 
-        fetch('{{ route('admin.digital-archives.upload.ajax') }}', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json',
-            },
-            body: formData
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Unggah Berhasil!',
-                    text: data.message,
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-                loadExplorerData(currentFolderId);
-            } else {
-                Swal.fire({ icon: 'error', title: 'Gagal', text: data.message || 'Gagal mengunggah.' });
-            }
-        })
-        .catch(err => {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: 'Terjadi kesalahan saat mengunggah.' });
+        isUploading = false;
+        showArchiveToast('Seluruh berkas berhasil diunggah! ✨', 'success');
+        loadExplorerData(currentFolderId);
+    }
+
+    function uploadSingleFileWithProgress(item) {
+        return new Promise((resolve) => {
+            const bar = document.getElementById(`queue_bar_${item.id}`);
+            const pct = document.getElementById(`queue_pct_${item.id}`);
+            const status = document.getElementById(`queue_status_${item.id}`);
+
+            if (status) status.textContent = 'Mengunggah...';
+
+            const formData = new FormData();
+            formData.append('folder_id', item.folderId);
+            formData.append('category', item.category);
+            formData.append('files[]', item.file);
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '{{ route('admin.digital-archives.upload.ajax') }}', true);
+            xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+            xhr.setRequestHeader('Accept', 'application/json');
+
+            xhr.upload.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    const percent = Math.min(99, Math.round((e.loaded / e.total) * 100));
+                    if (bar) bar.style.width = percent + '%';
+                    if (pct) pct.textContent = percent + '%';
+                }
+            };
+
+            xhr.onload = function() {
+                completedUploadCount++;
+                updateUploadQueueHeader();
+
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try {
+                        const res = JSON.parse(xhr.responseText);
+                        if (res.success) {
+                            if (bar) {
+                                bar.style.width = '100%';
+                                bar.classList.remove('bg-japan-600');
+                                bar.classList.add('bg-emerald-500');
+                            }
+                            if (pct) pct.textContent = '100%';
+                            if (status) {
+                                status.innerHTML = '<span class="text-emerald-600 font-bold flex items-center gap-1">✅ Berhasil</span>';
+                            }
+                        } else {
+                            if (status) status.innerHTML = `<span class="text-rose-600 font-bold">⚠️ ${res.message || 'Gagal'}</span>`;
+                        }
+                    } catch (e) {
+                        if (status) status.innerHTML = '<span class="text-rose-600 font-bold">⚠️ Respons tidak valid</span>';
+                    }
+                } else {
+                    if (status) status.innerHTML = `<span class="text-rose-600 font-bold">⚠️ Gagal (HTTP ${xhr.status})</span>`;
+                }
+                resolve();
+            };
+
+            xhr.onerror = function() {
+                completedUploadCount++;
+                updateUploadQueueHeader();
+                if (status) status.innerHTML = '<span class="text-rose-600 font-bold">⚠️ Error koneksi</span>';
+                resolve();
+            };
+
+            xhr.send(formData);
         });
+    }
+
+    function updateUploadQueueHeader() {
+        const titleEl = document.getElementById('uploadQueueTitle');
+        const subTitleEl = document.getElementById('uploadQueueSubtitle');
+        const totalBar = document.getElementById('uploadQueueTotalBar');
+
+        if (completedUploadCount >= totalUploadCount && totalUploadCount > 0) {
+            if (titleEl) titleEl.textContent = 'Semua berkas selesai diunggah';
+            if (subTitleEl) subTitleEl.textContent = `${completedUploadCount} dari ${totalUploadCount} berkas`;
+            if (totalBar) totalBar.style.width = '100%';
+        } else {
+            if (titleEl) titleEl.textContent = 'Mengunggah berkas...';
+            if (subTitleEl) subTitleEl.textContent = `${completedUploadCount} dari ${totalUploadCount} selesai`;
+            const overallPct = totalUploadCount > 0 ? Math.round((completedUploadCount / totalUploadCount) * 100) : 0;
+            if (totalBar) totalBar.style.width = overallPct + '%';
+        }
+    }
+
+    function toggleUploadQueueCollapse() {
+        const body = document.getElementById('uploadQueueBody');
+        const icon = document.getElementById('uploadQueueCollapseIcon');
+        if (!body) return;
+        if (body.classList.contains('hidden')) {
+            body.classList.remove('hidden');
+            if (icon) icon.setAttribute('data-lucide', 'chevron-down');
+        } else {
+            body.classList.add('hidden');
+            if (icon) icon.setAttribute('data-lucide', 'chevron-up');
+        }
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function closeUploadQueueWidget() {
+        const widget = document.getElementById('uploadQueueWidget');
+        if (widget) widget.classList.add('hidden');
     }
 
     // 15. Drag File into Folder (Moving)
@@ -1839,6 +2007,12 @@
         e.stopPropagation();
         e.currentTarget.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-100');
 
+        // Check if external desktop files were dropped onto this folder
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleExplorerFilesUpload(e.dataTransfer.files, targetFolderId);
+            return;
+        }
+
         const raw = e.dataTransfer.getData('text/plain');
         if (!raw) return;
 
@@ -1857,6 +2031,7 @@
                 .then(r => r.json())
                 .then(res => {
                     if (res.success) {
+                        showArchiveToast('Berkas berhasil dipindahkan', 'success');
                         loadExplorerData(currentFolderId);
                     }
                 });

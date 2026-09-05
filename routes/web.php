@@ -229,6 +229,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('/reimbursements/import', [ReimbursementController::class, 'importCsv'])->name('reimbursements.import');
     Route::get('/reimbursements/{id}/print', [ReimbursementController::class, 'print'])->name('reimbursements.print');
     Route::post('/reimbursements/{id}/status', [ReimbursementController::class, 'updateStatus'])->name('reimbursements.status');
+    Route::post('/reimbursements/{id}/send-wa', [ReimbursementController::class, 'sendWaNotification'])->name('reimbursements.send.wa');
     Route::resource('reimbursements', ReimbursementController::class)->except(['create', 'show', 'edit']);
 
     // 14c. Panel Arsip Digital Dokumen & Nota (Windows File Explorer SPA)
@@ -247,6 +248,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::resource('digital-archives', DigitalArchiveController::class)->except(['create', 'show', 'edit', 'update']);
 
     // 15. Program Kemitraan & Referral Afiliasi
+    Route::get('/affiliates/export-pdf', [AffiliateController::class, 'exportPdf'])->name('affiliates.export.pdf');
+    Route::get('/affiliates/export-csv', [AffiliateController::class, 'exportCsv'])->name('affiliates.export.csv');
+    Route::get('/affiliates/{id}/students', [AffiliateController::class, 'referredStudents'])->name('affiliates.students');
+    Route::post('/affiliates/{id}/send-wa', [AffiliateController::class, 'sendWaGreeting'])->name('affiliates.send.wa');
     Route::resource('affiliates', AffiliateController::class)->except(['create', 'show', 'edit']);
 
     // 16. User Management & RBAC Roles
