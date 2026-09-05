@@ -409,7 +409,7 @@
         </button>
 
         <div class="space-y-1 text-center">
-            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase text-white bg-japan-600 inline-block font-mono">
+            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase text-white bg-japan-600 inline-block font-mono shadow-xs">
                 QR Scanner & Verification
             </span>
             <h3 class="text-xl font-black text-white">Pindai QR Code Dokumen</h3>
@@ -418,44 +418,57 @@
 
         <!-- Viewfinder Box with Laser Animation -->
         <div class="relative w-64 h-64 mx-auto bg-slate-950 rounded-2xl border-2 border-dashed border-red-500/60 overflow-hidden flex items-center justify-center shadow-inner">
-            <video id="qrVideoElement" class="w-full h-full object-cover hidden" playsinline></video>
-            <div id="qrPlaceholderIcon" class="flex flex-col items-center justify-center space-y-2 text-slate-500">
+            <video id="qrVideoElement" class="w-full h-full object-cover hidden" playsinline muted></video>
+            <div id="qrPlaceholderIcon" class="flex flex-col items-center justify-center space-y-2 text-slate-500 text-center px-4">
                 <i data-lucide="camera" class="w-12 h-12 text-japan-500/70 animate-pulse"></i>
-                <span class="text-xs font-mono">Kamera Siap Diaktifkan</span>
+                <span class="text-xs font-mono" id="qrCameraStatusText">Kamera Siap Diaktifkan</span>
             </div>
             <!-- Red Laser Line Scan Effect -->
-            <div class="absolute inset-x-0 top-0 h-0.5 bg-red-500 shadow-md shadow-red-500 animate-pulse pointer-events-none" style="animation: scanLaser 2s infinite linear;"></div>
+            <div id="qrLaserScanLine" class="hidden absolute inset-x-0 top-0 h-0.5 bg-red-500 shadow-md shadow-red-500 pointer-events-none" style="animation: scanLaser 2s infinite linear;"></div>
         </div>
 
-        <!-- Camera Control Button -->
-        <div class="flex items-center justify-center gap-2">
+        <!-- Camera Control & Upload Buttons -->
+        <div class="flex flex-wrap items-center justify-center gap-2">
             <button 
                 type="button" 
                 id="btnToggleCamera" 
                 onclick="toggleCameraStream()" 
-                class="px-4 py-2 rounded-xl bg-japan-600 hover:bg-japan-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-red-600/30 transition active:scale-[0.97]"
+                class="px-4 py-2.5 rounded-xl bg-japan-600 hover:bg-japan-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-red-600/30 transition active:scale-[0.97]"
             >
                 <i data-lucide="video" class="w-4 h-4"></i>
                 <span id="cameraBtnLabel">Aktifkan Kamera</span>
             </button>
+
+            <!-- Hidden File Input for QR Image Upload -->
+            <input type="file" id="qrFileInput" accept="image/*" class="hidden" onchange="handleQrFileUpload(event)">
+            <button 
+                type="button" 
+                onclick="document.getElementById('qrFileInput').click()" 
+                class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs flex items-center gap-1.5 transition active:scale-[0.97]"
+                title="Unggah foto atau tangkapan layar QR Code dari galeri perangkat"
+            >
+                <i data-lucide="image" class="w-4 h-4 text-emerald-400"></i>
+                <span>Unggah Foto QR</span>
+            </button>
         </div>
 
         <!-- Or Manual Paste Option -->
-        <div class="pt-2 border-t border-slate-800 space-y-2">
-            <label class="text-[11px] font-bold text-slate-400 block">Atau tempelkan tautan QR Code / NIS langsung:</label>
+        <div class="pt-3 border-t border-slate-800 space-y-2">
+            <label class="text-[11px] font-bold text-slate-400 block">Atau ketikkan nomor NIS / kode dokumen secara manual:</label>
             <div class="flex items-center gap-2">
                 <input 
                     type="text" 
                     id="manualQrInput" 
-                    placeholder="Contoh: SJI-2026-001 atau link verifikasi" 
-                    class="flex-1 px-3.5 py-2 rounded-xl text-xs bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-japan-500 font-mono"
+                    placeholder="Contoh: SJI-2026-001 atau nomor telepon" 
+                    class="flex-1 px-3.5 py-2.5 rounded-xl text-xs bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-japan-500 font-mono"
                 >
                 <button 
                     type="button" 
                     onclick="submitScannedQr()" 
-                    class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-600 transition"
+                    class="btn-red-primary px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1 shadow-sm active:scale-[0.97]"
                 >
-                    Cek
+                    <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                    <span>Cek</span>
                 </button>
             </div>
         </div>
@@ -472,12 +485,15 @@
 
 <script>
     let cameraStream = null;
+    let qrScanAnimId = null;
+    const offscreenCanvas = document.createElement('canvas');
+    const offscreenCtx = offscreenCanvas.getContext('2d', { willReadFrequently: true });
 
     function openQrScanModal() {
         const modal = document.getElementById('qrScanModal');
         modal.classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
     }
 
     function closeQrScanModal() {
@@ -490,38 +506,148 @@
     async function toggleCameraStream() {
         const video = document.getElementById('qrVideoElement');
         const placeholder = document.getElementById('qrPlaceholderIcon');
+        const laser = document.getElementById('qrLaserScanLine');
         const label = document.getElementById('cameraBtnLabel');
+        const statusText = document.getElementById('qrCameraStatusText');
 
         if (cameraStream) {
             stopCameraStream();
             return;
         }
 
+        // Check if browser supports mediaDevices
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            showCameraErrorModal('Browser Anda tidak mendukung akses kamera langsung atau halaman diakses melalui koneksi HTTP biasa. Kamera web memerlukan protokol HTTPS atau localhost.');
+            return;
+        }
+
         try {
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                video.srcObject = cameraStream;
-                video.classList.remove('hidden');
-                placeholder.classList.add('hidden');
-                video.play();
-                label.innerText = 'Matikan Kamera';
-            } else {
-                alert('Akses kamera tidak didukung pada browser ini.');
+            if (statusText) statusText.innerText = 'Menghubungkan kamera...';
+
+            let stream = null;
+            try {
+                // Priority 1: Back camera for smartphone devices
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 } }
+                });
+            } catch (e1) {
+                // Priority 2: Any available camera (laptop webcam, front cam, USB cam)
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
             }
+
+            cameraStream = stream;
+            video.srcObject = stream;
+            video.setAttribute('playsinline', 'true');
+            video.classList.remove('hidden');
+            if (placeholder) placeholder.classList.add('hidden');
+            if (laser) laser.classList.remove('hidden');
+            await video.play();
+
+            if (label) label.innerText = 'Matikan Kamera';
+            if (statusText) statusText.innerText = 'Arahkan kamera ke QR Code...';
+
+            // Start live continuous scanning loop with jsQR
+            startQrScanningLoop();
+
         } catch (err) {
-            console.warn('Camera access denied or unavailable:', err);
-            alert('Izin kamera belum diberikan. Anda dapat memasukkan kode NIS secara manual di kolom bawah.');
+            console.warn('Camera stream error:', err);
+            stopCameraStream();
+
+            let detailedMessage = 'Izin kamera belum diberikan atau diblokir di pengaturan browser Anda.';
+            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                detailedMessage = 'Akses kamera ditolak oleh browser. Silakan klik ikon gembok / perizinan di sebelah URL browser Anda, lalu aktifkan izin <strong>"Kamera / Camera"</strong>.';
+            } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                detailedMessage = 'Tidak ada perangkat kamera yang terdeteksi pada komputer / laptop ini.';
+            } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+                detailedMessage = 'Kamera sedang digunakan oleh aplikasi lain (seperti Zoom, Google Meet, atau tab browser lain).';
+            }
+
+            showCameraErrorModal(detailedMessage);
         }
     }
 
+    function showCameraErrorModal(message) {
+        if (window.Swal) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Akses Kamera Terkendala',
+                html: `
+                    <div class="text-left text-xs space-y-2.5 text-slate-600">
+                        <p>${message}</p>
+                        <div class="bg-amber-50 p-3 rounded-2xl border border-amber-200 text-amber-900 space-y-1">
+                            <p class="font-bold">💡 Solusi Cepat & Mudah:</p>
+                            <p>1. Ketik kode <strong>NIS Siswa</strong> (contoh: <code>SJI-2026-001</code>) langsung di kolom manual.</p>
+                            <p>2. Atau gunakan tombol <strong>"Unggah Foto QR"</strong> untuk memilih gambar dari galeri perangkat.</p>
+                        </div>
+                    </div>
+                `,
+                confirmButtonText: 'Ketik NIS Manual',
+                confirmButtonColor: '#DC2626',
+                showCancelButton: true,
+                cancelButtonText: '📷 Unggah Foto QR',
+                cancelButtonColor: '#059669',
+                customClass: {
+                    popup: 'rounded-3xl shadow-2xl p-6',
+                    confirmButton: 'rounded-xl font-bold text-xs px-4 py-2.5',
+                    cancelButton: 'rounded-xl font-bold text-xs px-4 py-2.5'
+                }
+            }).then((res) => {
+                if (res.isConfirmed) {
+                    document.getElementById('manualQrInput')?.focus();
+                } else if (res.dismiss === Swal.DismissReason.cancel) {
+                    document.getElementById('qrFileInput')?.click();
+                }
+            });
+        } else {
+            alert(message);
+        }
+    }
+
+    function startQrScanningLoop() {
+        const video = document.getElementById('qrVideoElement');
+        if (!video) return;
+
+        function scanFrame() {
+            if (!cameraStream) return;
+
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                offscreenCanvas.width = video.videoWidth;
+                offscreenCanvas.height = video.videoHeight;
+                offscreenCtx.drawImage(video, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
+                const imageData = offscreenCtx.getImageData(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+
+                if (window.jsQR) {
+                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                        inversionAttempts: 'dontInvert'
+                    });
+                    if (code && code.data) {
+                        processDetectedQr(code.data);
+                        return;
+                    }
+                }
+            }
+            qrScanAnimId = requestAnimationFrame(scanFrame);
+        }
+
+        qrScanAnimId = requestAnimationFrame(scanFrame);
+    }
+
     function stopCameraStream() {
+        if (qrScanAnimId) {
+            cancelAnimationFrame(qrScanAnimId);
+            qrScanAnimId = null;
+        }
+
         if (cameraStream) {
             cameraStream.getTracks().forEach(track => track.stop());
             cameraStream = null;
         }
+
         const video = document.getElementById('qrVideoElement');
         const placeholder = document.getElementById('qrPlaceholderIcon');
+        const laser = document.getElementById('qrLaserScanLine');
         const label = document.getElementById('cameraBtnLabel');
+        const statusText = document.getElementById('qrCameraStatusText');
 
         if (video) {
             video.classList.add('hidden');
@@ -529,26 +655,112 @@
             video.srcObject = null;
         }
         if (placeholder) placeholder.classList.remove('hidden');
+        if (laser) laser.classList.add('hidden');
         if (label) label.innerText = 'Aktifkan Kamera';
+        if (statusText) statusText.innerText = 'Kamera Siap Diaktifkan';
     }
 
-    function submitScannedQr() {
-        const val = (document.getElementById('manualQrInput')?.value || '').trim();
-        if (!val) return;
+    function handleQrFileUpload(event) {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
 
-        // If it is a full URL e.g. https://.../verifikasi/SJI-2026-001 or /kwitansi/SJI-2026-001
-        let nisOrCode = val;
-        if (val.includes('/')) {
-            const parts = val.split('/');
+        if (window.Swal) {
+            Swal.fire({
+                title: 'Membaca QR Code...',
+                text: 'Sedang memproses gambar dokumen...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                offscreenCanvas.width = img.width;
+                offscreenCanvas.height = img.height;
+                offscreenCtx.drawImage(img, 0, 0);
+                const imageData = offscreenCtx.getImageData(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+
+                if (window.jsQR) {
+                    const code = jsQR(imageData.data, imageData.width, imageData.height);
+                    if (code && code.data) {
+                        processDetectedQr(code.data);
+                    } else {
+                        if (window.Swal) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'QR Code Tidak Terbaca',
+                                text: 'Tidak ditemukan QR Code yang jelas pada foto yang diunggah. Pastikan foto tidak buram atau masukkan kode NIS secara manual.',
+                                confirmButtonColor: '#DC2626',
+                                confirmButtonText: 'Mengerti'
+                            });
+                        } else {
+                            alert('QR Code tidak ditemukan pada gambar.');
+                        }
+                    }
+                }
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        event.target.value = '';
+    }
+
+    function processDetectedQr(rawText) {
+        stopCameraStream();
+        if (!rawText) return;
+
+        let nisOrCode = rawText.trim();
+        if (nisOrCode.includes('/')) {
+            const parts = nisOrCode.split('/');
             nisOrCode = parts[parts.length - 1];
+        }
+
+        const manualInput = document.getElementById('manualQrInput');
+        if (manualInput) manualInput.value = nisOrCode;
+
+        if (window.Swal) {
+            Swal.fire({
+                icon: 'success',
+                title: 'QR Code Terdeteksi!',
+                html: `Kode Dokumen: <strong class="text-japan-600 font-mono text-sm">${nisOrCode}</strong><br><span class="text-xs text-slate-500">Membuka database siswa...</span>`,
+                timer: 1400,
+                showConfirmButton: false,
+                timerProgressBar: true
+            });
         }
 
         const mainInput = document.getElementById('studentSearchInput');
         if (mainInput) {
             mainInput.value = nisOrCode;
-            closeQrScanModal();
-            mainInput.closest('form').submit();
+            setTimeout(() => {
+                closeQrScanModal();
+                mainInput.closest('form').submit();
+            }, 900);
         }
+    }
+
+    function submitScannedQr() {
+        const val = (document.getElementById('manualQrInput')?.value || '').trim();
+        if (!val) {
+            if (window.Swal) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Masukkan Kode NIS',
+                    text: 'Silakan ketik nomor NIS (contoh: SJI-2026-001) atau nomor telepon siswa terlebih dahulu.',
+                    confirmButtonColor: '#DC2626',
+                    confirmButtonText: 'OK'
+                });
+            } else {
+                alert('Silakan masukkan NIS terlebih dahulu.');
+            }
+            return;
+        }
+
+        processDetectedQr(val);
     }
 </script>
 @endsection

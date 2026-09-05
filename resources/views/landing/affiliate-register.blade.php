@@ -131,7 +131,7 @@
                             <span class="text-slate-500 font-bold block">Tautan Pendaftaran Referral Anda:</span>
                             <div class="flex items-center gap-2">
                                 <input type="text" id="refLinkInput" readonly value="{{ session('referral_link') }}" class="w-full font-mono text-xs text-blue-600 bg-slate-50 p-2 rounded-lg border border-slate-200">
-                                <button type="button" onclick="navigator.clipboard.writeText('{{ session('referral_link') }}'); alert('Link referral berhasil disalin!');" class="px-4 py-2 rounded-lg bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition">
+                                <button type="button" onclick="navigator.clipboard.writeText('{{ session('referral_link') }}'); Swal.fire({ icon: 'success', title: 'Tersalin!', text: 'Link referral berhasil disalin ke clipboard.', timer: 1500, showConfirmButton: false });" class="px-4 py-2 rounded-lg bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition">
                                     Salin
                                 </button>
                             </div>

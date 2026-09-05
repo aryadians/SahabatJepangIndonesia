@@ -509,13 +509,21 @@
                 // Show subtle toast
                 showMiniToast(data.message);
             } else {
-                alert('Gagal memperbarui status pendaftar.');
+                if (window.Swal) {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: 'Gagal memperbarui status pendaftar.', confirmButtonColor: '#DC2626' });
+                } else {
+                    alert('Gagal memperbarui status pendaftar.');
+                }
             }
         })
         .catch(err => {
             if (spinner) spinner.classList.add('hidden');
             console.error(err);
-            alert('Terjadi kesalahan koneksi saat mengubah status.');
+            if (window.Swal) {
+                Swal.fire({ icon: 'error', title: 'Kesalahan Koneksi', text: 'Terjadi kesalahan koneksi saat mengubah status.', confirmButtonColor: '#DC2626' });
+            } else {
+                alert('Terjadi kesalahan koneksi saat mengubah status.');
+            }
         });
     }
 
@@ -706,7 +714,11 @@
             clearLeadSelection();
         } catch (err) {
             console.error(err);
-            alert('Terjadi kesalahan saat memproses status massal.');
+            if (window.Swal) {
+                Swal.fire({ icon: 'error', title: 'Kesalahan', text: 'Terjadi kesalahan saat memproses status massal.', confirmButtonColor: '#DC2626' });
+            } else {
+                alert('Terjadi kesalahan saat memproses status massal.');
+            }
         }
     }
 </script>

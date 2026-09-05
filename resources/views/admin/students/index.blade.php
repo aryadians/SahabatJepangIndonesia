@@ -1172,7 +1172,11 @@
         })
         .catch(err => {
             console.error(err);
-            alert('Gagal memuat detail data siswa.');
+            if (window.Swal) {
+                Swal.fire({ icon: 'error', title: 'Kesalahan', text: 'Gagal memuat detail data siswa.', confirmButtonColor: '#DC2626' });
+            } else {
+                alert('Gagal memuat detail data siswa.');
+            }
         });
     }
 
@@ -1196,7 +1200,11 @@
         }
 
         if (!cleanPhone) {
-            alert('Nomor WhatsApp siswa belum terdaftar.');
+            if (window.Swal) {
+                Swal.fire({ icon: 'warning', title: 'Nomor WhatsApp Kosong', text: 'Nomor WhatsApp siswa belum terdaftar di database.', confirmButtonColor: '#DC2626' });
+            } else {
+                alert('Nomor WhatsApp siswa belum terdaftar.');
+            }
             return;
         }
 

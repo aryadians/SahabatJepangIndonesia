@@ -1223,7 +1223,11 @@
         const currentToken = tokenInput ? tokenInput.value.trim() : '';
 
         if (!targetPhone) {
-            alert('Silakan masukkan nomor WhatsApp tujuan uji coba terlebih dahulu.');
+            if (window.Swal) {
+                Swal.fire({ icon: 'warning', title: 'Nomor WhatsApp Kosong', text: 'Silakan masukkan nomor WhatsApp tujuan uji coba terlebih dahulu.', confirmButtonColor: '#DC2626' });
+            } else {
+                alert('Silakan masukkan nomor WhatsApp tujuan uji coba terlebih dahulu.');
+            }
             if (phoneInput) phoneInput.focus();
             return;
         }
@@ -1308,7 +1312,11 @@
         if (!input) return;
         const val = input.value.trim();
         if (!val) {
-            alert('Token Fonnte masih kosong. Silakan isi terlebih dahulu.');
+            if (window.Swal) {
+                Swal.fire({ icon: 'warning', title: 'Token Kosong', text: 'Token Fonnte masih kosong. Silakan isi terlebih dahulu.', confirmButtonColor: '#DC2626' });
+            } else {
+                alert('Token Fonnte masih kosong. Silakan isi terlebih dahulu.');
+            }
             input.focus();
             return;
         }
