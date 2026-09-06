@@ -408,6 +408,15 @@
                                         <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                                     </button>
 
+                                    <a 
+                                        href="{{ route('admin.cash-book.print', $trx->id) }}" 
+                                        target="_blank" 
+                                        class="p-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 transition inline-flex items-center" 
+                                        title="Cetak Lembar Voucher Kas ({{ $trx->type === 'income' ? 'BKM' : 'BKK' }})"
+                                    >
+                                        <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                                    </a>
+
                                     @if(!$isLocked)
                                         <form action="{{ route('admin.cash-book.destroy', $trx->id) }}" method="POST" onsubmit="return confirm('Hapus transaksi kas {{ $trx->transaction_number }}?')">
                                             @csrf

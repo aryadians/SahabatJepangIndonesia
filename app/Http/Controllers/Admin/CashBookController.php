@@ -399,4 +399,52 @@ class CashBookController extends Controller
 
         return $query;
     }
+
+    /**
+     * Cetak Lembar Bukti Kas Masuk (BKM) atau Bukti Kas Keluar (BKK) Resmi
+     */
+    public function printVoucher($id)
+    {
+        $transaction = CashTransaction::with(['student', 'teacher', 'affiliate', 'reimbursement'])->findOrFail($id);
+        $settings = SiteSetting::allCached();
+        $terbilang = trim($this->terbilang((int)$transaction->amount)) . ' Rupiah';
+
+        return view('admin.cash_book.print_voucher', compact('transaction', 'settings', 'terbilang'));
+    }
+
+    /**
+     * Konversi Angka ke Kata Terbilang Rupiah
+     */
+    private function terbilang($number)
+    {
+        $result = $this->rawTerbilang($number);
+        return preg_replace('/\s+/', ' ', trim($result));
+    }
+
+    private function rawTerbilang($number)
+    {
+        $number = abs((int)$number);
+        $bilang = ['', 'Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam', 'Tujuh', 'Delapan', 'Sembilan', 'Sepuluh', 'Sebelas'];
+        
+        if ($number < 12) {
+            return $bilang[$number];
+        } elseif ($number < 20) {
+            return $this->rawTerbilang($number - 10) . ' Belas';
+        } elseif ($number < 100) {
+            return $this->rawTerbilang((int)($number / 10)) . ' Puluh ' . $this->rawTerbilang($number % 10);
+        } elseif ($number < 200) {
+            return 'Seratus ' . $this->rawTerbilang($number - 100);
+        } elseif ($number < 1000) {
+            return $this->rawTerbilang((int)($number / 100)) . ' Ratus ' . $this->rawTerbilang($number % 100);
+        } elseif ($number < 2000) {
+            return 'Seribu ' . $this->rawTerbilang($number - 1000);
+        } elseif ($number < 1000000) {
+            return $this->rawTerbilang((int)($number / 1000)) . ' Ribu ' . $this->rawTerbilang($number % 1000);
+        } elseif ($number < 1000000000) {
+            return $this->rawTerbilang((int)($number / 1000000)) . ' Juta ' . $this->rawTerbilang($number % 1000000);
+        } elseif ($number < 1000000000000) {
+            return $this->rawTerbilang((int)($number / 1000000000)) . ' Miliar ' . $this->rawTerbilang($number % 1000000000);
+        }
+        return (string)$number;
+    }
 }

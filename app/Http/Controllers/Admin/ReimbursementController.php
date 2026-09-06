@@ -548,13 +548,16 @@ class ReimbursementController extends Controller
                       });
                 });
             } elseif ($period === 'weekly') {
-                $startOfWeek = now()->startOfWeek()->toDateString();
-                $endOfWeek = now()->endOfWeek()->toDateString();
+                $startOfWeek = now()->startOfWeek()->startOfDay();
+                $endOfWeek = now()->endOfWeek()->endOfDay();
                 $query->where(function ($q) use ($startOfWeek, $endOfWeek) {
-                    $q->whereBetween('start_date', [$startOfWeek, $endOfWeek])
-                      ->orWhere(function ($sub) {
-                          $sub->whereNull('start_date')->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
-                      });
+                    $q->where(function ($sq) use ($startOfWeek, $endOfWeek) {
+                        $sq->whereDate('start_date', '>=', $startOfWeek->toDateString())
+                           ->whereDate('start_date', '<=', $endOfWeek->toDateString());
+                    })->orWhere(function ($sub) use ($startOfWeek, $endOfWeek) {
+                        $sub->whereNull('start_date')
+                            ->whereBetween('created_at', [$startOfWeek, $endOfWeek]);
+                    });
                 });
             } elseif ($period === 'monthly') {
                 $month = now()->month;

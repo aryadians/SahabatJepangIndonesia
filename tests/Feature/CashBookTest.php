@@ -435,6 +435,49 @@ class CashBookTest extends TestCase
         $this->assertNotNull($trx);
         $this->assertEquals($teacher->id, $trx->teacher->id);
     }
+
+    public function test_cash_book_voucher_print_for_income_and_expense(): void
+    {
+        $this->actingAs($this->admin);
+
+        // 1. Test Income Voucher (BKM)
+        $incomeTrx = CashTransaction::create([
+            'transaction_number' => 'BKM-202609-0099',
+            'transaction_date' => '2026-09-06',
+            'type' => 'income',
+            'category' => 'tuition_student',
+            'title' => 'Pembayaran Pelatihan Siswa: Budi Santoso',
+            'amount' => 5000000,
+            'payment_method' => 'bank_bca',
+            'notes' => 'Angsuran biaya tahap 1',
+            'recorded_by' => 'Admin Keuangan',
+        ]);
+
+        $incomeRes = $this->get("/admin/cash-book/{$incomeTrx->id}/print");
+        $incomeRes->assertStatus(200);
+        $incomeRes->assertSee('BUKTI KAS MASUK (BKM)');
+        $incomeRes->assertSee('BKM-202609-0099');
+        $incomeRes->assertSee('Lima Juta Rupiah');
+
+        // 2. Test Expense Voucher (BKK)
+        $expenseTrx = CashTransaction::create([
+            'transaction_number' => 'BKK-202609-0099',
+            'transaction_date' => '2026-09-06',
+            'type' => 'expense',
+            'category' => 'building_rent',
+            'title' => 'Sewa Gedung Kampus LPK Cabang Jakarta',
+            'amount' => 12500000,
+            'payment_method' => 'bank_mandiri',
+            'notes' => 'Pembayaran sewa gedung semester 2',
+            'recorded_by' => 'Admin Keuangan',
+        ]);
+
+        $expenseRes = $this->get("/admin/cash-book/{$expenseTrx->id}/print");
+        $expenseRes->assertStatus(200);
+        $expenseRes->assertSee('BUKTI KAS KELUAR (BKK)');
+        $expenseRes->assertSee('BKK-202609-0099');
+        $expenseRes->assertSee('Dua Belas Juta Lima Ratus Ribu Rupiah');
+    }
 }
 
 

@@ -223,10 +223,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/finance', [FinancialAnalyticsController::class, 'index'])->name('finance.index');
     Route::get('/finance/export-pdf', [FinancialAnalyticsController::class, 'exportPdf'])->name('finance.export.pdf');
 
-    // 14-GL. Buku Kas Umum & Jurnal Akuntansi Keuangan LPK
     Route::get('/cash-book/export-csv', [CashBookController::class, 'exportCsv'])->name('cash-book.export.csv');
     Route::get('/cash-book/export-pdf', [CashBookController::class, 'exportPdf'])->name('cash-book.export.pdf');
     Route::post('/cash-book/period-lock', [CashBookController::class, 'togglePeriodLock'])->name('cash-book.period-lock');
+    Route::get('/cash-book/{id}/print', [CashBookController::class, 'printVoucher'])->name('cash-book.print');
     Route::resource('cash-book', CashBookController::class)->except(['create', 'show', 'edit']);
 
     // 14b. Klaim Reimbursement & Uang Muka Perjalanan Dinas (Cash Advance)
