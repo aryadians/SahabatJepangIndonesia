@@ -117,21 +117,23 @@
                 <span>Dashboard</span>
             </a>
 
-            <a 
-                href="{{ route('admin.consultations.index') }}" 
-                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.consultations.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
-            >
-                <i data-lucide="users" class="w-4 h-4"></i>
-                <span>Leads Pendaftar</span>
-                @php
-                    $pendingCount = \App\Models\Consultation::where('status', 'pending')->count();
-                @endphp
-                @if($pendingCount > 0)
-                    <span class="ml-auto px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 font-black text-[10px]">
-                        {{ $pendingCount }}
-                    </span>
-                @endif
-            </a>
+            @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
+                <a 
+                    href="{{ route('admin.consultations.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.consultations.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="users" class="w-4 h-4"></i>
+                    <span>Leads Pendaftar</span>
+                    @php
+                        $pendingCount = \App\Models\Consultation::where('status', 'pending')->count();
+                    @endphp
+                    @if($pendingCount > 0)
+                        <span class="ml-auto px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 font-black text-[10px]">
+                            {{ $pendingCount }}
+                        </span>
+                    @endif
+                </a>
+            @endif
 
             <div class="px-3 pt-3 pb-1 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
                 Akademik & Siswa
@@ -185,44 +187,50 @@
                 <span>Jadwal Angkatan & Kuota</span>
             </a>
 
-            <div class="px-3 pt-3 pb-1 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
-                Keuangan, Dinas & Operasional
-            </div>
+            @if(auth()->user()->canManageFinance())
+                <div class="px-3 pt-3 pb-1 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                    Keuangan & Pembukuan LPK
+                </div>
 
-            <a 
-                href="{{ route('admin.cash-book.index') }}" 
-                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.cash-book.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
-            >
-                <i data-lucide="book-open" class="w-4 h-4"></i>
-                <span>Buku Kas & Jurnal LPK</span>
-                @php
-                    $isLockedPeriod = !empty(\App\Models\SiteSetting::get('financial_lock_until'));
-                @endphp
-                @if($isLockedPeriod)
-                    <span class="ml-auto p-1 rounded bg-amber-500/20 text-amber-400" title="Tutup Buku Aktif">
-                        <i data-lucide="lock" class="w-3 h-3"></i>
+                <a 
+                    href="{{ route('admin.cash-book.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.cash-book.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                    <span>Buku Kas & Jurnal LPK</span>
+                    @php
+                        $isLockedPeriod = !empty(\App\Models\SiteSetting::get('financial_lock_until'));
+                    @endphp
+                    @if($isLockedPeriod)
+                        <span class="ml-auto p-1 rounded bg-amber-500/20 text-amber-400" title="Tutup Buku Aktif">
+                            <i data-lucide="lock" class="w-3 h-3"></i>
+                        </span>
+                    @endif
+                </a>
+
+                <a 
+                    href="{{ route('admin.finance.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.finance.index') || request()->routeIs('admin.finance.export.pdf') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="trending-up" class="w-4 h-4"></i>
+                    <span>Proyeksi Kas & Keuangan</span>
+                </a>
+
+                <a 
+                    href="{{ route('admin.finance.pl') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.finance.pl*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="calculator" class="w-4 h-4"></i>
+                    <span>Laba Rugi LPK (P&L)</span>
+                    <span class="ml-auto px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                        P&L
                     </span>
-                @endif
-            </a>
+                </a>
+            @endif
 
-            <a 
-                href="{{ route('admin.finance.index') }}" 
-                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.finance.index') || request()->routeIs('admin.finance.export.pdf') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
-            >
-                <i data-lucide="trending-up" class="w-4 h-4"></i>
-                <span>Proyeksi Kas & Keuangan</span>
-            </a>
-
-            <a 
-                href="{{ route('admin.finance.pl') }}" 
-                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.finance.pl*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
-            >
-                <i data-lucide="calculator" class="w-4 h-4"></i>
-                <span>Laba Rugi LPK (P&L)</span>
-                <span class="ml-auto px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                    P&L
-                </span>
-            </a>
+            <div class="px-3 pt-3 pb-1 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                Dinas, Arsip & Operasional
+            </div>
 
             <a 
                 href="{{ route('admin.reimbursements.index') }}" 
@@ -240,29 +248,31 @@
                 @endif
             </a>
 
-            <a 
-                href="{{ route('admin.digital-archives.index') }}" 
-                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.digital-archives.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
-            >
-                <i data-lucide="folder-archive" class="w-4 h-4"></i>
-                <span>Arsip Digital Nota & Berkas</span>
-            </a>
+            @if(auth()->user()->isAdmin() || auth()->user()->isStaff())
+                <a 
+                    href="{{ route('admin.digital-archives.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.digital-archives.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="folder-archive" class="w-4 h-4"></i>
+                    <span>Arsip Digital Nota & Berkas</span>
+                </a>
 
-            <a 
-                href="{{ route('admin.whatsapp.index') }}" 
-                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.whatsapp.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
-            >
-                <i data-lucide="message-square" class="w-4 h-4"></i>
-                <span>Otomatisasi WhatsApp</span>
-            </a>
+                <a 
+                    href="{{ route('admin.whatsapp.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.whatsapp.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                    <span>Otomatisasi WhatsApp</span>
+                </a>
 
-            <a 
-                href="{{ route('admin.affiliates.index') }}" 
-                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.affiliates.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
-            >
-                <i data-lucide="handshake" class="w-4 h-4"></i>
-                <span>Kemitraan SMK & BKK</span>
-            </a>
+                <a 
+                    href="{{ route('admin.affiliates.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.affiliates.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="handshake" class="w-4 h-4"></i>
+                    <span>Kemitraan SMK & BKK</span>
+                </a>
+            @endif
 
             @if(auth()->user()->isAdmin())
                 <div class="px-3 pt-3 pb-1 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">

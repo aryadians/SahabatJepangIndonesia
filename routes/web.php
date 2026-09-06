@@ -168,11 +168,13 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/leads/export-pdf', [AdminConsultationController::class, 'exportPdf'])->name('consultations.export.pdf');
     Route::get('/leads/{id}/print', [AdminConsultationController::class, 'printForm'])->name('consultations.print');
 
-    // 3. Site Settings & Hero CMS
-    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
-    Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
-    Route::post('/settings/test-fonnte', [SettingController::class, 'testFonnte'])->name('settings.test.fonnte');
-    Route::get('/settings/device-fonnte', [SettingController::class, 'checkFonnteDevice'])->name('settings.device.fonnte');
+    // 3. Site Settings & Hero CMS (Admin Only)
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+        Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+        Route::post('/settings/test-fonnte', [SettingController::class, 'testFonnte'])->name('settings.test.fonnte');
+        Route::get('/settings/device-fonnte', [SettingController::class, 'checkFonnteDevice'])->name('settings.device.fonnte');
+    });
 
     // 4. Programs CRUD
     Route::resource('programs', ProgramController::class)->except(['show']);
@@ -232,20 +234,22 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::put('/whatsapp/templates/{id}', [WhatsAppController::class, 'updateTemplate'])->name('whatsapp.template.update');
     Route::post('/whatsapp/send', [WhatsAppController::class, 'sendDirect'])->name('whatsapp.send');
 
-    // 14. Executive Financial Analytics & Cashflow Forecasting
-    Route::get('/finance', [FinancialAnalyticsController::class, 'index'])->name('finance.index');
-    Route::get('/finance/export-pdf', [FinancialAnalyticsController::class, 'exportPdf'])->name('finance.export.pdf');
-    Route::get('/finance/profit-loss', [FinancialAnalyticsController::class, 'profitAndLoss'])->name('finance.pl');
-    Route::get('/finance/profit-loss/export-pdf', [FinancialAnalyticsController::class, 'exportProfitAndLossPdf'])->name('finance.pl.export');
+    // 14. Executive Financial Analytics & Cashflow Forecasting (Admin & Staff Only)
+    Route::middleware('role:admin,staff')->group(function () {
+        Route::get('/finance', [FinancialAnalyticsController::class, 'index'])->name('finance.index');
+        Route::get('/finance/export-pdf', [FinancialAnalyticsController::class, 'exportPdf'])->name('finance.export.pdf');
+        Route::get('/finance/profit-loss', [FinancialAnalyticsController::class, 'profitAndLoss'])->name('finance.pl');
+        Route::get('/finance/profit-loss/export-pdf', [FinancialAnalyticsController::class, 'exportProfitAndLossPdf'])->name('finance.pl.export');
 
-    Route::get('/cash-book/export-csv', [CashBookController::class, 'exportCsv'])->name('cash-book.export.csv');
-    Route::get('/cash-book/export-pdf', [CashBookController::class, 'exportPdf'])->name('cash-book.export.pdf');
-    Route::get('/cash-book/income-statement/pdf', [CashBookController::class, 'incomeStatementPdf'])->name('cash-book.income-statement.pdf');
-    Route::get('/cash-book/balance-sheet/pdf', [CashBookController::class, 'balanceSheetPdf'])->name('cash-book.balance-sheet.pdf');
-    Route::post('/cash-book/period-lock', [CashBookController::class, 'togglePeriodLock'])->name('cash-book.period-lock');
-    Route::get('/cash-book/{id}/print', [CashBookController::class, 'printVoucher'])->name('cash-book.print');
-    Route::get('/cash-book/{id}/download-proof', [CashBookController::class, 'downloadProof'])->name('cash-book.proof.download');
-    Route::resource('cash-book', CashBookController::class)->except(['create', 'show', 'edit']);
+        Route::get('/cash-book/export-csv', [CashBookController::class, 'exportCsv'])->name('cash-book.export.csv');
+        Route::get('/cash-book/export-pdf', [CashBookController::class, 'exportPdf'])->name('cash-book.export.pdf');
+        Route::get('/cash-book/income-statement/pdf', [CashBookController::class, 'incomeStatementPdf'])->name('cash-book.income-statement.pdf');
+        Route::get('/cash-book/balance-sheet/pdf', [CashBookController::class, 'balanceSheetPdf'])->name('cash-book.balance-sheet.pdf');
+        Route::post('/cash-book/period-lock', [CashBookController::class, 'togglePeriodLock'])->name('cash-book.period-lock');
+        Route::get('/cash-book/{id}/print', [CashBookController::class, 'printVoucher'])->name('cash-book.print');
+        Route::get('/cash-book/{id}/download-proof', [CashBookController::class, 'downloadProof'])->name('cash-book.proof.download');
+        Route::resource('cash-book', CashBookController::class)->except(['create', 'show', 'edit']);
+    });
 
     // 14b. Klaim Reimbursement & Uang Muka Perjalanan Dinas (Cash Advance)
     Route::get('/reimbursements/stats', [ReimbursementController::class, 'stats'])->name('reimbursements.stats');
@@ -284,8 +288,11 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('/affiliates/{id}/payout', [AffiliateController::class, 'payoutCommission'])->name('affiliates.payout');
     Route::resource('affiliates', AffiliateController::class)->except(['create', 'show', 'edit']);
 
-    // 16. User Management & RBAC Roles
-    Route::resource('users', UserController::class)->except(['create', 'show', 'edit']);
+    // 16. User Management & RBAC Roles (Admin Only)
+    Route::middleware('role:admin')->group(function () {
+        Route::post('/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle');
+        Route::resource('users', UserController::class)->except(['create', 'show', 'edit']);
+    });
 
     // 17. Kalender Wawancara Kerja & Matching Kaisha
     Route::get('/interviews/export-pdf', [JobInterviewController::class, 'exportPdf'])->name('interviews.export.pdf');
