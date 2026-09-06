@@ -729,5 +729,112 @@ class NewFeaturesTest extends TestCase
                 && str_contains($request['message'], 'Telah Disetujui');
         });
     }
+
+    public function test_admin_can_access_flight_readiness_tracker(): void
+    {
+        $student = Student::create([
+            'name' => 'Kenjiro Sato',
+            'nis' => 'SJI-2026-999',
+            'program' => 'Tokutei Ginou (SSW)',
+            'status' => 'ready_to_depart',
+            'destination_company' => 'Yamato Logistics KK',
+            'destination_prefecture' => 'Aichi',
+            'total_cost' => 15000000,
+            'paid_amount' => 15000000,
+        ]);
+
+        $response = $this->actingAs($this->admin)->get('/admin/flight-readiness');
+        $response->assertStatus(200);
+        $response->assertSee('Flight Readiness Tracker');
+        $response->assertSee('Kenjiro Sato');
+        $response->assertSee('Yamato Logistics KK');
+        $response->assertSee('Aichi');
+    }
+
+    public function test_admin_can_update_flight_readiness_status(): void
+    {
+        $student = Student::create([
+            'name' => 'Ahmad Fauzi',
+            'nis' => 'SJI-2026-998',
+            'program' => 'Ginou Jisshusei (Magang)',
+            'status' => 'passed_interview',
+            'total_cost' => 20000000,
+            'paid_amount' => 10000000,
+        ]);
+
+        $response = $this->actingAs($this->admin)->put("/admin/flight-readiness/{$student->id}/status", [
+            'status' => 'visa_processing',
+            'destination_company' => 'Honda Auto Parts Co.',
+            'destination_prefecture' => 'Gunma',
+            'departure_date' => '2026-11-20',
+            'passport_number' => 'X9988776',
+            'passport_expiry' => '2031-11-20',
+            'mcu_result' => 'fit',
+            'coe_number' => 'COE-JPN-88990',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('students', [
+            'id' => $student->id,
+            'status' => 'visa_processing',
+            'destination_company' => 'Honda Auto Parts Co.',
+            'destination_prefecture' => 'Gunma',
+            'passport_number' => 'X9988776',
+            'mcu_result' => 'fit',
+            'coe_number' => 'COE-JPN-88990',
+        ]);
+    }
+
+    public function test_admin_can_quick_upload_flight_document(): void
+    {
+        $student = Student::create([
+            'name' => 'Dewi Lestari',
+            'nis' => 'SJI-2026-997',
+            'program' => 'Tokutei Ginou (SSW)',
+            'status' => 'interview',
+            'total_cost' => 18000000,
+            'paid_amount' => 5000000,
+        ]);
+
+        $fakeFile = \Illuminate\Http\UploadedFile::fake()->image('passport_scan.jpg', 600, 400);
+
+        $response = $this->actingAs($this->admin)->post("/admin/flight-readiness/{$student->id}/upload-doc", [
+            'doc_type' => 'passport',
+            'file' => $fakeFile,
+        ]);
+
+        $response->assertRedirect();
+        $student->refresh();
+        $this->assertNotNull($student->document_passport);
+        $this->assertStringStartsWith('data:image', $student->document_passport);
+
+        // Digital Archive created
+        $this->assertDatabaseHas('digital_archives', [
+            'category' => 'dokumen_siswa',
+            'file_name' => "{$student->nis}_passport.jpg",
+        ]);
+    }
+
+    public function test_admin_can_export_flight_readiness_pdf(): void
+    {
+        Student::create([
+            'name' => 'Rina Nose',
+            'nis' => 'SJI-2026-996',
+            'program' => 'Tokutei Ginou (SSW)',
+            'status' => 'ready_to_depart',
+            'destination_company' => 'Toyota Boshoku',
+            'destination_prefecture' => 'Aichi',
+            'total_cost' => 15000000,
+            'paid_amount' => 15000000,
+        ]);
+
+        $response = $this->actingAs($this->admin)->get('/admin/flight-readiness/export-pdf');
+        $response->assertStatus(200);
+        $response->assertSee('DAFTAR VERIFIKASI KESIAPAN KEBERANGKATAN SISWA');
+        $response->assertSee('FLIGHT READINESS DOSSIER');
+        $response->assertSee('Rina Nose');
+        $response->assertSee('Toyota Boshoku');
+    }
 }
+
 

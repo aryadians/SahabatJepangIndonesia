@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\DigitalArchiveController;
 use App\Http\Controllers\Admin\FacilityController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\FinancialAnalyticsController;
+use App\Http\Controllers\Admin\FlightReadinessController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProgramController;
@@ -209,6 +210,12 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('/students/{id}/payment', [StudentController::class, 'updatePayment'])->name('students.payment');
     Route::post('/students/{id}/send-receipt-wa', [StudentController::class, 'sendReceiptWa'])->name('students.send.receipt.wa');
     Route::resource('students', StudentController::class);
+
+    // 11b. Pusat Checklist & Verifikasi Dokumen Keberangkatan Siswa (Flight Readiness)
+    Route::get('/flight-readiness', [FlightReadinessController::class, 'index'])->name('flight-readiness.index');
+    Route::match(['post', 'put'], '/flight-readiness/{id}/status', [FlightReadinessController::class, 'updateStatus'])->name('flight-readiness.status');
+    Route::post('/flight-readiness/{id}/upload-doc', [FlightReadinessController::class, 'quickUploadDoc'])->name('flight-readiness.upload-doc');
+    Route::get('/flight-readiness/export-pdf', [FlightReadinessController::class, 'exportPdf'])->name('flight-readiness.export.pdf');
 
     // 12. Data Pengajar / Sensei
     Route::get('/teachers/export-pdf', [TeacherController::class, 'exportPdf'])->name('teachers.export.pdf');

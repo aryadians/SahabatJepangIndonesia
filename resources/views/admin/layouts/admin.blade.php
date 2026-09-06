@@ -146,6 +146,14 @@
             </a>
 
             <a 
+                href="{{ route('admin.flight-readiness.index') }}" 
+                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.flight-readiness.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+            >
+                <i data-lucide="plane-takeoff" class="w-4 h-4 {{ request()->routeIs('admin.flight-readiness.*') ? 'text-white' : 'text-emerald-400' }}"></i>
+                <span>Checklist Terbang Jepang</span>
+            </a>
+
+            <a 
                 href="{{ route('admin.interviews.index') }}" 
                 class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.interviews.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
             >
