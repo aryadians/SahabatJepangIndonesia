@@ -487,7 +487,7 @@
                                     @if($item->type === 'cash_advance' && in_array($item->status, ['paid', 'approved']))
                                         <button 
                                             type="button" 
-                                            onclick="openSettlementModal('{{ $item->id }}', '{{ $item->reimbursement_no }}', '{{ $item->amount_approved }}', '{{ addslashes($item->employee_name) }}')"
+                                            onclick="openSettlementModal('{{ $item->id }}', '{{ $item->reimbursement_no }}', '{{ $item->amount_approved }}', '{{ addslashes($item->employee_name) }}', '{{ addslashes($item->title) }}')"
                                             class="px-2 py-1 rounded-lg bg-purple-100 hover:bg-purple-200 text-purple-800 font-bold text-[11px] transition flex items-center gap-1 cursor-pointer"
                                             title="Laporkan Nota Realisasi Pengeluaran SPJ Kasbon"
                                         >
@@ -546,207 +546,270 @@
 </div>
 
 <!-- MODAL 1: FORM PENGAJUAN BARU (REIMBURSE & CASH ADVANCE) -->
-<div id="createReimbursementModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+<div id="createReimbursementModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-5 hidden" onclick="handleBackdropClick(event, 'createReimbursementModal')">
+    <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[94vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         
         <!-- Header Modal -->
-        <div class="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-slate-50 via-red-50/20 to-slate-50">
+        <div class="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-red-50/60 via-white to-slate-50">
             <div class="flex items-center gap-3.5">
-                <div class="w-11 h-11 rounded-2xl bg-japan-600 text-white flex items-center justify-center font-bold shadow-md shadow-japan-600/20">
-                    <i data-lucide="receipt" class="w-5 h-5"></i>
+                <div class="w-12 h-12 rounded-2xl bg-japan-600 text-white flex items-center justify-center font-bold shadow-lg shadow-japan-600/25">
+                    <i data-lucide="receipt" class="w-6 h-6"></i>
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <h3 class="font-black text-slate-900 text-base leading-tight">Pengajuan Reimburse & Kasbon Dinas</h3>
-                        <span class="px-2 py-0.5 rounded-md bg-japan-100 text-japan-800 text-[10px] font-bold">経費精算</span>
+                        <h3 class="font-black text-slate-900 text-base sm:text-lg tracking-tight">Form Pengajuan Biaya & Uang Muka Dinas</h3>
+                        <span class="px-2 py-0.5 rounded-full bg-japan-50 text-japan-700 text-[10px] font-bold border border-japan-200">経費精算</span>
                     </div>
-                    <p class="text-xs text-slate-500 mt-0.5">Formulir pengajuan klaim nota biaya perjalanan dinas & uang muka (cash advance)</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Klaim penggantian nota riil atau permohonan modal kasbon pra-perjalanan dinas</p>
                 </div>
             </div>
-            <button type="button" onclick="closeCreateReimbursementModal()" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition shadow-xs">
+            <button type="button" onclick="closeCreateReimbursementModal()" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition cursor-pointer">
                 <i data-lucide="x" class="w-4 h-4"></i>
             </button>
         </div>
 
         <!-- Form Body -->
-        <form action="{{ route('admin.reimbursements.store') }}" method="POST" enctype="multipart/form-data" class="flex-1 overflow-y-auto p-6 space-y-6">
+        <form action="{{ route('admin.reimbursements.store') }}" method="POST" enctype="multipart/form-data" class="flex-1 overflow-y-auto p-5 sm:p-7 space-y-6">
             @csrf
 
-            <!-- Section 1: Tipe Transaksi -->
-            <div class="space-y-2">
-                <label class="block text-xs font-black uppercase tracking-wider text-slate-500">1. Tipe Pengajuan Keuangan <span class="text-rose-500">*</span></label>
+            <!-- Section 1: Tipe Pengajuan Keuangan -->
+            <div class="space-y-2.5">
+                <div class="flex items-center justify-between">
+                    <label class="block text-xs font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                        <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-black flex items-center justify-center">1</span>
+                        <span>Pilih Tipe Pengajuan Keuangan</span>
+                        <span class="text-rose-500">*</span>
+                    </label>
+                    <span class="text-[11px] text-slate-400 font-medium">Pilih salah satu metode</span>
+                </div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    <label class="p-3.5 rounded-2xl border-2 cursor-pointer transition flex items-start gap-3 border-sky-500 bg-sky-50/50 text-slate-900 shadow-xs" id="labelTypeReimburse">
-                        <input type="radio" name="type" value="reimbursement" checked onchange="toggleTypeNotice('reimbursement')" class="mt-1 text-japan-600 focus:ring-japan-500">
+                    <!-- Option 1: Reimburse -->
+                    <label class="relative p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start gap-3.5 border-sky-500 bg-sky-50/40 text-slate-900 shadow-sm" id="labelTypeReimburse">
+                        <input type="radio" name="type" value="reimbursement" checked onchange="toggleTypeNotice('reimbursement')" class="mt-1 text-sky-600 focus:ring-sky-500">
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2">
-                                <span class="font-black text-xs text-slate-900">Reimburse (Klaim Balik)</span>
-                                <span class="px-1.5 py-0.5 text-[9px] font-bold rounded bg-sky-100 text-sky-800">Pasca Dinas</span>
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="font-black text-xs sm:text-sm text-slate-900">Klaim Reimburse (Klaim Balik)</span>
+                                <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-sky-100 text-sky-800 border border-sky-200">Pasca Dinas</span>
                             </div>
-                            <span class="text-[11px] text-slate-500 block mt-0.5 leading-relaxed">Karyawan membayar terlebih dahulu, diganti setelah nota verifikasi bendahara.</span>
+                            <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                                Karyawan telah menalangi biaya dinas terlebih dahulu. Penggantian dana dicairkan setelah bukti nota diverifikasi oleh bendahara.
+                            </p>
                         </div>
                     </label>
 
-                    <label class="p-3.5 rounded-2xl border-2 cursor-pointer transition flex items-start gap-3 border-slate-200 hover:border-purple-300 text-slate-900" id="labelTypeAdvance">
+                    <!-- Option 2: Cash Advance -->
+                    <label class="relative p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start gap-3.5 border-slate-200 hover:border-purple-300 text-slate-900" id="labelTypeAdvance">
                         <input type="radio" name="type" value="cash_advance" onchange="toggleTypeNotice('cash_advance')" class="mt-1 text-purple-600 focus:ring-purple-500">
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2">
-                                <span class="font-black text-xs text-slate-900">Uang Muka Dinas (Kasbon)</span>
-                                <span class="px-1.5 py-0.5 text-[9px] font-bold rounded bg-purple-100 text-purple-800">Pra Dinas</span>
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="font-black text-xs sm:text-sm text-slate-900">Uang Muka Dinas (Kasbon)</span>
+                                <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-purple-100 text-purple-800 border border-purple-200">Pra Dinas</span>
                             </div>
-                            <span class="text-[11px] text-slate-500 block mt-0.5 leading-relaxed">Dana dicairkan di muka sebelum dinas keluar kota, lalu dipertanggungjawabkan (SPJ).</span>
+                            <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                                Dana dicairkan di muka sebelum dinas keluar kota. Bukti pengeluaran dan nota fisik dipertanggungjawabkan (SPJ) setelah dinas.
+                            </p>
                         </div>
                     </label>
                 </div>
-            </div>
 
-            <!-- Section 2: Pemohon & Kategori -->
-            <div class="space-y-2">
-                <label class="block text-xs font-black uppercase tracking-wider text-slate-500">2. Data Pemohon & Kategori</label>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="space-y-1">
-                        <label class="block text-xs font-bold text-slate-700">Karyawan / Pejabat Pemohon <span class="text-rose-500">*</span></label>
-                        <select name="teacher_id" id="selectEmployee" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-japan-600 focus:ring-1 focus:ring-japan-600 transition bg-white">
-                            <option value="">-- Pilih dari Daftar Karyawan / Direksi --</option>
-                            @foreach($employees as $emp)
-                                <option value="{{ $emp->id }}">
-                                    {{ $emp->name }} ({{ $emp->position_title ?: $emp->role_badge['label'] }})
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="space-y-1">
-                        <label class="block text-xs font-bold text-slate-700">Kategori Pengeluaran <span class="text-rose-500">*</span></label>
-                        <select name="category" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-japan-600 focus:ring-1 focus:ring-japan-600 transition bg-white">
-                            <option value="mou_perjalanan_dinas">Perjalanan Dinas MoU Poltekkes & SMK</option>
-                            <option value="transportasi">Transportasi (Tiket Pesawat / Kereta / Bensin / Tol)</option>
-                            <option value="akomodasi_hotel">Akomodasi / Penginapan Hotel Dinas</option>
-                            <option value="konsumsi_meeting">Konsumsi & Jamuan Meeting Mitra Kaisha</option>
-                            <option value="operasional_kantor">Operasional Kantor & Pelatihan Siswa</option>
-                            <option value="lainnya">Keperluan Dinas Lainnya</option>
-                        </select>
-                    </div>
+                <!-- Dynamic Guide Notice -->
+                <div id="typeNoticeBox" class="p-3 bg-sky-50 border border-sky-200/80 rounded-2xl flex items-start gap-2.5 text-xs text-sky-900">
+                    <i data-lucide="info" class="w-4 h-4 text-sky-600 shrink-0 mt-0.5"></i>
+                    <span id="typeNoticeText">
+                        <strong>Panduan Reimburse:</strong> Harap lampirkan bukti foto nota/kuitansi fisik pada bagian bawah. Setelah disetujui, bendahara akan langsung mencairkan dana ke kas/rekening Anda.
+                    </span>
                 </div>
             </div>
 
-            <!-- Section 3: Agenda & Tanggal -->
-            <div class="space-y-2">
-                <label class="block text-xs font-black uppercase tracking-wider text-slate-500">3. Rincian Agenda & Lokasi Perjalanan</label>
-                <div class="space-y-3">
-                    <div class="space-y-1">
-                        <label class="block text-xs font-bold text-slate-700">Agenda / Keperluan Dinas <span class="text-rose-500">*</span></label>
-                        <input 
-                            type="text" 
-                            name="title" 
-                            required 
-                            placeholder="Contoh: Perjalanan Dinas Penandatanganan MoU dengan Rektor Poltekkes Semarang" 
-                            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-japan-600 focus:ring-1 focus:ring-japan-600 transition"
-                        >
-                    </div>
+            <!-- Section 2 & 3: 2-Column Responsive Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Left Column: Data Pemohon, Kategori & Agenda -->
+                <div class="space-y-4">
+                    <label class="block text-xs font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                        <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-black flex items-center justify-center">2</span>
+                        <span>Informasi Pemohon & Kategori</span>
+                    </label>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="space-y-3.5 bg-slate-50/70 p-4 rounded-2xl border border-slate-200/80">
                         <div class="space-y-1">
-                            <label class="block text-xs font-bold text-slate-700">Kota / Lokasi Tujuan</label>
+                            <label class="block text-xs font-bold text-slate-700">Karyawan / Pejabat Pemohon <span class="text-rose-500">*</span></label>
+                            <select name="teacher_id" id="selectEmployee" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-japan-600 focus:ring-1 focus:ring-japan-600 transition bg-white shadow-xs">
+                                <option value="">-- Pilih Karyawan / Direksi / Sensei --</option>
+                                @foreach($employees as $emp)
+                                    <option value="{{ $emp->id }}">
+                                        {{ $emp->name }} ({{ $emp->position_title ?: $emp->role_badge['label'] }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-xs font-bold text-slate-700">Pos Kategori Pengeluaran <span class="text-rose-500">*</span></label>
+                            <select name="category" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-japan-600 focus:ring-1 focus:ring-japan-600 transition bg-white shadow-xs">
+                                <option value="mou_perjalanan_dinas">🤝 Perjalanan Dinas MoU Poltekkes & SMK</option>
+                                <option value="transportasi">🚄 Transportasi (Tiket Pesawat / Kereta / Bensin / Tol)</option>
+                                <option value="akomodasi_hotel">🏨 Akomodasi / Penginapan Hotel Dinas</option>
+                                <option value="konsumsi_meeting">🍱 Konsumsi & Jamuan Meeting Mitra Kaisha</option>
+                                <option value="operasional_kantor">🏢 Operasional Kantor & Pelatihan Siswa</option>
+                                <option value="lainnya">📦 Keperluan Dinas Lainnya</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-xs font-bold text-slate-700">Agenda / Keperluan Dinas <span class="text-rose-500">*</span></label>
                             <input 
                                 type="text" 
-                                name="destination" 
-                                placeholder="Contoh: Semarang & Solo" 
-                                class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-japan-600 font-semibold"
-                            >
-                        </div>
-
-                        <div class="space-y-1">
-                            <label class="block text-xs font-bold text-slate-700">Tanggal Mulai</label>
-                            <input 
-                                type="date" 
-                                name="start_date" 
-                                value="{{ date('Y-m-d') }}" 
-                                class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-japan-600"
-                            >
-                        </div>
-
-                        <div class="space-y-1">
-                            <label class="block text-xs font-bold text-slate-700">Tanggal Selesai</label>
-                            <input 
-                                type="date" 
-                                name="end_date" 
-                                class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-japan-600"
-                            >
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section 4: Finansial -->
-            <div class="space-y-2">
-                <label class="block text-xs font-black uppercase tracking-wider text-slate-500">4. Nominal Anggaran & Catatan</label>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
-                    <div class="space-y-1">
-                        <label class="block text-xs font-bold text-slate-700">Nominal yang Diajukan (Rp) <span class="text-rose-500">*</span></label>
-                        <div class="relative">
-                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-black text-xs text-slate-400">Rp</span>
-                            <input 
-                                type="number" 
-                                name="amount_requested" 
+                                name="title" 
                                 required 
-                                min="1" 
-                                placeholder="Contoh: 2500000" 
-                                class="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm font-black text-slate-900 focus:outline-none focus:border-japan-600 focus:ring-1 focus:ring-japan-600 transition"
+                                placeholder="Contoh: MoU Kemitraan Poltekkes Semarang & Pelatihan Interview" 
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-japan-600 focus:ring-1 focus:ring-japan-600 transition bg-white shadow-xs"
                             >
                         </div>
-                        <p class="text-[10px] text-slate-400 mt-1">Masukkan nominal angka bulat tanpa titik atau koma.</p>
-                    </div>
-
-                    <div class="space-y-1">
-                        <label class="block text-xs font-bold text-slate-700">Catatan / Keterangan Tambahan</label>
-                        <textarea 
-                            name="notes" 
-                            rows="2" 
-                            placeholder="Rincian kontak mitra yang dikunjungi, tujuan khusus, dll..." 
-                            class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-japan-600 transition"
-                        ></textarea>
                     </div>
                 </div>
+
+                <!-- Right Column: Lokasi, Jadwal & Nominal -->
+                <div class="space-y-4">
+                    <label class="block text-xs font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                        <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-black flex items-center justify-center">3</span>
+                        <span>Lokasi, Jadwal & Anggaran</span>
+                    </label>
+
+                    <div class="space-y-3.5 bg-slate-50/70 p-4 rounded-2xl border border-slate-200/80">
+                        <div class="space-y-1">
+                            <label class="block text-xs font-bold text-slate-700">Kota / Lokasi Tujuan</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-rose-500"></i>
+                                </span>
+                                <input 
+                                    type="text" 
+                                    name="destination" 
+                                    placeholder="Contoh: Semarang, Solo & Yogyakarta" 
+                                    class="w-full pl-9 pr-3.5 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:border-japan-600 bg-white shadow-xs"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="space-y-1">
+                                <label class="block text-xs font-bold text-slate-700">Tanggal Mulai</label>
+                                <input 
+                                    type="date" 
+                                    name="start_date" 
+                                    id="inputStartDate"
+                                    value="{{ date('Y-m-d') }}" 
+                                    onchange="updateTripDuration()"
+                                    class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:border-japan-600 bg-white shadow-xs"
+                                >
+                            </div>
+
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <label class="block text-xs font-bold text-slate-700">Tanggal Selesai</label>
+                                    <span id="tripDurationBadge" class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">1 Hari</span>
+                                </div>
+                                <input 
+                                    type="date" 
+                                    name="end_date" 
+                                    id="inputEndDate"
+                                    value="{{ date('Y-m-d') }}" 
+                                    onchange="updateTripDuration()"
+                                    class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:border-japan-600 bg-white shadow-xs"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-xs font-bold text-slate-700">Nominal yang Diajukan (Rp) <span class="text-rose-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-black text-xs text-slate-400">Rp</span>
+                                <input 
+                                    type="number" 
+                                    name="amount_requested" 
+                                    id="inputAmountRequested"
+                                    required 
+                                    min="1" 
+                                    oninput="updateAmountPreview(this.value)"
+                                    placeholder="Contoh: 2500000" 
+                                    class="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm font-black text-slate-900 focus:outline-none focus:border-japan-600 focus:ring-1 focus:ring-japan-600 transition bg-white shadow-xs"
+                                >
+                            </div>
+                            <div id="amountPreviewText" class="text-[11px] font-semibold text-japan-700 mt-1 min-h-[16px]"></div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- Section 5: Multi-Nota Fisik Base64 -->
-            <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
-                <div class="flex items-center justify-between">
+            <!-- Section 4: Catatan Tambahan (Full Width) -->
+            <div class="space-y-1">
+                <label class="block text-xs font-bold text-slate-700">Catatan / Keterangan Khusus (Opsional)</label>
+                <textarea 
+                    name="notes" 
+                    rows="2" 
+                    placeholder="Rincian agenda mitra kaisha yang dikunjungi, kontak PIC, atau alasan urgensi dinas..." 
+                    class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-japan-600 transition bg-white"
+                ></textarea>
+            </div>
+
+            <!-- Section 5: Lampiran Multi-Nota Fisik Base64 -->
+            <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3.5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
                         <div class="flex items-center gap-2">
-                            <h4 class="font-extrabold text-xs text-slate-900">Lampirkan Bukti Nota / Kuitansi Fisik</h4>
-                            <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">Base64 Database Safe</span>
+                            <h4 class="font-extrabold text-xs text-slate-900 flex items-center gap-1.5">
+                                <i data-lucide="paperclip" class="w-4 h-4 text-japan-600"></i>
+                                <span>Lampiran Bukti Nota & Kuitansi Pengeluaran</span>
+                            </h4>
+                            <span id="receiptSummaryBadge" class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">1 Nota</span>
                         </div>
-                        <p class="text-[11px] text-slate-500 mt-0.5">Tersimpan aman di database tanpa risiko hilang saat migrasi hosting atau container reload</p>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Tersimpan aman di database base64 tanpa risiko hilang saat hosting berpindah</p>
                     </div>
-                    <button type="button" onclick="addReceiptUploadRow()" class="px-3 py-1.5 rounded-xl bg-japan-50 hover:bg-japan-100 text-japan-700 text-xs font-bold transition flex items-center gap-1.5 shadow-xs border border-japan-200">
+                    <button type="button" onclick="addReceiptUploadRow()" class="px-3.5 py-1.5 rounded-xl bg-japan-50 hover:bg-japan-100 text-japan-700 text-xs font-bold transition flex items-center gap-1.5 shadow-xs border border-japan-200 cursor-pointer self-start sm:self-auto">
                         <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                        <span>Tambah Nota</span>
+                        <span>Tambah Baris Nota</span>
                     </button>
                 </div>
 
                 <div id="receiptUploadContainer" class="space-y-2.5">
-                    <div class="receipt-row p-3 bg-white rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center">
+                    <div class="receipt-row p-3 bg-white rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center shadow-xs">
                         <div class="sm:col-span-5">
-                            <input type="text" name="receipt_titles[]" placeholder="Nama Nota (cth: Tiket Kereta PP)" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:border-japan-500 focus:outline-none">
+                            <input type="text" name="receipt_titles[]" placeholder="Nama Nota 1 (cth: Tiket Kereta PP / Hotel)" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:border-japan-500 focus:outline-none">
                         </div>
                         <div class="sm:col-span-3">
-                            <input type="number" name="receipt_amounts[]" placeholder="Nominal Rp" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:border-japan-500 focus:outline-none font-semibold">
+                            <div class="relative">
+                                <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">Rp</span>
+                                <input type="number" name="receipt_amounts[]" oninput="calculateTotalReceipts()" placeholder="Nominal Rp" class="receipt-amount-input w-full pl-7 pr-2 py-1.5 text-xs rounded-lg border border-slate-200 focus:border-japan-500 focus:outline-none font-semibold">
+                            </div>
                         </div>
-                        <div class="sm:col-span-4 flex items-center gap-2">
-                            <input type="file" name="receipt_files[]" accept="image/*,application/pdf" class="w-full text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-japan-600 file:text-white hover:file:bg-japan-700 file:cursor-pointer cursor-pointer">
+                        <div class="sm:col-span-3 flex items-center gap-2">
+                            <input type="file" name="receipt_files[]" accept="image/*,application/pdf" onchange="handleReceiptPreview(this)" class="w-full text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-japan-600 file:text-white hover:file:bg-japan-700 file:cursor-pointer cursor-pointer">
+                            <div class="receipt-preview-thumb hidden w-7 h-7 rounded bg-slate-100 border border-slate-200 overflow-hidden shrink-0"></div>
+                        </div>
+                        <div class="sm:col-span-1 text-center">
+                            <button type="button" onclick="removeReceiptRow(this)" class="p-1.5 text-slate-300 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition cursor-pointer" title="Hapus baris ini">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
                         </div>
                     </div>
+                </div>
+
+                <!-- Total Nota Live Calculation -->
+                <div class="pt-2 border-t border-slate-200/80 flex items-center justify-between text-xs">
+                    <span class="text-slate-500 font-medium">Total Akumulasi Nota Terlampir:</span>
+                    <span id="totalReceiptsFormatted" class="font-black text-slate-900 font-mono">Rp 0</span>
                 </div>
             </div>
 
             <!-- Footer Action Buttons -->
             <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3 sticky bottom-0 bg-white/95 backdrop-blur-xs py-2">
-                <button type="button" onclick="closeCreateReimbursementModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-bold transition">
+                <button type="button" onclick="closeCreateReimbursementModal()" class="px-5 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-bold transition cursor-pointer">
                     Batal
                 </button>
-                <button type="submit" class="btn-red-primary px-6 py-2.5 rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition flex items-center gap-2">
+                <button type="submit" class="btn-red-primary px-7 py-2.5 rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer">
                     <i data-lucide="send" class="w-4 h-4"></i>
                     <span>Kirim Pengajuan Keuangan</span>
                 </button>
@@ -758,66 +821,85 @@
 </div>
 
 <!-- MODAL 2: SETTLEMENT REALISASI KASBON SPJ -->
-<div id="settlementModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden">
-        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-purple-50/50">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold">
+<div id="settlementModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-5 hidden" onclick="handleBackdropClick(event, 'settlementModal')">
+    <div class="bg-white rounded-3xl max-w-xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        
+        <!-- Header Modal -->
+        <div class="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-purple-50 via-white to-purple-50/40">
+            <div class="flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-2xl bg-purple-600 text-white flex items-center justify-center font-bold shadow-lg shadow-purple-600/25">
                     <i data-lucide="clipboard-check" class="w-5 h-5"></i>
                 </div>
                 <div>
-                    <h3 class="font-black text-slate-900 text-sm">Penyelesaian Realisasi SPJ (Settlement)</h3>
-                    <p class="text-[11px] text-slate-500" id="modalSettlementDocNo">ADV-SJI/...</p>
+                    <div class="flex items-center gap-2">
+                        <h3 class="font-black text-slate-900 text-base leading-tight">Penyelesaian Realisasi SPJ Kasbon</h3>
+                        <span class="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 text-[10px] font-bold border border-purple-200">仮払金精算</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 font-mono mt-0.5" id="modalSettlementDocNo">ADV-SJI/...</p>
                 </div>
             </div>
-            <button type="button" onclick="closeSettlementModal()" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center">
+            <button type="button" onclick="closeSettlementModal()" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition cursor-pointer">
                 <i data-lucide="x" class="w-4 h-4"></i>
             </button>
         </div>
 
-        <form id="settlementForm" method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
+        <form id="settlementForm" method="POST" enctype="multipart/form-data" class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
             @csrf
             <input type="hidden" name="action" value="settle">
 
-            <div class="p-3 bg-purple-50 rounded-xl border border-purple-100 text-xs space-y-1">
-                <div class="flex justify-between">
-                    <span class="text-slate-500">Nama Karyawan:</span>
+            <!-- Card Informasi Pengajuan Awal -->
+            <div class="p-4 bg-gradient-to-br from-purple-50/80 to-slate-50 rounded-2xl border border-purple-100 text-xs space-y-2">
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-500">Nama Pemohon:</span>
                     <span class="font-bold text-slate-800" id="modalSettlementName">-</span>
                 </div>
-                <div class="flex justify-between">
-                    <span class="text-slate-500">Uang Muka Diterima:</span>
-                    <span class="font-black text-purple-700" id="modalSettlementApproved">-</span>
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-500">Agenda / Keperluan:</span>
+                    <span class="font-semibold text-slate-700 truncate max-w-[260px]" id="modalSettlementTitle">-</span>
+                </div>
+                <div class="flex justify-between items-center pt-2 border-t border-purple-200/50">
+                    <span class="font-bold text-purple-900">Plafon Uang Muka Diterima:</span>
+                    <span class="font-black text-purple-700 text-sm font-mono" id="modalSettlementApproved">-</span>
                 </div>
             </div>
 
-            <div class="space-y-1">
-                <label class="block text-xs font-bold text-slate-700">Total Pengeluaran Aktual SPJ (Rp) <span class="text-rose-500">*</span></label>
-                <input 
-                    type="number" 
-                    name="amount_spent" 
-                    id="modalAmountSpent" 
-                    required 
-                    min="0" 
-                    placeholder="Masukkan nominal realisasi pengeluaran" 
-                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-black text-slate-900 focus:outline-none focus:border-purple-600"
-                >
+            <!-- Input Realisasi Pengeluaran Aktual -->
+            <div class="space-y-1.5">
+                <label class="block text-xs font-black uppercase tracking-wider text-slate-700">
+                    Total Pengeluaran Aktual Riil (Rp) <span class="text-rose-500">*</span>
+                </label>
+                <div class="relative">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-black text-xs text-slate-400">Rp</span>
+                    <input 
+                        type="number" 
+                        name="amount_spent" 
+                        id="modalAmountSpent" 
+                        required 
+                        min="0" 
+                        oninput="calculateSettlementDiff()"
+                        placeholder="Masukkan total nominal pengeluaran riil" 
+                        class="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 text-base font-black text-slate-900 focus:outline-none focus:border-purple-600 focus:ring-1 focus:ring-purple-600 transition shadow-xs"
+                    >
+                </div>
+                <p class="text-[10px] text-slate-400">Isi sesuai total penjumlahan seluruh nota kuitansi fisik pengeluaran dinas.</p>
             </div>
 
-            <div class="space-y-1">
-                <label class="block text-xs font-bold text-slate-700">Unggah Nota / Bukti Realisasi Tambahan</label>
-                <input 
-                    type="file" 
-                    name="settlement_receipts[]" 
-                    multiple 
-                    accept="image/*,application/pdf" 
-                    class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs file:mr-2 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-bold file:bg-purple-600 file:text-white"
-                >
+            <!-- Dynamic Live Calculation Difference Box -->
+            <div id="settlementCalcCard" class="p-3.5 rounded-2xl border transition-all text-xs space-y-1.5 bg-slate-50 border-slate-200">
+                <div class="flex items-center justify-between">
+                    <span class="font-bold text-slate-600" id="calcDiffLabel">Status Selisih Kas:</span>
+                    <span class="font-black font-mono text-sm text-slate-800" id="calcDiffBadge">Rp 0</span>
+                </div>
+                <p class="text-[11px] text-slate-500 leading-relaxed" id="calcDiffExplanation">
+                    Masukkan nominal pengeluaran aktual di atas untuk melihat status pengembalian atau penggantian dana.
+                </p>
             </div>
 
+            <!-- Akun Kas Rekonsiliasi & Tanggal -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div class="space-y-1">
-                    <label class="block text-xs font-bold text-slate-700">Akun Kas Rekonsiliasi <span class="text-rose-500">*</span></label>
-                    <select name="settlement_payment_method" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-purple-600 bg-white">
+                    <label class="block text-xs font-bold text-slate-700">Akun Kas / Bank Rekonsiliasi <span class="text-rose-500">*</span></label>
+                    <select name="settlement_payment_method" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-purple-600 bg-white shadow-xs">
                         <option value="cash_kasir">Kas Tunai (Kasir LPK)</option>
                         <option value="bank_mandiri">Transfer Bank Mandiri</option>
                         <option value="bank_bca">Transfer Bank BCA</option>
@@ -827,46 +909,63 @@
                 </div>
 
                 <div class="space-y-1">
-                    <label class="block text-xs font-bold text-slate-700">Tanggal Rekonsiliasi <span class="text-rose-500">*</span></label>
+                    <label class="block text-xs font-bold text-slate-700">Tanggal Rekonsiliasi SPJ <span class="text-rose-500">*</span></label>
                     <input 
                         type="date" 
                         name="settlement_date" 
                         value="{{ date('Y-m-d') }}" 
                         required 
-                        class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:border-purple-600"
+                        class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:border-purple-600 bg-white shadow-xs"
                     >
                 </div>
             </div>
 
+            <!-- Unggah Nota Realisasi SPJ Tambahan -->
+            <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700">Unggah Nota / Kuitansi Realisasi Tambahan</label>
+                <input 
+                    type="file" 
+                    name="settlement_receipts[]" 
+                    multiple 
+                    accept="image/*,application/pdf" 
+                    class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs file:mr-2 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-bold file:bg-purple-600 file:text-white hover:file:bg-purple-700 cursor-pointer"
+                >
+                <p class="text-[10px] text-slate-400">Bisa memilih lebih dari 1 file gambar / PDF (tiket pesawat, hotel, bensin, dll).</p>
+            </div>
+
+            <!-- Catatan SPJ -->
             <div class="space-y-1">
                 <label class="block text-xs font-bold text-slate-700">Catatan Penyelesaian Rekonsiliasi</label>
                 <textarea 
                     name="settlement_notes" 
                     rows="2" 
-                    placeholder="Sisa uang kasbon telah dikembalikan ke kasir / kuitansi lengkap..." 
-                    class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-purple-600"
+                    placeholder="Sisa uang kasbon telah disetorkan tunai ke kasir / seluruh bukti perjalanan lengkap..." 
+                    class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-purple-600 transition"
                 ></textarea>
             </div>
 
+            <!-- Checkbox Notifikasi WhatsApp -->
             <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
                 <label class="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" name="notify_wa" value="1" checked class="w-4 h-4 rounded text-japan-600 focus:ring-japan-500">
-                    <span class="text-xs font-semibold text-slate-700">Kirim notifikasi pembaruan status ke WhatsApp pemohon</span>
+                    <span class="text-xs font-semibold text-slate-700">Kirim laporan penyelesaian SPJ ke WhatsApp pemohon</span>
                 </label>
             </div>
 
+            <!-- Accounting Notice -->
             <div class="p-3 bg-purple-50/50 rounded-xl border border-purple-200/60 flex items-start gap-2.5">
                 <i data-lucide="info" class="w-4 h-4 text-purple-600 shrink-0 mt-0.5"></i>
                 <p class="text-[11px] text-purple-900 leading-relaxed">
-                    <strong>Sinkronisasi Buku Kas:</strong> Jika terdapat sisa uang kasbon, otomatis tercatat di <strong>Kas Masuk (BKM)</strong>. Jika pengeluaran melebihi uang muka, otomatis tercatat di <strong>Kas Keluar (BKK)</strong>.
+                    <strong>Sinkronisasi Jurnal Buku Kas:</strong> Jika terdapat sisa uang kasbon, otomatis tercatat sebagai <strong>Kas Masuk (BKM)</strong>. Jika pengeluaran aktual melebihi uang muka, otomatis tercatat sebagai <strong>Kas Keluar (BKK)</strong>.
                 </p>
             </div>
 
-            <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button type="button" onclick="closeSettlementModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-bold transition">
+            <!-- Footer Buttons -->
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2 sticky bottom-0 bg-white py-2">
+                <button type="button" onclick="closeSettlementModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-bold transition cursor-pointer">
                     Batal
                 </button>
-                <button type="submit" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md hover:shadow-lg transition flex items-center gap-2">
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer">
                     <i data-lucide="clipboard-check" class="w-4 h-4"></i>
                     <span>Simpan Settlement SPJ</span>
                 </button>
@@ -876,7 +975,7 @@
 </div>
 
 <!-- MODAL 2.5: PENCAIRAN DANA REIMBURSE & KASBON (BUKU KAS & JURNAL) -->
-<div id="payDisbursementModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+<div id="payDisbursementModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden" onclick="handleBackdropClick(event, 'payDisbursementModal')">
     <div class="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         
         <!-- Header Modal -->
@@ -1015,11 +1114,11 @@
 </div>
 
 <!-- MODAL 3: IMPORT FILE CSV/EXCEL -->
-<div id="importCsvModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+<div id="importCsvModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden" onclick="handleBackdropClick(event, 'importCsvModal')">
     <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden">
         <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
             <h3 class="font-black text-slate-900 text-sm">Import Data Reimburse / Kasbon CSV</h3>
-            <button type="button" onclick="document.getElementById('importCsvModal').classList.add('hidden')" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center">
+            <button type="button" onclick="closeImportModal()" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center">
                 <i data-lucide="x" class="w-4 h-4"></i>
             </button>
         </div>
@@ -1041,7 +1140,7 @@
             </div>
 
             <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button type="button" onclick="document.getElementById('importCsvModal').classList.add('hidden')" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600">
+                <button type="button" onclick="closeImportModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600">
                     Batal
                 </button>
                 <button type="submit" class="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold">
@@ -1053,7 +1152,7 @@
 </div>
 
 <!-- MODAL 4: KIRIM NOTIFIKASI WHATSAPP MANUAL -->
-<div id="sendWaModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+<div id="sendWaModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden" onclick="handleBackdropClick(event, 'sendWaModal')">
     <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-emerald-50/70">
             <div class="flex items-center gap-2.5">
@@ -1125,24 +1224,30 @@
 </div>
 
 <script>
-    function openWaModal(id, docNo, name, phone, title) {
-        const form = document.getElementById('sendWaForm');
-        form.action = `/admin/reimbursements/${id}/send-wa`;
-        document.getElementById('modalWaDocNo').textContent = docNo;
-        document.getElementById('modalWaName').textContent = name;
-        document.getElementById('modalWaTitle').textContent = title;
-        document.getElementById('modalWaPhone').value = phone || '';
-        document.getElementById('modalWaNotes').value = '';
-        document.getElementById('sendWaModal').classList.remove('hidden');
-        if (window.lucide) lucide.createIcons();
+    // Global Backdrop & Keyboard Navigation Handlers
+    function handleBackdropClick(e, modalId) {
+        if (e.target.id === modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
     }
 
-    function closeWaModal() {
-        document.getElementById('sendWaModal').classList.add('hidden');
-    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modals = ['createReimbursementModal', 'settlementModal', 'payDisbursementModal', 'importCsvModal', 'sendWaModal'];
+            modals.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && !el.classList.contains('hidden')) {
+                    el.classList.add('hidden');
+                }
+            });
+        }
+    });
 
+    // Form Pengajuan Baru Reimburse & Kasbon
     function openCreateReimbursementModal() {
         document.getElementById('createReimbursementModal').classList.remove('hidden');
+        updateTripDuration();
+        calculateTotalReceipts();
         if (window.lucide) lucide.createIcons();
     }
 
@@ -1153,12 +1258,75 @@
     function toggleTypeNotice(type) {
         const lblReim = document.getElementById('labelTypeReimburse');
         const lblAdv = document.getElementById('labelTypeAdvance');
+        const noticeBox = document.getElementById('typeNoticeBox');
+        const noticeText = document.getElementById('typeNoticeText');
+
         if (type === 'reimbursement') {
-            lblReim.className = 'p-3.5 rounded-2xl border-2 cursor-pointer transition flex items-start gap-3 border-sky-500 bg-sky-50/50 text-slate-900 shadow-xs';
-            lblAdv.className = 'p-3.5 rounded-2xl border-2 cursor-pointer transition flex items-start gap-3 border-slate-200 hover:border-purple-300 text-slate-900';
+            if (lblReim) lblReim.className = 'relative p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start gap-3.5 border-sky-500 bg-sky-50/40 text-slate-900 shadow-sm';
+            if (lblAdv) lblAdv.className = 'relative p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start gap-3.5 border-slate-200 hover:border-purple-300 text-slate-900';
+            if (noticeBox) noticeBox.className = 'p-3 bg-sky-50 border border-sky-200/80 rounded-2xl flex items-start gap-2.5 text-xs text-sky-900';
+            if (noticeText) {
+                noticeText.innerHTML = '<strong>Panduan Reimburse:</strong> Harap lampirkan bukti foto nota/kuitansi fisik pada bagian bawah. Setelah diverifikasi bendahara, penggantian dana akan langsung dicairkan ke kas/rekening Anda.';
+            }
         } else {
-            lblAdv.className = 'p-3.5 rounded-2xl border-2 cursor-pointer transition flex items-start gap-3 border-purple-500 bg-purple-50/50 text-slate-900 shadow-xs';
-            lblReim.className = 'p-3.5 rounded-2xl border-2 cursor-pointer transition flex items-start gap-3 border-slate-200 hover:border-sky-300 text-slate-900';
+            if (lblAdv) lblAdv.className = 'relative p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start gap-3.5 border-purple-500 bg-purple-50/40 text-slate-900 shadow-sm';
+            if (lblReim) lblReim.className = 'relative p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-start gap-3.5 border-slate-200 hover:border-sky-300 text-slate-900';
+            if (noticeBox) noticeBox.className = 'p-3 bg-purple-50 border border-purple-200/80 rounded-2xl flex items-start gap-2.5 text-xs text-purple-900';
+            if (noticeText) {
+                noticeText.innerHTML = '<strong>Panduan Kasbon Dinas (Uang Muka):</strong> Dana akan dicairkan bendahara di awal sebelum perjalanan. Setelah dinas selesai, wajib melakukan SPJ (Surat Pertanggungjawaban) untuk rekonsiliasi pengeluaran riil.';
+            }
+        }
+    }
+
+    function updateTripDuration() {
+        const start = document.getElementById('inputStartDate')?.value;
+        const end = document.getElementById('inputEndDate')?.value;
+        const badge = document.getElementById('tripDurationBadge');
+        if (!badge || !start || !end) return;
+
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+        const diffDays = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+        if (diffDays > 0) {
+            badge.textContent = diffDays + ' Hari';
+            badge.className = 'text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200';
+        } else {
+            badge.textContent = 'Tanggal Tidak Valid';
+            badge.className = 'text-[10px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200';
+        }
+    }
+
+    function updateAmountPreview(val) {
+        const preview = document.getElementById('amountPreviewText');
+        if (!preview) return;
+        const num = parseFloat(val);
+        if (!isNaN(num) && num > 0) {
+            preview.textContent = '≈ Rp ' + num.toLocaleString('id-ID');
+        } else {
+            preview.textContent = '';
+        }
+    }
+
+    function updateReceiptCountBadge() {
+        const container = document.getElementById('receiptUploadContainer');
+        const badge = document.getElementById('receiptSummaryBadge');
+        if (container && badge) {
+            const count = container.querySelectorAll('.receipt-row').length;
+            badge.textContent = count + ' Nota';
+        }
+    }
+
+    function calculateTotalReceipts() {
+        const inputs = document.querySelectorAll('.receipt-amount-input');
+        let total = 0;
+        inputs.forEach(input => {
+            const val = parseFloat(input.value);
+            if (!isNaN(val) && val > 0) total += val;
+        });
+        const totalEl = document.getElementById('totalReceiptsFormatted');
+        if (totalEl) {
+            totalEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
         }
     }
 
@@ -1166,34 +1334,81 @@
         const container = document.getElementById('receiptUploadContainer');
         const count = container.querySelectorAll('.receipt-row').length + 1;
         const row = document.createElement('div');
-        row.className = 'receipt-row p-3 bg-white rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center animate-in fade-in duration-200';
+        row.className = 'receipt-row p-3 bg-white rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center shadow-xs animate-in fade-in duration-200';
         row.innerHTML = `
             <div class="sm:col-span-5">
                 <input type="text" name="receipt_titles[]" placeholder="Nama Nota ${count} (cth: Hotel / Bensin)" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:border-japan-500 focus:outline-none">
             </div>
             <div class="sm:col-span-3">
-                <input type="number" name="receipt_amounts[]" placeholder="Nominal Rp" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:border-japan-500 focus:outline-none font-semibold">
+                <div class="relative">
+                    <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">Rp</span>
+                    <input type="number" name="receipt_amounts[]" oninput="calculateTotalReceipts()" placeholder="Nominal Rp" class="receipt-amount-input w-full pl-7 pr-2 py-1.5 text-xs rounded-lg border border-slate-200 focus:border-japan-500 focus:outline-none font-semibold">
+                </div>
             </div>
-            <div class="sm:col-span-3">
-                <input type="file" name="receipt_files[]" accept="image/*,application/pdf" class="w-full text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-japan-600 file:text-white hover:file:bg-japan-700 file:cursor-pointer cursor-pointer">
+            <div class="sm:col-span-3 flex items-center gap-2">
+                <input type="file" name="receipt_files[]" accept="image/*,application/pdf" onchange="handleReceiptPreview(this)" class="w-full text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-japan-600 file:text-white hover:file:bg-japan-700 file:cursor-pointer cursor-pointer">
+                <div class="receipt-preview-thumb hidden w-7 h-7 rounded bg-slate-100 border border-slate-200 overflow-hidden shrink-0"></div>
             </div>
             <div class="sm:col-span-1 text-center">
-                <button type="button" onclick="this.closest('.receipt-row').remove()" class="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition" title="Hapus baris ini">
+                <button type="button" onclick="removeReceiptRow(this)" class="p-1.5 text-slate-300 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition cursor-pointer" title="Hapus baris ini">
                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                 </button>
             </div>
         `;
         container.appendChild(row);
+        updateReceiptCountBadge();
         if (window.lucide) lucide.createIcons();
     }
 
-    function openSettlementModal(id, docNo, approvedAmount, employeeName) {
+    function removeReceiptRow(btn) {
+        const row = btn.closest('.receipt-row');
+        if (row) {
+            row.remove();
+            updateReceiptCountBadge();
+            calculateTotalReceipts();
+        }
+    }
+
+    function handleReceiptPreview(input) {
+        const row = input.closest('.receipt-row');
+        if (!row) return;
+        const thumb = row.querySelector('.receipt-preview-thumb');
+        if (!thumb) return;
+
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    thumb.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                    thumb.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                thumb.innerHTML = `<span class="flex items-center justify-center w-full h-full text-[9px] font-bold text-slate-500 bg-slate-100">PDF</span>`;
+                thumb.classList.remove('hidden');
+            }
+        } else {
+            thumb.classList.add('hidden');
+            thumb.innerHTML = '';
+        }
+    }
+
+    // SPJ Realisasi Kasbon Modal Logic
+    let currentSettlementApproved = 0;
+
+    function openSettlementModal(id, docNo, approvedAmount, employeeName, title) {
         const form = document.getElementById('settlementForm');
         form.action = `/admin/reimbursements/${id}/status`;
         document.getElementById('modalSettlementDocNo').textContent = docNo;
         document.getElementById('modalSettlementName').textContent = employeeName;
-        document.getElementById('modalSettlementApproved').textContent = 'Rp ' + Number(approvedAmount).toLocaleString('id-ID');
-        document.getElementById('modalAmountSpent').value = approvedAmount;
+        document.getElementById('modalSettlementTitle').textContent = title || 'Perjalanan Dinas';
+        
+        currentSettlementApproved = parseFloat(approvedAmount) || 0;
+        document.getElementById('modalSettlementApproved').textContent = 'Rp ' + currentSettlementApproved.toLocaleString('id-ID');
+        document.getElementById('modalAmountSpent').value = currentSettlementApproved;
+        
+        calculateSettlementDiff();
         document.getElementById('settlementModal').classList.remove('hidden');
         if (window.lucide) lucide.createIcons();
     }
@@ -1202,6 +1417,58 @@
         document.getElementById('settlementModal').classList.add('hidden');
     }
 
+    function calculateSettlementDiff() {
+        const spentInput = document.getElementById('modalAmountSpent');
+        const card = document.getElementById('settlementCalcCard');
+        const badge = document.getElementById('calcDiffBadge');
+        const label = document.getElementById('calcDiffLabel');
+        const explanation = document.getElementById('calcDiffExplanation');
+
+        if (!spentInput || !card || !badge || !label || !explanation) return;
+
+        const spent = parseFloat(spentInput.value);
+        if (isNaN(spent) || spent < 0) {
+            card.className = 'p-3.5 rounded-2xl border transition-all text-xs space-y-1.5 bg-slate-50 border-slate-200';
+            label.textContent = 'Status Selisih Kas:';
+            label.className = 'font-bold text-slate-600';
+            badge.textContent = 'Rp 0';
+            badge.className = 'font-black font-mono text-sm text-slate-800';
+            explanation.textContent = 'Masukkan nominal pengeluaran aktual di atas untuk melihat status pengembalian atau penggantian dana.';
+            return;
+        }
+
+        const diff = spent - currentSettlementApproved;
+
+        if (diff < 0) {
+            // Sisa Uang Kasbon (Harus Dikembalikan ke Kasir)
+            const sisa = Math.abs(diff);
+            card.className = 'p-3.5 rounded-2xl border transition-all text-xs space-y-1.5 bg-emerald-50 border-emerald-300 text-emerald-950 shadow-xs';
+            label.textContent = 'Status: Sisa Kasbon (Kembalikan ke Kasir LPK)';
+            label.className = 'font-black text-emerald-800';
+            badge.textContent = '+ Rp ' + sisa.toLocaleString('id-ID');
+            badge.className = 'font-black font-mono text-base text-emerald-700';
+            explanation.innerHTML = `<strong>Terdapat sisa uang kasbon sebesar Rp ${sisa.toLocaleString('id-ID')}</strong> yang wajib disetor kembali ke kasir / rekening LPK. Sistem akan membukukan transaksi ini ke <strong>Kas Masuk (BKM)</strong>.`;
+        } else if (diff > 0) {
+            // Kurang Bayar / Kelebihan Pengeluaran (LPK ganti ke Karyawan)
+            const kurang = diff;
+            card.className = 'p-3.5 rounded-2xl border transition-all text-xs space-y-1.5 bg-rose-50 border-rose-300 text-rose-950 shadow-xs';
+            label.textContent = 'Status: Kurang Bayar (LPK Wajib Mengganti ke Karyawan)';
+            label.className = 'font-black text-rose-800';
+            badge.textContent = '- Rp ' + kurang.toLocaleString('id-ID');
+            badge.className = 'font-black font-mono text-base text-rose-700';
+            explanation.innerHTML = `Pengeluaran riil melebihi plafon awal sebesar <strong>Rp ${kurang.toLocaleString('id-ID')}</strong>. LPK wajib mencairkan kekurangan dana ini kepada pemohon. Sistem akan membukukan transaksi ini ke <strong>Kas Keluar (BKK)</strong>.`;
+        } else {
+            // Pas (Nihil)
+            card.className = 'p-3.5 rounded-2xl border transition-all text-xs space-y-1.5 bg-sky-50 border-sky-300 text-sky-950 shadow-xs';
+            label.textContent = 'Status: Pengeluaran Pas (Sesuai Plafon)';
+            label.className = 'font-black text-sky-800';
+            badge.textContent = 'Rp 0 (Nihil)';
+            badge.className = 'font-black font-mono text-base text-sky-700';
+            explanation.innerHTML = 'Total pengeluaran riil sama persis dengan uang muka kasbon yang diterima. Tidak ada pengembalian maupun pembayaran kompensasi tambahan.';
+        }
+    }
+
+    // Modal Pencairan Dana (BKK)
     function openPayModal(id, docNo, employee, amount, title, type) {
         const form = document.getElementById('payDisbursementForm');
         form.action = `/admin/reimbursements/${id}/status`;
@@ -1216,6 +1483,28 @@
 
     function closePayModal() {
         document.getElementById('payDisbursementModal').classList.add('hidden');
+    }
+
+    // Modal Import CSV
+    function closeImportModal() {
+        document.getElementById('importCsvModal').classList.add('hidden');
+    }
+
+    // Modal WhatsApp Gateway
+    function openWaModal(id, docNo, name, phone, title) {
+        const form = document.getElementById('sendWaForm');
+        form.action = `/admin/reimbursements/${id}/send-wa`;
+        document.getElementById('modalWaDocNo').textContent = docNo;
+        document.getElementById('modalWaName').textContent = name;
+        document.getElementById('modalWaTitle').textContent = title;
+        document.getElementById('modalWaPhone').value = phone || '';
+        document.getElementById('modalWaNotes').value = '';
+        document.getElementById('sendWaModal').classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function closeWaModal() {
+        document.getElementById('sendWaModal').classList.add('hidden');
     }
 
     // Auto-Sync Mini Dashboard Realtime via AJAX
