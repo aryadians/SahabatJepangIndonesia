@@ -426,8 +426,10 @@ class CashBookController extends Controller
 
         $totalCash = $cashOnHand + $bankMandiri + $bankBca + $bankOther;
 
-        // 2. Piutang Biaya Pelatihan Siswa Aktif
-        $studentReceivables = (float) Student::whereNotIn('status', ['cancelled'])->sum('remaining_balance');
+        // 2. Piutang Biaya Pelatihan Siswa Aktif (Total Tagihan - Total Terbayar)
+        $totalCostSum = (float) Student::whereNotIn('status', ['cancelled'])->sum('total_cost');
+        $paidAmountSum = (float) Student::whereNotIn('status', ['cancelled'])->sum('paid_amount');
+        $studentReceivables = max(0, $totalCostSum - $paidAmountSum);
 
         // 3. Uang Muka Perjalanan Dinas Belum Di-SPJ
         $unsettledAdvances = (float) Reimbursement::where('type', 'cash_advance')->where('status', 'paid')->sum('amount_approved');
