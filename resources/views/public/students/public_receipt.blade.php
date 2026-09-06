@@ -16,6 +16,31 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
+        @keyframes hankoStamp {
+            0% {
+                transform: scale(2.2) rotate(-25deg);
+                opacity: 0;
+            }
+            65% {
+                transform: scale(0.92) rotate(-3deg);
+                opacity: 1;
+            }
+            85% {
+                transform: scale(1.04) rotate(-3deg);
+            }
+            100% {
+                transform: scale(1) rotate(-3deg);
+                opacity: 1;
+            }
+        }
+        .animate-hanko {
+            animation: hankoStamp 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .washi-pattern {
+            background-color: #ffffff;
+            background-image: radial-gradient(#e2e8f0 0.5px, transparent 0.5px);
+            background-size: 14px 14px;
+        }
         @media print {
             body {
                 background: white !important;
@@ -40,19 +65,19 @@
             margin: 12mm 15mm;
         }
         .hanko-stamp {
-            border: 2px solid #DC2626;
+            border: 2.5px double #DC2626;
             color: #DC2626;
             transform: rotate(-3deg);
-            background: rgba(254, 242, 242, 0.4);
-            box-shadow: 0 0 0 1px #DC2626 inset;
+            background: rgba(254, 242, 242, 0.5);
+            box-shadow: 0 0 0 1px #DC2626 inset, 0 0 12px rgba(220, 38, 38, 0.15);
         }
     </style>
 </head>
-<body class="bg-slate-100 font-sans text-slate-900 p-3 sm:p-8 antialiased">
+<body class="bg-slate-100/80 font-sans text-slate-900 p-3 sm:p-8 antialiased">
 
     <!-- Action Bar (Hidden on Print) -->
-    <div class="max-w-3xl mx-auto mb-6 flex flex-col sm:flex-row items-center justify-between gap-3 no-print bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-        <div class="flex items-center gap-2">
+    <div class="max-w-3xl mx-auto mb-6 flex flex-col sm:flex-row items-center justify-between gap-3 no-print bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-slate-200">
+        <div class="flex items-center gap-2 flex-wrap">
             <a href="{{ url('/') }}" class="text-xs font-bold text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition">
                 <i data-lucide="home" class="w-4 h-4"></i>
                 <span>Beranda</span>
@@ -60,13 +85,42 @@
             <span class="text-slate-300">•</span>
             <a href="{{ route('public.flight.tracking', $student->nis) }}" class="text-xs font-bold text-red-600 hover:text-red-700 flex items-center gap-1.5 transition">
                 <i data-lucide="plane" class="w-4 h-4"></i>
-                <span>Cek Kesiapan Terbang Siswa</span>
+                <span>Cek Kesiapan Siswa</span>
             </a>
         </div>
-        <div class="flex items-center gap-2">
-            <button onclick="window.print()" class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-md flex items-center gap-2 transition hover:scale-105 active:scale-95">
+        <div class="flex items-center gap-2 flex-wrap">
+            <!-- Share to WhatsApp -->
+            @php
+                $waText = "Halo, berikut Kwitansi Resmi Pembayaran Pendidikan & Pelatihan LPK Sahabat Jepang Indonesia atas nama *{$student->name}* ({$student->nis}): " . request()->url();
+            @endphp
+            <a 
+                href="https://api.whatsapp.com/send?text={{ urlencode($waText) }}" 
+                target="_blank" 
+                class="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-xs flex items-center gap-1.5 transition shadow-2xs"
+                title="Kirim tautan kwitansi ke WhatsApp"
+            >
+                <i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
+                <span>Bagikan WA</span>
+            </a>
+
+            <!-- Copy Link Button -->
+            <button 
+                type="button" 
+                onclick="copyReceiptUrl(this)" 
+                class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition shadow-2xs"
+                title="Salin tautan kwitansi resmi"
+            >
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span class="copy-label">Salin Tautan</span>
+            </button>
+
+            <!-- Print Button -->
+            <button 
+                onclick="window.print()" 
+                class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-md flex items-center gap-1.5 transition hover:scale-105 active:scale-95"
+            >
                 <i data-lucide="printer" class="w-4 h-4"></i>
-                <span>Cetak / Simpan PDF</span>
+                <span>Cetak / PDF</span>
             </button>
         </div>
     </div>
@@ -258,11 +312,11 @@
                 <p class="text-[11px] font-bold text-slate-700 mt-0.5">Bagian Keuangan & Kasir Lembaga</p>
                 
                 <div class="h-16 flex items-center justify-center relative my-1">
-                    <!-- Stempel Hanko Jepang -->
-                    <div class="h-12 w-12 rounded-full hanko-stamp flex flex-col items-center justify-center select-none font-serif">
+                    <!-- Stempel Hanko Jepang Beranimasi -->
+                    <div class="h-14 w-14 rounded-full hanko-stamp animate-hanko flex flex-col items-center justify-center select-none font-serif cursor-pointer" title="Stempel Resmi Sahabat Jepang Indonesia" onclick="this.classList.remove('animate-hanko'); void this.offsetWidth; this.classList.add('animate-hanko');">
                         <span class="text-[7px] font-bold tracking-widest text-red-600">株式会社</span>
-                        <span class="text-[9px] font-black text-red-600">SJI印</span>
-                        <span class="text-[6.5px] font-bold text-red-600">出納</span>
+                        <span class="text-[10px] font-black text-red-600 tracking-tight leading-none">SJI印</span>
+                        <span class="text-[6.5px] font-bold text-red-600">出納済</span>
                     </div>
                 </div>
 
@@ -277,6 +331,22 @@
     <script>
         if (window.lucide) {
             lucide.createIcons();
+        }
+
+        function copyReceiptUrl(btn) {
+            const url = window.location.href;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(url).then(() => {
+                    const label = btn.querySelector('.copy-label');
+                    const icon = btn.querySelector('svg');
+                    if (label) label.textContent = 'Tersalin! ✓';
+                    btn.classList.add('bg-emerald-50', 'text-emerald-700', 'border-emerald-300');
+                    setTimeout(() => {
+                        if (label) label.textContent = 'Salin Tautan';
+                        btn.classList.remove('bg-emerald-50', 'text-emerald-700', 'border-emerald-300');
+                    }, 2000);
+                }).catch(() => {});
+            }
         }
     </script>
 </body>

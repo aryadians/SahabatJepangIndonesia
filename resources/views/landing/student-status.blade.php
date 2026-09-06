@@ -141,6 +141,16 @@
                     <!-- Direct Official Print Actions -->
                     <div class="flex flex-wrap items-center gap-2.5 self-stretch md:self-auto justify-end border-t md:border-t-0 pt-4 md:pt-0 border-slate-100">
                         <a 
+                            href="{{ route('public.flight.tracking', $student->nis) }}" 
+                            target="_blank" 
+                            class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-800 border border-red-200 text-xs font-black transition flex items-center justify-center gap-1.5 shadow-2xs"
+                            title="Buka Kartu Tanda Siswa Digital 3D & Status Kesiapan Dokumen Terbang"
+                        >
+                            <i data-lucide="badge-check" class="w-4 h-4 text-red-600"></i>
+                            <span>Kartu Siswa 3D & Kesiapan</span>
+                        </a>
+
+                        <a 
                             href="{{ route('student.public.receipt', $student->nis) }}" 
                             target="_blank" 
                             class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-black transition flex items-center justify-center gap-1.5 shadow-2xs"

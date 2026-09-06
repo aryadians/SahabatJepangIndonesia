@@ -236,7 +236,7 @@
                 <thead>
                     <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-[11px] font-extrabold uppercase tracking-wider">
                         <th class="py-3.5 px-4 w-12 text-center">No</th>
-                        <th class="py-3.5 px-4">Kandidat Siswa</th>
+                        <th class="py-3.5 px-4 sticky left-0 bg-slate-50/95 backdrop-blur-xs z-10 border-r border-slate-200 shadow-xs">Kandidat Siswa</th>
                         <th class="py-3.5 px-4">Penempatan Jepang</th>
                         <th class="py-3.5 px-3 text-center" title="Kartu Tanda Penduduk">KTP</th>
                         <th class="py-3.5 px-3 text-center" title="Kartu Keluarga">KK</th>
@@ -272,20 +272,20 @@
                             $flightColor = 'bg-slate-100 text-slate-700 border-slate-200';
                             if ($completedCount === 8 || $st->status === 'ready_to_depart') {
                                 $flightStatus = 'READY TO FLY ✈️';
-                                $flightColor = 'bg-emerald-100 text-emerald-800 border-emerald-300 font-black';
+                                $flightColor = 'bg-emerald-600 text-white border-emerald-400 font-black shadow-md shadow-emerald-500/40 animate-pulse';
                             } elseif (!empty($st->coe_number) && empty($st->visa_number)) {
                                 $flightStatus = 'WAITING VISA 🛂';
-                                $flightColor = 'bg-blue-50 text-blue-700 border-blue-200';
+                                $flightColor = 'bg-blue-600 text-white border-blue-400 font-bold shadow-xs';
                             } elseif ($st->status === 'passed_interview' && empty($st->coe_number)) {
                                 $flightStatus = 'WAITING COE ⏳';
-                                $flightColor = 'bg-amber-50 text-amber-700 border-amber-200';
+                                $flightColor = 'bg-amber-500 text-white border-amber-400 font-bold shadow-xs';
                             }
                         @endphp
-                        <tr class="hover:bg-slate-50/80 transition">
+                        <tr class="hover:bg-slate-50/80 transition group">
                             <td class="py-3 px-4 text-center font-mono text-slate-400">
                                 {{ $students->firstItem() + $idx }}
                             </td>
-                            <td class="py-3 px-4">
+                            <td class="py-3 px-4 sticky left-0 bg-white/95 backdrop-blur-xs z-10 border-r border-slate-100 group-hover:bg-slate-50 shadow-xs">
                                 <div class="flex items-center gap-3">
                                     <div class="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center font-black text-slate-600 text-xs overflow-hidden flex-shrink-0">
                                         @if(!empty($st->photo))
@@ -299,7 +299,10 @@
                                             {{ $st->name }}
                                         </a>
                                         <div class="flex items-center gap-1.5 text-[10px] text-slate-400 font-mono">
-                                            <span>{{ $st->nis }}</span>
+                                            <button type="button" onclick="copyNis('{{ $st->nis }}', this)" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600 transition cursor-pointer font-bold" title="Salin NIS">
+                                                <span>{{ $st->nis }}</span>
+                                                <i data-lucide="copy" class="w-2.5 h-2.5 copy-icon"></i>
+                                            </button>
                                             <span>•</span>
                                             <span class="font-sans text-japan-600 font-bold">{{ $st->program }}</span>
                                         </div>
@@ -909,6 +912,28 @@
         const modal = document.getElementById('updateStatusModal');
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+    }
+
+    function copyNis(nis, btn) {
+        if (!nis) return;
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(nis).then(() => {
+                const icon = btn.querySelector('.copy-icon');
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'check');
+                    if (window.lucide) lucide.createIcons();
+                    btn.classList.add('text-emerald-700', 'bg-emerald-50');
+                    setTimeout(() => {
+                        icon.setAttribute('data-lucide', 'copy');
+                        if (window.lucide) lucide.createIcons();
+                        btn.classList.remove('text-emerald-700', 'bg-emerald-50');
+                    }, 1500);
+                }
+                if (window.showJapaneseAlert) {
+                    window.showJapaneseAlert('success', 'NIS Disalin', `NIS ${nis} telah disalin ke clipboard.`);
+                }
+            }).catch(() => {});
+        }
     }
 </script>
 @endsection

@@ -14,6 +14,25 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        .font-japanese {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        @keyframes hankoFloat {
+            0%, 100% { transform: rotate(-5deg) scale(1); }
+            50% { transform: rotate(-8deg) scale(1.04); }
+        }
+        .animate-hanko-float {
+            animation: hankoFloat 4s ease-in-out infinite;
+        }
+        @media print {
+            .no-print { display: none !important; }
+        }
+    </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-900 min-h-screen antialiased flex flex-col justify-between">
 
@@ -108,6 +127,156 @@
         @endif
 
         @if($student)
+            <!-- Section: 3D Digital Student Identity Card (学生証) -->
+            <div class="bg-gradient-to-b from-slate-900 to-slate-950 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-4 no-print">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-red-600 text-white flex items-center justify-center font-bold text-xs shadow-md">
+                            証
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-black text-white flex items-center gap-2">
+                                <span>Kartu Tanda Siswa Digital Resmi</span>
+                                <span class="text-xs text-red-400 font-japanese font-bold">学生証</span>
+                            </h3>
+                            <p class="text-[11px] text-slate-400">Gerakkan kursor/sentuh layar untuk efek perspektif 3D interaktif.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <button 
+                            type="button" 
+                            onclick="copyStudentNis('{{ $student->nis }}', this)" 
+                            class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center gap-1.5 transition border border-slate-700 cursor-pointer"
+                            title="Salin NIS Siswa"
+                        >
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            <span class="nis-label">Salin NIS</span>
+                        </button>
+                        <button 
+                            type="button" 
+                            onclick="window.print()" 
+                            class="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center gap-1.5 transition shadow-sm cursor-pointer"
+                        >
+                            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                            <span>Cetak Kartu</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3D Card Interactive Stage -->
+                <div id="cardContainer3d" class="perspective-1000 py-4 flex justify-center cursor-pointer">
+                    <div 
+                        id="studentIdCard3d" 
+                        class="relative w-full max-w-md bg-gradient-to-br from-slate-900 via-slate-900 to-red-950 text-white rounded-3xl p-6 sm:p-7 shadow-2xl border border-red-500/30 overflow-hidden transform-gpu transition-transform duration-150 ease-out select-none"
+                        style="box-shadow: 0 25px 50px -12px rgba(220, 38, 38, 0.25);"
+                    >
+                        <!-- Holographic / Japanese Kanji Watermark -->
+                        <div class="absolute -right-8 -bottom-8 text-white/[0.03] text-9xl font-black font-japanese pointer-events-none select-none">
+                            学生
+                        </div>
+                        <div class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-red-600/20 via-transparent to-transparent pointer-events-none rounded-tr-3xl"></div>
+
+                        <!-- Card Header -->
+                        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-lg bg-red-600 text-white flex items-center justify-center font-black text-sm shadow-md">
+                                    日
+                                </div>
+                                <div>
+                                    <h4 class="text-[11px] font-black tracking-wider uppercase text-white leading-none">LPK SAHABAT JEPANG INDONESIA</h4>
+                                    <p class="text-[9px] text-red-400 font-japanese font-bold tracking-widest mt-0.5">学生証 • STUDENT IDENTITY CARD</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1 bg-white/10 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/10 text-[10px] font-bold">
+                                <span>🇮🇩</span>
+                                <span class="text-white/40 text-[9px]">⇄</span>
+                                <span>🇯🇵</span>
+                            </div>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="grid grid-cols-3 gap-3.5 pt-4 items-center">
+                            <!-- Photo & Chip -->
+                            <div class="col-span-1 flex flex-col items-center">
+                                <div class="w-24 h-28 rounded-2xl bg-gradient-to-b from-slate-800 to-slate-950 border-2 border-amber-400/80 p-0.5 shadow-lg overflow-hidden flex items-center justify-center relative">
+                                    @if(!empty($student->photo))
+                                        <img src="{{ $student->photo }}" alt="{{ $student->name }}" class="w-full h-full object-cover rounded-xl">
+                                    @else
+                                        <div class="w-full h-full flex flex-col items-center justify-center text-amber-300">
+                                            <span class="text-3xl font-black">{{ strtoupper(substr($student->name, 0, 1)) }}</span>
+                                            <span class="text-[8px] font-mono mt-1 text-slate-400">PASFOTO</span>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="mt-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[8.5px] font-extrabold uppercase font-mono">
+                                    <i data-lucide="check" class="w-2.5 h-2.5 text-emerald-400"></i>
+                                    <span>VERIFIED</span>
+                                </div>
+                            </div>
+
+                            <!-- Student Info -->
+                            <div class="col-span-2 space-y-2">
+                                <div>
+                                    <span class="text-[8.5px] text-slate-400 uppercase tracking-wider block font-medium">氏名 / CANDIDATE NAME</span>
+                                    <h4 class="text-base sm:text-lg font-black text-white tracking-tight leading-tight">
+                                        {{ $student->name }}
+                                    </h4>
+                                    @if($student->japanese_name)
+                                        <span class="text-xs font-japanese font-bold text-red-400 block mt-0.5">{{ $student->japanese_name }}</span>
+                                    @endif
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-2 text-[10px] pt-1">
+                                    <div>
+                                        <span class="text-slate-400 block text-[8px] font-medium">学籍番号 / NIS</span>
+                                        <strong class="font-mono text-amber-300 text-xs tracking-tight">{{ $student->nis }}</strong>
+                                    </div>
+                                    <div>
+                                        <span class="text-slate-400 block text-[8px] font-medium">期生 / BATCH</span>
+                                        <strong class="text-white text-[11px]">{{ $student->batch ?: 'Reguler' }}</strong>
+                                    </div>
+                                    <div class="col-span-2">
+                                        <span class="text-slate-400 block text-[8px] font-medium">プログラム / PROGRAM</span>
+                                        <strong class="text-slate-200 truncate block text-[10.5px]">{{ $student->program ?? 'Program Pemagangan' }}</strong>
+                                    </div>
+                                    @if($student->destination_company)
+                                    <div class="col-span-2">
+                                        <span class="text-slate-400 block text-[8px] font-medium">派遣先 / KAISHA JEPANG</span>
+                                        <strong class="text-red-300 truncate block text-[10.5px]">{{ $student->destination_company }} ({{ $student->destination_prefecture ?: 'Jepang' }})</strong>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Footer Bar: QR + Hanko -->
+                        <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-10 h-10 bg-white p-1 rounded-lg shadow-xs flex-shrink-0">
+                                    <img 
+                                        src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&margin=0&data={{ urlencode(route('public.flight.tracking', $student->nis)) }}" 
+                                        alt="QR" 
+                                        class="w-full h-full"
+                                    >
+                                </div>
+                                <div class="text-[8.5px] text-slate-400 leading-tight">
+                                    <span class="text-white font-bold block">VALIDATED DIGITAL ID</span>
+                                    <span>SO Kemenaker RI • SJI</span>
+                                </div>
+                            </div>
+
+                            <!-- Animated Hanko Stamp -->
+                            <div class="h-11 w-11 rounded-full border-2 border-red-500 text-red-500 flex flex-col items-center justify-center font-japanese text-[6.5px] leading-none select-none animate-hanko-float bg-red-500/10 shadow-xs flex-shrink-0" title="Stempel Hanko Lembaga">
+                                <span>協同</span>
+                                <span class="font-black text-[8px] my-0.5">SJI</span>
+                                <span>組合</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Candidate Overview Card -->
             <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-xs space-y-6">
                 
@@ -311,6 +480,59 @@
     <script>
         if (window.lucide) {
             lucide.createIcons();
+        }
+
+        // 3D Tilt Effect for Student Identity Card
+        (function init3dCard() {
+            const card = document.getElementById('studentIdCard3d');
+            const container = document.getElementById('cardContainer3d');
+            if (!card || !container) return;
+
+            container.addEventListener('mousemove', (e) => {
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                const rotateX = -(y / rect.height) * 18;
+                const rotateY = (x / rect.width) * 18;
+                card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+
+            container.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+            });
+
+            container.addEventListener('touchmove', (e) => {
+                if (e.touches.length > 0) {
+                    const touch = e.touches[0];
+                    const rect = container.getBoundingClientRect();
+                    const x = touch.clientX - rect.left - rect.width / 2;
+                    const y = touch.clientY - rect.top - rect.height / 2;
+                    const rotateX = -(y / rect.height) * 14;
+                    const rotateY = (x / rect.width) * 14;
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`;
+                }
+            }, { passive: true });
+
+            container.addEventListener('touchend', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+            });
+        })();
+
+        // Copy Student NIS with visual feedback
+        function copyStudentNis(nis, btn) {
+            if (!nis) return;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(nis).then(() => {
+                    const label = btn.querySelector('.nis-label');
+                    const originalText = label ? label.textContent : '';
+                    if (label) label.textContent = 'Tersalin! ✓';
+                    btn.classList.add('bg-emerald-700', 'text-white');
+                    setTimeout(() => {
+                        if (label) label.textContent = originalText || 'Salin NIS';
+                        btn.classList.remove('bg-emerald-700', 'text-white');
+                    }, 1800);
+                }).catch(() => {});
+            }
         }
     </script>
 </body>

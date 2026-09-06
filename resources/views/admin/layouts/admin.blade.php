@@ -395,6 +395,24 @@
                     <i data-lucide="menu" class="w-5 h-5"></i>
                 </button>
                 <span class="font-bold text-slate-800 text-base truncate">@yield('page_title', 'Admin Panel')</span>
+
+                <!-- Dual Operational Clock: Jakarta (WIB) & Tokyo (JST) -->
+                <div class="hidden lg:flex items-center gap-2 pl-3 border-l border-slate-200 text-xs">
+                    <!-- Jakarta Clock -->
+                    <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 font-mono shadow-2xs" title="Waktu Indonesia Barat (Kantor LPK SJI Jakarta)">
+                        <span class="text-xs select-none">🇮🇩</span>
+                        <span class="font-bold text-[10px] text-slate-400">JKT</span>
+                        <strong id="liveClockWib" class="text-slate-800 font-semibold tracking-tight">--:--:--</strong>
+                    </div>
+
+                    <!-- Tokyo Clock -->
+                    <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-red-50/80 border border-red-200/80 text-red-900 font-mono shadow-2xs" title="Japan Standard Time (Waktu Kaisha / Kumiai Jepang)">
+                        <span class="text-xs select-none">🇯🇵</span>
+                        <span class="font-bold text-[10px] text-red-600">TYO</span>
+                        <strong id="liveClockJst" class="text-red-700 font-bold tracking-tight">--:--:--</strong>
+                        <span class="text-[9px] px-1 py-0.2 rounded bg-red-100 text-red-800 font-extrabold font-sans select-none">+2h</span>
+                    </div>
+                </div>
             </div>
 
             <div class="flex items-center gap-3">
@@ -928,6 +946,33 @@
                 setTimeout(() => toast.remove(), 300);
             }, 5000);
         };
+
+        // Dual Operational Clock: Jakarta (WIB) & Tokyo (JST)
+        function updateDualClocks() {
+            const elWib = document.getElementById('liveClockWib');
+            const elJst = document.getElementById('liveClockJst');
+            if (!elWib && !elJst) return;
+
+            const now = new Date();
+            const timeFormat = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            
+            if (elWib) {
+                try {
+                    elWib.textContent = now.toLocaleTimeString('id-ID', { ...timeFormat, timeZone: 'Asia/Jakarta' });
+                } catch (e) {
+                    elWib.textContent = now.toLocaleTimeString();
+                }
+            }
+            if (elJst) {
+                try {
+                    elJst.textContent = now.toLocaleTimeString('ja-JP', { ...timeFormat, timeZone: 'Asia/Tokyo' });
+                } catch (e) {
+                    elJst.textContent = now.toLocaleTimeString();
+                }
+            }
+        }
+        updateDualClocks();
+        setInterval(updateDualClocks, 1000);
 
         // Start Real-Time Sync Poller
         pollAdminSync();
