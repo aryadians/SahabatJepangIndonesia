@@ -234,6 +234,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // 14. Executive Financial Analytics & Cashflow Forecasting
     Route::get('/finance', [FinancialAnalyticsController::class, 'index'])->name('finance.index');
     Route::get('/finance/export-pdf', [FinancialAnalyticsController::class, 'exportPdf'])->name('finance.export.pdf');
+    Route::get('/finance/profit-loss', [FinancialAnalyticsController::class, 'profitAndLoss'])->name('finance.pl');
+    Route::get('/finance/profit-loss/export-pdf', [FinancialAnalyticsController::class, 'exportProfitAndLossPdf'])->name('finance.pl.export');
 
     Route::get('/cash-book/export-csv', [CashBookController::class, 'exportCsv'])->name('cash-book.export.csv');
     Route::get('/cash-book/export-pdf', [CashBookController::class, 'exportPdf'])->name('cash-book.export.pdf');

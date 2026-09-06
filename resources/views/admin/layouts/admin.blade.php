@@ -207,10 +207,21 @@
 
             <a 
                 href="{{ route('admin.finance.index') }}" 
-                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.finance.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.finance.index') || request()->routeIs('admin.finance.export.pdf') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
             >
                 <i data-lucide="trending-up" class="w-4 h-4"></i>
                 <span>Proyeksi Kas & Keuangan</span>
+            </a>
+
+            <a 
+                href="{{ route('admin.finance.pl') }}" 
+                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.finance.pl*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+            >
+                <i data-lucide="calculator" class="w-4 h-4"></i>
+                <span>Laba Rugi LPK (P&L)</span>
+                <span class="ml-auto px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    P&L
+                </span>
             </a>
 
             <a 

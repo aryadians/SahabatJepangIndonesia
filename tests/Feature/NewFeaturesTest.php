@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Brochure;
+use App\Models\CashTransaction;
 use App\Models\Consultation;
 use App\Models\InterviewCandidate;
 use App\Models\JobInterview;
@@ -995,6 +996,110 @@ class NewFeaturesTest extends TestCase
         $response->assertSee('Mega Puspita');
         $response->assertSee('Tokyo Care Home Co., Ltd.');
         $response->assertSee('Tokyo');
+    }
+
+    public function test_admin_can_access_profit_and_loss_statement(): void
+    {
+        // 1. Setup Cash Transactions (Income & Expense)
+        CashTransaction::create([
+            'transaction_number' => 'BKM-202609-0001',
+            'transaction_date' => now()->toDateString(),
+            'type' => 'income',
+            'category' => 'tuition_student',
+            'title' => 'Pembayaran SPP Siswa Tokutei Ginou',
+            'amount' => 25000000,
+            'payment_method' => 'bank_bca',
+        ]);
+
+        CashTransaction::create([
+            'transaction_number' => 'BKK-202609-0001',
+            'transaction_date' => now()->toDateString(),
+            'type' => 'expense',
+            'category' => 'student_equipment',
+            'title' => 'Pengadaan Buku Modul & Seragam Kelas',
+            'amount' => 2000000,
+            'payment_method' => 'cash_kasir',
+        ]);
+
+        CashTransaction::create([
+            'transaction_number' => 'BKK-202609-0002',
+            'transaction_date' => now()->toDateString(),
+            'type' => 'expense',
+            'category' => 'teacher_salary',
+            'title' => 'Gaji dan Honorarium Sensei Bulan Ini',
+            'amount' => 8000000,
+            'payment_method' => 'bank_mandiri',
+        ]);
+
+        $response = $this->actingAs($this->admin)->get('/admin/finance/profit-loss');
+        $response->assertStatus(200);
+        $response->assertSee('Laporan Eksekutif Laba Rugi');
+        $response->assertSee('Executive Profit & Loss Statement', false);
+        $response->assertSee('25.000.000');
+        $response->assertSee('2.000.000');
+        $response->assertSee('8.000.000');
+        $response->assertSee('15.000.000'); // Net profit: 25M - (2M + 8M) = 15M
+        $response->assertSee('LABA KOTOR LEMBAGA');
+        $response->assertSee('EBITDA');
+        $response->assertSee('IV. LABA / (RUGI) BERSIH TAHUN BERJALAN');
+    }
+
+    public function test_admin_can_filter_profit_and_loss_by_period(): void
+    {
+        // Transaksi di Q1 (Februari)
+        CashTransaction::create([
+            'transaction_number' => 'BKM-202602-0001',
+            'transaction_date' => '2026-02-15',
+            'type' => 'income',
+            'category' => 'registration_fee',
+            'title' => 'Uang Pendaftaran Angkatan Februari',
+            'amount' => 5000000,
+            'payment_method' => 'cash_kasir',
+        ]);
+
+        // Transaksi di Q3 (Agustus)
+        CashTransaction::create([
+            'transaction_number' => 'BKM-202608-0001',
+            'transaction_date' => '2026-08-20',
+            'type' => 'income',
+            'category' => 'tuition_student',
+            'title' => 'Pelunasan Biaya Pelatihan Agustus',
+            'amount' => 12000000,
+            'payment_method' => 'bank_bca',
+        ]);
+
+        // Filter Q1
+        $q1Response = $this->actingAs($this->admin)->get('/admin/finance/profit-loss?year=2026&quarter=Q1');
+        $q1Response->assertStatus(200);
+        $q1Response->assertSee('5.000.000');
+        $q1Response->assertDontSee('12.000.000');
+
+        // Filter Bulan 8 (Agustus)
+        $augResponse = $this->actingAs($this->admin)->get('/admin/finance/profit-loss?year=2026&month=8');
+        $augResponse->assertStatus(200);
+        $augResponse->assertSee('12.000.000');
+        $augResponse->assertDontSee('5.000.000');
+    }
+
+    public function test_admin_can_export_official_profit_and_loss_pdf(): void
+    {
+        CashTransaction::create([
+            'transaction_number' => 'BKM-202609-0099',
+            'transaction_date' => now()->toDateString(),
+            'type' => 'income',
+            'category' => 'tuition_student',
+            'title' => 'Biaya Pelatihan Siswa',
+            'amount' => 30000000,
+            'payment_method' => 'bank_bca',
+        ]);
+
+        $response = $this->actingAs($this->admin)->get('/admin/finance/profit-loss/export-pdf?year=' . now()->year);
+        $response->assertStatus(200);
+        $response->assertSee('LAPORAN LABA RUGI OPERASIONAL LEMBAGA');
+        $response->assertSee('出納之印');
+        $response->assertSee('代表理事印');
+        $response->assertSee('PL-SJI');
+        $response->assertSee('30.000.000');
     }
 }
 

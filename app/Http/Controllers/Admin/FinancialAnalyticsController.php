@@ -276,4 +276,208 @@ class FinancialAnalyticsController extends Controller
             'monthlyComparison'
         ));
     }
+
+    /**
+     * Laporan Eksekutif Laba Rugi & Arus Kas LPK (Executive P&L Statement)
+     */
+    public function profitAndLoss(Request $request)
+    {
+        $data = $this->calculateProfitAndLossData($request);
+        return view('admin.finance.profit_loss', $data);
+    }
+
+    /**
+     * Cetak Lembar Resmi Laporan Laba Rugi A4 Portrait PDF
+     */
+    public function exportProfitAndLossPdf(Request $request)
+    {
+        $data = $this->calculateProfitAndLossData($request);
+        $data['docNumber'] = 'PL-SJI/' . date('Ym') . '/' . str_pad(rand(100, 999), 4, '0', STR_PAD_LEFT);
+        $data['settings'] = \App\Models\SiteSetting::allCached();
+        return view('admin.finance.profit_loss_pdf', $data);
+    }
+
+    /**
+     * Helper Kalkulasi Data Laba Rugi Berdasarkan Periode
+     */
+    protected function calculateProfitAndLossData(Request $request): array
+    {
+        $year = (int) $request->input('year', now()->year);
+        $quarter = $request->input('quarter'); // 'Q1', 'Q2', 'Q3', 'Q4'
+        $month = $request->input('month');     // 1 - 12
+
+        // Tentukan Rentang Waktu
+        if (!empty($month) && is_numeric($month) && $month >= 1 && $month <= 12) {
+            $month = (int) $month;
+            $startDate = Carbon::create($year, $month, 1)->startOfMonth();
+            $endDate = Carbon::create($year, $month, 1)->endOfMonth();
+            $periodType = 'month';
+            $periodLabel = 'Bulan ' . $startDate->translatedFormat('F Y');
+            $periodKanji = $year . '年' . $month . '月度';
+        } elseif (!empty($quarter) && in_array(strtoupper($quarter), ['Q1', 'Q2', 'Q3', 'Q4'])) {
+            $quarter = strtoupper($quarter);
+            $periodType = 'quarter';
+            match($quarter) {
+                'Q1' => [
+                    $startDate = Carbon::create($year, 1, 1)->startOfDay(),
+                    $endDate = Carbon::create($year, 3, 31)->endOfDay(),
+                    $periodLabel = "Kuartal I (Jan - Mar) {$year}",
+                    $periodKanji = "{$year}年度 第1四半期",
+                ],
+                'Q2' => [
+                    $startDate = Carbon::create($year, 4, 1)->startOfDay(),
+                    $endDate = Carbon::create($year, 6, 30)->endOfDay(),
+                    $periodLabel = "Kuartal II (Apr - Jun) {$year}",
+                    $periodKanji = "{$year}年度 第2四半期",
+                ],
+                'Q3' => [
+                    $startDate = Carbon::create($year, 7, 1)->startOfDay(),
+                    $endDate = Carbon::create($year, 9, 30)->endOfDay(),
+                    $periodLabel = "Kuartal III (Jul - Sep) {$year}",
+                    $periodKanji = "{$year}年度 第3四半期",
+                ],
+                'Q4' => [
+                    $startDate = Carbon::create($year, 10, 1)->startOfDay(),
+                    $endDate = Carbon::create($year, 12, 31)->endOfDay(),
+                    $periodLabel = "Kuartal IV (Okt - Des) {$year}",
+                    $periodKanji = "{$year}年度 第4四半期",
+                ],
+            };
+        } else {
+            $periodType = 'year';
+            $startDate = Carbon::create($year, 1, 1)->startOfDay();
+            $endDate = Carbon::create($year, 12, 31)->endOfDay();
+            $periodLabel = "Tahun Buku {$year}";
+            $periodKanji = "{$year}年度 通期";
+        }
+
+        $incomeCategories = CashTransaction::INCOME_CATEGORIES;
+        $expenseCategories = CashTransaction::EXPENSE_CATEGORIES;
+
+        // Query transaksi pemasukan pada periode
+        $incomeQuery = CashTransaction::where('type', 'income')
+            ->whereBetween('transaction_date', [$startDate, $endDate]);
+
+        $incomeItems = [];
+        $grossRevenue = 0;
+        foreach ($incomeCategories as $catKey => $catLabel) {
+            $amount = (float) (clone $incomeQuery)->where('category', $catKey)->sum('amount');
+            if ($amount > 0) {
+                $incomeItems[] = [
+                    'key' => $catKey,
+                    'label' => $catLabel,
+                    'amount' => $amount,
+                ];
+                $grossRevenue += $amount;
+            }
+        }
+
+        // Query transaksi pengeluaran pada periode
+        $expenseQuery = CashTransaction::where('type', 'expense')
+            ->whereBetween('transaction_date', [$startDate, $endDate]);
+
+        // Klasifikasi: Beban Pokok Pendidikan / HPP (Direct Educational Cost / COGS)
+        $cogsCategories = ['student_equipment'];
+        $cogsItems = [];
+        $totalCogs = 0;
+
+        // Klasifikasi: Beban Usaha & Administrasi Umum (OPEX)
+        $opexItems = [];
+        $totalOpex = 0;
+
+        foreach ($expenseCategories as $catKey => $catLabel) {
+            $amount = (float) (clone $expenseQuery)->where('category', $catKey)->sum('amount');
+            if ($amount > 0) {
+                if (in_array($catKey, $cogsCategories)) {
+                    $cogsItems[] = [
+                        'key' => $catKey,
+                        'label' => $catLabel,
+                        'amount' => $amount,
+                    ];
+                    $totalCogs += $amount;
+                } else {
+                    $opexItems[] = [
+                        'key' => $catKey,
+                        'label' => $catLabel,
+                        'amount' => $amount,
+                    ];
+                    $totalOpex += $amount;
+                }
+            }
+        }
+
+        // Laba Kotor (Gross Profit) = Gross Revenue - COGS
+        $grossProfit = $grossRevenue - $totalCogs;
+        $grossMargin = $grossRevenue > 0 ? round(($grossProfit / $grossRevenue) * 100, 1) : 0;
+
+        // Laba Usaha / EBITDA (Operating Profit) = Gross Profit - OPEX
+        $operatingProfit = $grossProfit - $totalOpex;
+        $operatingMargin = $grossRevenue > 0 ? round(($operatingProfit / $grossRevenue) * 100, 1) : 0;
+
+        // Laba Bersih (Net Profit / Net Income)
+        $netProfit = $operatingProfit;
+        $netMargin = $grossRevenue > 0 ? round(($netProfit / $grossRevenue) * 100, 1) : 0;
+
+        // Total Beban Keseluruhan (COGS + OPEX)
+        $totalExpenses = $totalCogs + $totalOpex;
+        $expenseRatio = $grossRevenue > 0 ? round(($totalExpenses / $grossRevenue) * 100, 1) : 0;
+
+        // Tren Bulanan Tahun Terpilih (12 Bulan untuk grafik dan tabel komparasi)
+        $monthlyTrends = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $mStart = Carbon::create($year, $m, 1)->startOfMonth();
+            $mEnd = Carbon::create($year, $m, 1)->endOfMonth();
+
+            $mInflow = (float) CashTransaction::where('type', 'income')
+                ->whereBetween('transaction_date', [$mStart, $mEnd])
+                ->sum('amount');
+
+            $mOutflow = (float) CashTransaction::where('type', 'expense')
+                ->whereBetween('transaction_date', [$mStart, $mEnd])
+                ->sum('amount');
+
+            $monthlyTrends[] = [
+                'month' => $m,
+                'name' => $mStart->translatedFormat('M'),
+                'inflow' => $mInflow,
+                'outflow' => $mOutflow,
+                'net' => $mInflow - $mOutflow,
+            ];
+        }
+
+        // Available years for dropdown
+        $minDate = CashTransaction::min('transaction_date');
+        $minYear = $minDate ? Carbon::parse($minDate)->year : (now()->year - 2);
+        $maxDate = CashTransaction::max('transaction_date');
+        $maxYear = max(now()->year + 1, $maxDate ? Carbon::parse($maxDate)->year : now()->year);
+        $availableYears = range(max($minYear, 2023), max($maxYear, now()->year));
+        rsort($availableYears);
+
+        return compact(
+            'year',
+            'quarter',
+            'month',
+            'periodType',
+            'periodLabel',
+            'periodKanji',
+            'startDate',
+            'endDate',
+            'incomeItems',
+            'grossRevenue',
+            'cogsItems',
+            'totalCogs',
+            'grossProfit',
+            'grossMargin',
+            'opexItems',
+            'totalOpex',
+            'operatingProfit',
+            'operatingMargin',
+            'netProfit',
+            'netMargin',
+            'totalExpenses',
+            'expenseRatio',
+            'monthlyTrends',
+            'availableYears'
+        );
+    }
 }

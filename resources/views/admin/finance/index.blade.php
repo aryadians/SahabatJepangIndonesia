@@ -83,6 +83,13 @@
                     <span>Tahun Kalender {{ now()->year }}</span>
                 </span>
                 <a 
+                    href="{{ route('admin.finance.pl') }}" 
+                    class="px-3 py-1.5 rounded-xl bg-japan-600 hover:bg-japan-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs shadow-japan-900/10"
+                >
+                    <i data-lucide="calculator" class="w-3.5 h-3.5 text-white"></i>
+                    <span>Laba Rugi (P&L)</span>
+                </a>
+                <a 
                     href="{{ route('admin.cash-book.index') }}" 
                     class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
                 >
