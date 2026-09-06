@@ -45,5 +45,17 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('admin123'),
             ]
         );
+
+        // 4. Karyawan / Staf Operasional & Administrasi
+        User::updateOrCreate(
+            ['email' => 'karyawan@sahabatjepangindonesia.com'],
+            [
+                'name' => 'Budi Santoso (Staf Administrasi)',
+                'role' => 'staff',
+                'phone' => '081311223344',
+                'is_active' => true,
+                'password' => Hash::make('admin123'),
+            ]
+        );
     }
 }

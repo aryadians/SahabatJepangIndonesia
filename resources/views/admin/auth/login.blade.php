@@ -169,7 +169,7 @@
                             Masuk ke Dashboard
                         </h3>
                         <p class="text-xs text-slate-500 mt-0.5 font-medium">
-                            Pilih role instan atau ketik kredensial resmi Anda
+                            Khusus Administrator, Sensei/Instruktur & Karyawan
                         </p>
                     </div>
                     <span class="px-2.5 py-1 rounded-full bg-red-50 text-japan-700 font-extrabold text-[10px] border border-red-200">
@@ -177,37 +177,15 @@
                     </span>
                 </div>
 
-                <!-- Role Shortcut Switcher (Pill Selector) -->
-                <div class="mb-5 p-1.5 rounded-2xl bg-slate-100 border border-slate-200 grid grid-cols-3 gap-1 text-xs font-bold">
-                    <button 
-                        type="button" 
-                        onclick="fillCredentials('admin@sahabatjepangindonesia.com', 'admin123', 'admin')" 
-                        id="btnRoleAdmin" 
-                        class="py-2 px-2 rounded-xl bg-white text-slate-900 shadow-sm flex items-center justify-center gap-1.5 transition text-[11px] font-black border border-slate-200/80"
-                    >
-                        <i data-lucide="shield" class="w-3.5 h-3.5 text-japan-600"></i>
-                        <span class="truncate">Admin</span>
-                    </button>
-                    
-                    <button 
-                        type="button" 
-                        onclick="fillCredentials('sensei@sahabatjepangindonesia.com', 'admin123', 'sensei')" 
-                        id="btnRoleSensei" 
-                        class="py-2 px-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-white/60 flex items-center justify-center gap-1.5 transition text-[11px] font-bold"
-                    >
-                        <i data-lucide="user-check" class="w-3.5 h-3.5 text-blue-600"></i>
-                        <span class="truncate">Yamada</span>
-                    </button>
-
-                    <button 
-                        type="button" 
-                        onclick="fillCredentials('sensei2@sahabatjepangindonesia.com', 'admin123', 'sensei2')" 
-                        id="btnRoleSensei2" 
-                        class="py-2 px-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-white/60 flex items-center justify-center gap-1.5 transition text-[11px] font-bold"
-                    >
-                        <i data-lucide="graduation-cap" class="w-3.5 h-3.5 text-emerald-600"></i>
-                        <span class="truncate">Dewi (N2)</span>
-                    </button>
+                <!-- Internal Access Badge Notice -->
+                <div class="mb-5 p-3 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-japan-50 text-japan-600 flex items-center justify-center flex-shrink-0 border border-red-100 shadow-xs">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i>
+                    </div>
+                    <div class="text-xs">
+                        <span class="font-bold text-slate-800 block text-[11px] sm:text-xs">Portal Akses Internal LPK</span>
+                        <span class="text-slate-500 text-[10px] sm:text-[11px] leading-tight block">Silakan masukkan email resmi dan kata sandi yang telah terdaftar.</span>
+                    </div>
                 </div>
 
                 <!-- Alert Messages -->
@@ -247,10 +225,12 @@
                             </div>
                             <input 
                                 type="email" 
-                                id="loginEmail"
+                                id="loginEmail" 
                                 name="email" 
-                                value="{{ old('email', 'admin@sahabatjepangindonesia.com') }}" 
+                                value="{{ old('email') }}" 
                                 required 
+                                autofocus
+                                autocomplete="username"
                                 placeholder="nama@sahabatjepangindonesia.com"
                                 class="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-slate-50/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-japan-500/20 focus:border-japan-600 transition shadow-xs"
                             >
@@ -275,9 +255,10 @@
                                 type="password" 
                                 id="loginPassword"
                                 name="password" 
-                                value="admin123" 
+                                value="" 
                                 required 
-                                placeholder="••••••••"
+                                autocomplete="current-password"
+                                placeholder="Masukkan kata sandi akun Anda"
                                 class="w-full pl-10 pr-11 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-900 bg-slate-50/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-japan-500/20 focus:border-japan-600 transition shadow-xs"
                             >
                             <button 
@@ -307,7 +288,7 @@
                             id="submitBtn"
                             class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-japan-600 via-red-600 to-rose-700 hover:from-japan-700 hover:to-rose-800 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-red-600/30 hover:shadow-xl hover:shadow-red-600/40 hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center gap-2 group cursor-pointer"
                         >
-                            <span>Masuk ke Dashboard Admin</span>
+                            <span>Masuk ke Dashboard</span>
                             <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
                         </button>
                     </div>
@@ -369,33 +350,6 @@
                 icon.setAttribute('data-lucide', 'eye');
             }
             lucide.createIcons();
-        }
-
-        // Quick Role Switcher
-        function fillCredentials(email, pwd, role) {
-            document.getElementById('loginEmail').value = email;
-            document.getElementById('loginPassword').value = pwd;
-
-            const btnAdmin = document.getElementById('btnRoleAdmin');
-            const btnSensei = document.getElementById('btnRoleSensei');
-            const btnSensei2 = document.getElementById('btnRoleSensei2');
-
-            // Reset all
-            [btnAdmin, btnSensei, btnSensei2].forEach(btn => {
-                if (btn) {
-                    btn.className = 'py-2 px-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-white/60 flex items-center justify-center gap-1.5 transition text-[11px] font-bold';
-                }
-            });
-
-            // Set active
-            const activeClasses = 'py-2 px-2 rounded-xl bg-white text-slate-900 shadow-sm flex items-center justify-center gap-1.5 transition text-[11px] font-black border border-slate-200/80';
-            if (role === 'admin' && btnAdmin) {
-                btnAdmin.className = activeClasses;
-            } else if (role === 'sensei' && btnSensei) {
-                btnSensei.className = activeClasses;
-            } else if (role === 'sensei2' && btnSensei2) {
-                btnSensei2.className = activeClasses;
-            }
         }
 
         // Sakura Canvas Simulation

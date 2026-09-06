@@ -27,10 +27,39 @@ class ExampleTest extends TestCase
         $response->assertSee('SO KEMENAKER RI');
         $response->assertSee('clockWibSide');
         $response->assertSee('clockJstSide');
-        $response->assertSee('btnRoleAdmin');
-        $response->assertSee('btnRoleSensei');
-        $response->assertSee('btnRoleSensei2');
+        $response->assertSee('Khusus Administrator, Sensei');
         $response->assertSee('loginEmail');
         $response->assertSee('loginPassword');
+        $response->assertDontSee('btnRoleAdmin');
+    }
+
+    public function test_admin_login_authentication_succeeds_for_admin_and_staff(): void
+    {
+        $admin = \App\Models\User::factory()->create([
+            'email' => 'admin_test@sahabatjepangindonesia.com',
+            'password' => \Illuminate\Support\Facades\Hash::make('admin123'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        $response = $this->post(route('admin.login.submit'), [
+            'email' => 'admin_test@sahabatjepangindonesia.com',
+            'password' => 'admin123',
+        ]);
+
+        $response->assertRedirect(route('admin.dashboard'));
+        $this->assertAuthenticatedAs($admin);
+    }
+
+    public function test_admin_login_fails_with_invalid_credentials(): void
+    {
+        $response = $this->from(route('admin.login'))->post(route('admin.login.submit'), [
+            'email' => 'admin@sahabatjepangindonesia.com',
+            'password' => 'salah_password',
+        ]);
+
+        $response->assertRedirect(route('admin.login'));
+        $response->assertSessionHasErrors('email');
+        $this->assertGuest();
     }
 }
