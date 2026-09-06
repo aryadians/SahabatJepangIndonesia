@@ -1830,7 +1830,70 @@
     let completedUploadCount = 0;
     let totalUploadCount = 0;
 
-    function handleExplorerFilesUpload(files, targetFolderOverride = null) {
+    // Helper: Kompresi gambar client-side via canvas sebelum upload agar cepat dan tidak melebihi payload
+    function compressImageClientSide(file, maxDimension = 1600, quality = 0.82) {
+        return new Promise((resolve) => {
+            if (!file || !file.type || !file.type.startsWith('image/') || file.type === 'image/gif' || file.type.includes('svg')) {
+                resolve(file);
+                return;
+            }
+
+            // Jika ukuran sudah kecil (< 350KB), tidak perlu kompresi
+            if (file.size < 350 * 1024) {
+                resolve(file);
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxDimension || height > maxDimension) {
+                        if (width >= height) {
+                            height = Math.round((height / width) * maxDimension);
+                            width = maxDimension;
+                        } else {
+                            width = Math.round((width / height) * maxDimension);
+                            height = maxDimension;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const outType = file.type === 'image/png' ? 'image/jpeg' : file.type;
+                    canvas.toBlob(function(blob) {
+                        if (blob && blob.size < file.size) {
+                            const newName = file.name.replace(/\.[^/.]+$/, "") + (outType === 'image/jpeg' ? '.jpg' : '.png');
+                            const newFile = new File([blob], newName, {
+                                type: outType,
+                                lastModified: Date.now()
+                            });
+                            resolve(newFile);
+                        } else {
+                            resolve(file);
+                        }
+                    }, outType, quality);
+                };
+                img.onerror = function() {
+                    resolve(file);
+                };
+                img.src = e.target.result;
+            };
+            reader.onerror = function() {
+                resolve(file);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async function handleExplorerFilesUpload(files, targetFolderOverride = null) {
         if (!files || files.length === 0) return;
 
         const fileArray = Array.from(files);
@@ -1845,9 +1908,9 @@
         totalUploadCount += fileArray.length;
         updateUploadQueueHeader();
 
-        fileArray.forEach(file => {
+        for (const file of fileArray) {
             const uploadId = 'up_' + Math.random().toString(36).substr(2, 9);
-            const sizeStr = file.size > 1024 * 1024 
+            const rawSizeStr = file.size > 1024 * 1024 
                 ? (file.size / (1024 * 1024)).toFixed(1) + ' MB' 
                 : Math.round(file.size / 1024) + ' KB';
 
@@ -1862,10 +1925,10 @@
                         </div>
                         <span class="font-bold text-slate-800 text-[11px] truncate" title="${file.name}">${file.name}</span>
                     </div>
-                    <span id="queue_size_${uploadId}" class="text-[10px] text-slate-400 font-mono font-medium flex-shrink-0">${sizeStr}</span>
+                    <span id="queue_size_${uploadId}" class="text-[10px] text-slate-400 font-mono font-medium flex-shrink-0">${rawSizeStr}</span>
                 </div>
                 <div class="flex items-center justify-between text-[10px] text-slate-500 font-medium">
-                    <span id="queue_status_${uploadId}" class="text-slate-500 font-semibold">Menunggu antrean...</span>
+                    <span id="queue_status_${uploadId}" class="text-slate-500 font-semibold">Menyiapkan berkas...</span>
                     <span id="queue_pct_${uploadId}" class="font-mono font-bold text-slate-700">0%</span>
                 </div>
                 <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
@@ -1875,13 +1938,25 @@
             if (body) body.appendChild(itemEl);
             if (window.lucide) lucide.createIcons();
 
+            // Lakukan pre-kompresi cepat untuk gambar
+            const optimizedFile = await compressImageClientSide(file);
+            const finalSizeStr = optimizedFile.size > 1024 * 1024 
+                ? (optimizedFile.size / (1024 * 1024)).toFixed(1) + ' MB' 
+                : Math.round(optimizedFile.size / 1024) + ' KB';
+
+            const sizeSpan = document.getElementById(`queue_size_${uploadId}`);
+            if (sizeSpan) sizeSpan.textContent = finalSizeStr;
+
+            const statusSpan = document.getElementById(`queue_status_${uploadId}`);
+            if (statusSpan) statusSpan.textContent = 'Menunggu antrean...';
+
             uploadQueue.push({
                 id: uploadId,
-                file: file,
+                file: optimizedFile,
                 folderId: folderId,
                 category: targetCategory
             });
-        });
+        }
 
         processUploadQueue();
     }
@@ -1946,13 +2021,20 @@
                                 status.innerHTML = '<span class="text-emerald-600 font-bold flex items-center gap-1">✅ Berhasil</span>';
                             }
                         } else {
-                            if (status) status.innerHTML = `<span class="text-rose-600 font-bold">⚠️ ${res.message || 'Gagal'}</span>`;
+                            if (status) status.innerHTML = `<span class="text-rose-600 font-bold" title="${res.message || ''}">⚠️ ${res.message || 'Gagal'}</span>`;
                         }
                     } catch (e) {
                         if (status) status.innerHTML = '<span class="text-rose-600 font-bold">⚠️ Respons tidak valid</span>';
                     }
                 } else {
-                    if (status) status.innerHTML = `<span class="text-rose-600 font-bold">⚠️ Gagal (HTTP ${xhr.status})</span>`;
+                    let errDetail = `Gagal (HTTP ${xhr.status})`;
+                    try {
+                        const errObj = JSON.parse(xhr.responseText);
+                        if (errObj && errObj.message) {
+                            errDetail = errObj.message;
+                        }
+                    } catch (e) {}
+                    if (status) status.innerHTML = `<span class="text-rose-600 font-bold truncate max-w-[140px]" title="${errDetail}">⚠️ ${errDetail}</span>`;
                 }
                 resolve();
             };
