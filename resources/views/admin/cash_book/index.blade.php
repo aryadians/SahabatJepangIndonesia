@@ -629,7 +629,7 @@
 </div>
 
 <!-- Modal Pratinjau Bukti Transaksi -->
-<div id="proofModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs hidden items-center justify-center p-4">
+<div id="proofModal" onclick="if(event.target === this) closeModal('proofModal')" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs hidden items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <div>
@@ -656,7 +656,7 @@
 </div>
 
 <!-- Modal Ringkasan Laba Rugi Operasional & Margin LPK -->
-<div id="incomeStatementModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs hidden items-center justify-center p-4">
+<div id="incomeStatementModal" onclick="if(event.target === this) closeModal('incomeStatementModal')" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs hidden items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
         <div class="flex items-center justify-between border-b border-slate-100 pb-4">
             <div class="flex items-center gap-3">
