@@ -212,6 +212,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/students/{id}/invoice', [StudentController::class, 'invoice'])->name('students.invoice');
     Route::post('/students/{id}/payment', [StudentController::class, 'updatePayment'])->name('students.payment');
     Route::post('/students/{id}/send-receipt-wa', [StudentController::class, 'sendReceiptWa'])->name('students.send.receipt.wa');
+    Route::get('/students/quick-search', [StudentController::class, 'quickSearch'])->name('students.quick.search');
     Route::resource('students', StudentController::class);
 
     // 11b. Pusat Checklist & Verifikasi Dokumen Keberangkatan Siswa (Flight Readiness)

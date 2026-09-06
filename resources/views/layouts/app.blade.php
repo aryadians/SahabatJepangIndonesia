@@ -188,6 +188,9 @@
 </head>
 <body class="bg-[#FAFAFA] text-slate-800 antialiased selection:bg-red-500 selection:text-white relative">
 
+    <!-- Global Reading Progress Neon Bar (Scroll Depth Indicator) -->
+    <div id="readingProgressBar" class="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-japan-600 via-rose-500 to-amber-400 z-[9999] transition-all duration-75 ease-out shadow-sm shadow-japan-600/50" style="width: 0%;"></div>
+
     <!-- Top Announcement Bar -->
     <div class="bg-gradient-to-r from-japan-900 via-japan-700 to-japan-800 text-white text-xs sm:text-sm py-2 px-4 text-center font-medium shadow-sm relative z-40">
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-2 sm:gap-6">

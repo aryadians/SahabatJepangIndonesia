@@ -427,6 +427,26 @@
             </div>
 
             <div class="flex items-center gap-3">
+                <!-- Quick Search Omnibar Trigger (Ctrl + K) -->
+                <button 
+                    type="button" 
+                    onclick="openCommandPalette()"
+                    class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-slate-500 hover:text-slate-800 text-xs font-medium transition group shadow-2xs"
+                    title="Cari menu, fitur, atau siswa (Shortcut: Ctrl + K)"
+                >
+                    <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 group-hover:text-japan-600 transition"></i>
+                    <span class="text-slate-600 font-semibold">Cari menu / siswa...</span>
+                    <kbd class="px-1.5 py-0.5 rounded bg-white text-slate-500 text-[10px] font-mono border border-slate-300 font-bold shadow-2xs ml-1">Ctrl K</kbd>
+                </button>
+                <button 
+                    type="button" 
+                    onclick="openCommandPalette()"
+                    class="sm:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition"
+                    title="Cari menu & siswa"
+                >
+                    <i data-lucide="search" class="w-5 h-5"></i>
+                </button>
+
                 <!-- Real-Time Sync Indicator -->
                 <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-[11px] font-bold text-emerald-700 shadow-xs" title="Sistem tersinkronisasi langsung dengan pendaftaran guest">
                     <span class="relative flex h-2 w-2">
@@ -1009,6 +1029,358 @@
     <!-- Universal Alert & Toast Containers -->
     <div id="appAlertContainer" class="fixed top-5 right-5 z-[9999] flex flex-col gap-2.5 max-w-sm pointer-events-none"></div>
     <div id="realtimeToastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm pointer-events-none"></div>
+
+    <!-- Universal Command Palette / Omnibar Modal (Ctrl + K) -->
+    <div 
+        id="adminCommandPalette" 
+        class="fixed inset-0 z-[99999] bg-slate-950/70 backdrop-blur-md hidden items-start justify-center p-4 sm:p-6 pt-16 sm:pt-24 transition-all duration-200"
+        onclick="if(event.target === this) closeCommandPalette()"
+    >
+        <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[80vh] transform transition-all duration-200 scale-95 opacity-0" id="commandPaletteBox">
+            
+            <!-- Input Header -->
+            <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center gap-3 bg-slate-50/50">
+                <div class="w-9 h-9 rounded-2xl bg-japan-50 text-japan-600 flex items-center justify-center font-bold flex-shrink-0">
+                    <i data-lucide="search" class="w-5 h-5"></i>
+                </div>
+                <input 
+                    type="text" 
+                    id="commandPaletteInput" 
+                    placeholder="Ketik menu, tindakan, nama atau NIS siswa... (tekan Esc untuk tutup)" 
+                    class="w-full bg-transparent border-none text-slate-800 font-semibold text-sm sm:text-base placeholder:text-slate-400 focus:outline-none focus:ring-0"
+                    autocomplete="off"
+                >
+                <kbd class="hidden sm:inline-block px-2 py-1 rounded-lg bg-white border border-slate-200 text-slate-400 text-[10px] font-mono font-bold shadow-2xs">ESC</kbd>
+                <button type="button" onclick="closeCommandPalette()" class="text-slate-400 hover:text-slate-700 p-1 sm:hidden">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Content Area (Scrollable) -->
+            <div class="overflow-y-auto p-3 sm:p-4 space-y-4 divide-y divide-slate-100" id="commandPaletteContent">
+                
+                <!-- Live Students Section (Populated dynamically when searching) -->
+                <div id="paletteStudentSection" class="hidden space-y-2 pt-2">
+                    <div class="flex items-center justify-between px-3 text-[11px] font-black text-slate-400 uppercase tracking-wider">
+                        <span>Hasil Pencarian Siswa</span>
+                        <span id="studentSearchLoading" class="hidden text-japan-600 animate-pulse">Mencari...</span>
+                    </div>
+                    <div id="paletteStudentList" class="space-y-1"></div>
+                </div>
+
+                <!-- Quick Navigation Section -->
+                <div id="paletteNavSection" class="space-y-2">
+                    <span class="px-3 text-[11px] font-black text-slate-400 uppercase tracking-wider block">Menu & Modul Utama</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5" id="paletteNavList">
+                        <a href="{{ route('admin.finance.pl') }}" class="palette-item flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100 transition group border border-transparent hover:border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                                    <i data-lucide="calculator" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-800 group-hover:text-slate-900">Laporan Laba Rugi (P&L)</h4>
+                                    <p class="text-[10px] text-slate-400">Ringkasan laba kotor & bersih resmi</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">Keuangan</span>
+                        </a>
+
+                        <a href="{{ route('admin.finance.index') }}" class="palette-item flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100 transition group border border-transparent hover:border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                                    <i data-lucide="trending-up" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-800 group-hover:text-slate-900">Proyeksi Kas & Keuangan</h4>
+                                    <p class="text-[10px] text-slate-400">Arus kas & piutang cicilan siswa</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-800">Keuangan</span>
+                        </a>
+
+                        <a href="{{ route('admin.flight-readiness.index') }}" class="palette-item flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100 transition group border border-transparent hover:border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-xl bg-japan-50 text-japan-600 flex items-center justify-center font-bold">
+                                    <i data-lucide="plane-takeoff" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-800 group-hover:text-slate-900">Flight Readiness Tracker</h4>
+                                    <p class="text-[10px] text-slate-400">Checklist paspor, CoE & visa terbang</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-japan-100 text-japan-800">Kesiswaan</span>
+                        </a>
+
+                        <a href="{{ route('admin.students.index') }}" class="palette-item flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100 transition group border border-transparent hover:border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+                                    <i data-lucide="users" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-800 group-hover:text-slate-900">Data Master Siswa</h4>
+                                    <p class="text-[10px] text-slate-400">Profil, dossier, SPP & status</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-purple-100 text-purple-800">Kesiswaan</span>
+                        </a>
+
+                        <a href="{{ route('admin.cash-book.index') }}" class="palette-item flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100 transition group border border-transparent hover:border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-800 group-hover:text-slate-900">Buku Kas & Jurnal LPK</h4>
+                                    <p class="text-[10px] text-slate-400">Pencatatan kas masuk BKM & keluar BKK</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">Kas</span>
+                        </a>
+
+                        <a href="{{ route('admin.reimbursements.index') }}" class="palette-item flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100 transition group border border-transparent hover:border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
+                                    <i data-lucide="receipt" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-800 group-hover:text-slate-900">Reimburse & Kasbon</h4>
+                                    <p class="text-[10px] text-slate-400">Klaim dinas & approval direksi</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-100 text-rose-800">Operasional</span>
+                        </a>
+
+                        <a href="{{ route('admin.digital-archives.index') }}" class="palette-item flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100 transition group border border-transparent hover:border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+                                    <i data-lucide="folder-archive" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-800 group-hover:text-slate-900">Arsip Digital Nota</h4>
+                                    <p class="text-[10px] text-slate-400">Explorer berkas & bukti transfer</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800">Dokumen</span>
+                        </a>
+
+                        <a href="{{ route('admin.whatsapp.index') }}" class="palette-item flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100 transition group border border-transparent hover:border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-xl bg-green-50 text-green-600 flex items-center justify-center font-bold">
+                                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-800 group-hover:text-slate-900">Otomatisasi WhatsApp</h4>
+                                    <p class="text-[10px] text-slate-400">Template pesan & notifikasi CRM</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-green-100 text-green-800">CRM</span>
+                        </a>
+
+                        <a href="{{ route('admin.settings.index') }}" class="palette-item flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100 transition group border border-transparent hover:border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
+                                    <i data-lucide="sliders" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-800 group-hover:text-slate-900">Pengaturan Website</h4>
+                                    <p class="text-[10px] text-slate-400">SEO, hero banner, logo & SO Kemenaker</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-200 text-slate-800">Sistem</span>
+                        </a>
+
+                        <a href="{{ route('admin.brochures.index') }}" class="palette-item flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100 transition group border border-transparent hover:border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-800 group-hover:text-slate-900">Brosur & Silabus</h4>
+                                    <p class="text-[10px] text-slate-400">Manajemen katalog kurikulum</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">CMS</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Shortcuts -->
+                <div id="paletteActionSection" class="space-y-2 pt-3">
+                    <span class="px-3 text-[11px] font-black text-slate-400 uppercase tracking-wider block">Tindakan Cepat</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <a href="{{ route('admin.students.create') }}" class="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-50 hover:bg-japan-50 hover:text-japan-700 text-slate-700 text-xs font-bold transition border border-slate-200 hover:border-japan-300">
+                            <i data-lucide="user-plus" class="w-4 h-4 text-japan-600"></i>
+                            <span>+ Tambah Siswa Baru</span>
+                        </a>
+                        <a href="{{ route('admin.cash-book.index') }}" class="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-50 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 text-xs font-bold transition border border-slate-200 hover:border-emerald-300">
+                            <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-600"></i>
+                            <span>+ Catat Transaksi Kas Masuk/Keluar</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer Keyboard Hints -->
+            <div class="p-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                <div class="flex items-center gap-3">
+                    <span class="flex items-center gap-1">
+                        <kbd class="px-1.5 py-0.5 rounded bg-white border border-slate-200 text-slate-600 text-[10px] font-mono">↑↓</kbd> Navigasi
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <kbd class="px-1.5 py-0.5 rounded bg-white border border-slate-200 text-slate-600 text-[10px] font-mono">Enter</kbd> Pilih
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <kbd class="px-1.5 py-0.5 rounded bg-white border border-slate-200 text-slate-600 text-[10px] font-mono">Esc</kbd> Batal
+                    </span>
+                </div>
+                <span class="text-slate-400 hidden sm:inline">LPK SJI Executive Command Palette</span>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Command Palette JavaScript Engine -->
+    <script>
+        let isPaletteOpen = false;
+        let searchDebounceTimer = null;
+
+        function openCommandPalette() {
+            const modal = document.getElementById('adminCommandPalette');
+            const box = document.getElementById('commandPaletteBox');
+            const input = document.getElementById('commandPaletteInput');
+            if (!modal || !box || !input) return;
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                box.classList.remove('scale-95', 'opacity-0');
+                box.classList.add('scale-100', 'opacity-100');
+                input.focus();
+                input.select();
+            }, 10);
+            isPaletteOpen = true;
+        }
+
+        function closeCommandPalette() {
+            const modal = document.getElementById('adminCommandPalette');
+            const box = document.getElementById('commandPaletteBox');
+            const input = document.getElementById('commandPaletteInput');
+            if (!modal || !box) return;
+
+            box.classList.remove('scale-100', 'opacity-100');
+            box.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                if (input) input.value = '';
+                filterPaletteItems('');
+            }, 200);
+            isPaletteOpen = false;
+        }
+
+        // Global Keyboard Shortcut: Ctrl + K or Cmd + K
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                if (isPaletteOpen) {
+                    closeCommandPalette();
+                } else {
+                    openCommandPalette();
+                }
+            } else if (e.key === 'Escape' && isPaletteOpen) {
+                closeCommandPalette();
+            }
+        });
+
+        // Live Filter & Student Search
+        const paletteInput = document.getElementById('commandPaletteInput');
+        if (paletteInput) {
+            paletteInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim().toLowerCase();
+                filterPaletteItems(query);
+
+                clearTimeout(searchDebounceTimer);
+                if (query.length >= 2) {
+                    searchDebounceTimer = setTimeout(() => {
+                        searchStudentsAjax(query);
+                    }, 250);
+                } else {
+                    document.getElementById('paletteStudentSection').classList.add('hidden');
+                }
+            });
+        }
+
+        function filterPaletteItems(query) {
+            const items = document.querySelectorAll('.palette-item');
+            let hasMatch = false;
+
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (!query || text.includes(query)) {
+                    item.classList.remove('hidden');
+                    hasMatch = true;
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+
+        function searchStudentsAjax(query) {
+            const studentSection = document.getElementById('paletteStudentSection');
+            const studentList = document.getElementById('paletteStudentList');
+            const loader = document.getElementById('studentSearchLoading');
+            if (!studentSection || !studentList) return;
+
+            studentSection.classList.remove('hidden');
+            if (loader) loader.classList.remove('hidden');
+
+            fetch(`{{ route('admin.students.quick.search') }}?q=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (loader) loader.classList.add('hidden');
+                    studentList.innerHTML = '';
+
+                    if (data.students && data.students.length > 0) {
+                        data.students.forEach(st => {
+                            const row = document.createElement('div');
+                            row.className = 'flex items-center justify-between p-2.5 rounded-2xl hover:bg-japan-50/70 border border-slate-200 transition group';
+                            row.innerHTML = `
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-xl bg-japan-600 text-white flex items-center justify-center font-bold text-xs">
+                                        ${st.name.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-bold text-xs text-slate-900 group-hover:text-japan-700">${st.name}</span>
+                                            <span class="font-mono text-[10px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-600">${st.nis}</span>
+                                        </div>
+                                        <p class="text-[10px] text-slate-400">${st.program || 'Program Umum'} ${st.destination_company ? '• ' + st.destination_company : ''}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <a href="${st.url}" class="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 text-slate-700 text-[11px] font-bold border border-slate-200 transition" title="Buka Detail">
+                                        Detail
+                                    </a>
+                                    <a href="${st.print_url}" target="_blank" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold transition" title="Cetak Dossier">
+                                        Dossier
+                                    </a>
+                                    <a href="${st.receipt_url}" target="_blank" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition" title="Kwitansi">
+                                        Kwitansi
+                                    </a>
+                                </div>
+                            `;
+                            studentList.appendChild(row);
+                        });
+                    } else {
+                        studentList.innerHTML = `<p class="text-xs text-slate-400 italic p-3 text-center">Tidak ditemukan siswa dengan kata kunci "${query}".</p>`;
+                    }
+                })
+                .catch(() => {
+                    if (loader) loader.classList.add('hidden');
+                });
+        }
+    </script>
 
     @stack('scripts')
 </body>

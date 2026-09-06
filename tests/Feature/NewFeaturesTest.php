@@ -1101,6 +1101,47 @@ class NewFeaturesTest extends TestCase
         $response->assertSee('PL-SJI');
         $response->assertSee('30.000.000');
     }
+
+    public function test_admin_command_palette_and_quick_search_endpoint(): void
+    {
+        $student = Student::create([
+            'name' => 'Kenjiro Pratama',
+            'nis' => 'SJI-2026-888',
+            'program' => 'Tokutei Ginou (SSW)',
+            'destination_company' => 'Nagoya Auto Tech Co.',
+            'status' => 'active',
+            'total_cost' => 20000000,
+            'paid_amount' => 15000000,
+        ]);
+
+        // 1. Test Command Palette Presence in Admin View
+        $adminView = $this->actingAs($this->admin)->get('/admin');
+        $adminView->assertStatus(200);
+        $adminView->assertSee('adminCommandPalette');
+        $adminView->assertSee('commandPaletteInput');
+        $adminView->assertSee('Ctrl K');
+
+        // 2. Test AJAX Quick Search Endpoint
+        $searchResponse = $this->actingAs($this->admin)->getJson('/admin/students/quick-search?q=Kenjiro');
+        $searchResponse->assertStatus(200);
+        $searchResponse->assertJsonFragment([
+            'nis' => 'SJI-2026-888',
+            'name' => 'Kenjiro Pratama',
+            'destination_company' => 'Nagoya Auto Tech Co.',
+        ]);
+    }
+
+    public function test_public_floating_concierge_and_reading_progress_rendered(): void
+    {
+        $response = $this->get('/');
+        $response->assertStatus(200);
+        $response->assertSee('readingProgressBar');
+        $response->assertSee('publicConciergeDock');
+        $response->assertSee('Peta Alumni 🇯🇵');
+        $response->assertSee('Simulasi CBT');
+        $response->assertSee('Cek Status');
+        $response->assertSee('Brosur');
+    }
 }
 
 

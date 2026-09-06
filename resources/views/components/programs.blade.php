@@ -25,7 +25,7 @@
         <!-- Program Cards Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             @foreach($programs as $index => $program)
-                <div class="glass-card rounded-3xl p-6 sm:p-8 flex flex-col justify-between glass-card-hover border border-red-100/80 reveal-on-scroll delay-{{ ($index + 1) * 100 }} relative overflow-hidden group">
+                <div class="glass-card spotlight-card rounded-3xl p-6 sm:p-8 flex flex-col justify-between glass-card-hover border border-red-100/80 reveal-on-scroll delay-{{ ($index + 1) * 100 }} relative overflow-hidden group">
                     
                     <!-- Decorative Japanese Kanji Watermark -->
                     <div class="absolute -right-4 -bottom-6 font-japanese font-black text-8xl text-red-500/5 select-none pointer-events-none transition-transform group-hover:scale-110 group-hover:text-red-500/10 duration-500">

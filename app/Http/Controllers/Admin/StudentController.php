@@ -983,4 +983,40 @@ class StudentController extends Controller
         }
         return (string)$number;
     }
+
+    /**
+     * AJAX Quick Search Siswa untuk Universal Command Palette (Ctrl+K)
+     */
+    public function quickSearch(Request $request)
+    {
+        $q = trim($request->input('q', ''));
+        if (strlen($q) < 2) {
+            return response()->json(['students' => []]);
+        }
+
+        $students = Student::where(function ($sub) use ($q) {
+            $sub->where('name', 'like', "%{$q}%")
+                ->orWhere('nis', 'like', "%{$q}%")
+                ->orWhere('phone', 'like', "%{$q}%")
+                ->orWhere('destination_company', 'like', "%{$q}%");
+        })
+        ->select('id', 'nis', 'name', 'program', 'status', 'photo', 'destination_company')
+        ->limit(8)
+        ->get()
+        ->map(function ($s) {
+            return [
+                'id' => $s->id,
+                'nis' => $s->nis,
+                'name' => $s->name,
+                'program' => $s->program,
+                'status' => $s->status,
+                'destination_company' => $s->destination_company,
+                'url' => route('admin.students.index', ['q' => $s->nis]),
+                'print_url' => route('admin.students.print', $s->id),
+                'receipt_url' => route('admin.students.receipt', $s->id),
+            ];
+        });
+
+        return response()->json(['students' => $students]);
+    }
 }

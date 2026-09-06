@@ -22,7 +22,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             
             <!-- Pillar 1 -->
-            <div class="glass-card p-8 rounded-3xl border border-red-100/80 hover:border-japan-400 glass-card-hover reveal-on-scroll delay-100 relative group flex flex-col justify-between">
+            <div class="glass-card spotlight-card p-8 rounded-3xl border border-red-100/80 hover:border-japan-400 glass-card-hover reveal-on-scroll delay-100 relative group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-6">
                         <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-japan-600 to-red-700 text-white flex items-center justify-center shadow-lg shadow-red-500/20 group-hover:scale-105 transition-transform">
@@ -46,7 +46,7 @@
             </div>
 
             <!-- Pillar 2 -->
-            <div class="glass-card p-8 rounded-3xl border border-red-100/80 hover:border-japan-400 glass-card-hover reveal-on-scroll delay-200 relative group flex flex-col justify-between">
+            <div class="glass-card spotlight-card p-8 rounded-3xl border border-red-100/80 hover:border-japan-400 glass-card-hover reveal-on-scroll delay-200 relative group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-6">
                         <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-japan-600 to-red-700 text-white flex items-center justify-center shadow-lg shadow-red-500/20 group-hover:scale-105 transition-transform">
@@ -70,7 +70,7 @@
             </div>
 
             <!-- Pillar 3 -->
-            <div class="glass-card p-8 rounded-3xl border border-red-100/80 hover:border-japan-400 glass-card-hover reveal-on-scroll delay-300 relative group flex flex-col justify-between">
+            <div class="glass-card spotlight-card p-8 rounded-3xl border border-red-100/80 hover:border-japan-400 glass-card-hover reveal-on-scroll delay-300 relative group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-6">
                         <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-japan-600 to-red-700 text-white flex items-center justify-center shadow-lg shadow-red-500/20 group-hover:scale-105 transition-transform">
@@ -94,7 +94,7 @@
             </div>
 
             <!-- Pillar 4 -->
-            <div class="glass-card p-8 rounded-3xl border border-red-100/80 hover:border-japan-400 glass-card-hover reveal-on-scroll delay-400 relative group flex flex-col justify-between">
+            <div class="glass-card spotlight-card p-8 rounded-3xl border border-red-100/80 hover:border-japan-400 glass-card-hover reveal-on-scroll delay-400 relative group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-6">
                         <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-japan-600 to-red-700 text-white flex items-center justify-center shadow-lg shadow-red-500/20 group-hover:scale-105 transition-transform">
@@ -118,7 +118,7 @@
             </div>
 
             <!-- Pillar 5 -->
-            <div class="glass-card p-8 rounded-3xl border border-red-100/80 hover:border-japan-400 glass-card-hover reveal-on-scroll delay-500 relative group flex flex-col justify-between">
+            <div class="glass-card spotlight-card p-8 rounded-3xl border border-red-100/80 hover:border-japan-400 glass-card-hover reveal-on-scroll delay-500 relative group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-6">
                         <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-japan-600 to-red-700 text-white flex items-center justify-center shadow-lg shadow-red-500/20 group-hover:scale-105 transition-transform">
@@ -142,7 +142,7 @@
             </div>
 
             <!-- Pillar 6 -->
-            <div class="glass-card p-8 rounded-3xl border border-red-100/80 hover:border-japan-400 glass-card-hover reveal-on-scroll delay-600 relative group flex flex-col justify-between">
+            <div class="glass-card spotlight-card p-8 rounded-3xl border border-red-100/80 hover:border-japan-400 glass-card-hover reveal-on-scroll delay-600 relative group flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-6">
                         <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-japan-600 to-red-700 text-white flex items-center justify-center shadow-lg shadow-red-500/20 group-hover:scale-105 transition-transform">

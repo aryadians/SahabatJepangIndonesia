@@ -18,6 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initInstantPagePrefetch();
     initMobileBottomBar();
     initSocialProofTicker();
+    initReadingProgressBar();
+    initSpotlightHover();
 });
 
 /* ==========================================================================
@@ -1398,6 +1400,51 @@ function initSocialProofTicker() {
     const intervalMs = (config.interval && config.interval >= 5000) ? config.interval : 28000;
     setTimeout(showNextActivity, 7000);
     setInterval(showNextActivity, intervalMs);
+}
+
+/* ==========================================================================
+   15. READING PROGRESS BAR & FLOATING CONCIERGE DOCK (ZEN LUXURY UI/UX)
+   ========================================================================== */
+function initReadingProgressBar() {
+    const bar = document.getElementById('readingProgressBar');
+    const dock = document.getElementById('publicConciergeDock');
+
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+
+        if (bar) {
+            bar.style.width = Math.min(100, Math.max(0, progress)) + '%';
+        }
+
+        // Show/elevate concierge dock past hero
+        if (dock) {
+            if (scrollTop > 350) {
+                dock.classList.remove('opacity-0', 'translate-y-12', 'pointer-events-none');
+                dock.classList.add('opacity-100', 'translate-y-0');
+            } else {
+                dock.classList.add('opacity-0', 'translate-y-12', 'pointer-events-none');
+                dock.classList.remove('opacity-100', 'translate-y-0');
+            }
+        }
+    }, { passive: true });
+}
+
+/* ==========================================================================
+   16. SPOTLIGHT MOUSE HOVER GLOW EFFECT
+   ========================================================================== */
+function initSpotlightHover() {
+    const cards = document.querySelectorAll('.spotlight-card, .glass-card');
+    cards.forEach((card) => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+        });
+    });
 }
 
 
