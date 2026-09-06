@@ -111,7 +111,7 @@ class DigitalArchiveController extends Controller
         $totalFiles = DigitalArchive::count();
         $totalFolders = ArchiveFolder::count();
         $totalMou = DigitalArchive::where('category', 'dokumen_mou')->count();
-        $totalReceipts = DigitalArchive::where('category', 'nota_reimburse')->count();
+        $totalReceipts = DigitalArchive::whereIn('category', ['nota_reimburse', 'nota_kas'])->count();
 
         $storage = $this->calculateStorageInfo();
 

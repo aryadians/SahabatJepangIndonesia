@@ -33,7 +33,7 @@
                 <i data-lucide="receipt" class="w-5 h-5"></i>
             </div>
             <div class="min-w-0">
-                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider truncate">Nota Reimburse</p>
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider truncate">Nota & Bukti Kas</p>
                 <h3 id="statTotalReceipts" class="text-lg sm:text-xl font-black text-emerald-600 mt-0.5">{{ number_format($stats['total_receipts']) }}</h3>
             </div>
         </div>
@@ -141,6 +141,8 @@
                 >
                     <option value="all">📁 Semua Kategori</option>
                     <option value="nota_reimburse">🧾 Nota & Kuitansi Reimburse</option>
+                    <option value="nota_kas">💵 Bukti Transaksi Buku Kas</option>
+                    <option value="dokumen_siswa">🎓 Dokumen & Berkas Siswa</option>
                     <option value="dokumen_mou">📜 Naskah Kerjasama MoU</option>
                     <option value="kuitansi_hotel_tiket">✈️ Tiket & Hotel Dinas</option>
                     <option value="surat_tugas">📋 Surat Tugas Dinas</option>
@@ -268,6 +270,24 @@
                     >
                         <i data-lucide="receipt" class="w-4 h-4 text-emerald-600"></i>
                         <span>Nota &amp; Kuitansi SPJ</span>
+                    </button>
+
+                    <button 
+                        type="button" 
+                        onclick="onCategoryFilterChange('nota_kas')"
+                        class="w-full px-2.5 py-1.5 rounded-xl text-left text-xs font-semibold text-slate-600 hover:bg-white hover:text-teal-700 transition flex items-center gap-2"
+                    >
+                        <i data-lucide="wallet" class="w-4 h-4 text-teal-600"></i>
+                        <span>Bukti Kas Umum</span>
+                    </button>
+
+                    <button 
+                        type="button" 
+                        onclick="onCategoryFilterChange('dokumen_siswa')"
+                        class="w-full px-2.5 py-1.5 rounded-xl text-left text-xs font-semibold text-slate-600 hover:bg-white hover:text-blue-700 transition flex items-center gap-2"
+                    >
+                        <i data-lucide="graduation-cap" class="w-4 h-4 text-blue-600"></i>
+                        <span>Dokumen Siswa</span>
                     </button>
 
                     <button 

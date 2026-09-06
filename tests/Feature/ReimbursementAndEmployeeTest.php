@@ -909,4 +909,32 @@ class ReimbursementAndEmployeeTest extends TestCase
         $daDlRes->assertHeader('Content-Disposition');
         $this->assertStringContainsString($archive->file_name, $daDlRes->headers->get('Content-Disposition'));
     }
+
+    public function test_admin_can_archive_student_document_to_digital_archives(): void
+    {
+        $this->actingAs($this->admin);
+
+        $fakeBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
+
+        $archiveRes = $this->postJson('/admin/digital-archives/archive-receipt', [
+            'title' => '[SJI-2026-001 - Budi Santoso] - e-KTP',
+            'file_base64' => $fakeBase64,
+            'file_name' => 'SJI-2026-001_e-KTP.png',
+            'category' => 'dokumen_siswa',
+            'folder_name' => 'Dokumen & Berkas Siswa',
+            'uploader_name' => 'Admin Siswa',
+        ]);
+
+        $archiveRes->assertOk();
+        $archiveRes->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('digital_archives', [
+            'title' => '[SJI-2026-001 - Budi Santoso] - e-KTP',
+            'category' => 'dokumen_siswa',
+        ]);
+
+        $this->assertDatabaseHas('archive_folders', [
+            'name' => 'Dokumen & Berkas Siswa',
+        ]);
+    }
 }

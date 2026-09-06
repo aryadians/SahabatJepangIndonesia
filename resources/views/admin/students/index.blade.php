@@ -1002,16 +1002,53 @@
 <div id="indexDocPreviewModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 custom-modal">
     <div class="fixed inset-0 modal-backdrop-blur" onclick="closeModal('indexDocPreviewModal')"></div>
     <div class="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden modal-content-box z-10 flex flex-col max-h-[90vh]">
-        <div class="bg-slate-900 text-white p-4 px-6 flex items-center justify-between flex-shrink-0">
+        <div class="bg-slate-900 text-white p-4 px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 flex-shrink-0">
             <div class="flex items-center gap-3">
-                <i data-lucide="file-text" class="w-5 h-5 text-japan-500"></i>
-                <h3 id="indexDocPreviewTitle" class="text-sm font-bold text-white">Preview Dokumen</h3>
+                <div class="w-9 h-9 rounded-xl bg-japan-600/20 text-japan-400 flex items-center justify-center font-bold">
+                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h3 id="indexDocPreviewTitle" class="text-sm font-bold text-white">Preview Dokumen</h3>
+                    <p id="indexDocStudentSub" class="text-[11px] text-slate-400">Berkas pendaftaran resmi siswa</p>
+                </div>
             </div>
-            <div class="flex items-center gap-2">
-                <a id="indexDocDownloadBtn" href="#" download target="_blank" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition flex items-center gap-1.5">
-                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                    <span>Download</span>
-                </a>
+            <div class="flex items-center flex-wrap gap-2">
+                <!-- Unduh Berkas -->
+                <button 
+                    id="indexDocDownloadBtn" 
+                    type="button" 
+                    onclick="downloadCurrentStudentDoc()" 
+                    class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition flex items-center gap-1.5 border border-slate-700 active:scale-95"
+                    title="Unduh berkas ke perangkat"
+                >
+                    <i data-lucide="download" class="w-3.5 h-3.5 text-blue-400"></i>
+                    <span>Unduh Berkas</span>
+                </button>
+
+                <!-- Taruh di Arsip Digital -->
+                <button 
+                    id="indexDocArchiveBtn" 
+                    type="button" 
+                    onclick="archiveCurrentStudentDocToDigital()" 
+                    class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95"
+                    title="Simpan berkas ini ke sistem Arsip Digital LPK"
+                >
+                    <i id="indexDocArchiveIcon" data-lucide="archive" class="w-3.5 h-3.5"></i>
+                    <span id="indexDocArchiveText">Taruh di Arsip Digital</span>
+                </button>
+
+                <!-- Buka di Tab Baru -->
+                <button 
+                    id="indexDocNewTabBtn" 
+                    type="button" 
+                    onclick="openCurrentStudentDocInNewTab()" 
+                    class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition flex items-center gap-1.5"
+                    title="Buka pratinjau di tab browser baru"
+                >
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                    <span class="hidden sm:inline">Tab Baru</span>
+                </button>
+
                 <button onclick="closeModal('indexDocPreviewModal')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm transition">
                     &times;
                 </button>
@@ -1247,12 +1284,77 @@
         window.open(waUrl, '_blank');
     }
 
+    let currentActiveDoc = {
+        title: '',
+        url: '',
+        student: null
+    };
+
+    // Helper: Unduh file Base64 dengan aman via Blob
+    function downloadBase64File(dataUrl, filename) {
+        if (!dataUrl) return;
+        if (!dataUrl.startsWith('data:')) {
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = filename;
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            return;
+        }
+
+        try {
+            const arr = dataUrl.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            const blob = new Blob([u8arr], { type: mime });
+            const blobUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+        } catch (e) {
+            console.error('Blob download fallback triggered', e);
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    }
+
     // View Doc from Detail Modal
     function viewDocFromDetailModal(title, docUrl) {
+        currentActiveDoc.title = title;
+        currentActiveDoc.url = docUrl;
+        currentActiveDoc.student = currentStudentObj;
+
         document.getElementById('indexDocPreviewTitle').textContent = title;
-        const downloadBtn = document.getElementById('indexDocDownloadBtn');
-        downloadBtn.href = docUrl;
-        downloadBtn.download = title.replace(/[^a-zA-Z0-9]/g, '_');
+        const sub = document.getElementById('indexDocStudentSub');
+        if (sub && currentStudentObj) {
+            sub.textContent = `${currentStudentObj.name} (NIS: ${currentStudentObj.nis || '-'})`;
+        }
+
+        // Reset archive button
+        const archiveBtn = document.getElementById('indexDocArchiveBtn');
+        const archiveText = document.getElementById('indexDocArchiveText');
+        const archiveIcon = document.getElementById('indexDocArchiveIcon');
+        if (archiveBtn && archiveText) {
+            archiveBtn.className = "px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95";
+            archiveBtn.disabled = false;
+            archiveText.textContent = "Taruh di Arsip Digital";
+            if (archiveIcon) archiveIcon.setAttribute('data-lucide', 'archive');
+        }
 
         const container = document.getElementById('indexDocContainer');
         container.innerHTML = '';
@@ -1269,6 +1371,120 @@
         if (window.lucide) {
             lucide.createIcons();
         }
+    }
+
+    function downloadCurrentStudentDoc() {
+        if (!currentActiveDoc.url) {
+            alert('Berkas belum tersedia untuk diunduh.');
+            return;
+        }
+        const s = currentActiveDoc.student || {};
+        const safeNis = (s.nis || 'SISWA').replace(/[^a-zA-Z0-9_-]/g, '_');
+        const safeName = (s.name || 'Dokumen').replace(/[^a-zA-Z0-9_-]/g, '_');
+        const safeTitle = (currentActiveDoc.title || 'Berkas').replace(/[^a-zA-Z0-9_-]/g, '_');
+        const ext = currentActiveDoc.url.includes('pdf') ? 'pdf' : (currentActiveDoc.url.includes('png') ? 'png' : 'jpg');
+        const filename = `${safeNis}_${safeName}_${safeTitle}.${ext}`;
+
+        downloadBase64File(currentActiveDoc.url, filename);
+    }
+
+    function openCurrentStudentDocInNewTab() {
+        if (!currentActiveDoc.url) return;
+        if (currentActiveDoc.url.startsWith('data:')) {
+            try {
+                const arr = currentActiveDoc.url.split(',');
+                const mime = arr[0].match(/:(.*?);/)[1];
+                const bstr = atob(arr[1]);
+                let n = bstr.length;
+                const u8arr = new Uint8Array(n);
+                while (n--) {
+                    u8arr[n] = bstr.charCodeAt(n);
+                }
+                const blob = new Blob([u8arr], { type: mime });
+                const blobUrl = URL.createObjectURL(blob);
+                window.open(blobUrl, '_blank');
+                return;
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        window.open(currentActiveDoc.url, '_blank');
+    }
+
+    function archiveCurrentStudentDocToDigital() {
+        if (!currentActiveDoc.url) {
+            alert('Tidak ada berkas yang dapat diarsipkan.');
+            return;
+        }
+
+        const s = currentActiveDoc.student || {};
+        const safeTitle = `[${s.nis || 'SISWA'} - ${s.name || 'Siswa'}] - ${currentActiveDoc.title || 'Berkas'}`;
+        const ext = currentActiveDoc.url.includes('pdf') ? 'pdf' : (currentActiveDoc.url.includes('png') ? 'png' : 'jpg');
+        const fileName = `${(s.nis || 'SISWA')}_${(currentActiveDoc.title || 'dokumen').replace(/[^a-zA-Z0-9_-]/g, '_')}.${ext}`;
+
+        const btn = document.getElementById('indexDocArchiveBtn');
+        const btnText = document.getElementById('indexDocArchiveText');
+        const originalText = btnText ? btnText.textContent : 'Taruh di Arsip Digital';
+
+        if (btnText) btnText.textContent = 'Menyimpan...';
+        if (btn) btn.disabled = true;
+
+        fetch('/admin/digital-archives/archive-receipt', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                title: safeTitle,
+                file_base64: currentActiveDoc.url,
+                file_name: fileName,
+                category: 'dokumen_siswa',
+                folder_name: 'Dokumen & Berkas Siswa',
+                uploader_name: 'Admin Siswa',
+                notes: `Diarsipkan otomatis dari profil siswa ${s.name} (${s.nis || '-'})`
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                if (btn) {
+                    btn.className = "px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm";
+                    btn.disabled = false;
+                }
+                if (btnText) {
+                    btnText.innerHTML = '<span>Tersimpan di Arsip ✓</span>';
+                }
+
+                if (window.Swal) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: data.already_archived ? 'Sudah Diarsipkan' : 'Berhasil Diarsipkan!',
+                        html: `<p class="text-xs text-slate-600 mb-3">${data.message}</p><a href="${data.archive_url}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition">Buka di Arsip Digital &rarr;</a>`,
+                        confirmButtonColor: '#059669',
+                        confirmButtonText: 'Tutup'
+                    });
+                }
+            } else {
+                throw new Error(data.message || 'Gagal menyimpan ke arsip');
+            }
+        })
+        .catch(err => {
+            console.error('Error archiving student doc:', err);
+            if (btn) btn.disabled = false;
+            if (btnText) btnText.textContent = originalText;
+            if (window.Swal) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Mengarsipkan',
+                    text: err.message || 'Terjadi kesalahan saat menyimpan berkas ke Arsip Digital.',
+                    confirmButtonColor: '#DC2626'
+                });
+            } else {
+                alert('Gagal menyimpan ke Arsip Digital.');
+            }
+        });
     }
 </script>
 @endsection
