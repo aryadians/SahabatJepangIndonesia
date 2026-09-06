@@ -116,8 +116,22 @@ class ReimbursementController extends Controller
 
             foreach ($files as $idx => $file) {
                 if ($file->isValid()) {
-                    $mime = $file->getMimeType();
-                    $base64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($file->getRealPath()));
+                    $mime = $file->getMimeType() ?: 'application/octet-stream';
+                    $fileSize = round($file->getSize() / 1024, 1) . ' KB';
+                    
+                    if (extension_loaded('gd') && str_starts_with($mime, 'image/')) {
+                        $compressed = $this->compressImageForBase64($file->getRealPath(), $mime);
+                        if ($compressed !== null) {
+                            $base64 = 'data:' . $compressed['mime'] . ';base64,' . base64_encode($compressed['data']);
+                            $fileSize = round(strlen($compressed['data']) / 1024, 1) . ' KB';
+                            $mime = $compressed['mime'];
+                        } else {
+                            $base64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($file->getRealPath()));
+                        }
+                    } else {
+                        $base64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($file->getRealPath()));
+                    }
+
                     $itemTitle = $titles[$idx] ?? 'Nota ' . ($idx + 1);
                     $itemAmount = !empty($amounts[$idx]) ? (float) $amounts[$idx] : 0;
 
@@ -129,7 +143,7 @@ class ReimbursementController extends Controller
                         'date' => now()->toDateString(),
                         'file_name' => $file->getClientOriginalName(),
                         'file_type' => $mime,
-                        'file_size' => round($file->getSize() / 1024, 1) . ' KB',
+                        'file_size' => $fileSize,
                         'base64_image' => $base64,
                         'notes' => null,
                     ];
@@ -306,8 +320,22 @@ class ReimbursementController extends Controller
                 if ($request->hasFile('settlement_receipts')) {
                     foreach ($request->file('settlement_receipts') as $file) {
                         if ($file->isValid()) {
-                            $mime = $file->getMimeType();
-                            $base64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($file->getRealPath()));
+                            $mime = $file->getMimeType() ?: 'application/octet-stream';
+                            $fileSize = round($file->getSize() / 1024, 1) . ' KB';
+
+                            if (extension_loaded('gd') && str_starts_with($mime, 'image/')) {
+                                $compressed = $this->compressImageForBase64($file->getRealPath(), $mime);
+                                if ($compressed !== null) {
+                                    $base64 = 'data:' . $compressed['mime'] . ';base64,' . base64_encode($compressed['data']);
+                                    $fileSize = round(strlen($compressed['data']) / 1024, 1) . ' KB';
+                                    $mime = $compressed['mime'];
+                                } else {
+                                    $base64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($file->getRealPath()));
+                                }
+                            } else {
+                                $base64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($file->getRealPath()));
+                            }
+
                             $newItem = [
                                 'id' => uniqid('rcpt_stl_'),
                                 'title' => 'Nota Realisasi SPJ - ' . $file->getClientOriginalName(),
@@ -316,7 +344,7 @@ class ReimbursementController extends Controller
                                 'date' => $settleDate,
                                 'file_name' => $file->getClientOriginalName(),
                                 'file_type' => $mime,
-                                'file_size' => round($file->getSize() / 1024, 1) . ' KB',
+                                'file_size' => $fileSize,
                                 'base64_image' => $base64,
                                 'notes' => 'Diserahkan saat settlement',
                             ];

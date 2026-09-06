@@ -154,13 +154,7 @@ class CashBookController extends Controller
             return back()->with('error', "Gagal! Tanggal transaksi berada dalam periode yang telah Ditutup Buku (Lock Period s/d {$formattedLock}). Buka kunci periode terlebih dahulu jika perlu input susulan.");
         }
 
-        $proofBase64 = null;
-        if ($request->hasFile('proof_file')) {
-            $file = $request->file('proof_file');
-            $mime = $file->getMimeType();
-            $data = base64_encode(file_get_contents($file->getRealPath()));
-            $proofBase64 = 'data:' . $mime . ';base64,' . $data;
-        }
+        $proofBase64 = $this->handleFileUpload($request, 'proof_file', 'proof_file');
 
         $trxNumber = CashTransaction::generateNumber($validated['type']);
 
@@ -208,10 +202,7 @@ class CashBookController extends Controller
         }
 
         if ($request->hasFile('proof_file')) {
-            $file = $request->file('proof_file');
-            $mime = $file->getMimeType();
-            $data = base64_encode(file_get_contents($file->getRealPath()));
-            $transaction->proof_file = 'data:' . $mime . ';base64,' . $data;
+            $transaction->proof_file = $this->handleFileUpload($request, 'proof_file', 'proof_file', $transaction->proof_file);
         }
 
         $transaction->title = $validated['title'];

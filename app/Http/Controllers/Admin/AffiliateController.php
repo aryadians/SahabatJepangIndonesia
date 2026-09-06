@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Affiliate;
 use App\Models\CashTransaction;
 use App\Models\SiteSetting;
+use App\Traits\UploadsImage;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class AffiliateController extends Controller
 {
+    use UploadsImage;
     /**
      * Halaman Publik Pendaftaran Mitra Sekolah & Afiliasi
      */
@@ -405,13 +407,7 @@ class AffiliateController extends Controller
             return back()->with('error', "Gagal! Tanggal pencairan komisi berada dalam periode yang telah Ditutup Buku (s/d " . Carbon::parse($lockDate)->format('d/m/Y') . ").");
         }
 
-        $proofBase64 = null;
-        if ($request->hasFile('proof_file')) {
-            $file = $request->file('proof_file');
-            $mime = $file->getMimeType();
-            $data = base64_encode(file_get_contents($file->getRealPath()));
-            $proofBase64 = 'data:' . $mime . ';base64,' . $data;
-        }
+        $proofBase64 = $this->handleFileUpload($request, 'proof_file', 'proof_file');
 
         $trxNumber = CashTransaction::generateNumber('expense');
 
