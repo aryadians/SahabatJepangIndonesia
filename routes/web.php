@@ -78,7 +78,8 @@ Route::get('/cek-status', [StudentPortalController::class, 'index'])->name('stud
 Route::get('/portal-siswa', fn() => redirect()->route('student.portal'));
 Route::get('/cek-kesiapan/{nis?}', [\App\Http\Controllers\StudentPublicController::class, 'publicTracking'])->name('public.flight.tracking');
 Route::get('/tracking/{nis?}', fn($nis = null) => redirect()->route('public.flight.tracking', ['nis' => $nis]));
-Route::get('/kwitansi/{nis}', [\App\Http\Controllers\StudentPublicController::class, 'publicReceipt'])->name('public.student.receipt');
+Route::get('/kwitansi/{nis}', [\App\Http\Controllers\StudentPublicController::class, 'publicReceipt'])->name('student.public.receipt');
+Route::get('/kuitansi/{nis}', [\App\Http\Controllers\StudentPublicController::class, 'publicReceipt'])->name('public.student.receipt');
 Route::get('/invoice/{nis}', [StudentPortalController::class, 'publicInvoice'])->name('student.public.invoice');
 
 // 5.6. Sistem Verifikasi Publik QR Code Keaslian Dokumen Resmi

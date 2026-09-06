@@ -262,7 +262,7 @@
                         </div>
                     </div>
                     <a 
-                        href="{{ route('public.student.receipt', $student->nis) }}" 
+                        href="{{ route('student.public.receipt', $student->nis) }}" 
                         target="_blank"
                         class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm flex items-center gap-2 transition hover:scale-105 active:scale-95 flex-shrink-0"
                     >

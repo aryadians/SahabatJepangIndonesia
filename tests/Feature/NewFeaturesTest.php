@@ -934,6 +934,24 @@ class NewFeaturesTest extends TestCase
         $response->assertSee('Paspor Kritis');
         $response->assertSee('Yudi Kritis');
     }
+
+    public function test_guest_can_access_student_status_portal_with_keyword(): void
+    {
+        $student = Student::create([
+            'name' => 'Budi Setiawan',
+            'nis' => 'SJI-2026-002',
+            'program' => 'Tokutei Ginou (SSW)',
+            'status' => 'active',
+            'total_cost' => 20000000,
+            'paid_amount' => 10000000,
+        ]);
+
+        $response = $this->get('/cek-status?keyword=SJI-2026-002');
+        $response->assertStatus(200);
+        $response->assertSee('Budi Setiawan');
+        $response->assertSee('SJI-2026-002');
+        $response->assertSee('Unduh Kwitansi');
+    }
 }
 
 
