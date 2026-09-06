@@ -38,6 +38,7 @@ class CashTransaction extends Model
         'subsidy_government' => 'Subsidi Beasiswa Kemenaker/Kemenkes',
         'affiliate_fee_in' => 'Fee Kemitraan Industri / Kaisha',
         'cash_advance_return' => 'Pengembalian Sisa Kasbon Dinas',
+        'transfer_in' => 'Transfer Masuk Antar Kas / Bank',
         'other_income' => 'Pemasukan Lain-lain',
     ];
 
@@ -51,6 +52,7 @@ class CashTransaction extends Model
         'cash_advance' => 'Uang Muka Perjalanan Dinas',
         'affiliate_commission' => 'Komisi Kemitraan SMK & BKK',
         'tax_legal' => 'Pajak, Perizinan SO & Akreditasi',
+        'transfer_out' => 'Transfer Keluar Antar Kas / Bank',
         'other_expense' => 'Beban Operasional Lainnya',
     ];
 
@@ -110,6 +112,8 @@ class CashTransaction extends Model
             'student_equipment' => ['bg' => 'bg-teal-100 text-teal-800 border-teal-200', 'icon' => 'book-open'],
             'reimbursement', 'cash_advance' => ['bg' => 'bg-rose-100 text-rose-800 border-rose-200', 'icon' => 'receipt'],
             'affiliate_commission' => ['bg' => 'bg-purple-100 text-purple-800 border-purple-200', 'icon' => 'gift'],
+            'transfer_in' => ['bg' => 'bg-emerald-100 text-emerald-800 border-emerald-200', 'icon' => 'arrow-down-left'],
+            'transfer_out' => ['bg' => 'bg-blue-100 text-blue-800 border-blue-200', 'icon' => 'arrow-up-right'],
             default => ['bg' => 'bg-slate-100 text-slate-800 border-slate-200', 'icon' => 'file-text'],
         };
     }
