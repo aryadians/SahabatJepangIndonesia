@@ -835,6 +835,106 @@ class NewFeaturesTest extends TestCase
         $response->assertSee('Rina Nose');
         $response->assertSee('Toyota Boshoku');
     }
+
+    public function test_guest_can_view_public_student_receipt(): void
+    {
+        $student = Student::create([
+            'name' => 'Bambang Sudirman',
+            'nis' => 'SJI-2026-777',
+            'program' => 'Tokutei Ginou (SSW)',
+            'status' => 'active',
+            'total_cost' => 25000000,
+            'paid_amount' => 15000000,
+        ]);
+
+        $response = $this->get("/kwitansi/{$student->nis}");
+        $response->assertStatus(200);
+        $response->assertSee('Bambang Sudirman');
+        $response->assertSee('SJI-2026-777');
+        $response->assertSee('BUKTI PENERIMAAN PEMBAYARAN BIAYA PENDIDIKAN');
+        $response->assertSee('Terverifikasi Digital');
+        $response->assertSee('15.000.000');
+    }
+
+    public function test_guest_can_track_flight_readiness_by_nis(): void
+    {
+        $student = Student::create([
+            'name' => 'Mega Utami',
+            'nis' => 'SJI-2026-778',
+            'program' => 'Ginou Jisshusei (Magang)',
+            'status' => 'visa_processing',
+            'destination_company' => 'Hitachi Construction Machinery',
+            'destination_prefecture' => 'Ibaraki',
+            'coe_number' => 'COE-IBK-99001',
+            'total_cost' => 20000000,
+            'paid_amount' => 20000000,
+        ]);
+
+        $response = $this->get("/cek-kesiapan/{$student->nis}");
+        $response->assertStatus(200);
+        $response->assertSee('Mega Utami');
+        $response->assertSee('Hitachi Construction Machinery');
+        $response->assertSee('Ibaraki');
+        $response->assertSee('Kelengkapan 8 Dokumen Keberangkatan');
+        $response->assertSee('WAITING VISA');
+    }
+
+    public function test_admin_can_send_flight_readiness_document_reminder_wa(): void
+    {
+        SiteSetting::set('fonnte_enabled', '1', 'whatsapp');
+        SiteSetting::set('fonnte_api_token', 'mock_token_sji', 'whatsapp');
+
+        \Illuminate\Support\Facades\Http::fake([
+            'https://api.fonnte.com/send' => \Illuminate\Support\Facades\Http::response(['status' => true, 'detail' => 'Pesan terkirim'], 200),
+        ]);
+
+        $student = Student::create([
+            'name' => 'Fajar Pratama',
+            'nis' => 'SJI-2026-779',
+            'phone' => '081299887766',
+            'program' => 'Tokutei Ginou (SSW)',
+            'status' => 'interview',
+            'total_cost' => 18000000,
+            'paid_amount' => 5000000,
+        ]);
+
+        $response = $this->actingAs($this->admin)->post("/admin/flight-readiness/{$student->id}/send-wa", [
+            'phone' => '081299887766',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        \Illuminate\Support\Facades\Http::assertSent(function ($request) {
+            return $request->url() === 'https://api.fonnte.com/send'
+                && $request['target'] === '6281299887766'
+                && str_contains($request['message'], 'Fajar Pratama')
+                && str_contains($request['message'], 'SJI-2026-779')
+                && str_contains($request['message'], 'LPK Sahabat Jepang Indonesia');
+        });
+    }
+
+    public function test_flight_readiness_tracker_displays_expiry_alerts(): void
+    {
+        // Siswa dengan paspor mendekati kadaluarsa (< 6 bulan)
+        Student::create([
+            'name' => 'Yudi Kritis',
+            'nis' => 'SJI-2026-780',
+            'status' => 'ready_to_depart',
+            'passport_number' => 'B1234567',
+            'passport_expiry' => now()->addMonths(2)->toDateString(),
+            'total_cost' => 15000000,
+            'paid_amount' => 15000000,
+        ]);
+
+        $response = $this->actingAs($this->admin)->get('/admin/flight-readiness');
+        $response->assertStatus(200);
+        $response->assertSee('Deteksi Dini Dokumen Kritis');
+        $response->assertSee('Expiry Alert Engine');
+        $response->assertSee('Paspor Kritis');
+        $response->assertSee('Yudi Kritis');
+    }
 }
+
 
 

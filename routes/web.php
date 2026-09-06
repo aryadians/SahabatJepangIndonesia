@@ -76,7 +76,9 @@ use App\Http\Controllers\DocumentVerificationController;
 // 5.5. Portal Cek Status Mandiri Siswa & Bukti Pembayaran Resmi
 Route::get('/cek-status', [StudentPortalController::class, 'index'])->name('student.portal');
 Route::get('/portal-siswa', fn() => redirect()->route('student.portal'));
-Route::get('/kwitansi/{nis}', [StudentPortalController::class, 'publicReceipt'])->name('student.public.receipt');
+Route::get('/cek-kesiapan/{nis?}', [\App\Http\Controllers\StudentPublicController::class, 'publicTracking'])->name('public.flight.tracking');
+Route::get('/tracking/{nis?}', fn($nis = null) => redirect()->route('public.flight.tracking', ['nis' => $nis]));
+Route::get('/kwitansi/{nis}', [\App\Http\Controllers\StudentPublicController::class, 'publicReceipt'])->name('public.student.receipt');
 Route::get('/invoice/{nis}', [StudentPortalController::class, 'publicInvoice'])->name('student.public.invoice');
 
 // 5.6. Sistem Verifikasi Publik QR Code Keaslian Dokumen Resmi
@@ -215,6 +217,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/flight-readiness', [FlightReadinessController::class, 'index'])->name('flight-readiness.index');
     Route::match(['post', 'put'], '/flight-readiness/{id}/status', [FlightReadinessController::class, 'updateStatus'])->name('flight-readiness.status');
     Route::post('/flight-readiness/{id}/upload-doc', [FlightReadinessController::class, 'quickUploadDoc'])->name('flight-readiness.upload-doc');
+    Route::post('/flight-readiness/{id}/send-wa', [FlightReadinessController::class, 'sendDocumentReminderWa'])->name('flight-readiness.send-wa');
     Route::get('/flight-readiness/export-pdf', [FlightReadinessController::class, 'exportPdf'])->name('flight-readiness.export.pdf');
 
     // 12. Data Pengajar / Sensei

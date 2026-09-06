@@ -90,6 +90,24 @@ class FlightReadinessController extends Controller
                                   ->whereNull('coe_number')
                                   ->count();
 
+        // Early Warning Expiry Alerts
+        $criticalPassports = Student::whereNotNull('passport_expiry')
+            ->where('passport_expiry', '<=', now()->addMonths(6))
+            ->get();
+
+        $expiredMcus = Student::whereNotNull('mcu_date')
+            ->where(function ($q) {
+                $q->where('mcu_date', '<=', now()->subDays(90))
+                  ->orWhere('mcu_result', 'unfit');
+            })
+            ->get();
+
+        $expiringCoes = Student::whereNotNull('coe_number')
+            ->whereNull('visa_number')
+            ->whereNotNull('coe_date')
+            ->where('coe_date', '<=', now()->subDays(60))
+            ->get();
+
         // Data Siswa Terurut
         $students = $query->orderByRaw("
             CASE 
@@ -120,8 +138,103 @@ class FlightReadinessController extends Controller
             'waitingVisaCount',
             'waitingCoeCount',
             'prefectures',
-            'programs'
+            'programs',
+            'criticalPassports',
+            'expiredMcus',
+            'expiringCoes'
         ));
+    }
+
+    /**
+     * Kirim Pengingat Dokumen & Update Kesiapan Terbang via WhatsApp
+     */
+    public function sendDocumentReminderWa(Request $request, $id)
+    {
+        $student = Student::findOrFail($id);
+        $phone = $request->input('phone', $student->phone);
+
+        $cleanPhone = preg_replace('/[^0-9]/', '', (string)$phone);
+        if (str_starts_with($cleanPhone, '0')) {
+            $cleanPhone = '62' . substr($cleanPhone, 1);
+        }
+
+        if (empty($cleanPhone)) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Nomor WhatsApp siswa belum terdaftar atau tidak valid.'], 422);
+            }
+            return back()->with('error', 'Nomor WhatsApp siswa belum terdaftar atau tidak valid.');
+        }
+
+        // Cek dokumen yang belum lengkap
+        $missingDocs = [];
+        if (empty($student->document_ktp)) $missingDocs[] = 'KTP Siswa (E-KTP)';
+        if (empty($student->document_kk)) $missingDocs[] = 'Kartu Keluarga (KK)';
+        if (empty($student->document_ijazah)) $missingDocs[] = 'Ijazah Pendidikan Terakhir';
+        if (empty($student->document_passport)) $missingDocs[] = 'Buku Paspor RI (Min. 12 bulan)';
+        if (empty($student->document_certificate)) $missingDocs[] = 'Sertifikat Bahasa Jepang (JLPT N5/N4 atau JFT)';
+        if (empty($student->document_ssw)) $missingDocs[] = 'Sertifikat Keahlian Kerja (SSW / Magang)';
+        if (empty($student->document_mcu) || $student->mcu_result !== 'fit') $missingDocs[] = 'Hasil Medical Check-Up (MCU Fit to Fly)';
+        if (empty($student->document_coe_visa)) $missingDocs[] = 'CoE & Visa Kerja Resmi Jepang';
+
+        $trackingUrl = url('/cek-kesiapan/' . $student->nis);
+        $isReady = empty($missingDocs);
+
+        if ($isReady) {
+            $msg = "Konnichiwa, *{$student->name}* ({$student->nis})! ✈️🇯🇵\n\n";
+            $msg .= "Selamat! Berdasarkan hasil verifikasi berkas *Sending Organization (SO) LPK Sahabat Jepang Indonesia*, seluruh dokumen keberangkatan Anda telah dinyatakan *LENGKAP & SIAP TERBANG (READY TO FLY)*.\n\n";
+            $msg .= "📋 *Rincian Keberangkatan*:\n";
+            $msg .= "🏢 *Perusahaan Penerima*: " . ($student->destination_company ?: '-') . "\n";
+            $msg .= "🗾 *Prefektur Tujuan*: " . ($student->destination_prefecture ?: '-') . "\n";
+            $msg .= "🛂 *No. Paspor*: " . ($student->passport_number ?: '-') . "\n";
+            $msg .= "📅 *Estimasi Keberangkatan*: " . ($student->departure_date ? Carbon::parse($student->departure_date)->format('d F Y') : 'Menunggu Tiket Penerbangan') . "\n\n";
+            $msg .= "🔗 *Cek Dossier & Panduan Keberangkatan*:\n";
+            $msg .= "👉 {$trackingUrl}\n\n";
+            $msg .= "Mohon jaga kesehatan fisik dan mental, serta persiapkan perlengkapan pribadi Anda dengan baik. Ganbatte kudasai!\n\n";
+            $msg .= "_Divisi Penempatan Luar Negeri - LPK Sahabat Jepang Indonesia_";
+        } else {
+            $msg = "Konnichiwa, *{$student->name}* ({$student->nis}) 🌸\n\n";
+            $msg .= "Berdasarkan audit kelengkapan berkas keberangkatan menuju Jepang di *LPK Sahabat Jepang Indonesia*, terdapat beberapa dokumen yang masih *BELUM LENGKAP* atau memerlukan pembaruan:\n\n";
+            $msg .= "⚠️ *Daftar Dokumen yang Harus Dilengkapi*:\n";
+            foreach ($missingDocs as $idx => $doc) {
+                $msg .= ($idx + 1) . ". {$doc}\n";
+            }
+            if ($student->departure_date) {
+                $msg .= "\n📅 *Estimasi Rencana Terbang*: " . Carbon::parse($student->departure_date)->format('d F Y') . "\n";
+            }
+            $msg .= "\n🔗 *Pantau Progres & Rincian Berkas Anda*:\n";
+            $msg .= "👉 {$trackingUrl}\n\n";
+            $msg .= "Mohon segera menyerahkan / mengunggah dokumen di atas ke bagian administrasi LPK agar proses pengurusan visa dan tiket tidak tertunda.\n\n";
+            $msg .= "_Divisi Verifikasi Dokumen & Visa - LPK Sahabat Jepang Indonesia_";
+        }
+
+        // Kirim via Fonnte Gateway jika aktif
+        $sentViaFonnte = false;
+        if (\App\Services\FonnteService::isConfigured()) {
+            $res = \App\Services\FonnteService::send($cleanPhone, $msg, [
+                'type' => 'flight_reminder',
+                'student_id' => $student->id,
+            ]);
+            $sentViaFonnte = $res['success'] ?? false;
+        }
+
+        $waLink = 'https://wa.me/' . $cleanPhone . '?text=' . urlencode($msg);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'sent_via_fonnte' => $sentViaFonnte,
+                'message' => $sentViaFonnte 
+                    ? "Notifikasi WhatsApp kesiapan terbang berhasil dikirimkan ke {$student->name} ({$cleanPhone})."
+                    : "Tautan WhatsApp berhasil disiapkan untuk dikirim ke {$student->name}.",
+                'wa_link' => $waLink,
+            ]);
+        }
+
+        if ($sentViaFonnte) {
+            return back()->with('success', "Pengingat WhatsApp berhasil dikirim ke {$student->name} ({$cleanPhone}).");
+        }
+
+        return redirect()->away($waLink);
     }
 
     /**

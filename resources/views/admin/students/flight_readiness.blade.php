@@ -99,6 +99,60 @@
         </div>
     </div>
 
+    <!-- Early Warning Expiry Alert Banner -->
+    @if((isset($criticalPassports) && $criticalPassports->count() > 0) || (isset($expiredMcus) && $expiredMcus->count() > 0) || (isset($expiringCoes) && $expiringCoes->count() > 0))
+        <div class="bg-gradient-to-r from-amber-500/10 via-rose-500/10 to-red-500/10 border border-amber-300 rounded-3xl p-5 shadow-xs space-y-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold shadow-xs">
+                        <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-black text-slate-900 tracking-tight flex items-center gap-2">
+                            <span>Deteksi Dini Dokumen Kritis & Kadaluarsa (Expiry Alert Engine)</span>
+                            <span class="px-2 py-0.5 rounded-full bg-red-100 text-red-700 text-[10px] font-extrabold uppercase">Tindakan Diperlukan</span>
+                        </h4>
+                        <p class="text-xs text-slate-600 mt-0.5">
+                            Sistem mendeteksi dokumen siswa yang mendekati atau telah melampaui batas toleransi imigrasi/maskapai penerbangan.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                @if(isset($criticalPassports) && $criticalPassports->count() > 0)
+                    <div class="p-3 bg-white/90 rounded-2xl border border-amber-200">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 block">Paspor Kritis (< 6 Bulan)</span>
+                        <strong class="text-sm text-slate-900 block mt-0.5">{{ $criticalPassports->count() }} Siswa</strong>
+                        <p class="text-[11px] text-slate-500 mt-1 line-clamp-1">
+                            {{ $criticalPassports->pluck('name')->implode(', ') }}
+                        </p>
+                    </div>
+                @endif
+
+                @if(isset($expiredMcus) && $expiredMcus->count() > 0)
+                    <div class="p-3 bg-white/90 rounded-2xl border border-rose-200">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-rose-800 block">MCU Kadaluarsa (> 90 Hari / Unfit)</span>
+                        <strong class="text-sm text-slate-900 block mt-0.5">{{ $expiredMcus->count() }} Siswa</strong>
+                        <p class="text-[11px] text-slate-500 mt-1 line-clamp-1">
+                            {{ $expiredMcus->pluck('name')->implode(', ') }}
+                        </p>
+                    </div>
+                @endif
+
+                @if(isset($expiringCoes) && $expiringCoes->count() > 0)
+                    <div class="p-3 bg-white/90 rounded-2xl border border-red-200">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-red-800 block">CoE Mendekati 90 Hari (Tanpa Visa)</span>
+                        <strong class="text-sm text-slate-900 block mt-0.5">{{ $expiringCoes->count() }} Siswa</strong>
+                        <p class="text-[11px] text-slate-500 mt-1 line-clamp-1">
+                            {{ $expiringCoes->pluck('name')->implode(', ') }}
+                        </p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    @endif
+
     <!-- Filter & Search Bar -->
     <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs">
         <form action="{{ route('admin.flight-readiness.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
@@ -404,6 +458,26 @@
                                         <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                                     </button>
 
+                                    <!-- Kirim Pengingat WhatsApp -->
+                                    <button 
+                                        type="button" 
+                                        onclick="openWaReminderModal('{{ $st->id }}', '{{ addslashes($st->name) }}', '{{ $st->phone }}', '{{ $completedCount }}', '{{ $flightStatus }}')" 
+                                        class="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold transition cursor-pointer"
+                                        title="Kirim Notifikasi / Pengingat Dokumen via WhatsApp"
+                                    >
+                                        <i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                    </button>
+
+                                    <!-- Tautan Cek Kesiapan Mandiri Publik -->
+                                    <a 
+                                        href="{{ route('public.flight.tracking', $st->nis) }}" 
+                                        target="_blank" 
+                                        class="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold transition cursor-pointer"
+                                        title="Buka Portal Cek Kesiapan Publik Mandiri"
+                                    >
+                                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                                    </a>
+
                                     <!-- Cetak Lembar Profil Siswa -->
                                     <a 
                                         href="{{ route('admin.students.print', $st->id) }}" 
@@ -624,9 +698,134 @@
     </div>
 </div>
 
+<!-- 4. Modal Kirim Pengingat WhatsApp -->
+<div id="waReminderModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4 relative">
+        <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                    <i data-lucide="message-circle" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h4 class="text-sm font-black text-slate-900" id="waModalTitle">Kirim Notifikasi WhatsApp</h4>
+                    <p class="text-[11px] text-slate-400" id="waModalSubtitle">Pengingat Kesiapan Berkas Keberangkatan</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeWaReminderModal()" class="text-slate-400 hover:text-slate-700 text-xl font-bold p-1 leading-none">&times;</button>
+        </div>
+
+        <form id="waReminderForm" method="POST" action="" class="space-y-4">
+            @csrf
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Nomor WhatsApp Siswa / Wali:</label>
+                <div class="relative">
+                    <i data-lucide="phone" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+                    <input 
+                        type="text" 
+                        name="phone" 
+                        id="waModalPhone" 
+                        required 
+                        placeholder="081234567890..." 
+                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                    >
+                </div>
+                <p class="text-[10px] text-slate-400 mt-1">Sistem otomatis menstandarkan nomor telepon ke format internasional (62...).</p>
+            </div>
+
+            <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 text-xs space-y-1">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Isi Pesan Otomatis:</span>
+                <p class="text-slate-700 leading-relaxed font-medium" id="waModalPreviewText">
+                    Memuat ringkasan status berkas siswa...
+                </p>
+            </div>
+
+            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                <button type="button" onclick="closeWaReminderModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+                    Batal
+                </button>
+                <button type="submit" id="btnSubmitWa" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md flex items-center gap-2 transition hover:scale-105 active:scale-95">
+                    <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                    <span>Kirim Sekarang</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     let currentPreviewUrl = null;
     let currentPreviewTitle = null;
+
+    function openWaReminderModal(id, name, phone, completedCount, flightStatus) {
+        const form = document.getElementById('waReminderForm');
+        form.action = `/admin/flight-readiness/${id}/send-wa`;
+
+        document.getElementById('waModalTitle').textContent = `WhatsApp: ${name}`;
+        document.getElementById('waModalSubtitle').textContent = `Progres: ${completedCount}/8 Berkas • ${flightStatus}`;
+        document.getElementById('waModalPhone').value = phone || '';
+
+        const previewText = document.getElementById('waModalPreviewText');
+        if (completedCount == 8) {
+            previewText.textContent = "Ucapan selamat atas kelengkapan 100% dokumen (READY TO FLY), informasi perusahaan penerima di Jepang, dan arahan pembekalan pra-terbang.";
+        } else {
+            previewText.textContent = `Pemberitahuan audit berkas yang masih kosong (${completedCount}/8 lengkap), daftar dokumen yang wajib segera dilengkapi, serta tautan tracking mandiri siswa.`;
+        }
+
+        const modal = document.getElementById('waReminderModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function closeWaReminderModal() {
+        const modal = document.getElementById('waReminderModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    // Handle WA Form AJAX submission
+    document.getElementById('waReminderForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btnSubmitWa');
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<span class="animate-spin mr-1">⏳</span> Mengirim...`;
+
+        try {
+            const formData = new FormData(this);
+            const response = await fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+                body: formData
+            });
+            const data = await response.json();
+
+            closeWaReminderModal();
+
+            if (data.success) {
+                if (window.showJapaneseAlert) {
+                    window.showJapaneseAlert('success', 'WhatsApp Terkirim', data.message);
+                } else {
+                    alert(data.message);
+                }
+                if (data.wa_link && !data.sent_via_fonnte) {
+                    window.open(data.wa_link, '_blank');
+                }
+            } else {
+                alert(data.message || 'Gagal mengirim pesan WhatsApp.');
+            }
+        } catch (err) {
+            console.error(err);
+            // Fallback: submit standard form if fetch fails
+            this.submit();
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    });
 
     function previewDoc(title, url) {
         currentPreviewUrl = url;
