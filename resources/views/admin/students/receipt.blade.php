@@ -40,13 +40,19 @@
 <body class="bg-slate-100 text-slate-900 font-sans p-4 sm:p-8">
 
     <!-- Top Action Bar (No-Print) -->
-    <div class="max-w-3xl mx-auto mb-6 flex items-center justify-between no-print">
+    <div class="max-w-3xl mx-auto mb-6 flex flex-wrap items-center justify-between gap-3 no-print">
         <a href="{{ auth()->check() ? route('admin.students.index') : route('student.portal') }}" class="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition flex items-center gap-1.5 shadow-xs">
             &larr; {{ auth()->check() ? 'Kembali ke Data Siswa' : 'Kembali ke Portal Siswa' }}
         </a>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
+            @if(auth()->check())
+            <button type="button" onclick="openWaModal()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-xs flex items-center gap-1.5">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.698.075-2.031-.476-1.525-.63-2.502-2.181-2.58-2.283-.075-.102-.622-.829-.622-1.58 0-.752.394-1.121.534-1.27.144-.15.312-.187.417-.187.106 0 .211.002.302.007.098.006.228-.037.357.272.132.318.45 1.096.49 1.177.04.08.067.174.013.28-.053.107-.08.174-.16.267-.08.094-.17.209-.243.281-.08.079-.164.165-.07.327.094.162.417.688.895 1.114.614.547 1.132.716 1.293.796.162.08.256.067.352-.042.095-.11.408-.475.517-.638.11-.162.219-.136.368-.081.15.053.953.449 1.117.531.164.081.273.122.313.19.04.068.04.394-.104.799z"/></svg>
+                <span>Kirim ke WhatsApp</span>
+            </button>
+            @endif
             <a href="{{ auth()->check() ? route('admin.students.invoice', $student->id) : route('student.public.invoice', $student->nis) }}" class="px-4 py-2 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold hover:bg-blue-100 transition">
-                Cetak Invoice Tagihan
+                Cetak Invoice
             </a>
             <button onclick="window.print()" class="px-5 py-2 rounded-xl bg-red-600 text-white text-xs font-bold hover:bg-red-700 transition shadow-md flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
@@ -54,6 +60,26 @@
             </button>
         </div>
     </div>
+
+    @if(session('success'))
+    <div class="max-w-3xl mx-auto mb-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center justify-between no-print shadow-xs">
+        <div class="flex items-center gap-2">
+            <span>✅ {{ session('success') }}</span>
+        </div>
+        <button onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-800">&times;</button>
+    </div>
+    @endif
+
+    @if(session('warning'))
+    <div class="max-w-3xl mx-auto mb-4 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold flex items-center justify-between no-print shadow-xs">
+        <div class="flex items-center gap-2">
+            <span>⚠️ {{ session('warning') }}</span>
+        </div>
+        @if(session('wa_manual_url'))
+            <a href="{{ session('wa_manual_url') }}" target="_blank" class="px-3 py-1 bg-emerald-600 text-white rounded-lg text-[11px] font-extrabold hover:bg-emerald-700">Buka WhatsApp Manual</a>
+        @endif
+    </div>
+    @endif
 
     <!-- Official Receipt Paper (A4 Canvas) -->
     <div class="page-container max-w-3xl mx-auto bg-white rounded-3xl border border-slate-200 shadow-xl p-8 sm:p-12 relative overflow-hidden">
@@ -221,6 +247,78 @@
         </div>
 
     </div>
+
+    <!-- Modal Kirim WhatsApp (No-Print) -->
+    <div id="waModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs hidden items-center justify-center p-4 no-print" onclick="if(event.target === this) closeWaModal()">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.698.075-2.031-.476-1.525-.63-2.502-2.181-2.58-2.283-.075-.102-.622-.829-.622-1.58 0-.752.394-1.121.534-1.27.144-.15.312-.187.417-.187.106 0 .211.002.302.007.098.006.228-.037.357.272.132.318.45 1.096.49 1.177.04.08.067.174.013.28-.053.107-.08.174-.16.267-.08.094-.17.209-.243.281-.08.079-.164.165-.07.327.094.162.417.688.895 1.114.614.547 1.132.716 1.293.796.162.08.256.067.352-.042.095-.11.408-.475.517-.638.11-.162.219-.136.368-.081.15.053.953.449 1.117.531.164.081.273.122.313.19.04.068.04.394-.104.799z"/></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-extrabold text-slate-900">Kirim Kwitansi via WhatsApp</h4>
+                        <p class="text-[11px] text-slate-400">Penerima: {{ $student->name }} ({{ $student->nis }})</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeWaModal()" class="text-slate-400 hover:text-slate-700 text-xl font-bold p-1">&times;</button>
+            </div>
+
+            <form action="{{ route('admin.students.send.receipt.wa', $student->id) }}" method="POST" id="sendWaForm" class="space-y-4">
+                @csrf
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Nomor WhatsApp Siswa / Wali:</label>
+                    <input 
+                        type="text" 
+                        name="phone" 
+                        id="waPhoneInput"
+                        value="{{ $student->phone }}" 
+                        placeholder="Contoh: 081234567890" 
+                        required 
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    >
+                    <p class="text-[10px] text-slate-400 mt-1">Format 08... atau 628... akan otomatis dikonversi oleh sistem.</p>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1.5">
+                    <p class="font-bold text-slate-800">Isi Notifikasi yang Dikirim:</p>
+                    <ul class="text-[11px] text-slate-600 space-y-1 list-disc list-inside">
+                        <li>Nomor Kwitansi: <span class="font-mono font-bold">{{ $receiptNo }}</span></li>
+                        <li>Total Dana Diterima: <span class="font-bold text-emerald-700">Rp {{ number_format($student->paid_amount, 0, ',', '.') }}</span></li>
+                        <li>Sisa Tanggungan: <span class="font-bold">{{ $student->remaining_balance <= 0 ? 'LUNAS' : 'Rp ' . number_format($student->remaining_balance, 0, ',', '.') }}</span></li>
+                        <li>Tautan Kwitansi Digital Resmi (QR & Stempel Sah)</li>
+                    </ul>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                    <button type="button" onclick="closeWaModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-bold transition">
+                        Batal
+                    </button>
+                    <button type="submit" id="btnSubmitWa" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-md flex items-center gap-1.5">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.698.075-2.031-.476-1.525-.63-2.502-2.181-2.58-2.283-.075-.102-.622-.829-.622-1.58 0-.752.394-1.121.534-1.27.144-.15.312-.187.417-.187.106 0 .211.002.302.007.098.006.228-.037.357.272.132.318.45 1.096.49 1.177.04.08.067.174.013.28-.053.107-.08.174-.16.267-.08.094-.17.209-.243.281-.08.079-.164.165-.07.327.094.162.417.688.895 1.114.614.547 1.132.716 1.293.796.162.08.256.067.352-.042.095-.11.408-.475.517-.638.11-.162.219-.136.368-.081.15.053.953.449 1.117.531.164.081.273.122.313.19.04.068.04.394-.104.799z"/></svg>
+                        <span>Kirim Sekarang</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openWaModal() {
+            const modal = document.getElementById('waModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+        function closeWaModal() {
+            const modal = document.getElementById('waModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+    </script>
 
 </body>
 </html>

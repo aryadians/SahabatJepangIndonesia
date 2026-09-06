@@ -207,6 +207,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/students/{id}/receipt', [StudentController::class, 'receipt'])->name('students.receipt');
     Route::get('/students/{id}/invoice', [StudentController::class, 'invoice'])->name('students.invoice');
     Route::post('/students/{id}/payment', [StudentController::class, 'updatePayment'])->name('students.payment');
+    Route::post('/students/{id}/send-receipt-wa', [StudentController::class, 'sendReceiptWa'])->name('students.send.receipt.wa');
     Route::resource('students', StudentController::class);
 
     // 12. Data Pengajar / Sensei
@@ -225,6 +226,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
     Route::get('/cash-book/export-csv', [CashBookController::class, 'exportCsv'])->name('cash-book.export.csv');
     Route::get('/cash-book/export-pdf', [CashBookController::class, 'exportPdf'])->name('cash-book.export.pdf');
+    Route::get('/cash-book/income-statement/pdf', [CashBookController::class, 'incomeStatementPdf'])->name('cash-book.income-statement.pdf');
+    Route::get('/cash-book/balance-sheet/pdf', [CashBookController::class, 'balanceSheetPdf'])->name('cash-book.balance-sheet.pdf');
     Route::post('/cash-book/period-lock', [CashBookController::class, 'togglePeriodLock'])->name('cash-book.period-lock');
     Route::get('/cash-book/{id}/print', [CashBookController::class, 'printVoucher'])->name('cash-book.print');
     Route::get('/cash-book/{id}/download-proof', [CashBookController::class, 'downloadProof'])->name('cash-book.proof.download');

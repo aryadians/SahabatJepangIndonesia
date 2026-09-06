@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\CashTransaction;
+use App\Models\Reimbursement;
 use App\Models\SiteSetting;
+use App\Models\Student;
 use App\Traits\UploadsImage;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -323,6 +325,141 @@ class CashBookController extends Controller
             'totalIncome',
             'totalExpense',
             'netCashflow'
+        ));
+    }
+
+    /**
+     * Cetak Laporan Laba Rugi Resmi (Income Statement / P&L) A4 Portrait PDF
+     */
+    public function incomeStatementPdf(Request $request)
+    {
+        $query = $this->buildFilteredQuery($request);
+        $period = $request->input('period', 'this_month');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        $periodLabel = match($period) {
+            'today' => 'Hari Ini (' . now()->translatedFormat('d F Y') . ')',
+            'this_week' => 'Minggu Ini (' . now()->startOfWeek()->format('d/m') . ' - ' . now()->endOfWeek()->format('d/m/Y') . ')',
+            'this_month' => 'Bulan ' . now()->translatedFormat('F Y'),
+            'this_year' => 'Tahun Buku ' . now()->year,
+            'custom' => ($startDate && $endDate) ? Carbon::parse($startDate)->format('d/m/Y') . ' s/d ' . Carbon::parse($endDate)->format('d/m/Y') : 'Seluruh Periode Terfilter',
+            default => 'Bulan Ini (' . now()->translatedFormat('F Y') . ')',
+        };
+
+        $incomeCategories = CashTransaction::INCOME_CATEGORIES;
+        $expenseCategories = CashTransaction::EXPENSE_CATEGORIES;
+
+        // Breakdown Pendapatan
+        $incomeItems = [];
+        $totalIncome = 0;
+        foreach ($incomeCategories as $catKey => $catLabel) {
+            $sum = (float) (clone $query)->where('type', 'income')->where('category', $catKey)->sum('amount');
+            if ($sum > 0) {
+                $incomeItems[] = [
+                    'category' => $catKey,
+                    'label' => $catLabel,
+                    'amount' => $sum,
+                ];
+                $totalIncome += $sum;
+            }
+        }
+
+        // Breakdown Beban Operasional
+        $expenseItems = [];
+        $totalExpense = 0;
+        foreach ($expenseCategories as $catKey => $catLabel) {
+            $sum = (float) (clone $query)->where('type', 'expense')->where('category', $catKey)->sum('amount');
+            if ($sum > 0) {
+                $expenseItems[] = [
+                    'category' => $catKey,
+                    'label' => $catLabel,
+                    'amount' => $sum,
+                ];
+                $totalExpense += $sum;
+            }
+        }
+
+        $netProfit = $totalIncome - $totalExpense;
+        $profitMargin = $totalIncome > 0 ? round(($netProfit / $totalIncome) * 100, 1) : 0;
+        $expenseRatio = $totalIncome > 0 ? round(($totalExpense / $totalIncome) * 100, 1) : 0;
+
+        $docNumber = 'PL-SJI/' . date('Ym') . '/' . str_pad(rand(10, 99), 4, '0', STR_PAD_LEFT);
+        $settings = SiteSetting::allCached();
+
+        return view('admin.cash_book.income_statement_pdf', compact(
+            'periodLabel',
+            'incomeItems',
+            'expenseItems',
+            'totalIncome',
+            'totalExpense',
+            'netProfit',
+            'profitMargin',
+            'expenseRatio',
+            'docNumber',
+            'settings',
+            'period'
+        ));
+    }
+
+    /**
+     * Cetak Laporan Posisi Keuangan / Neraca (Balance Sheet) A4 Portrait PDF
+     */
+    public function balanceSheetPdf(Request $request)
+    {
+        $asOfDate = $request->input('as_of_date', now()->toDateString());
+        $formattedDate = Carbon::parse($asOfDate)->translatedFormat('d F Y');
+        $settings = SiteSetting::allCached();
+
+        // 1. Kas & Setara Kas (Berdasarkan transaksi s/d tanggal tersebut)
+        $cashOnHand = (float) CashTransaction::where('payment_method', 'cash_kasir')->whereDate('transaction_date', '<=', $asOfDate)->where('type', 'income')->sum('amount')
+                    - (float) CashTransaction::where('payment_method', 'cash_kasir')->whereDate('transaction_date', '<=', $asOfDate)->where('type', 'expense')->sum('amount');
+
+        $bankMandiri = (float) CashTransaction::where('payment_method', 'bank_mandiri')->whereDate('transaction_date', '<=', $asOfDate)->where('type', 'income')->sum('amount')
+                     - (float) CashTransaction::where('payment_method', 'bank_mandiri')->whereDate('transaction_date', '<=', $asOfDate)->where('type', 'expense')->sum('amount');
+
+        $bankBca = (float) CashTransaction::where('payment_method', 'bank_bca')->whereDate('transaction_date', '<=', $asOfDate)->where('type', 'income')->sum('amount')
+                  - (float) CashTransaction::where('payment_method', 'bank_bca')->whereDate('transaction_date', '<=', $asOfDate)->where('type', 'expense')->sum('amount');
+
+        $bankOther = (float) CashTransaction::whereNotIn('payment_method', ['cash_kasir', 'bank_mandiri', 'bank_bca'])->whereDate('transaction_date', '<=', $asOfDate)->where('type', 'income')->sum('amount')
+                   - (float) CashTransaction::whereNotIn('payment_method', ['cash_kasir', 'bank_mandiri', 'bank_bca'])->whereDate('transaction_date', '<=', $asOfDate)->where('type', 'expense')->sum('amount');
+
+        $totalCash = $cashOnHand + $bankMandiri + $bankBca + $bankOther;
+
+        // 2. Piutang Biaya Pelatihan Siswa Aktif
+        $studentReceivables = (float) Student::whereNotIn('status', ['cancelled'])->sum('remaining_balance');
+
+        // 3. Uang Muka Perjalanan Dinas Belum Di-SPJ
+        $unsettledAdvances = (float) Reimbursement::where('type', 'cash_advance')->where('status', 'paid')->sum('amount_approved');
+
+        // Total Aset Lancar
+        $totalCurrentAssets = $totalCash + $studentReceivables + $unsettledAdvances;
+
+        // 4. Kewajiban Lancar
+        $pendingReimbursements = (float) Reimbursement::where('status', 'approved')->sum('amount_approved');
+        $totalLiabilities = $pendingReimbursements;
+
+        // 5. Ekuitas
+        $equityBalance = $totalCurrentAssets - $totalLiabilities;
+
+        $docNumber = 'BS-SJI/' . date('Ym') . '/' . str_pad(rand(10, 99), 4, '0', STR_PAD_LEFT);
+
+        return view('admin.cash_book.balance_sheet_pdf', compact(
+            'asOfDate',
+            'formattedDate',
+            'cashOnHand',
+            'bankMandiri',
+            'bankBca',
+            'bankOther',
+            'totalCash',
+            'studentReceivables',
+            'unsettledAdvances',
+            'totalCurrentAssets',
+            'pendingReimbursements',
+            'totalLiabilities',
+            'equityBalance',
+            'docNumber',
+            'settings'
         ));
     }
 

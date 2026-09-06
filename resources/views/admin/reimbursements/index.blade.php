@@ -464,6 +464,16 @@
                                         </a>
                                     @endif
 
+                                    <!-- Kirim Notifikasi WhatsApp ke Pemohon -->
+                                    <button 
+                                        type="button" 
+                                        onclick='openWaModal({{ $item->id }}, "{{ $item->reimbursement_no }}", "{{ addslashes($item->employee_name) }}", "{{ $item->teacher?->phone }}", "{{ addslashes($item->title) }}")' 
+                                        class="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-600 font-bold transition cursor-pointer"
+                                        title="Kirim Notifikasi Status via WhatsApp (Fonnte)"
+                                    >
+                                        <i data-lucide="message-circle" class="w-4 h-4"></i>
+                                    </button>
+
                                     <!-- Verifikasi Status: Approve / Pay (Cairkan) -->
                                     @if($item->status === 'submitted')
                                         <form action="{{ route('admin.reimbursements.status', $item->id) }}" method="POST" class="inline">

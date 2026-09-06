@@ -606,5 +606,128 @@ class NewFeaturesTest extends TestCase
         $guestHome->assertSee('Masa Depan Cerah di Tokyo');
         $guestHome->assertSee('https://images.unsplash.com/photo-1542051841857-5f90071e7989?w=900');
     }
+
+    public function test_admin_can_send_student_payment_receipt_via_whatsapp(): void
+    {
+        SiteSetting::set('fonnte_enabled', '1', 'whatsapp');
+        SiteSetting::set('fonnte_api_token', 'mock_token_sji', 'whatsapp');
+
+        Http::fake([
+            'https://api.fonnte.com/send' => Http::response(['status' => true, 'detail' => 'Pesan terkirim'], 200),
+        ]);
+
+        $student = Student::create([
+            'name' => 'Kenji Pratama',
+            'nis' => 'SJI-2026-9901',
+            'phone' => '081299988877',
+            'paid_amount' => 5000000,
+            'total_cost' => 10000000,
+            'program' => 'Tokutei Ginou',
+            'status' => 'active',
+        ]);
+
+        $response = $this->actingAs($this->admin)->post("/admin/students/{$student->id}/send-receipt-wa", [
+            'phone' => '081299988877',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        Http::assertSent(function ($request) use ($student) {
+            return $request->url() === 'https://api.fonnte.com/send'
+                && $request['target'] === '6281299988877'
+                && str_contains($request['message'], 'Kenji Pratama')
+                && str_contains($request['message'], url('/kwitansi/' . $student->nis));
+        });
+    }
+
+    public function test_admin_can_export_income_statement_pdf(): void
+    {
+        // Create sample income & expense transactions
+        \App\Models\CashTransaction::create([
+            'transaction_number' => 'BKM-202609-0001',
+            'transaction_date' => now()->toDateString(),
+            'type' => 'income',
+            'category' => 'tuition_student',
+            'title' => 'Cicilan SPP Siswa Angkatan 2026',
+            'amount' => 7500000,
+            'payment_method' => 'bank_mandiri',
+        ]);
+
+        \App\Models\CashTransaction::create([
+            'transaction_number' => 'BKK-202609-0001',
+            'transaction_date' => now()->toDateString(),
+            'type' => 'expense',
+            'category' => 'teacher_salary',
+            'title' => 'Gaji Sensei Bahasa Jepang',
+            'amount' => 4500000,
+            'payment_method' => 'bank_mandiri',
+        ]);
+
+        $response = $this->actingAs($this->admin)->get('/admin/cash-book/income-statement/pdf?period=this_month');
+        $response->assertStatus(200);
+        $response->assertSee('LAPORAN LABA RUGI OPERASIONAL');
+        $response->assertSee('Biaya Pelatihan / Cicilan Siswa');
+        $response->assertSee('7.500.000');
+        $response->assertSee('4.500.000');
+        $response->assertSee('Laba Bersih Operasional');
+    }
+
+    public function test_admin_can_export_balance_sheet_pdf(): void
+    {
+        \App\Models\CashTransaction::create([
+            'transaction_number' => 'BKM-202609-0002',
+            'transaction_date' => now()->toDateString(),
+            'type' => 'income',
+            'category' => 'tuition_student',
+            'title' => 'Pembayaran Tunai Kasir Siswa',
+            'amount' => 2000000,
+            'payment_method' => 'cash_kasir',
+        ]);
+
+        $response = $this->actingAs($this->admin)->get('/admin/cash-book/balance-sheet/pdf');
+        $response->assertStatus(200);
+        $response->assertSee('LAPORAN POSISI KEUANGAN / NERACA');
+        $response->assertSee('Kas Tunai (Kasir Lembaga)');
+        $response->assertSee('ASET LANCAR');
+        $response->assertSee('SEIMBANG (BALANCED)');
+    }
+
+    public function test_admin_can_send_reimbursement_status_wa(): void
+    {
+        SiteSetting::set('fonnte_enabled', '1', 'whatsapp');
+        SiteSetting::set('fonnte_api_token', 'mock_token_sji', 'whatsapp');
+
+        Http::fake([
+            'https://api.fonnte.com/send' => Http::response(['status' => true, 'detail' => 'Pesan terkirim'], 200),
+        ]);
+
+        $reimburse = \App\Models\Reimbursement::create([
+            'reimbursement_no' => 'RMB-202609-0099',
+            'employee_name' => 'Budi Santoso',
+            'title' => 'Perjalanan Dinas Kunjungan Siswa',
+            'type' => 'reimbursement',
+            'category' => 'transport',
+            'amount_requested' => 350000,
+            'amount_approved' => 350000,
+            'status' => 'approved',
+            'date_submitted' => now()->toDateString(),
+        ]);
+
+        $response = $this->actingAs($this->admin)->post("/admin/reimbursements/{$reimburse->id}/send-wa", [
+            'phone' => '085711223344',
+            'custom_notes' => 'Dana siap diambil di kasir.',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        Http::assertSent(function ($request) {
+            return $request->url() === 'https://api.fonnte.com/send'
+                && $request['target'] === '6285711223344'
+                && str_contains($request['message'], 'RMB-202609-0099')
+                && str_contains($request['message'], 'Telah Disetujui');
+        });
+    }
 }
 

@@ -56,7 +56,27 @@
                 title="Cetak Laporan Buku Kas Resmi ke PDF A4 Landscape"
             >
                 <i data-lucide="printer" class="w-4 h-4 text-japan-400"></i>
-                <span class="hidden sm:inline">Cetak PDF</span>
+                <span class="hidden sm:inline">Buku Kas (PDF)</span>
+            </a>
+
+            <a 
+                href="{{ route('admin.cash-book.income-statement.pdf', request()->query()) }}" 
+                target="_blank" 
+                class="px-3.5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs flex items-center gap-1.5 transition cursor-pointer"
+                title="Cetak Laporan Laba Rugi Resmi ke PDF A4 Portrait"
+            >
+                <i data-lucide="file-check" class="w-4 h-4 text-emerald-300"></i>
+                <span class="hidden sm:inline">Laba Rugi (P&L)</span>
+            </a>
+
+            <a 
+                href="{{ route('admin.cash-book.balance-sheet.pdf', request()->query()) }}" 
+                target="_blank" 
+                class="px-3.5 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs shadow-xs flex items-center gap-1.5 transition cursor-pointer"
+                title="Cetak Laporan Neraca Keuangan ke PDF A4 Portrait"
+            >
+                <i data-lucide="scale" class="w-4 h-4 text-blue-300"></i>
+                <span class="hidden sm:inline">Neraca Keuangan</span>
             </a>
 
             <button 
@@ -66,7 +86,7 @@
                 title="Lihat Ringkasan Laba Rugi & Rasio Operasional"
             >
                 <i data-lucide="pie-chart" class="w-4 h-4 text-blue-600"></i>
-                <span class="hidden sm:inline">Rekap Laba Rugi</span>
+                <span class="hidden sm:inline">Rekap Ringkas</span>
             </button>
 
             <button 
@@ -829,17 +849,35 @@
             </div>
         </div>
 
-        <div class="flex items-center justify-between pt-3 border-t border-slate-100">
-            <a 
-                href="{{ route('admin.cash-book.export.pdf', request()->query()) }}" 
-                target="_blank" 
-                class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs flex items-center gap-1.5 transition"
-            >
-                <i data-lucide="printer" class="w-4 h-4 text-japan-400"></i>
-                <span>Cetak Rekap Resmi PDF</span>
-            </a>
+        <div class="flex items-center justify-between pt-3 border-t border-slate-100 flex-wrap gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
+                <a 
+                    href="{{ route('admin.cash-book.income-statement.pdf', request()->query()) }}" 
+                    target="_blank" 
+                    class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs flex items-center gap-1.5 transition"
+                >
+                    <i data-lucide="file-check" class="w-4 h-4 text-emerald-300"></i>
+                    <span>Cetak Laba Rugi (P&L) A4</span>
+                </a>
+                <a 
+                    href="{{ route('admin.cash-book.balance-sheet.pdf', request()->query()) }}" 
+                    target="_blank" 
+                    class="px-4 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs shadow-xs flex items-center gap-1.5 transition"
+                >
+                    <i data-lucide="scale" class="w-4 h-4 text-blue-300"></i>
+                    <span>Cetak Neraca Keuangan A4</span>
+                </a>
+                <a 
+                    href="{{ route('admin.cash-book.export.pdf', request()->query()) }}" 
+                    target="_blank" 
+                    class="px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs flex items-center gap-1.5 transition"
+                >
+                    <i data-lucide="printer" class="w-4 h-4 text-japan-400"></i>
+                    <span>Cetak Buku Kas</span>
+                </a>
+            </div>
             <button type="button" onclick="closeModal('incomeStatementModal')" class="px-5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">
-                Tutup Ringkasan
+                Tutup
             </button>
         </div>
     </div>

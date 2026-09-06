@@ -531,16 +531,18 @@ class ReimbursementController extends Controller
         $phone = null;
         $recipientName = $reimbursement->employee_name;
 
-        if ($reimbursement->teacher_id) {
+        if (!empty($extra['target_phone'])) {
+            $phone = $extra['target_phone'];
+            if ($reimbursement->teacher_id) {
+                $teacher = Teacher::find($reimbursement->teacher_id);
+                if ($teacher) $recipientName = $teacher->name;
+            }
+        } elseif ($reimbursement->teacher_id) {
             $teacher = Teacher::find($reimbursement->teacher_id);
             if ($teacher && !empty($teacher->phone)) {
                 $phone = $teacher->phone;
                 $recipientName = $teacher->name;
             }
-        }
-
-        if (empty($phone) && !empty($extra['target_phone'])) {
-            $phone = $extra['target_phone'];
         }
 
         if (empty($phone)) {

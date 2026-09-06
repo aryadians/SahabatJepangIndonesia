@@ -454,6 +454,8 @@ class StudentController extends Controller
                 $remaining = max(0, $totalCost - $paidAmount);
                 $formattedRemaining = 'Rp ' . number_format($remaining, 0, ',', '.');
 
+                $receiptUrl = url('/kwitansi/' . $student->nis);
+
                 $msg = "Konnichiwa, *{$student->name}* ({$student->nis}) 🌸\n\n";
                 $msg .= "Pembayaran biaya pelatihan Anda telah berhasil kami verifikasi dan tercatat resmi di Buku Kas Umum *LPK Sahabat Jepang Indonesia*.\n\n";
                 $msg .= "📋 *Kuitansi Pembayaran Digital*:\n";
@@ -462,6 +464,8 @@ class StudentController extends Controller
                 $msg .= "📊 *Akumulasi Terbayar*: {$formattedTotalPaid}\n";
                 $msg .= "⏳ *Sisa Tanggungan*: " . ($remaining <= 0 ? '*LUNAS*' : $formattedRemaining) . "\n";
                 $msg .= "📅 *Tanggal Transaksi*: " . Carbon::parse($paymentDate)->format('d/m/Y') . "\n\n";
+                $msg .= "🔗 *Unduh / Lihat Kwitansi Digital Resmi (QR Code & Stempel Sah)*:\n";
+                $msg .= "👉 {$receiptUrl}\n\n";
                 $msg .= "Terima kasih atas kedisiplinan administrasi Anda. Terus semangat dalam menempuh pelatihan bahasa dan budaya Jepang! 🇯🇵\n\n";
                 $msg .= "_LPK Sahabat Jepang Indonesia - Lembaga Penyalur & Pelatihan Kerja Resmi Kemenaker RI_";
 
@@ -872,6 +876,84 @@ class StudentController extends Controller
         $terbilangRemaining = trim($this->terbilang((int)$student->remaining_balance)) . ' Rupiah';
 
         return view('admin.students.invoice', compact('student', 'settings', 'invoiceNo', 'terbilangRemaining'));
+    }
+
+    /**
+     * Kirim Notifikasi Kwitansi Pembayaran Resmi via WhatsApp (Fonnte / Manual Link)
+     */
+    public function sendReceiptWa(Request $request, $id)
+    {
+        $student = Student::findOrFail($id);
+        $phone = $request->input('phone', $student->phone);
+
+        $cleanPhone = preg_replace('/[^0-9]/', '', (string)$phone);
+        if (str_starts_with($cleanPhone, '0')) {
+            $cleanPhone = '62' . substr($cleanPhone, 1);
+        }
+
+        if (empty($cleanPhone)) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Nomor WhatsApp siswa belum terdaftar atau tidak valid.'], 422);
+            }
+            return back()->with('error', 'Nomor WhatsApp siswa belum terdaftar atau tidak valid.');
+        }
+
+        $receiptNo = 'KW-SJI/' . date('Ym') . '/' . str_pad($student->id, 4, '0', STR_PAD_LEFT);
+        $paidFormatted = 'Rp ' . number_format($student->paid_amount, 0, ',', '.');
+        $totalFormatted = 'Rp ' . number_format($student->total_cost, 0, ',', '.');
+        $remaining = max(0, $student->remaining_balance);
+        $remainingFormatted = 'Rp ' . number_format($remaining, 0, ',', '.');
+        $statusLabel = $remaining <= 0 ? 'LUNAS ✅' : ($student->paid_amount > 0 ? 'Cicilan Berjalan ⏳' : 'Belum Membayar ❌');
+        $receiptUrl = url('/kwitansi/' . $student->nis);
+
+        $msg = "Konnichiwa, *{$student->name}* ({$student->nis}) 🌸\n\n";
+        $msg .= "Berikut kami kirimkan tautan resmi *Kwitansi Pembayaran Biaya Pelatihan* Anda di *LPK Sahabat Jepang Indonesia*:\n\n";
+        $msg .= "📄 *No. Kwitansi*: `{$receiptNo}`\n";
+        $msg .= "👤 *Nama Siswa*: {$student->name}\n";
+        $msg .= "🏷️ *Program*: " . ($student->program ?: 'Pelatihan Kerja & Bahasa Jepang') . "\n";
+        $msg .= "💵 *Total Biaya Pelatihan*: {$totalFormatted}\n";
+        $msg .= "✅ *Total Dana Diterima*: *{$paidFormatted}*\n";
+        $msg .= "⏳ *Sisa Tanggungan*: *" . ($remaining <= 0 ? 'LUNAS (Rp 0)' : $remainingFormatted) . "*\n";
+        $msg .= "📌 *Status Administrasi*: *{$statusLabel}*\n\n";
+        $msg .= "🔗 *Unduh / Lihat Kwitansi Digital Resmi (QR Code & Stempel Sah)*:\n";
+        $msg .= "👉 {$receiptUrl}\n\n";
+        $msg .= "Simpan tautan ini sebagai bukti pembayaran resmi Anda. Jika ada pertanyaan, silakan hubungi staf keuangan LPK SJI.\n\n";
+        $msg .= "_LPK Sahabat Jepang Indonesia - Lembaga Penyalur & Pelatihan Kerja Resmi Kemenaker RI_";
+
+        if (\App\Services\FonnteService::isConfigured()) {
+            $result = \App\Services\FonnteService::send($cleanPhone, $msg, [
+                'type' => 'student_receipt',
+                'student_id' => $student->id,
+                'receipt_no' => $receiptNo,
+            ]);
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => $result['success'] ?? false,
+                    'message' => $result['message'] ?? 'Pesan terkirim via Fonnte Gateway.',
+                    'manual_url' => 'https://wa.me/' . $cleanPhone . '?text=' . urlencode($msg),
+                ]);
+            }
+
+            if (!empty($result['success'])) {
+                return back()->with('success', "Kwitansi resmi berhasil dikirim ke WhatsApp {$student->name} ({$cleanPhone}).");
+            } else {
+                return back()->with('warning', ($result['message'] ?? 'Fonnte merespons gagal.') . ' Anda dapat menggunakan tautan WhatsApp manual.')
+                             ->with('wa_manual_url', 'https://wa.me/' . $cleanPhone . '?text=' . urlencode($msg));
+            }
+        }
+
+        $manualUrl = 'https://wa.me/' . $cleanPhone . '?text=' . urlencode($msg);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => false,
+                'manual_url' => $manualUrl,
+                'message' => 'Fonnte Gateway belum aktif. Silakan buka tautan WhatsApp manual.'
+            ]);
+        }
+
+        return redirect()->away($manualUrl);
     }
 
     /**

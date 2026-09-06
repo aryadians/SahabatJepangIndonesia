@@ -401,6 +401,16 @@
                                             <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
                                         </a>
 
+                                        <!-- Kirim Kwitansi via WhatsApp -->
+                                        <button 
+                                            type="button"
+                                            onclick="openStudentReceiptWaModal('{{ $st->id }}', '{{ addslashes($st->name) }}', '{{ $st->nis }}', '{{ $st->phone }}', '{{ number_format($st->paid_amount, 0, ',', '.') }}', '{{ $st->remaining_balance <= 0 ? 'LUNAS' : number_format($st->remaining_balance, 0, ',', '.') }}')"
+                                            class="w-7 h-7 rounded-lg text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 flex items-center justify-center transition cursor-pointer" 
+                                            title="Kirim Notifikasi Kwitansi via WhatsApp (Fonnte)"
+                                        >
+                                            <i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                        </button>
+
                                         <!-- Buka Portal Mandiri Siswa -->
                                         <a 
                                             href="{{ route('student.portal', ['keyword' => $st->nis]) }}" 
@@ -1486,5 +1496,87 @@
             }
         });
     }
+
+    // Modal Kirim Kwitansi Siswa via WhatsApp
+    function openStudentReceiptWaModal(id, name, nis, phone, paid, remaining) {
+        const form = document.getElementById('studentReceiptWaForm');
+        if (form) form.action = `/admin/students/${id}/send-receipt-wa`;
+        document.getElementById('srwModalName').textContent = name;
+        document.getElementById('srwModalNis').textContent = nis;
+        document.getElementById('srwModalPhone').value = phone || '';
+        document.getElementById('srwModalPaid').textContent = 'Rp ' + paid;
+        document.getElementById('srwModalRemaining').textContent = remaining === 'LUNAS' ? 'LUNAS (Rp 0)' : ('Rp ' + remaining);
+        
+        const modal = document.getElementById('studentReceiptWaModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+    }
+
+    function closeStudentReceiptWaModal() {
+        const modal = document.getElementById('studentReceiptWaModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    }
 </script>
+
+<!-- Modal Kirim Kwitansi via WhatsApp -->
+<div id="studentReceiptWaModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs hidden items-center justify-center p-4" onclick="if(event.target === this) closeStudentReceiptWaModal()">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                    <i data-lucide="message-circle" class="w-5 h-5 text-emerald-600"></i>
+                </div>
+                <div>
+                    <h4 class="text-sm font-extrabold text-slate-900">Kirim Kwitansi via WhatsApp</h4>
+                    <p class="text-[11px] text-slate-400"><span id="srwModalName">Nama Siswa</span> (<span id="srwModalNis">NIS</span>)</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeStudentReceiptWaModal()" class="text-slate-400 hover:text-slate-700 text-xl font-bold p-1">&times;</button>
+        </div>
+
+        <form action="" method="POST" id="studentReceiptWaForm" class="space-y-4">
+            @csrf
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Nomor WhatsApp Siswa / Wali:</label>
+                <input 
+                    type="text" 
+                    name="phone" 
+                    id="srwModalPhone"
+                    placeholder="Contoh: 081234567890" 
+                    required 
+                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                >
+                <p class="text-[10px] text-slate-400 mt-1">Sistem otomatis mendeteksi Fonnte Gateway atau membuka tautan WhatsApp Web jika offline.</p>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1.5">
+                <p class="font-bold text-slate-800">Ringkasan Kwitansi:</p>
+                <div class="flex items-center justify-between text-[11px]">
+                    <span class="text-slate-500">Total Terbayar:</span>
+                    <span id="srwModalPaid" class="font-bold text-emerald-700">Rp 0</span>
+                </div>
+                <div class="flex items-center justify-between text-[11px]">
+                    <span class="text-slate-500">Sisa Kewajiban:</span>
+                    <span id="srwModalRemaining" class="font-bold text-slate-800">Rp 0</span>
+                </div>
+                <p class="text-[10px] text-slate-500 pt-1 border-t border-slate-200/60">Pesan WA menyertakan tautan resmi kwitansi ber-QR code dan berstempel lembaga.</p>
+            </div>
+
+            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                <button type="button" onclick="closeStudentReceiptWaModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-bold transition">
+                    Batal
+                </button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-md flex items-center gap-1.5">
+                    <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                    <span>Kirim Sekarang</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection
