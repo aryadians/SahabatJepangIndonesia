@@ -182,19 +182,27 @@
             </div>
 
             <a 
-                href="{{ route('admin.finance.index') }}" 
-                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.finance.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
-            >
-                <i data-lucide="trending-up" class="w-4 h-4"></i>
-                <span>Proyeksi Kas & Keuangan</span>
-            </a>
-
-            <a 
                 href="{{ route('admin.cash-book.index') }}" 
                 class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.cash-book.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
             >
                 <i data-lucide="book-open" class="w-4 h-4"></i>
                 <span>Buku Kas & Jurnal LPK</span>
+                @php
+                    $isLockedPeriod = !empty(\App\Models\SiteSetting::get('financial_lock_until'));
+                @endphp
+                @if($isLockedPeriod)
+                    <span class="ml-auto p-1 rounded bg-amber-500/20 text-amber-400" title="Tutup Buku Aktif">
+                        <i data-lucide="lock" class="w-3 h-3"></i>
+                    </span>
+                @endif
+            </a>
+
+            <a 
+                href="{{ route('admin.finance.index') }}" 
+                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.finance.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+            >
+                <i data-lucide="trending-up" class="w-4 h-4"></i>
+                <span>Proyeksi Kas & Keuangan</span>
             </a>
 
             <a 

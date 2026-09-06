@@ -363,8 +363,23 @@
     </div>
 
     <!-- 4b. Executive Operational Finance & Digital Archives (Reimbursement & Arsip Explorer) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         
+        <!-- Saldo Kas Umum (General Ledger) -->
+        <div class="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-4 border border-slate-200 shadow-xs flex items-center justify-between hover:border-slate-300 transition">
+            <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full {{ $counts['cash_balance'] >= 0 ? 'bg-emerald-500' : 'bg-rose-500' }}"></span>
+                    <p class="text-[11px] font-bold text-slate-700 uppercase tracking-wider truncate">Saldo Kas Umum</p>
+                </div>
+                <h4 class="text-lg font-black {{ $counts['cash_balance'] >= 0 ? 'text-slate-900' : 'text-rose-600' }} mt-1 truncate">Rp {{ number_format($counts['cash_balance'], 0, ',', '.') }}</h4>
+                <a href="{{ route('admin.cash-book.index') }}" class="text-[11px] font-bold text-japan-600 hover:underline inline-block mt-0.5">Buka Buku Kas &rarr;</a>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center font-bold shrink-0">
+                <i data-lucide="book-open" class="w-5 h-5"></i>
+            </div>
+        </div>
+
         <!-- Reimburse Dicairkan -->
         <div class="bg-gradient-to-br from-white to-emerald-50/40 rounded-2xl p-4 border border-emerald-200/80 shadow-xs flex items-center justify-between hover:border-emerald-300 transition">
             <div class="min-w-0">
@@ -418,7 +433,7 @@
                     <p class="text-[11px] font-bold text-blue-800 uppercase tracking-wider truncate">Arsip Explorer SPA</p>
                 </div>
                 <h4 class="text-lg font-black text-slate-900 mt-1 truncate">{{ $counts['archives_total'] }} Berkas</h4>
-                <a href="{{ route('admin.digital-archives.index') }}" class="text-[11px] font-bold text-blue-700 hover:underline inline-block mt-0.5">{{ $counts['folders_total'] }} Folder (Windows UI) &rarr;</a>
+                <a href="{{ route('admin.digital-archives.index') }}" class="text-[11px] font-bold text-blue-700 hover:underline inline-block mt-0.5">{{ $counts['folders_total'] }} Folder &rarr;</a>
             </div>
             <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold shrink-0">
                 <i data-lucide="folder-git-2" class="w-5 h-5"></i>
@@ -442,10 +457,28 @@
                     <p class="text-xs text-slate-400">Unduh atau cetak laporan resmi berstempel dan kop surat standar Kemnaker RI dalam format A4</p>
                 </div>
             </div>
-            <span class="text-[11px] text-slate-400 font-mono hidden sm:inline">6 Laporan Tersedia</span>
+            <span class="text-[11px] text-slate-400 font-mono hidden sm:inline">7 Laporan Tersedia</span>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+            
+            <!-- 0. PDF Buku Kas Umum -->
+            <a 
+                href="{{ route('admin.cash-book.export.pdf') }}" 
+                target="_blank"
+                class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-emerald-500/50 transition flex flex-col justify-between group space-y-2"
+            >
+                <div class="flex items-center justify-between">
+                    <span class="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold">
+                        <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+                    </span>
+                    <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-L</span>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-white group-hover:text-emerald-400 transition">Buku Kas Umum</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5 truncate">Jurnal mutasi kas & bank</p>
+                </div>
+            </a>
             
             <!-- 1. PDF Buku Induk Siswa -->
             <a 

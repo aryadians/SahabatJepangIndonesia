@@ -55,6 +55,11 @@ class DashboardController extends Controller
             'unsettled_advances' => \App\Models\Reimbursement::where('type', 'cash_advance')->whereIn('status', ['approved', 'paid'])->count(),
             'archives_total' => \App\Models\DigitalArchive::count(),
             'folders_total' => \App\Models\ArchiveFolder::count(),
+            // Buku Kas Umum Real-time
+            'cash_balance' => ((float) \App\Models\CashTransaction::where('type', 'income')->sum('amount')) - ((float) \App\Models\CashTransaction::where('type', 'expense')->sum('amount')),
+            'cash_income_month' => (float) \App\Models\CashTransaction::where('type', 'income')->whereBetween('transaction_date', [now()->startOfMonth(), now()->endOfMonth()])->sum('amount'),
+            'cash_expense_month' => (float) \App\Models\CashTransaction::where('type', 'expense')->whereBetween('transaction_date', [now()->startOfMonth(), now()->endOfMonth()])->sum('amount'),
+            'is_financial_locked' => !empty(\App\Models\SiteSetting::get('financial_lock_until')),
         ];
 
         // 6-Month Intake Trend (DB agnostic using Carbon)
@@ -77,8 +82,9 @@ class DashboardController extends Controller
 
         $latestLeads = Consultation::latest()->take(5)->get();
         $latestStudents = \App\Models\Student::latest()->take(5)->get();
+        $latestCashTransactions = \App\Models\CashTransaction::latest('transaction_date')->latest('id')->take(5)->get();
         $programs = Program::orderBy('order')->get();
 
-        return view('admin.dashboard', compact('counts', 'monthlyIntake', 'latestLeads', 'latestStudents', 'programs'));
+        return view('admin.dashboard', compact('counts', 'monthlyIntake', 'latestLeads', 'latestStudents', 'latestCashTransactions', 'programs'));
     }
 }
