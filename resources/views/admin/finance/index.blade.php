@@ -83,6 +83,13 @@
                     <span>Tahun Kalender {{ now()->year }}</span>
                 </span>
                 <a 
+                    href="{{ route('admin.cash-book.index') }}" 
+                    class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+                >
+                    <i data-lucide="book-open" class="w-3.5 h-3.5 text-white"></i>
+                    <span>Buku Kas Umum</span>
+                </a>
+                <a 
                     href="{{ route('admin.reimbursements.index') }}" 
                     class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center gap-1.5"
                 >
@@ -100,8 +107,14 @@
                     <span class="text-[11px] font-black uppercase tracking-wider">Total Kas Masuk (Inflow)</span>
                     <i data-lucide="arrow-down-left" class="w-4 h-4"></i>
                 </div>
-                <h4 class="text-xl sm:text-2xl font-black text-emerald-700">Rp {{ number_format($totalRealizedRevenue) }}</h4>
-                <p class="text-[11px] text-emerald-800 font-medium">Realisasi pendaftaran & cicilan siswa</p>
+                <h4 class="text-xl sm:text-2xl font-black text-emerald-700">Rp {{ number_format($totalInflow) }}</h4>
+                <p class="text-[11px] text-emerald-800 font-medium">
+                    @if($cashBookIncome > 0)
+                        Buku Kas Umum & Realisasi Siswa
+                    @else
+                        Realisasi pendaftaran & cicilan siswa
+                    @endif
+                </p>
             </div>
 
             <!-- 2. Total Outflow -->
@@ -394,15 +407,25 @@
                                     if (str_starts_with($cleanPhone, '0')) $cleanPhone = '62' . substr($cleanPhone, 1);
                                     $msg = "Halo Kak {$s->name} (NIS: {$s->nis}), kami informasikan sisa tanggungan biaya program {$s->program} sebesar Rp " . number_format($s->remaining_balance) . ". Harap melakukan konfirmasi pembayaran ya Kak. Terima kasih!";
                                 @endphp
-                                <a 
-                                    href="https://api.whatsapp.com/send?phone={{ $cleanPhone }}&text={{ urlencode($msg) }}" 
-                                    target="_blank" 
-                                    class="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs transition"
-                                    title="Kirim Pengingat WhatsApp"
-                                >
-                                    <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
-                                    <span>Ingatkan WA</span>
-                                </a>
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <a 
+                                        href="https://api.whatsapp.com/send?phone={{ $cleanPhone }}&text={{ urlencode($msg) }}" 
+                                        target="_blank" 
+                                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs transition"
+                                        title="Kirim Pengingat WhatsApp"
+                                    >
+                                        <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                                        <span>Ingatkan WA</span>
+                                    </a>
+                                    <a 
+                                        href="{{ route('admin.students.index', ['q' => $s->nis]) }}" 
+                                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs transition"
+                                        title="Buka Kasir Pembayaran Siswa"
+                                    >
+                                        <i data-lucide="credit-card" class="w-3.5 h-3.5"></i>
+                                        <span>Kasir</span>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     @empty

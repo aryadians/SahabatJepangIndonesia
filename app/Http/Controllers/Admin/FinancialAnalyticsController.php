@@ -15,11 +15,14 @@ class FinancialAnalyticsController extends Controller
 {
     public function index()
     {
-        // 1. Core Financial Metrics (Pendapatan Siswa)
+        // 1. Core Financial Metrics (Pendapatan Siswa & Buku Kas)
         $totalPotentialRevenue = (float) Student::sum('total_cost');
         $totalRealizedRevenue = (float) Student::sum('paid_amount');
         $totalReceivables = $totalPotentialRevenue - $totalRealizedRevenue;
         $collectionRate = $totalPotentialRevenue > 0 ? round(($totalRealizedRevenue / $totalPotentialRevenue) * 100, 1) : 0;
+
+        $cashBookIncome = (float) CashTransaction::where('type', 'income')->sum('amount');
+        $totalInflow = $cashBookIncome > 0 ? $cashBookIncome : $totalRealizedRevenue;
 
         // 1b. Arus Kas Keluar (Sinkronisasi Pengeluaran Buku Kas Umum & Reimbursement Dinas)
         $totalReimbursements = (float) Reimbursement::where('type', 'reimbursement')
@@ -32,8 +35,8 @@ class FinancialAnalyticsController extends Controller
 
         $cashBookExpense = (float) CashTransaction::where('type', 'expense')->sum('amount');
         $totalOutflow = $cashBookExpense > 0 ? $cashBookExpense : ($totalReimbursements + $totalCashAdvances);
-        $netCashflow = $totalRealizedRevenue - $totalOutflow;
-        $expenseRatio = $totalRealizedRevenue > 0 ? round(($totalOutflow / $totalRealizedRevenue) * 100, 1) : 0;
+        $netCashflow = $totalInflow - $totalOutflow;
+        $expenseRatio = $totalInflow > 0 ? round(($totalOutflow / $totalInflow) * 100, 1) : 0;
 
         // 1c. Grafik Komparatif 12 Bulan (Arus Kas Masuk vs Kas Keluar Terintegrasi)
         $currentYear = now()->year;
@@ -126,6 +129,8 @@ class FinancialAnalyticsController extends Controller
         return view('admin.finance.index', compact(
             'totalPotentialRevenue',
             'totalRealizedRevenue',
+            'totalInflow',
+            'cashBookIncome',
             'totalReceivables',
             'collectionRate',
             'totalReimbursements',
@@ -153,6 +158,9 @@ class FinancialAnalyticsController extends Controller
         $totalRealizedRevenue = Student::sum('paid_amount');
         $totalReceivables = $totalPotentialRevenue - $totalRealizedRevenue;
         $collectionRate = $totalPotentialRevenue > 0 ? round(($totalRealizedRevenue / $totalPotentialRevenue) * 100, 1) : 0;
+
+        $cashBookIncome = (float) CashTransaction::where('type', 'income')->sum('amount');
+        $totalInflow = $cashBookIncome > 0 ? $cashBookIncome : (float)$totalRealizedRevenue;
 
         $programRevenue = Student::select('program', 
             DB::raw('COUNT(*) as student_count'),
@@ -197,8 +205,8 @@ class FinancialAnalyticsController extends Controller
 
         $cashBookExpense = (float) CashTransaction::where('type', 'expense')->sum('amount');
         $totalOutflow = $cashBookExpense > 0 ? $cashBookExpense : ($totalReimbursements + $totalCashAdvances);
-        $netCashflow = $totalRealizedRevenue - $totalOutflow;
-        $expenseRatio = $totalRealizedRevenue > 0 ? round(($totalOutflow / $totalRealizedRevenue) * 100, 1) : 0;
+        $netCashflow = $totalInflow - $totalOutflow;
+        $expenseRatio = $totalInflow > 0 ? round(($totalOutflow / $totalInflow) * 100, 1) : 0;
 
         $currentYear = now()->year;
         $monthlyComparison = [];
