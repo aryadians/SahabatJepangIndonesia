@@ -227,6 +227,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/cash-book/export-pdf', [CashBookController::class, 'exportPdf'])->name('cash-book.export.pdf');
     Route::post('/cash-book/period-lock', [CashBookController::class, 'togglePeriodLock'])->name('cash-book.period-lock');
     Route::get('/cash-book/{id}/print', [CashBookController::class, 'printVoucher'])->name('cash-book.print');
+    Route::get('/cash-book/{id}/download-proof', [CashBookController::class, 'downloadProof'])->name('cash-book.proof.download');
     Route::resource('cash-book', CashBookController::class)->except(['create', 'show', 'edit']);
 
     // 14b. Klaim Reimbursement & Uang Muka Perjalanan Dinas (Cash Advance)
@@ -236,6 +237,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/reimbursements/template', [ReimbursementController::class, 'exportTemplate'])->name('reimbursements.template');
     Route::post('/reimbursements/import', [ReimbursementController::class, 'importCsv'])->name('reimbursements.import');
     Route::get('/reimbursements/{id}/print', [ReimbursementController::class, 'print'])->name('reimbursements.print');
+    Route::get('/reimbursements/{id}/receipts/{index}/download', [ReimbursementController::class, 'downloadReceipt'])->name('reimbursements.receipt.download');
     Route::post('/reimbursements/{id}/status', [ReimbursementController::class, 'updateStatus'])->name('reimbursements.status');
     Route::post('/reimbursements/{id}/send-wa', [ReimbursementController::class, 'sendWaNotification'])->name('reimbursements.send.wa');
     Route::resource('reimbursements', ReimbursementController::class)->except(['create', 'show', 'edit']);
@@ -248,6 +250,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::put('/digital-archives/folders/{id}', [DigitalArchiveController::class, 'renameFolder'])->name('digital-archives.folder.rename');
     Route::delete('/digital-archives/folders/{id}', [DigitalArchiveController::class, 'deleteFolder'])->name('digital-archives.folder.delete');
     Route::post('/digital-archives/upload-ajax', [DigitalArchiveController::class, 'uploadAjax'])->name('digital-archives.upload.ajax');
+    Route::post('/digital-archives/archive-receipt', [DigitalArchiveController::class, 'archiveReceipt'])->name('digital-archives.archive.receipt');
+    Route::get('/digital-archives/{id}/download', [DigitalArchiveController::class, 'downloadFile'])->name('digital-archives.file.download');
     Route::put('/digital-archives/{id}/rename', [DigitalArchiveController::class, 'renameFile'])->name('digital-archives.file.rename');
     Route::put('/digital-archives/{id}/move', [DigitalArchiveController::class, 'moveFile'])->name('digital-archives.file.move');
     Route::delete('/digital-archives/{id}/ajax', [DigitalArchiveController::class, 'deleteFileAjax'])->name('digital-archives.file.delete');

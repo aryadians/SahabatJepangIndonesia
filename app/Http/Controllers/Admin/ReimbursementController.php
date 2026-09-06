@@ -922,4 +922,40 @@ class ReimbursementController extends Controller
             return back()->with('error', 'Gagal memproses file CSV: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Download Berkas Nota Fisik Base64 Pengajuan Reimburse / SPJ
+     */
+    public function downloadReceipt($id, $index)
+    {
+        $reimbursement = Reimbursement::findOrFail($id);
+        $receipts = $reimbursement->receipts_data ?? [];
+        if (!isset($receipts[$index])) {
+            return back()->with('error', 'Nota fisik yang diminta tidak ditemukan.');
+        }
+
+        $rc = $receipts[$index];
+        $base64 = $rc['base64_image'] ?? '';
+        if (empty($base64)) {
+            return back()->with('error', 'Berkas nota fisik kosong.');
+        }
+
+        if (str_contains($base64, ';base64,')) {
+            [$header, $data] = explode(';base64,', $base64);
+            $mime = str_replace('data:', '', $header);
+        } else {
+            $data = $base64;
+            $mime = $rc['file_type'] ?? 'image/jpeg';
+        }
+
+        $content = base64_decode($data);
+        $ext = str_contains($mime, 'pdf') ? 'pdf' : (str_contains($mime, 'png') ? 'png' : 'jpg');
+        $safeTitle = preg_replace('/[^a-zA-Z0-9_-]/', '_', $rc['title'] ?? 'Nota');
+        $safeDoc = str_replace('/', '-', $reimbursement->reimbursement_no);
+        $filename = "{$safeDoc}_{$safeTitle}.{$ext}";
+
+        return response($content)
+            ->header('Content-Type', $mime)
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+    }
 }

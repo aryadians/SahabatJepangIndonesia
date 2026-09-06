@@ -389,9 +389,9 @@
                                 @if($trx->proof_file)
                                     <button 
                                         type="button" 
-                                        onclick="showProofModal('{{ $trx->transaction_number }}', '{{ $trx->title }}', '{{ $trx->proof_file }}')" 
-                                        class="p-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold transition inline-flex items-center gap-1 text-[11px]"
-                                        title="Lihat Bukti Transaksi"
+                                        onclick="showProofModal({{ $trx->id }}, '{{ $trx->transaction_number }}', '{{ addslashes($trx->title) }}', '{{ $trx->proof_file }}', '{{ $trx->formatted_amount }}', '{{ $trx->type }}', '{{ addslashes($trx->payment_method_label) }}', '{{ $trx->transaction_date ? $trx->transaction_date->format('d/m/Y') : '' }}', '{{ addslashes($trx->category_label) }}')" 
+                                        class="p-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold transition inline-flex items-center gap-1 text-[11px] cursor-pointer"
+                                        title="Lihat, Unduh & Simpan ke Arsip Digital"
                                     >
                                         <i data-lucide="eye" class="w-3.5 h-3.5"></i>
                                         <span>Bukti</span>
@@ -652,26 +652,65 @@
 </div>
 
 <!-- Modal Pratinjau Bukti Transaksi -->
-<div id="proofModal" onclick="if(event.target === this) closeModal('proofModal')" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs hidden items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-            <div>
-                <h4 class="font-extrabold text-slate-900 text-sm" id="proofModalTitle">Bukti Transaksi</h4>
-                <p class="text-xs text-slate-400 font-mono" id="proofModalSubtitle">-</p>
+<div id="proofModal" onclick="if(event.target === this) closeModal('proofModal')" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs hidden items-center justify-center p-3 sm:p-5">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <!-- Header -->
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-slate-50 via-white to-indigo-50/40">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-indigo-600/20">
+                    <i data-lucide="file-check" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h4 class="font-extrabold text-slate-900 text-sm sm:text-base" id="proofModalTitle">Bukti Transaksi Kas</h4>
+                        <span id="proofTypeBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-800">-</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 font-mono mt-0.5" id="proofModalSubtitle">-</p>
+                </div>
             </div>
-            <button type="button" onclick="closeModal('proofModal')" class="text-slate-400 hover:text-slate-700 text-xl font-bold p-1">&times;</button>
+            <button type="button" onclick="closeModal('proofModal')" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition cursor-pointer">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
         </div>
 
-        <div id="proofContainer" class="max-h-[60vh] overflow-auto flex items-center justify-center bg-slate-100 rounded-2xl p-2 border border-slate-200">
-            <!-- Rendered by JS -->
+        <!-- Meta Summary Bar -->
+        <div class="px-5 py-2.5 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-600 flex-wrap gap-2">
+            <div class="flex items-center gap-3">
+                <span id="proofAmountText" class="font-black font-mono text-slate-900">-</span>
+                <span id="proofCategoryText" class="text-[11px] text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">-</span>
+            </div>
+            <span id="proofMethodText" class="text-[11px] font-mono text-slate-500">-</span>
         </div>
 
-        <div class="flex items-center justify-between pt-2">
-            <a id="proofDownloadBtn" href="#" download="bukti_transaksi" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center gap-1.5">
-                <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                <span>Unduh Bukti</span>
-            </a>
-            <button type="button" onclick="closeModal('proofModal')" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+        <!-- Canvas Viewport -->
+        <div class="flex-1 overflow-auto p-4 flex items-center justify-center bg-slate-950/5 min-h-[300px] max-h-[55vh]">
+            <div id="proofContainer" class="w-full flex items-center justify-center">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+
+        <!-- Action Footer -->
+        <div class="p-4 bg-white border-t border-slate-100 flex flex-wrap items-center justify-between gap-2.5">
+            <div class="flex items-center gap-2 flex-wrap">
+                <!-- Download Button -->
+                <button type="button" onclick="downloadCurrentProof()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    <span>Unduh Bukti</span>
+                </button>
+
+                <!-- Archive to Digital Archive Button -->
+                <button type="button" id="proofArchiveBtn" onclick="archiveCurrentProofToDigital()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer">
+                    <i data-lucide="folder-archive" class="w-3.5 h-3.5"></i>
+                    <span id="proofArchiveBtnText">Taruh di Arsip Digital</span>
+                </button>
+
+                <!-- Open in New Tab -->
+                <button type="button" onclick="openCurrentProofInNewTab()" class="p-2 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 transition cursor-pointer" title="Buka di Tab Baru">
+                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <button type="button" onclick="closeModal('proofModal')" class="px-5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer">
                 Tutup
             </button>
         </div>
@@ -1071,26 +1110,62 @@
         }
     };
 
-    window.showProofModal = function(trxNo, title, proofUrl) {
+    let currentProofItem = null;
+
+    window.showProofModal = function(id, trxNo, title, proofUrl, amountFormatted, type, methodLabel, dateStr, categoryLabel) {
+        currentProofItem = {
+            id: id,
+            trxNo: trxNo,
+            title: title,
+            proofUrl: proofUrl,
+            amount: amountFormatted,
+            type: type,
+            method: methodLabel,
+            date: dateStr,
+            category: categoryLabel,
+        };
+
         const modalTitle = document.getElementById('proofModalTitle');
         if (modalTitle) modalTitle.textContent = title;
         
         const modalSub = document.getElementById('proofModalSubtitle');
-        if (modalSub) modalSub.textContent = trxNo;
-        
-        const container = document.getElementById('proofContainer');
-        const dlBtn = document.getElementById('proofDownloadBtn');
+        if (modalSub) modalSub.textContent = `${trxNo} • ${dateStr || ''}`;
 
-        if (dlBtn) {
-            dlBtn.href = proofUrl;
-            dlBtn.download = `${trxNo}_bukti`;
+        const typeBadge = document.getElementById('proofTypeBadge');
+        if (typeBadge) {
+            typeBadge.textContent = type === 'income' ? 'Kas Masuk (BKM)' : 'Kas Keluar (BKK)';
+            typeBadge.className = type === 'income' 
+                ? 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800' 
+                : 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800';
         }
 
+        const amountText = document.getElementById('proofAmountText');
+        if (amountText) {
+            amountText.textContent = amountFormatted ? ((type === 'income' ? '+' : '-') + amountFormatted) : '-';
+            amountText.className = type === 'income' ? 'font-black font-mono text-emerald-700 text-sm' : 'font-black font-mono text-rose-700 text-sm';
+        }
+
+        const catText = document.getElementById('proofCategoryText');
+        if (catText) catText.textContent = categoryLabel || 'Transaksi Kas';
+
+        const methodText = document.getElementById('proofMethodText');
+        if (methodText) methodText.textContent = `Metode: ${methodLabel || 'Kas'}`;
+
+        const archiveBtnText = document.getElementById('proofArchiveBtnText');
+        const archiveBtn = document.getElementById('proofArchiveBtn');
+        if (archiveBtnText) archiveBtnText.textContent = 'Taruh di Arsip Digital';
+        if (archiveBtn) {
+            archiveBtn.className = 'px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer';
+            archiveBtn.disabled = false;
+            archiveBtn.onclick = archiveCurrentProofToDigital;
+        }
+
+        const container = document.getElementById('proofContainer');
         if (container) {
             if (proofUrl.startsWith('data:application/pdf')) {
-                container.innerHTML = `<iframe src="${proofUrl}" class="w-full h-80 rounded-xl border-0"></iframe>`;
+                container.innerHTML = `<iframe src="${proofUrl}" class="w-full h-96 rounded-2xl border border-slate-300 shadow-md bg-white"></iframe>`;
             } else {
-                container.innerHTML = `<img src="${proofUrl}" alt="Bukti Transaksi" class="max-h-80 max-w-full rounded-xl object-contain shadow-md">`;
+                container.innerHTML = `<img src="${proofUrl}" alt="Bukti Transaksi" class="max-h-[50vh] max-w-full rounded-2xl object-contain shadow-xl border border-slate-200 bg-white">`;
             }
         }
 
@@ -1100,7 +1175,119 @@
             modal.classList.add('flex');
             modal.classList.add('active');
         }
+        if (window.lucide) lucide.createIcons();
     };
+
+    window.downloadCurrentProof = function() {
+        if (!currentProofItem || !currentProofItem.proofUrl) return;
+
+        const ext = currentProofItem.proofUrl.includes('pdf') ? 'pdf' : 'jpg';
+        const filename = `Bukti_${currentProofItem.trxNo}.${ext}`;
+
+        downloadBase64File(currentProofItem.proofUrl, filename);
+    };
+
+    window.openCurrentProofInNewTab = function() {
+        if (!currentProofItem || !currentProofItem.proofUrl) return;
+
+        if (currentProofItem.proofUrl.startsWith('data:image/')) {
+            const w = window.open('');
+            w.document.write(`
+                <html>
+                    <head><title>${currentProofItem.title || 'Bukti Kas'}</title></head>
+                    <body style="margin:0;display:flex;justify-content:center;align-items:center;background:#0f172a;min-height:100vh;">
+                        <img src="${currentProofItem.proofUrl}" style="max-width:95vw;max-height:95vh;object-fit:contain;border-radius:12px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+                    </body>
+                </html>
+            `);
+        } else {
+            const w = window.open('');
+            w.location.href = currentProofItem.proofUrl;
+        }
+    };
+
+    window.archiveCurrentProofToDigital = async function() {
+        if (!currentProofItem || !currentProofItem.proofUrl) return;
+
+        const btn = document.getElementById('proofArchiveBtn');
+        const btnText = document.getElementById('proofArchiveBtnText');
+        if (btn) btn.disabled = true;
+        if (btnText) btnText.textContent = 'Menyimpan...';
+
+        try {
+            const payload = {
+                title: `Bukti Kas [${currentProofItem.trxNo}] - ${currentProofItem.title}`,
+                file_base64: currentProofItem.proofUrl,
+                file_name: `Bukti_${currentProofItem.trxNo}.jpg`,
+                category: 'nota_reimburse',
+                folder_name: 'Nota & Kuitansi Kas',
+                notes: `Bukti transaksi kas ${currentProofItem.trxNo} (${currentProofItem.amount}): ${currentProofItem.title}`,
+            };
+
+            const res = await fetch('{{ route("admin.digital-archives.archive.receipt") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                if (btn) btn.className = 'px-4 py-2 rounded-xl bg-teal-600 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer';
+                if (btnText) btnText.textContent = '✓ Tersimpan di Arsip (Buka)';
+                if (btn) {
+                    btn.disabled = false;
+                    btn.onclick = () => window.open(data.archive_url, '_blank');
+                }
+            } else {
+                alert(data.message || 'Gagal mengarsipkan bukti transaksi.');
+                if (btnText) btnText.textContent = 'Taruh di Arsip Digital';
+                if (btn) btn.disabled = false;
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Terjadi kesalahan saat menghubungi server arsip digital.');
+            if (btnText) btnText.textContent = 'Taruh di Arsip Digital';
+            if (btn) btn.disabled = false;
+        }
+    };
+
+    // Universal Base64 Blob Downloader
+    function downloadBase64File(base64Data, filename) {
+        try {
+            if (!base64Data.startsWith('data:')) {
+                base64Data = 'data:image/jpeg;base64,' + base64Data;
+            }
+            const parts = base64Data.split(';base64,');
+            const contentType = parts[0].replace('data:', '') || 'application/octet-stream';
+            const byteCharacters = atob(parts[1]);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: contentType });
+            const blobUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+        } catch (err) {
+            console.error('Blob download error, fallback to direct download:', err);
+            const a = document.createElement('a');
+            a.href = base64Data;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    }
 
     // Auto bind clicks on DOM ready
     document.addEventListener('DOMContentLoaded', () => {

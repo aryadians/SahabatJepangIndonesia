@@ -801,4 +801,112 @@ class ReimbursementAndEmployeeTest extends TestCase
             'reference_id' => $reimbursement->id,
         ]);
     }
+
+    public function test_admin_can_download_and_archive_reimbursement_receipt_to_digital_archives(): void
+    {
+        $this->actingAs($this->admin);
+
+        $fakeBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+
+        $reimbursement = Reimbursement::create([
+            'reimbursement_no' => 'RMB-SJI/202609/0099',
+            'employee_name' => 'Budi Santoso',
+            'type' => 'reimbursement',
+            'category' => 'akomodasi_hotel',
+            'title' => 'Dinas Solo & Hotel Novotel',
+            'amount_requested' => 750000,
+            'amount_approved' => 750000,
+            'status' => 'approved',
+            'receipts_data' => [
+                [
+                    'id' => 'rcpt_test_1',
+                    'title' => 'Kuitansi Hotel Novotel',
+                    'amount' => 750000,
+                    'file_name' => 'hotel_novotel.png',
+                    'file_type' => 'image/png',
+                    'file_size' => '1.2 KB',
+                    'base64_image' => $fakeBase64,
+                ]
+            ],
+        ]);
+
+        // 1. Test download endpoint
+        $downloadRes = $this->get("/admin/reimbursements/{$reimbursement->id}/receipts/0/download");
+        $downloadRes->assertOk();
+        $downloadRes->assertHeader('Content-Disposition');
+        $this->assertStringContainsStringIgnoringCase('hotel_novotel', $downloadRes->headers->get('Content-Disposition'));
+
+        // 2. Test 1-click archive endpoint
+        $archiveRes = $this->postJson('/admin/digital-archives/archive-receipt', [
+            'title' => "Bukti [{$reimbursement->reimbursement_no}] - Kuitansi Hotel Novotel",
+            'file_base64' => $fakeBase64,
+            'file_name' => 'hotel_novotel.png',
+            'category' => 'nota_reimburse',
+            'folder_name' => 'Nota & Kuitansi Reimburse',
+            'reimbursement_id' => $reimbursement->id,
+            'uploader_name' => 'Budi Santoso',
+        ]);
+
+        $archiveRes->assertOk();
+        $archiveRes->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('digital_archives', [
+            'title' => "Bukti [{$reimbursement->reimbursement_no}] - Kuitansi Hotel Novotel",
+            'reimbursement_id' => $reimbursement->id,
+            'uploader_name' => 'Budi Santoso',
+            'file_name' => 'hotel_novotel.png',
+        ]);
+    }
+
+    public function test_admin_can_download_and_archive_cash_transaction_proof_to_digital_archives(): void
+    {
+        $this->actingAs($this->admin);
+
+        $fakeBase64 = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=';
+
+        $trx = CashTransaction::create([
+            'transaction_number' => 'BKK-202609-0888',
+            'transaction_date' => '2026-09-06',
+            'type' => 'expense',
+            'category' => 'utilities',
+            'title' => 'Pembayaran Listrik PLN Kampus',
+            'amount' => 1250000,
+            'payment_method' => 'bank_bca',
+            'proof_file' => $fakeBase64,
+            'notes' => 'Struk PLN',
+            'recorded_by' => 'Admin Keuangan',
+        ]);
+
+        // 1. Test cash book proof download endpoint
+        $dlRes = $this->get("/admin/cash-book/{$trx->id}/download-proof");
+        $dlRes->assertOk();
+        $dlRes->assertHeader('Content-Disposition');
+        $this->assertStringContainsString('Bukti_BKK-202609-0888', $dlRes->headers->get('Content-Disposition'));
+
+        // 2. Test 1-click archive endpoint for cash transaction
+        $archiveRes = $this->postJson('/admin/digital-archives/archive-receipt', [
+            'title' => "Bukti Kas [{$trx->transaction_number}] - {$trx->title}",
+            'file_base64' => $trx->proof_file,
+            'file_name' => "Bukti_{$trx->transaction_number}.jpg",
+            'category' => 'nota_reimburse',
+            'folder_name' => 'Nota & Kuitansi Kas',
+        ]);
+
+        $archiveRes->assertOk();
+        $archiveRes->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('digital_archives', [
+            'title' => "Bukti Kas [{$trx->transaction_number}] - {$trx->title}",
+            'file_name' => "Bukti_{$trx->transaction_number}.jpg",
+        ]);
+
+        $archive = DigitalArchive::where('title', "Bukti Kas [{$trx->transaction_number}] - {$trx->title}")->first();
+        $this->assertNotNull($archive);
+
+        // 3. Test digital archive direct download endpoint
+        $daDlRes = $this->get("/admin/digital-archives/{$archive->id}/download");
+        $daDlRes->assertOk();
+        $daDlRes->assertHeader('Content-Disposition');
+        $this->assertStringContainsString($archive->file_name, $daDlRes->headers->get('Content-Disposition'));
+    }
 }

@@ -345,12 +345,17 @@
                                         <span>• {{ $item->start_date->format('d/m/Y') }}</span>
                                     @endif
                                 </div>
-                                @if(!empty($item->receipts_data))
-                                    <div class="pt-0.5">
-                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-japan-600 bg-red-50 px-2 py-0.5 rounded-full border border-red-100">
-                                            <i data-lucide="paperclip" class="w-3 h-3"></i>
-                                            <span>{{ count($item->receipts_data) }} Nota Fisik (Base64)</span>
-                                        </span>
+                                @if(!empty($item->receipts_data) && count($item->receipts_data) > 0)
+                                    <div class="pt-1">
+                                        <button 
+                                            type="button" 
+                                            onclick='openReceiptViewerModal({{ $item->id }}, "{{ $item->reimbursement_no }}", "{{ addslashes($item->employee_name) }}", "{{ addslashes($item->title) }}", @json($item->receipts_data))' 
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold text-japan-700 bg-red-50 hover:bg-red-100 border border-red-200 transition cursor-pointer shadow-2xs group"
+                                            title="Lihat, Unduh & Simpan ke Arsip Digital"
+                                        >
+                                            <i data-lucide="eye" class="w-3.5 h-3.5 text-japan-600 group-hover:scale-110 transition"></i>
+                                            <span>{{ count($item->receipts_data) }} Bukti Nota Fisik</span>
+                                        </button>
                                     </div>
                                 @endif
                             </td>
@@ -434,6 +439,18 @@
                                     >
                                         <i data-lucide="printer" class="w-4 h-4"></i>
                                     </a>
+
+                                    @if(!empty($item->receipts_data) && count($item->receipts_data) > 0)
+                                        <!-- Lihat & Unduh Nota Fisik (Arsip Digital) -->
+                                        <button 
+                                            type="button" 
+                                            onclick='openReceiptViewerModal({{ $item->id }}, "{{ $item->reimbursement_no }}", "{{ addslashes($item->employee_name) }}", "{{ addslashes($item->title) }}", @json($item->receipts_data))' 
+                                            class="p-1.5 rounded-lg bg-japan-50 hover:bg-japan-100 text-japan-600 font-bold transition cursor-pointer"
+                                            title="Lihat & Unduh Nota Fisik (Arsip Digital)"
+                                        >
+                                            <i data-lucide="receipt" class="w-4 h-4"></i>
+                                        </button>
+                                    @endif
 
                                     @if($expenseTrx)
                                         <!-- Cetak Lembar Voucher Kas Keluar (BKK) -->
@@ -1223,6 +1240,81 @@
     </div>
 </div>
 
+<!-- MODAL 5: VIEWER & DOWNLOAD NOTA FISIK / ARSIP DIGITAL -->
+<div id="receiptViewerModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-5 hidden" onclick="handleBackdropClick(event, 'receiptViewerModal')">
+    <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[94vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        
+        <!-- Header Modal -->
+        <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-slate-50 via-white to-red-50/40">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-japan-600 text-white flex items-center justify-center font-bold shadow-md shadow-japan-600/20">
+                    <i data-lucide="receipt" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h3 class="font-black text-slate-900 text-sm sm:text-base">Berkas Nota & Kuitansi Pengeluaran</h3>
+                        <span id="rvTotalCountBadge" class="px-2 py-0.5 rounded-full bg-japan-50 text-japan-700 text-[10px] font-bold border border-japan-200">0 Nota</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 font-mono mt-0.5" id="rvDocSubtitle">-</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeReceiptViewerModal()" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition cursor-pointer">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- Body: 2 Columns on Desktop (List/Tabs + Big Preview) -->
+        <div class="flex-1 overflow-hidden flex flex-col md:flex-row">
+            <!-- Left Column: Receipt Selector List -->
+            <div class="w-full md:w-72 border-b md:border-b-0 md:border-r border-slate-100 bg-slate-50/70 p-3.5 space-y-2 overflow-y-auto max-h-44 md:max-h-none">
+                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Daftar Nota Terlampir</p>
+                <div id="rvReceiptList" class="space-y-1.5">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Right Column: Canvas Viewport & Action Bar -->
+            <div class="flex-1 flex flex-col bg-slate-900/5 overflow-hidden">
+                <!-- Preview Canvas Container -->
+                <div id="rvPreviewCanvas" class="flex-1 overflow-auto p-4 flex items-center justify-center min-h-[300px] max-h-[50vh] md:max-h-[60vh] bg-slate-950/5">
+                    <!-- Image or Iframe injected by JS -->
+                </div>
+
+                <!-- Action Toolbar Footer -->
+                <div class="p-3.5 sm:p-4 bg-white border-t border-slate-100 flex flex-wrap items-center justify-between gap-2.5">
+                    <div class="flex items-center gap-2">
+                        <span id="rvCurrentFileName" class="text-xs font-bold text-slate-800 truncate max-w-[180px] sm:max-w-xs">-</span>
+                        <span id="rvCurrentFileSize" class="text-[10px] font-mono text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">-</span>
+                    </div>
+
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <!-- Direct Server Download Link -->
+                        <a id="rvServerDownloadLink" href="#" class="hidden"></a>
+
+                        <!-- Download Button -->
+                        <button type="button" id="rvDownloadBtn" onclick="downloadCurrentReceipt()" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer">
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                            <span>Unduh Berkas</span>
+                        </button>
+
+                        <!-- Archive to Digital Archive Button -->
+                        <button type="button" id="rvArchiveBtn" onclick="archiveCurrentReceiptToDigital()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer">
+                            <i data-lucide="folder-archive" class="w-3.5 h-3.5"></i>
+                            <span id="rvArchiveBtnText">Taruh di Arsip Digital</span>
+                        </button>
+
+                        <!-- Open in New Tab -->
+                        <button type="button" id="rvNewTabBtn" onclick="openCurrentReceiptInNewTab()" class="p-2 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 transition cursor-pointer" title="Buka di Tab Baru">
+                            <i data-lucide="external-link" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 <script>
     // Global Backdrop & Keyboard Navigation Handlers
     function handleBackdropClick(e, modalId) {
@@ -1233,7 +1325,7 @@
 
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            const modals = ['createReimbursementModal', 'settlementModal', 'payDisbursementModal', 'importCsvModal', 'sendWaModal'];
+            const modals = ['createReimbursementModal', 'settlementModal', 'payDisbursementModal', 'importCsvModal', 'sendWaModal', 'receiptViewerModal'];
             modals.forEach(id => {
                 const el = document.getElementById(id);
                 if (el && !el.classList.contains('hidden')) {
@@ -1505,6 +1597,225 @@
 
     function closeWaModal() {
         document.getElementById('sendWaModal').classList.add('hidden');
+    }
+
+    // Modal 5: Viewer & Download Nota Fisik (Arsip Digital)
+    let currentReceiptViewerItem = null;
+    let currentReceiptViewerIndex = 0;
+
+    function openReceiptViewerModal(id, docNo, employee, title, receipts) {
+        currentReceiptViewerItem = { id, docNo, employee, title, receipts: receipts || [] };
+        currentReceiptViewerIndex = 0;
+
+        const modal = document.getElementById('receiptViewerModal');
+        const subtitle = document.getElementById('rvDocSubtitle');
+        const countBadge = document.getElementById('rvTotalCountBadge');
+
+        if (subtitle) subtitle.textContent = `${docNo} • ${employee} • ${title}`;
+        if (countBadge) countBadge.textContent = `${currentReceiptViewerItem.receipts.length} Nota Terlampir`;
+
+        renderReceiptViewerList();
+        selectReceiptViewerIndex(0);
+
+        modal.classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function closeReceiptViewerModal() {
+        document.getElementById('receiptViewerModal').classList.add('hidden');
+    }
+
+    function renderReceiptViewerList() {
+        const container = document.getElementById('rvReceiptList');
+        if (!container) return;
+        container.innerHTML = '';
+
+        const receipts = currentReceiptViewerItem?.receipts || [];
+        if (receipts.length === 0) {
+            container.innerHTML = '<p class="text-xs text-slate-400 italic p-2">Tidak ada berkas nota terlampir.</p>';
+            return;
+        }
+
+        receipts.forEach((rc, idx) => {
+            const itemBtn = document.createElement('button');
+            itemBtn.type = 'button';
+            itemBtn.className = `w-full text-left p-2.5 rounded-xl border text-xs transition cursor-pointer flex flex-col gap-1 ${
+                idx === currentReceiptViewerIndex 
+                    ? 'bg-white border-japan-500 shadow-sm ring-1 ring-japan-300' 
+                    : 'bg-white/60 hover:bg-white border-slate-200'
+            }`;
+            itemBtn.onclick = () => selectReceiptViewerIndex(idx);
+
+            const amountFormatted = rc.amount ? ('Rp ' + Number(rc.amount).toLocaleString('id-ID')) : '';
+            itemBtn.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <span class="font-black text-slate-800 truncate">${rc.title || 'Nota ' + (idx + 1)}</span>
+                    ${amountFormatted ? `<span class="font-bold text-japan-600 font-mono text-[11px]">${amountFormatted}</span>` : ''}
+                </div>
+                <div class="flex items-center justify-between text-[10px] text-slate-400">
+                    <span class="truncate">${rc.file_name || 'Lampiran'}</span>
+                    <span>${rc.file_size || ''}</span>
+                </div>
+            `;
+            container.appendChild(itemBtn);
+        });
+    }
+
+    function selectReceiptViewerIndex(idx) {
+        currentReceiptViewerIndex = idx;
+        renderReceiptViewerList();
+
+        const rc = currentReceiptViewerItem?.receipts[idx];
+        if (!rc) return;
+
+        const canvas = document.getElementById('rvPreviewCanvas');
+        const nameEl = document.getElementById('rvCurrentFileName');
+        const sizeEl = document.getElementById('rvCurrentFileSize');
+        const archiveBtnText = document.getElementById('rvArchiveBtnText');
+        const archiveBtn = document.getElementById('rvArchiveBtn');
+
+        if (nameEl) nameEl.textContent = rc.title || rc.file_name || 'Nota ' + (idx + 1);
+        if (sizeEl) sizeEl.textContent = rc.file_size || 'Base64';
+
+        if (archiveBtnText) archiveBtnText.textContent = 'Taruh di Arsip Digital';
+        if (archiveBtn) {
+            archiveBtn.className = 'px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer';
+            archiveBtn.disabled = false;
+            archiveBtn.onclick = archiveCurrentReceiptToDigital;
+        }
+
+        if (canvas) {
+            canvas.innerHTML = '';
+            const base64 = rc.base64_image || '';
+            if (base64.startsWith('data:application/pdf')) {
+                canvas.innerHTML = `<iframe src="${base64}" class="w-full h-96 rounded-2xl border border-slate-300 shadow-md bg-white"></iframe>`;
+            } else if (base64) {
+                canvas.innerHTML = `<img src="${base64}" alt="${rc.title || 'Nota'}" class="max-h-[50vh] md:max-h-[55vh] max-w-full object-contain rounded-2xl shadow-xl border border-slate-200 bg-white">`;
+            } else {
+                canvas.innerHTML = '<div class="text-center p-8 text-slate-400 text-xs font-semibold">Berkas nota fisik tidak dapat dimuat atau telah dihapus.</div>';
+            }
+        }
+    }
+
+    function downloadCurrentReceipt() {
+        const rc = currentReceiptViewerItem?.receipts[currentReceiptViewerIndex];
+        if (!rc || !rc.base64_image) {
+            alert('Berkas nota fisik tidak tersedia untuk diunduh.');
+            return;
+        }
+
+        const docNoClean = (currentReceiptViewerItem.docNo || 'DOC').replace(/[^a-zA-Z0-9_-]/g, '-');
+        const titleClean = (rc.title || 'Nota').replace(/[^a-zA-Z0-9_-]/g, '_');
+        const ext = rc.file_type && rc.file_type.includes('pdf') ? 'pdf' : 'jpg';
+        const filename = `${docNoClean}_${titleClean}.${ext}`;
+
+        downloadBase64File(rc.base64_image, filename);
+    }
+
+    function openCurrentReceiptInNewTab() {
+        const rc = currentReceiptViewerItem?.receipts[currentReceiptViewerIndex];
+        if (!rc || !rc.base64_image) return;
+
+        if (rc.base64_image.startsWith('data:image/')) {
+            const w = window.open('');
+            w.document.write(`
+                <html>
+                    <head><title>${rc.title || 'Nota Fisik'}</title></head>
+                    <body style="margin:0;display:flex;justify-content:center;align-items:center;background:#0f172a;min-height:100vh;">
+                        <img src="${rc.base64_image}" style="max-width:95vw;max-height:95vh;object-fit:contain;border-radius:12px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+                    </body>
+                </html>
+            `);
+        } else {
+            const w = window.open('');
+            w.location.href = rc.base64_image;
+        }
+    }
+
+    async function archiveCurrentReceiptToDigital() {
+        const rc = currentReceiptViewerItem?.receipts[currentReceiptViewerIndex];
+        if (!rc || !rc.base64_image) return;
+
+        const btn = document.getElementById('rvArchiveBtn');
+        const btnText = document.getElementById('rvArchiveBtnText');
+        if (btn) btn.disabled = true;
+        if (btnText) btnText.textContent = 'Menyimpan...';
+
+        try {
+            const payload = {
+                title: `Bukti [${currentReceiptViewerItem.docNo}] - ${rc.title || 'Nota ' + (currentReceiptViewerIndex + 1)}`,
+                file_base64: rc.base64_image,
+                file_name: rc.file_name || `Nota_${currentReceiptViewerItem.docNo}_${currentReceiptViewerIndex + 1}.jpg`,
+                category: 'nota_reimburse',
+                folder_name: 'Nota & Kuitansi Reimburse',
+                reimbursement_id: currentReceiptViewerItem.id,
+                uploader_name: currentReceiptViewerItem.employee,
+                notes: `Lampiran nota: ${currentReceiptViewerItem.title}`,
+            };
+
+            const res = await fetch('{{ route("admin.digital-archives.archive.receipt") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                if (btn) btn.className = 'px-3.5 py-2 rounded-xl bg-teal-600 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer';
+                if (btnText) btnText.textContent = '✓ Tersimpan di Arsip (Buka)';
+                if (btn) {
+                    btn.disabled = false;
+                    btn.onclick = () => window.open(data.archive_url, '_blank');
+                }
+            } else {
+                alert(data.message || 'Gagal menyimpan berkas ke arsip digital.');
+                if (btnText) btnText.textContent = 'Taruh di Arsip Digital';
+                if (btn) btn.disabled = false;
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Terjadi kesalahan saat mengarsipkan berkas.');
+            if (btnText) btnText.textContent = 'Taruh di Arsip Digital';
+            if (btn) btn.disabled = false;
+        }
+    }
+
+    // Universal Base64 Blob Downloader
+    function downloadBase64File(base64Data, filename) {
+        try {
+            if (!base64Data.startsWith('data:')) {
+                base64Data = 'data:image/jpeg;base64,' + base64Data;
+            }
+            const parts = base64Data.split(';base64,');
+            const contentType = parts[0].replace('data:', '') || 'application/octet-stream';
+            const byteCharacters = atob(parts[1]);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: contentType });
+            const blobUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+        } catch (err) {
+            console.error('Blob download error, fallback to direct download:', err);
+            const a = document.createElement('a');
+            a.href = base64Data;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
     }
 
     // Auto-Sync Mini Dashboard Realtime via AJAX

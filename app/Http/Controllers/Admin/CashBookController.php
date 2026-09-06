@@ -447,4 +447,32 @@ class CashBookController extends Controller
         }
         return (string)$number;
     }
+
+    /**
+     * Download Berkas Bukti Transaksi Kas (Base64 Decode)
+     */
+    public function downloadProof($id)
+    {
+        $trx = CashTransaction::findOrFail($id);
+        if (empty($trx->proof_file)) {
+            return back()->with('error', 'Transaksi ini tidak memiliki berkas bukti nota.');
+        }
+
+        $base64 = $trx->proof_file;
+        if (str_contains($base64, ';base64,')) {
+            [$header, $data] = explode(';base64,', $base64);
+            $mime = str_replace('data:', '', $header);
+        } else {
+            $data = $base64;
+            $mime = 'image/jpeg';
+        }
+
+        $content = base64_decode($data);
+        $ext = str_contains($mime, 'pdf') ? 'pdf' : (str_contains($mime, 'png') ? 'png' : 'jpg');
+        $filename = "Bukti_{$trx->transaction_number}.{$ext}";
+
+        return response($content)
+            ->header('Content-Type', $mime)
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+    }
 }

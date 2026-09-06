@@ -576,6 +576,106 @@ class DigitalArchiveController extends Controller
     }
 
     /**
+     * API: 1-Click Simpan Nota / Bukti ke Arsip Digital
+     */
+    public function archiveReceipt(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'file_base64' => 'required|string',
+            'file_name' => 'nullable|string|max:255',
+            'category' => 'nullable|string|max:60',
+            'folder_name' => 'nullable|string|max:100',
+            'reimbursement_id' => 'nullable|exists:reimbursements,id',
+            'uploader_name' => 'nullable|string|max:150',
+            'document_date' => 'nullable|date',
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        $folderName = $validated['folder_name'] ?? 'Nota & Kuitansi Keuangan';
+        $folder = ArchiveFolder::firstOrCreate(
+            ['name' => $folderName],
+            ['color' => 'emerald', 'created_by' => 'Sistem Keuangan']
+        );
+
+        $base64 = $validated['file_base64'];
+        $mime = 'image/jpeg';
+        if (str_starts_with($base64, 'data:')) {
+            $header = explode(';base64,', $base64)[0];
+            $mime = str_replace('data:', '', $header);
+        }
+        $ext = str_contains($mime, 'pdf') ? 'pdf' : (str_contains($mime, 'png') ? 'png' : 'jpg');
+        $fileName = $validated['file_name'] ?? ('nota_' . time() . '.' . $ext);
+        $rawLen = strlen($base64);
+        $fileSize = round(($rawLen * 3 / 4) / 1024, 1) . ' KB';
+
+        // Check if already archived by title and folder_id
+        $existing = DigitalArchive::where('title', $validated['title'])
+            ->where('folder_id', $folder->id)
+            ->first();
+
+        if ($existing) {
+            return response()->json([
+                'success' => true,
+                'already_archived' => true,
+                'message' => 'Berkas ini sudah tersimpan di folder Arsip Digital (' . $folder->name . ').',
+                'archive' => $existing,
+                'archive_url' => route('admin.digital-archives.index', ['folder_id' => $folder->id]),
+            ]);
+        }
+
+        $archive = DigitalArchive::create([
+            'archive_no' => DigitalArchive::generateNumber(),
+            'folder_id' => $folder->id,
+            'title' => $validated['title'],
+            'category' => $validated['category'] ?? 'nota_reimburse',
+            'reimbursement_id' => $validated['reimbursement_id'] ?? null,
+            'uploader_name' => $validated['uploader_name'] ?? (auth()->user()->name ?? 'Admin Keuangan'),
+            'document_date' => $validated['document_date'] ?? now()->toDateString(),
+            'file_name' => $fileName,
+            'file_type' => $mime,
+            'file_size' => $fileSize,
+            'file_base64' => $base64,
+            'notes' => $validated['notes'] ?? null,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'already_archived' => false,
+            'message' => 'Nota fisik berhasil disimpan ke Arsip Digital (' . $folder->name . ')!',
+            'archive' => $archive,
+            'archive_url' => route('admin.digital-archives.index', ['folder_id' => $folder->id]),
+        ]);
+    }
+
+    /**
+     * Download Berkas Arsip Digital Langsung
+     */
+    public function downloadFile($id)
+    {
+        $archive = DigitalArchive::findOrFail($id);
+        $base64 = $archive->file_base64;
+        if (empty($base64)) {
+            return back()->with('error', 'Berkas arsip tidak ditemukan.');
+        }
+
+        if (str_contains($base64, ';base64,')) {
+            [$header, $data] = explode(';base64,', $base64);
+            $mime = str_replace('data:', '', $header);
+        } else {
+            $data = $base64;
+            $mime = $archive->file_type ?: 'application/octet-stream';
+        }
+
+        $content = base64_decode($data);
+        $filename = $archive->file_name ?: ($archive->archive_no . '.jpg');
+
+        return response($content)
+            ->header('Content-Type', $mime)
+            ->header('Content-Disposition', 'attachment; filename="' . addslashes($filename) . '"');
+    }
+
+    /**
      * Hapus Arsip Konvensional (Fallback)
      */
     public function destroy($id)
