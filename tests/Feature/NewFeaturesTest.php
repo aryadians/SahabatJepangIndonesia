@@ -847,6 +847,17 @@ class NewFeaturesTest extends TestCase
             'paid_amount' => 15000000,
         ]);
 
+        \App\Models\CashTransaction::create([
+            'transaction_number' => 'BKM-202609-0001',
+            'transaction_date' => now()->toDateString(),
+            'type' => 'income',
+            'category' => 'tuition_student',
+            'title' => "Pembayaran Biaya: {$student->name} ({$student->nis})",
+            'amount' => 15000000,
+            'reference_type' => 'student',
+            'reference_id' => $student->id,
+        ]);
+
         $response = $this->get("/kwitansi/{$student->nis}");
         $response->assertStatus(200);
         $response->assertSee('Bambang Sudirman');

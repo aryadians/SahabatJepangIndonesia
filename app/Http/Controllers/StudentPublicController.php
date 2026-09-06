@@ -27,9 +27,13 @@ class StudentPublicController extends Controller
         // Cari riwayat cicilan kas masuk yang terafiliasi dengan NIS siswa
         $recentTransactions = CashTransaction::where('type', 'income')
             ->where(function ($q) use ($student) {
-                $q->where('description', 'like', "%{$student->nis}%")
-                  ->orWhere('description', 'like', "%{$student->name}%")
-                  ->orWhere('notes', 'like', "%{$student->nis}%");
+                $q->where(function ($sq) use ($student) {
+                    $sq->where('reference_type', 'student')
+                       ->where('reference_id', $student->id);
+                })
+                ->orWhere('title', 'like', "%{$student->nis}%")
+                ->orWhere('title', 'like', "%{$student->name}%")
+                ->orWhere('notes', 'like', "%{$student->nis}%");
             })
             ->orderBy('transaction_date', 'desc')
             ->limit(10)
