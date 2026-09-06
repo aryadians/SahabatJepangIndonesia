@@ -3,9 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\Affiliate;
+use App\Models\CashTransaction;
 use App\Models\DigitalArchive;
 use App\Models\JobInterview;
 use App\Models\Reimbursement;
+use App\Models\SiteSetting;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\User;
@@ -647,5 +649,156 @@ class ReimbursementAndEmployeeTest extends TestCase
         $pdfRes->assertOk();
         $pdfRes->assertSee('Rekapitulasi Kemitraan SMK & BKK', false);
         $pdfRes->assertSee('SMK Karya Mandiri');
+    }
+
+    public function test_reimbursement_disbursement_and_settlement_automatically_syncs_with_cash_book_and_period_lock(): void
+    {
+        $this->actingAs($this->admin);
+
+        $employee = Teacher::create([
+            'nip' => 'SJI-EMP-99',
+            'name' => 'Tanaka Sensei',
+            'email' => 'tanaka@lpk.test',
+            'phone' => '081234567890',
+            'role' => 'sensei',
+            'status' => 'active',
+        ]);
+
+        // 1. Buat Pengajuan Kasbon Dinas Rp 2.000.000
+        $reimbursement = Reimbursement::create([
+            'reimbursement_no' => 'ADV-SJI-2026-999',
+            'teacher_id' => $employee->id,
+            'employee_name' => $employee->name,
+            'type' => 'cash_advance',
+            'category' => 'transportasi',
+            'title' => 'Perjalanan Dinas Visit Kampus Bandung',
+            'amount_requested' => 2000000,
+            'amount_approved' => 2000000,
+            'status' => 'approved',
+        ]);
+
+        // 2. Test Period Lock Protection saat pencairan
+        SiteSetting::set('financial_lock_until', '2026-08-31', 'financial');
+
+        $lockFailRes = $this->post("/admin/reimbursements/{$reimbursement->id}/status", [
+            'action' => 'pay',
+            'payment_date' => '2026-08-15',
+            'payment_method' => 'bank_bca',
+        ]);
+        $lockFailRes->assertSessionHas('error');
+        $this->assertEquals('approved', $reimbursement->fresh()->status);
+
+        // 3. Pencairan Berhasil di tanggal yang valid (misal: 2026-09-06)
+        $payRes = $this->post("/admin/reimbursements/{$reimbursement->id}/status", [
+            'action' => 'pay',
+            'payment_date' => '2026-09-06',
+            'payment_method' => 'bank_bca',
+            'payment_notes' => 'Transfer via BCA m-banking Ref #99281',
+            'amount_approved' => 2000000,
+        ]);
+        $payRes->assertSessionHas('success');
+        $reimbursement->refresh();
+        $this->assertEquals('paid', $reimbursement->status);
+
+        // Verifikasi CashTransaction (BKK / Beban Kas Keluar) otomatis tercipta di Buku Kas & Jurnal
+        $this->assertDatabaseHas('cash_transactions', [
+            'type' => 'expense',
+            'category' => 'cash_advance',
+            'amount' => 2000000,
+            'payment_method' => 'bank_bca',
+            'reference_type' => 'reimbursement',
+            'reference_id' => $reimbursement->id,
+        ]);
+
+        $cashTrx = CashTransaction::where('reference_type', 'reimbursement')
+            ->where('reference_id', $reimbursement->id)
+            ->where('type', 'expense')
+            ->first();
+        $this->assertNotNull($cashTrx);
+        $this->assertStringStartsWith('BKK-', $cashTrx->transaction_number);
+        $this->assertStringContainsString('Ref #99281', $cashTrx->notes);
+
+        // 4. Verifikasi Buku Kas Index menampilkan transaksi & tautan ke Reimbursement
+        $cashBookRes = $this->get('/admin/cash-book');
+        $cashBookRes->assertOk();
+        $cashBookRes->assertSee($cashTrx->transaction_number);
+        $cashBookRes->assertSee('ADV-SJI-2026-999');
+
+        // 5. Karyawan melakukan settlement SPJ dengan sisa uang (lebih bayar / kembalikan Rp 300.000 ke kasir)
+        $settleRes = $this->post("/admin/reimbursements/{$reimbursement->id}/status", [
+            'action' => 'settle',
+            'amount_spent' => 1700000,
+            'settlement_date' => '2026-09-06',
+            'settlement_payment_method' => 'cash_kasir',
+            'settlement_notes' => 'Pengeluaran riil Rp 1.700.000, sisa Rp 300.000 diserahkan tunai ke kasir.',
+        ]);
+        $settleRes->assertSessionHas('success');
+        $reimbursement->refresh();
+        $this->assertEquals('settled', $reimbursement->status);
+        $this->assertEquals(-300000, $reimbursement->amount_diff);
+
+        // Verifikasi CashTransaction (BKM / Kas Masuk - Pengembalian Sisa Kasbon) otomatis tercipta di Buku Kas
+        $this->assertDatabaseHas('cash_transactions', [
+            'type' => 'income',
+            'category' => 'cash_advance_return',
+            'amount' => 300000,
+            'payment_method' => 'cash_kasir',
+            'reference_type' => 'reimbursement',
+            'reference_id' => $reimbursement->id,
+        ]);
+
+        $returnTrx = CashTransaction::where('reference_type', 'reimbursement')
+            ->where('reference_id', $reimbursement->id)
+            ->where('type', 'income')
+            ->first();
+        $this->assertNotNull($returnTrx);
+        $this->assertStringStartsWith('BKM-', $returnTrx->transaction_number);
+
+        // 6. Verifikasi Halaman Reimbursement menampilkan badge Buku Kas
+        $rmbIndexRes = $this->get('/admin/reimbursements');
+        $rmbIndexRes->assertOk();
+        $rmbIndexRes->assertSee($cashTrx->transaction_number);
+        $rmbIndexRes->assertSee($returnTrx->transaction_number);
+    }
+
+    public function test_reimbursement_deletion_and_rejection_cleans_up_cash_transactions(): void
+    {
+        $this->actingAs($this->admin);
+
+        $reimbursement = Reimbursement::create([
+            'reimbursement_no' => 'RMB-TEST-CLEANUP-01',
+            'employee_name' => 'Budi Santoso',
+            'type' => 'reimbursement',
+            'category' => 'operasional_kantor',
+            'title' => 'Pembelian ATK & Toner Printer',
+            'amount_requested' => 500000,
+            'amount_approved' => 500000,
+            'status' => 'approved',
+        ]);
+
+        // Cairkan reimbursement
+        $this->post("/admin/reimbursements/{$reimbursement->id}/status", [
+            'action' => 'pay',
+            'payment_date' => '2026-09-06',
+            'payment_method' => 'cash_kasir',
+        ]);
+
+        $this->assertDatabaseHas('cash_transactions', [
+            'reference_type' => 'reimbursement',
+            'reference_id' => $reimbursement->id,
+            'amount' => 500000,
+        ]);
+
+        // Hapus pengajuan reimbursement
+        $delRes = $this->delete("/admin/reimbursements/{$reimbursement->id}");
+        $delRes->assertRedirect('/admin/reimbursements');
+        $delRes->assertSessionHas('success');
+
+        // Verifikasi dokumen dan transaksi kas terkait terhapus bersih
+        $this->assertDatabaseMissing('reimbursements', ['id' => $reimbursement->id]);
+        $this->assertDatabaseMissing('cash_transactions', [
+            'reference_type' => 'reimbursement',
+            'reference_id' => $reimbursement->id,
+        ]);
     }
 }

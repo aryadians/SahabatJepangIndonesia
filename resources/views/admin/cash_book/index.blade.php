@@ -322,11 +322,34 @@
                             <!-- Uraian & Kategori -->
                             <td class="py-3 px-4 max-w-xs sm:max-w-md">
                                 <h5 class="font-bold text-slate-900 leading-snug">{{ $trx->title }}</h5>
-                                <div class="flex items-center gap-2 mt-1">
+                                <div class="flex items-center gap-2 mt-1 flex-wrap">
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border {{ $badge['bg'] }}">
                                         <i data-lucide="{{ $badge['icon'] }}" class="w-3 h-3"></i>
                                         <span>{{ $trx->category_label }}</span>
                                     </span>
+                                    @if($trx->reference_type === 'reimbursement' && $trx->reference_id)
+                                        <a href="{{ route('admin.reimbursements.index', ['search' => $trx->reimbursement?->reimbursement_no]) }}" 
+                                           class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition"
+                                           title="Buka Dokumen SPJ / Reimburse">
+                                            <i data-lucide="receipt" class="w-2.5 h-2.5"></i>
+                                            <span>{{ $trx->reimbursement?->reimbursement_no ?: 'Dokumen Reimburse' }}</span>
+                                        </a>
+                                    @elseif($trx->reference_type === 'student' && $trx->student)
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                            <i data-lucide="user" class="w-2.5 h-2.5"></i>
+                                            <span>{{ $trx->student->nis }}</span>
+                                        </span>
+                                    @elseif($trx->reference_type === 'teacher' && $trx->teacher)
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                            <i data-lucide="user-check" class="w-2.5 h-2.5"></i>
+                                            <span>{{ $trx->teacher->nip ?: 'Sensei' }}</span>
+                                        </span>
+                                    @elseif($trx->reference_type === 'affiliate' && $trx->affiliate)
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                                            <i data-lucide="gift" class="w-2.5 h-2.5"></i>
+                                            <span>{{ $trx->affiliate->code }}</span>
+                                        </span>
+                                    @endif
                                     @if($trx->notes)
                                         <span class="text-[10px] text-slate-400 italic truncate max-w-[200px]" title="{{ $trx->notes }}">
                                             "{{ $trx->notes }}"

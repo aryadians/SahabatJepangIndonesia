@@ -389,12 +389,36 @@
                                 @endif
                             </td>
 
-                            <!-- Status -->
+                            <!-- Status & Sinkronisasi Buku Kas -->
                             <td class="px-4 py-3.5 text-center">
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border {{ $item->status_badge['bg'] }}">
                                     <i data-lucide="{{ $item->status_badge['icon'] }}" class="w-3 h-3"></i>
                                     <span>{{ $item->status_badge['label'] }}</span>
                                 </span>
+                                @php
+                                    $expenseTrx = $item->cashTransactions ? $item->cashTransactions->where('type', 'expense')->first() : null;
+                                    $returnTrx = $item->cashTransactions ? $item->cashTransactions->where('type', 'income')->first() : null;
+                                @endphp
+                                @if($expenseTrx)
+                                    <div class="mt-1">
+                                        <a href="{{ route('admin.cash-book.index', ['search' => $expenseTrx->transaction_number]) }}" 
+                                           class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 hover:bg-emerald-100 transition"
+                                           title="Buka transaksi di Buku Kas & Jurnal">
+                                            <i data-lucide="book-check" class="w-2.5 h-2.5"></i>
+                                            <span>Kas: {{ $expenseTrx->transaction_number }}</span>
+                                        </a>
+                                    </div>
+                                @endif
+                                @if($returnTrx)
+                                    <div class="mt-0.5">
+                                        <a href="{{ route('admin.cash-book.index', ['search' => $returnTrx->transaction_number]) }}" 
+                                           class="inline-flex items-center gap-1 text-[10px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200 hover:bg-sky-100 transition"
+                                           title="Sisa Kasbon Masuk ke Buku Kas">
+                                            <i data-lucide="arrow-down-left" class="w-2.5 h-2.5"></i>
+                                            <span>Sisa: {{ $returnTrx->transaction_number }}</span>
+                                        </a>
+                                    </div>
+                                @endif
                             </td>
 
                             <!-- Aksi Bendahara -->
@@ -411,7 +435,19 @@
                                         <i data-lucide="printer" class="w-4 h-4"></i>
                                     </a>
 
-                                    <!-- Verifikasi Status: Approve / Pay -->
+                                    @if($expenseTrx)
+                                        <!-- Cetak Lembar Voucher Kas Keluar (BKK) -->
+                                        <a 
+                                            href="{{ route('admin.cash-book.print', $expenseTrx->id) }}" 
+                                            target="_blank"
+                                            class="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold transition"
+                                            title="Cetak Voucher Kas Keluar (BKK: {{ $expenseTrx->transaction_number }})"
+                                        >
+                                            <i data-lucide="file-text" class="w-4 h-4"></i>
+                                        </a>
+                                    @endif
+
+                                    <!-- Verifikasi Status: Approve / Pay (Cairkan) -->
                                     @if($item->status === 'submitted')
                                         <form action="{{ route('admin.reimbursements.status', $item->id) }}" method="POST" class="inline">
                                             @csrf
@@ -419,25 +455,32 @@
                                             <input type="hidden" name="amount_approved" value="{{ $item->amount_requested }}">
                                             <button 
                                                 type="submit" 
-                                                class="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold transition"
-                                                title="Setujui Dokumen Pengajuan"
+                                                class="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold transition"
+                                                title="Setujui Dokumen (Plafon Disetujui)"
                                             >
                                                 <i data-lucide="check" class="w-4 h-4"></i>
                                             </button>
                                         </form>
+
+                                        <button 
+                                            type="button" 
+                                            onclick="openPayModal('{{ $item->id }}', '{{ $item->reimbursement_no }}', '{{ addslashes($item->employee_name) }}', '{{ $item->amount_requested }}', '{{ addslashes($item->title) }}', '{{ $item->type }}')"
+                                            class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] transition flex items-center gap-1 shadow-xs cursor-pointer"
+                                            title="Setujui & Langsung Cairkan Kas/Bank"
+                                        >
+                                            <i data-lucide="banknote" class="w-3.5 h-3.5"></i>
+                                            <span>Cairkan</span>
+                                        </button>
                                     @elseif($item->status === 'approved')
-                                        <form action="{{ route('admin.reimbursements.status', $item->id) }}" method="POST" class="inline">
-                                            @csrf
-                                            <input type="hidden" name="action" value="pay">
-                                            <button 
-                                                type="submit" 
-                                                class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] transition flex items-center gap-1 shadow-xs"
-                                                title="Cairkan Uang Reimburse / Kasbon ke Karyawan"
-                                            >
-                                                <i data-lucide="banknote" class="w-3.5 h-3.5"></i>
-                                                <span>Cairkan</span>
-                                            </button>
-                                        </form>
+                                        <button 
+                                            type="button" 
+                                            onclick="openPayModal('{{ $item->id }}', '{{ $item->reimbursement_no }}', '{{ addslashes($item->employee_name) }}', '{{ $item->amount_approved > 0 ? $item->amount_approved : $item->amount_requested }}', '{{ addslashes($item->title) }}', '{{ $item->type }}')"
+                                            class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] transition flex items-center gap-1 shadow-xs cursor-pointer"
+                                            title="Cairkan Uang Reimburse / Kasbon ke Karyawan (Catat ke Buku Kas)"
+                                        >
+                                            <i data-lucide="banknote" class="w-3.5 h-3.5"></i>
+                                            <span>Cairkan</span>
+                                        </button>
                                     @endif
 
                                     <!-- Input Realisasi Kasbon (Settlement) -->
@@ -445,7 +488,7 @@
                                         <button 
                                             type="button" 
                                             onclick="openSettlementModal('{{ $item->id }}', '{{ $item->reimbursement_no }}', '{{ $item->amount_approved }}', '{{ addslashes($item->employee_name) }}')"
-                                            class="px-2 py-1 rounded-lg bg-purple-100 hover:bg-purple-200 text-purple-800 font-bold text-[11px] transition flex items-center gap-1"
+                                            class="px-2 py-1 rounded-lg bg-purple-100 hover:bg-purple-200 text-purple-800 font-bold text-[11px] transition flex items-center gap-1 cursor-pointer"
                                             title="Laporkan Nota Realisasi Pengeluaran SPJ Kasbon"
                                         >
                                             <i data-lucide="clipboard-check" class="w-3.5 h-3.5"></i>
@@ -460,7 +503,7 @@
                                     <button 
                                         type="button" 
                                         onclick="openWaModal('{{ $item->id }}', '{{ $item->reimbursement_no }}', '{{ addslashes($item->employee_name) }}', '{{ $empPhone }}', '{{ addslashes($item->title) }}')"
-                                        class="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-600 font-bold transition" 
+                                        class="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-600 font-bold transition cursor-pointer" 
                                         title="Kirim Notifikasi WhatsApp Pemohon via Fonnte"
                                     >
                                         <i data-lucide="message-circle" class="w-4 h-4"></i>
@@ -470,7 +513,7 @@
                                     <form action="{{ route('admin.reimbursements.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirm('Hapus pengajuan {{ $item->reimbursement_no }}?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold transition" title="Hapus">
+                                        <button type="submit" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold transition cursor-pointer" title="Hapus">
                                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                                         </button>
                                     </form>
@@ -771,6 +814,30 @@
                 >
             </div>
 
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-slate-700">Akun Kas Rekonsiliasi <span class="text-rose-500">*</span></label>
+                    <select name="settlement_payment_method" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-purple-600 bg-white">
+                        <option value="cash_kasir">Kas Tunai (Kasir LPK)</option>
+                        <option value="bank_mandiri">Transfer Bank Mandiri</option>
+                        <option value="bank_bca">Transfer Bank BCA</option>
+                        <option value="bank_bni">Transfer Bank BNI</option>
+                        <option value="qris_transfer">QRIS / Digital Transfer</option>
+                    </select>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-slate-700">Tanggal Rekonsiliasi <span class="text-rose-500">*</span></label>
+                    <input 
+                        type="date" 
+                        name="settlement_date" 
+                        value="{{ date('Y-m-d') }}" 
+                        required 
+                        class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:border-purple-600"
+                    >
+                </div>
+            </div>
+
             <div class="space-y-1">
                 <label class="block text-xs font-bold text-slate-700">Catatan Penyelesaian Rekonsiliasi</label>
                 <textarea 
@@ -788,15 +855,162 @@
                 </label>
             </div>
 
+            <div class="p-3 bg-purple-50/50 rounded-xl border border-purple-200/60 flex items-start gap-2.5">
+                <i data-lucide="info" class="w-4 h-4 text-purple-600 shrink-0 mt-0.5"></i>
+                <p class="text-[11px] text-purple-900 leading-relaxed">
+                    <strong>Sinkronisasi Buku Kas:</strong> Jika terdapat sisa uang kasbon, otomatis tercatat di <strong>Kas Masuk (BKM)</strong>. Jika pengeluaran melebihi uang muka, otomatis tercatat di <strong>Kas Keluar (BKK)</strong>.
+                </p>
+            </div>
+
             <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button type="button" onclick="closeSettlementModal()" class="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-bold">
+                <button type="button" onclick="closeSettlementModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-bold transition">
                     Batal
                 </button>
-                <button type="submit" class="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md">
-                    Simpan Settlement SPJ
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md hover:shadow-lg transition flex items-center gap-2">
+                    <i data-lucide="clipboard-check" class="w-4 h-4"></i>
+                    <span>Simpan Settlement SPJ</span>
                 </button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- MODAL 2.5: PENCAIRAN DANA REIMBURSE & KASBON (BUKU KAS & JURNAL) -->
+<div id="payDisbursementModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        
+        <!-- Header Modal -->
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-emerald-50 via-teal-50/30 to-emerald-50">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold shadow-md shadow-emerald-600/20">
+                    <i data-lucide="banknote" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h3 class="font-black text-slate-900 text-sm">Pencairan Dana (Buku Kas & Jurnal)</h3>
+                        <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">Otomatis BKK</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 font-mono" id="modalPayDocNo">-</p>
+                </div>
+            </div>
+            <button type="button" onclick="closePayModal()" class="w-8 h-8 rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition shadow-xs">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- Form Body -->
+        <form id="payDisbursementForm" method="POST" enctype="multipart/form-data" class="p-6 space-y-4 overflow-y-auto">
+            @csrf
+            <input type="hidden" name="action" value="pay">
+
+            <!-- Summary Ringkasan Pengajuan -->
+            <div class="p-3.5 bg-emerald-50/60 rounded-2xl border border-emerald-100/80 text-xs space-y-1.5">
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-500">Penerima / Pemohon:</span>
+                    <span class="font-bold text-slate-800" id="modalPayEmployee">-</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-500">Perihal / Keperluan:</span>
+                    <span class="font-semibold text-slate-700 truncate max-w-[240px]" id="modalPayTitle">-</span>
+                </div>
+                <div class="flex justify-between items-center pt-1 border-t border-emerald-200/50">
+                    <span class="text-slate-500 font-bold">Jenis Pengajuan:</span>
+                    <span class="font-black text-emerald-800" id="modalPayType">-</span>
+                </div>
+            </div>
+
+            <!-- Nominal Pencairan -->
+            <div class="space-y-1">
+                <label class="block text-xs font-bold text-slate-700">Nominal yang Dicairkan (Rp) <span class="text-rose-500">*</span></label>
+                <div class="relative">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-black text-xs text-slate-400">Rp</span>
+                    <input 
+                        type="number" 
+                        name="amount_approved" 
+                        id="modalPayAmount" 
+                        required 
+                        min="1" 
+                        class="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm font-black text-slate-900 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 transition"
+                    >
+                </div>
+            </div>
+
+            <!-- Metode Pembayaran & Tanggal -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-slate-700">Rekening Kas Pembayar <span class="text-rose-500">*</span></label>
+                    <select name="payment_method" required class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-600 bg-white">
+                        <option value="cash_kasir">Kas Tunai (Kasir LPK)</option>
+                        <option value="bank_mandiri">Transfer Bank Mandiri</option>
+                        <option value="bank_bca">Transfer Bank BCA</option>
+                        <option value="bank_bni">Transfer Bank BNI</option>
+                        <option value="qris_transfer">QRIS / Digital Transfer</option>
+                    </select>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-slate-700">Tanggal Pencairan <span class="text-rose-500">*</span></label>
+                    <input 
+                        type="date" 
+                        name="payment_date" 
+                        value="{{ date('Y-m-d') }}" 
+                        required 
+                        class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-none focus:border-emerald-600"
+                    >
+                </div>
+            </div>
+
+            <!-- Bukti Transfer / Pencairan (Opsional) -->
+            <div class="space-y-1">
+                <label class="block text-xs font-bold text-slate-700">Bukti Transfer / Struk Pencairan <span class="text-[10px] text-slate-400 font-normal">(Opsional)</span></label>
+                <input 
+                    type="file" 
+                    name="payment_proof" 
+                    accept="image/*,application/pdf" 
+                    class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs file:mr-2 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer"
+                >
+                <p class="text-[10px] text-slate-400">Jika dikosongkan, sistem otomatis menautkan nota dari pengajuan pemohon.</p>
+            </div>
+
+            <!-- Catatan Tambahan / Ref No -->
+            <div class="space-y-1">
+                <label class="block text-xs font-bold text-slate-700">Catatan / No. Referensi Transfer <span class="text-[10px] text-slate-400 font-normal">(Opsional)</span></label>
+                <input 
+                    type="text" 
+                    name="payment_notes" 
+                    placeholder="Contoh: Ref Mandiri M-Banking #94821 / Kasir Tunai Kantor" 
+                    class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-emerald-600"
+                >
+            </div>
+
+            <!-- Checkbox Notifikasi WhatsApp -->
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="notify_wa" value="1" checked class="w-4 h-4 rounded text-japan-600 focus:ring-japan-500">
+                    <span class="text-xs font-semibold text-slate-700">Kirim notifikasi pencairan dana ke WhatsApp pemohon via Fonnte</span>
+                </label>
+            </div>
+
+            <!-- Accounting Auto-Record Info Box -->
+            <div class="p-3 bg-emerald-50/50 rounded-xl border border-emerald-200/60 flex items-start gap-2.5">
+                <i data-lucide="info" class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"></i>
+                <p class="text-[11px] text-emerald-900 leading-relaxed">
+                    <strong>Integrasi Buku Kas & Jurnal:</strong> Pengeluaran dana ini akan langsung membukukan nomor <strong>BKK (Bukti Kas Keluar)</strong> ke Buku Kas Umum & Jurnal Pengeluaran LPK.
+                </p>
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button type="button" onclick="closePayModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-bold transition">
+                    Batal
+                </button>
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md hover:shadow-lg transition flex items-center gap-2 cursor-pointer">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i>
+                    <span>Cairkan & Catat ke Buku Kas</span>
+                </button>
+            </div>
+        </form>
+
     </div>
 </div>
 
@@ -986,6 +1200,22 @@
 
     function closeSettlementModal() {
         document.getElementById('settlementModal').classList.add('hidden');
+    }
+
+    function openPayModal(id, docNo, employee, amount, title, type) {
+        const form = document.getElementById('payDisbursementForm');
+        form.action = `/admin/reimbursements/${id}/status`;
+        document.getElementById('modalPayDocNo').textContent = docNo;
+        document.getElementById('modalPayEmployee').textContent = employee;
+        document.getElementById('modalPayTitle').textContent = title;
+        document.getElementById('modalPayType').textContent = type === 'cash_advance' ? 'Kasbon Dinas (Uang Muka)' : 'Klaim Reimbursement';
+        document.getElementById('modalPayAmount').value = amount;
+        document.getElementById('payDisbursementModal').classList.remove('hidden');
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function closePayModal() {
+        document.getElementById('payDisbursementModal').classList.add('hidden');
     }
 
     // Auto-Sync Mini Dashboard Realtime via AJAX

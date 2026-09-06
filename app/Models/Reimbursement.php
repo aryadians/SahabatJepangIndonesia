@@ -63,6 +63,22 @@ class Reimbursement extends Model
     }
 
     /**
+     * Transaksi Terkait di Buku Kas Umum (BKM / BKK) & Jurnal Keuangan
+     */
+    public function cashTransactions(): HasMany
+    {
+        return $this->hasMany(CashTransaction::class, 'reference_id')->where('reference_type', 'reimbursement');
+    }
+
+    /**
+     * Transaksi Kas Keluar Terakhir (Pencairan Dana)
+     */
+    public function latestCashTransaction()
+    {
+        return $this->cashTransactions()->latest('id')->first();
+    }
+
+    /**
      * Hitung selisih Uang Muka vs Realisasi
      * Positif (> 0) = Lembaga Kurang Bayar (Bendahara harus mengganti ke karyawan)
      * Negatif (< 0) = Karyawan Lebih Bayar (Karyawan harus mengembalikan sisa ke kasir)

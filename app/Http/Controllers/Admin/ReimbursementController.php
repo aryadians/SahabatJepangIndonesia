@@ -7,9 +7,11 @@ use App\Models\ArchiveFolder;
 use App\Models\CashTransaction;
 use App\Models\DigitalArchive;
 use App\Models\Reimbursement;
+use App\Models\SiteSetting;
 use App\Models\Teacher;
 use App\Services\FonnteService;
 use App\Traits\UploadsImage;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -41,8 +43,10 @@ class ReimbursementController extends Controller
         ];
 
         $employees = Teacher::orderBy('name')->get();
+        $paymentMethods = CashTransaction::PAYMENT_METHODS;
+        $lockDate = SiteSetting::get('financial_lock_until');
 
-        return view('admin.reimbursements.index', compact('reimbursements', 'stats', 'employees'));
+        return view('admin.reimbursements.index', compact('reimbursements', 'stats', 'employees', 'paymentMethods', 'lockDate'));
     }
 
     /**
@@ -201,32 +205,81 @@ class ReimbursementController extends Controller
                 break;
 
             case 'pay':
-                $approvedAmount = $reimbursement->amount_approved > 0 ? $reimbursement->amount_approved : $reimbursement->amount_requested;
+                $paymentMethod = $request->input('payment_method', 'cash_kasir');
+                if (!array_key_exists($paymentMethod, CashTransaction::PAYMENT_METHODS)) {
+                    $paymentMethod = 'cash_kasir';
+                }
+
+                $paymentDate = $request->input('payment_date', now()->toDateString());
+                $lockDate = SiteSetting::get('financial_lock_until');
+                if ($lockDate && Carbon::parse($paymentDate)->format('Y-m-d') <= $lockDate) {
+                    return back()->with('error', "Gagal mencairkan: Tanggal pembayaran (" . Carbon::parse($paymentDate)->format('d/m/Y') . ") berada dalam periode yang telah Tutup Buku (s/d " . Carbon::parse($lockDate)->format('d/m/Y') . ").");
+                }
+
+                $approvedAmount = $request->filled('amount_approved') 
+                    ? (float) $request->input('amount_approved') 
+                    : ($reimbursement->amount_approved > 0 ? $reimbursement->amount_approved : $reimbursement->amount_requested);
+
+                $paymentProof = null;
+                if ($request->hasFile('payment_proof')) {
+                    $paymentProof = $this->handleImageUpload($request, 'payment_proof', 'payment_proof_url');
+                } elseif (!empty($reimbursement->receipts_data) && !empty($reimbursement->receipts_data[0]['base64_image'])) {
+                    $paymentProof = $reimbursement->receipts_data[0]['base64_image'];
+                }
+
+                $paymentNotes = $request->input('payment_notes');
+                $combinedNotes = "Nomor Dokumen: {$reimbursement->reimbursement_no}";
+                if (!empty($paymentNotes)) {
+                    $combinedNotes .= " | " . $paymentNotes;
+                }
+
                 $reimbursement->update([
                     'status' => 'paid',
                     'amount_approved' => $approvedAmount,
-                    'paid_at' => now(),
+                    'paid_at' => Carbon::parse($paymentDate . ' ' . now()->toTimeString()),
                     'approved_by' => auth()->user()->name ?? 'Bendahara Keuangan',
                 ]);
 
-                // Auto-record to CashTransaction (General Cash Book)
+                // Auto-record to CashTransaction (General Cash Book & Jurnal Keuangan)
                 $category = $reimbursement->type === 'cash_advance' ? 'cash_advance' : 'reimbursement';
-                CashTransaction::create([
-                    'transaction_number' => CashTransaction::generateNumber('expense'),
-                    'transaction_date' => now()->toDateString(),
-                    'type' => 'expense',
-                    'category' => $category,
-                    'title' => "Pencairan {$reimbursement->type_label}: {$reimbursement->title} ({$reimbursement->employee_name})",
-                    'amount' => $approvedAmount,
-                    'payment_method' => 'cash_kasir',
-                    'reference_type' => 'reimbursement',
-                    'reference_id' => $reimbursement->id,
-                    'notes' => "Nomor Dokumen: {$reimbursement->reimbursement_no}",
-                    'recorded_by' => auth()->user()->name ?? 'Bendahara Keuangan',
-                ]);
+                $existingTrx = CashTransaction::where('reference_type', 'reimbursement')
+                    ->where('reference_id', $reimbursement->id)
+                    ->where('type', 'expense')
+                    ->first();
+
+                if ($existingTrx) {
+                    $existingTrx->update([
+                        'transaction_date' => $paymentDate,
+                        'category' => $category,
+                        'title' => "Pencairan {$reimbursement->type_label}: {$reimbursement->title} ({$reimbursement->employee_name})",
+                        'amount' => $approvedAmount,
+                        'payment_method' => $paymentMethod,
+                        'proof_file' => $paymentProof ?? $existingTrx->proof_file,
+                        'notes' => $combinedNotes,
+                        'recorded_by' => auth()->user()->name ?? 'Bendahara Keuangan',
+                    ]);
+                    $trxNumber = $existingTrx->transaction_number;
+                } else {
+                    $newTrx = CashTransaction::create([
+                        'transaction_number' => CashTransaction::generateNumber('expense'),
+                        'transaction_date' => $paymentDate,
+                        'type' => 'expense',
+                        'category' => $category,
+                        'title' => "Pencairan {$reimbursement->type_label}: {$reimbursement->title} ({$reimbursement->employee_name})",
+                        'amount' => $approvedAmount,
+                        'payment_method' => $paymentMethod,
+                        'reference_type' => 'reimbursement',
+                        'reference_id' => $reimbursement->id,
+                        'proof_file' => $paymentProof,
+                        'notes' => $combinedNotes,
+                        'recorded_by' => auth()->user()->name ?? 'Bendahara Keuangan',
+                    ]);
+                    $trxNumber = $newTrx->transaction_number;
+                }
 
                 $actionLabel = $reimbursement->type === 'cash_advance' ? 'Dana Uang Muka berhasil dicairkan' : 'Uang Reimburse berhasil dibayarkan ke karyawan';
-                $msg = "{$actionLabel} untuk dokumen {$reimbursement->reimbursement_no}.";
+                $methodLabel = CashTransaction::PAYMENT_METHODS[$paymentMethod] ?? $paymentMethod;
+                $msg = "{$actionLabel} (Metode: {$methodLabel}) untuk dokumen {$reimbursement->reimbursement_no}. Otomatis tercatat di Buku Kas Umum & Jurnal Keuangan [{$trxNumber}].";
                 break;
 
             case 'settle':
@@ -234,6 +287,19 @@ class ReimbursementController extends Controller
                 $spent = (float) $request->input('amount_spent', 0);
                 $diff = $spent - (float) $reimbursement->amount_approved;
                 $settleNotes = $request->input('settlement_notes');
+                $settleDate = $request->input('settlement_date', now()->toDateString());
+                $settlePaymentMethod = $request->input('settlement_payment_method', 'cash_kasir');
+                if (!array_key_exists($settlePaymentMethod, CashTransaction::PAYMENT_METHODS)) {
+                    $settlePaymentMethod = 'cash_kasir';
+                }
+
+                // Cek period lock jika terdapat mutasi kas selisih
+                if ($diff != 0) {
+                    $lockDate = SiteSetting::get('financial_lock_until');
+                    if ($lockDate && Carbon::parse($settleDate)->format('Y-m-d') <= $lockDate) {
+                        return back()->with('error', "Gagal menyelesaikan SPJ: Tanggal rekonsiliasi (" . Carbon::parse($settleDate)->format('d/m/Y') . ") berada dalam periode yang telah Tutup Buku (s/d " . Carbon::parse($lockDate)->format('d/m/Y') . ").");
+                    }
+                }
 
                 // Tambahkan nota baru jika ada diupload saat settlement
                 $existingReceipts = $reimbursement->receipts_data ?? [];
@@ -247,7 +313,7 @@ class ReimbursementController extends Controller
                                 'title' => 'Nota Realisasi SPJ - ' . $file->getClientOriginalName(),
                                 'category' => $reimbursement->category,
                                 'amount' => 0,
-                                'date' => now()->toDateString(),
+                                'date' => $settleDate,
                                 'file_name' => $file->getClientOriginalName(),
                                 'file_type' => $mime,
                                 'file_size' => round($file->getSize() / 1024, 1) . ' KB',
@@ -268,7 +334,7 @@ class ReimbursementController extends Controller
                                 'category' => 'nota_reimburse',
                                 'reimbursement_id' => $reimbursement->id,
                                 'uploader_name' => $reimbursement->employee_name,
-                                'document_date' => now()->toDateString(),
+                                'document_date' => $settleDate,
                                 'file_name' => $file->getClientOriginalName(),
                                 'file_type' => $mime,
                                 'file_size' => round($file->getSize() / 1024, 1) . ' KB',
@@ -281,7 +347,7 @@ class ReimbursementController extends Controller
 
                 $combinedNotes = $reimbursement->notes;
                 if (!empty($settleNotes)) {
-                    $combinedNotes .= "\n[Catatan SPJ " . now()->format('d/m/Y') . "]: " . $settleNotes;
+                    $combinedNotes .= "\n[Catatan SPJ " . Carbon::parse($settleDate)->format('d/m/Y') . "]: " . $settleNotes;
                 }
 
                 $reimbursement->update([
@@ -289,36 +355,56 @@ class ReimbursementController extends Controller
                     'amount_diff' => $diff,
                     'receipts_data' => $existingReceipts,
                     'status' => 'settled',
-                    'settled_at' => now(),
+                    'settled_at' => Carbon::parse($settleDate . ' ' . now()->toTimeString()),
                     'notes' => $combinedNotes,
                 ]);
 
                 // Auto-sync ke Buku Kas Umum jika ada selisih uang pengembalian atau penambahan dana
+                $settleProof = !empty($existingReceipts) && !empty($existingReceipts[0]['base64_image']) ? $existingReceipts[0]['base64_image'] : null;
+
                 if ($diff < 0) {
-                    CashTransaction::create([
-                        'transaction_number' => CashTransaction::generateNumber('income'),
-                        'transaction_date' => now()->toDateString(),
-                        'type' => 'income',
-                        'category' => 'cash_advance_return',
-                        'title' => "Pengembalian Sisa Kasbon [{$reimbursement->reimbursement_no}] - {$reimbursement->employee_name}",
-                        'amount' => abs($diff),
-                        'payment_method' => 'cash_kasir',
-                        'reference_type' => 'reimbursement',
-                        'reference_id' => $reimbursement->id,
-                        'notes' => "Realisasi SPJ: {$reimbursement->title}. Sisa uang muka dinas dikembalikan ke kasir.",
-                        'recorded_by' => auth()->user()->name ?? 'Bendahara Keuangan',
-                    ]);
+                    $existingReturnTrx = CashTransaction::where('reference_type', 'reimbursement')
+                        ->where('reference_id', $reimbursement->id)
+                        ->where('type', 'income')
+                        ->where('category', 'cash_advance_return')
+                        ->first();
+
+                    if ($existingReturnTrx) {
+                        $existingReturnTrx->update([
+                            'transaction_date' => $settleDate,
+                            'amount' => abs($diff),
+                            'payment_method' => $settlePaymentMethod,
+                            'proof_file' => $settleProof ?? $existingReturnTrx->proof_file,
+                            'notes' => "Realisasi SPJ: {$reimbursement->title}. Sisa uang muka dinas dikembalikan ke kasir.",
+                        ]);
+                    } else {
+                        CashTransaction::create([
+                            'transaction_number' => CashTransaction::generateNumber('income'),
+                            'transaction_date' => $settleDate,
+                            'type' => 'income',
+                            'category' => 'cash_advance_return',
+                            'title' => "Pengembalian Sisa Kasbon [{$reimbursement->reimbursement_no}] - {$reimbursement->employee_name}",
+                            'amount' => abs($diff),
+                            'payment_method' => $settlePaymentMethod,
+                            'reference_type' => 'reimbursement',
+                            'reference_id' => $reimbursement->id,
+                            'proof_file' => $settleProof,
+                            'notes' => "Realisasi SPJ: {$reimbursement->title}. Sisa uang muka dinas dikembalikan ke kasir.",
+                            'recorded_by' => auth()->user()->name ?? 'Bendahara Keuangan',
+                        ]);
+                    }
                 } elseif ($diff > 0) {
                     CashTransaction::create([
                         'transaction_number' => CashTransaction::generateNumber('expense'),
-                        'transaction_date' => now()->toDateString(),
+                        'transaction_date' => $settleDate,
                         'type' => 'expense',
                         'category' => 'cash_advance',
                         'title' => "Penggantian Kekurangan Kasbon [{$reimbursement->reimbursement_no}] - {$reimbursement->employee_name}",
                         'amount' => $diff,
-                        'payment_method' => 'cash_kasir',
+                        'payment_method' => $settlePaymentMethod,
                         'reference_type' => 'reimbursement',
                         'reference_id' => $reimbursement->id,
+                        'proof_file' => $settleProof,
                         'notes' => "Realisasi SPJ: {$reimbursement->title}. Pengeluaran aktual melebihi uang muka awal.",
                         'recorded_by' => auth()->user()->name ?? 'Bendahara Keuangan',
                     ]);
@@ -326,9 +412,9 @@ class ReimbursementController extends Controller
 
                 $diffLabel = '';
                 if ($diff > 0) {
-                    $diffLabel = " Lembaga kurang bayar Rp " . number_format($diff, 0, ',', '.') . " (telah dicatat di Kas Keluar).";
+                    $diffLabel = " Lembaga kurang bayar Rp " . number_format($diff, 0, ',', '.') . " (telah dicatat di Buku Kas Keluar).";
                 } elseif ($diff < 0) {
-                    $diffLabel = " Karyawan lebih bayar Rp " . number_format(abs($diff), 0, ',', '.') . " (sisa uang telah dicatat di Kas Masuk).";
+                    $diffLabel = " Karyawan lebih bayar Rp " . number_format(abs($diff), 0, ',', '.') . " (sisa uang telah dicatat di Buku Kas Masuk).";
                 } else {
                     $diffLabel = " Realisasi pengeluaran pas sesuai uang muka.";
                 }
@@ -337,6 +423,22 @@ class ReimbursementController extends Controller
                 break;
 
             case 'reject':
+                // Cek apakah ada transaksi kas terkait dalam periode Tutup Buku
+                $lockDate = SiteSetting::get('financial_lock_until');
+                $hasLockedCash = false;
+                if ($lockDate) {
+                    $hasLockedCash = $reimbursement->cashTransactions()
+                        ->where('transaction_date', '<=', $lockDate)
+                        ->exists();
+                }
+
+                if ($hasLockedCash) {
+                    return back()->with('error', "Gagal menolak: Pengajuan {$reimbursement->reimbursement_no} memiliki transaksi kas dalam periode yang telah Tutup Buku.");
+                }
+
+                // Bersihkan transaksi kas yang sempat tercatat jika sebelumnya pernah di-pay
+                $reimbursement->cashTransactions()->delete();
+
                 $reimbursement->update([
                     'status' => 'rejected',
                     'notes' => $reimbursement->notes . "\n[Ditolak]: " . $request->input('reason', 'Tidak memenuhi syarat kelengkapan.'),
@@ -483,10 +585,26 @@ class ReimbursementController extends Controller
     {
         $reimbursement = Reimbursement::findOrFail($id);
         $no = $reimbursement->reimbursement_no;
+
+        // Cek apakah ada transaksi kas terkait dalam periode Tutup Buku
+        $lockDate = SiteSetting::get('financial_lock_until');
+        if ($lockDate) {
+            $hasLockedCash = $reimbursement->cashTransactions()
+                ->where('transaction_date', '<=', $lockDate)
+                ->exists();
+
+            if ($hasLockedCash) {
+                return back()->with('error', "Gagal menghapus: Pengajuan {$no} memiliki transaksi di Buku Kas yang berada dalam periode Tutup Buku (s/d " . Carbon::parse($lockDate)->format('d/m/Y') . "). Buka kunci tutup buku terlebih dahulu jika ingin menghapus transaksi ini.");
+            }
+        }
+
+        // Hapus transaksi kas terkait di Buku Kas Umum agar sinkron & tidak ada data hantu
+        $reimbursement->cashTransactions()->delete();
+
         $reimbursement->delete();
 
         return redirect()->route('admin.reimbursements.index')
-            ->with('success', "Dokumen {$no} berhasil dihapus.");
+            ->with('success', "Dokumen {$no} beserta catatan pembukuannya di Buku Kas Umum & Jurnal berhasil dihapus.");
     }
 
     /**
@@ -503,7 +621,7 @@ class ReimbursementController extends Controller
      */
     protected function filterQuery(Request $request)
     {
-        $query = Reimbursement::with('employee')->latest();
+        $query = Reimbursement::with(['employee', 'cashTransactions'])->latest();
 
         // 1. Filter Tipe (Reimburse vs Kasbon)
         if ($request->filled('type')) {

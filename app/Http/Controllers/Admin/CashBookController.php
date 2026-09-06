@@ -340,7 +340,7 @@ class CashBookController extends Controller
      */
     private function buildFilteredQuery(Request $request)
     {
-        $query = CashTransaction::query();
+        $query = CashTransaction::with(['reimbursement', 'student', 'teacher', 'affiliate']);
 
         // 1. Filter Rentang Waktu (Periode)
         $period = $request->input('period', 'this_month');
