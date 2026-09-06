@@ -75,6 +75,27 @@ class AlumniMapController extends Controller
             ],
         ];
 
+        // Hitung persebaran riil siswa dari database
+        $realStudentCounts = Student::whereIn('status', ['departed', 'graduated', 'passed_interview', 'ready_to_depart'])
+            ->whereNotNull('destination_prefecture')
+            ->selectRaw('destination_prefecture, count(*) as total')
+            ->groupBy('destination_prefecture')
+            ->pluck('total', 'destination_prefecture')
+            ->toArray();
+
+        // Update counts per region berdasarkan data riil database
+        foreach ($regions as $key => &$region) {
+            $regionRealCount = 0;
+            foreach ($region['prefectures'] as $pref) {
+                if (isset($realStudentCounts[$pref])) {
+                    $regionRealCount += $realStudentCounts[$pref];
+                }
+            }
+            $region['real_count'] = $regionRealCount;
+            $region['count'] = $region['count'] + $regionRealCount;
+        }
+        unset($region);
+
         // Query Alumni & Testimoni
         $testimonialsQuery = Testimonial::query();
         if ($selectedSector) {
@@ -82,17 +103,28 @@ class AlumniMapController extends Controller
         }
         $testimonials = $testimonialsQuery->orderBy('order')->get();
 
-        $studentsQuery = Student::whereIn('status', ['departed', 'graduated', 'passed_interview']);
+        $studentsQuery = Student::whereIn('status', ['departed', 'graduated', 'passed_interview', 'ready_to_depart']);
         if ($selectedSector) {
             $studentsQuery->where('sector', 'like', "%{$selectedSector}%");
         }
         if ($selectedRegion && isset($regions[$selectedRegion])) {
             $studentsQuery->whereIn('destination_prefecture', $regions[$selectedRegion]['prefectures']);
         }
-        $departedStudents = $studentsQuery->latest()->take(12)->get();
+        $departedStudents = $studentsQuery->latest()->take(16)->get();
 
         $totalAlumniCount = array_sum(array_column($regions, 'count'));
+        $totalPlacedStudents = Student::whereIn('status', ['departed', 'graduated', 'passed_interview'])->count();
 
-        return view('landing.alumni-map', compact('settings', 'regions', 'testimonials', 'departedStudents', 'totalAlumniCount', 'selectedSector', 'selectedRegion'));
+        return view('landing.alumni-map', compact(
+            'settings', 
+            'regions', 
+            'testimonials', 
+            'departedStudents', 
+            'totalAlumniCount', 
+            'totalPlacedStudents', 
+            'realStudentCounts', 
+            'selectedSector', 
+            'selectedRegion'
+        ));
     }
 }

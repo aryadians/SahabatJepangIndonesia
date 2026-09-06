@@ -963,6 +963,39 @@ class NewFeaturesTest extends TestCase
         $response->assertSee('SJI-2026-002');
         $response->assertSee('Unduh Kwitansi');
     }
+
+    public function test_guest_can_access_interactive_alumni_map_page(): void
+    {
+        $response = $this->get('/sebaran-alumni');
+        $response->assertStatus(200);
+        $response->assertSee('Peta Sebaran Alumni di Seluruh Jepang');
+        $response->assertSee('japanSvgMap');
+        $response->assertSee('日本全国就職マップ');
+        $response->assertSee('Kantō');
+        $response->assertSee('Chūbu');
+        $response->assertSee('Kansai');
+    }
+
+    public function test_alumni_map_filters_by_sector_and_calculates_real_students(): void
+    {
+        $student = Student::create([
+            'name' => 'Mega Puspita',
+            'nis' => 'SJI-2026-999',
+            'program' => 'Tokutei Ginou (SSW)',
+            'sector' => 'Kaigo',
+            'destination_company' => 'Tokyo Care Home Co., Ltd.',
+            'destination_prefecture' => 'Tokyo',
+            'status' => 'departed',
+            'total_cost' => 15000000,
+            'paid_amount' => 15000000,
+        ]);
+
+        $response = $this->get('/sebaran-alumni?sector=Kaigo');
+        $response->assertStatus(200);
+        $response->assertSee('Mega Puspita');
+        $response->assertSee('Tokyo Care Home Co., Ltd.');
+        $response->assertSee('Tokyo');
+    }
 }
 
 

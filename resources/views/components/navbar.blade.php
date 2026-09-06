@@ -167,9 +167,12 @@
                                 <div class="w-8 h-8 rounded-lg bg-red-100 text-japan-600 flex items-center justify-center font-bold flex-shrink-0">
                                     <i data-lucide="map-pin" class="w-4 h-4"></i>
                                 </div>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-900">Peta Sebaran Alumni</p>
-                                    <p class="text-[10px] text-slate-400">Sebaran di 47 prefektur Jepang</p>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <p class="text-xs font-bold text-slate-900">Peta Sebaran Alumni</p>
+                                        <span class="px-1.5 py-0.5 rounded bg-red-100 text-japan-700 text-[9px] font-black uppercase">Peta 47 Prefektur 🇯🇵</span>
+                                    </div>
+                                    <p class="text-[10px] text-slate-400">Peta interaktif sebaran 8 region Jepang</p>
                                 </div>
                             </a>
 
