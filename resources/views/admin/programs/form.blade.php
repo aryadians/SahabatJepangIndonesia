@@ -4,7 +4,7 @@
 @section('page_title', $program->exists ? 'Edit Program Karir' : 'Tambah Program Karir Baru')
 
 @section('content')
-<div class="max-w-4xl bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+<div class="w-full bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
     
     <div class="flex items-center justify-between border-b border-slate-100 pb-4">
         <div>

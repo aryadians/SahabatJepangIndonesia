@@ -35,6 +35,20 @@ class GroupBranch extends Model
     ];
 
     /**
+     * Auto clear synced stats cache on change
+     */
+    protected static function booted(): void
+    {
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('sji_corporate_synced_stats');
+        });
+
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('sji_corporate_synced_stats');
+        });
+    }
+
+    /**
      * Scope for active branches
      */
     public function scopeActive($query)

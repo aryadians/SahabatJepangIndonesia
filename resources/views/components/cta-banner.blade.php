@@ -33,13 +33,13 @@
                     </button>
 
                     <a 
-                        href="https://api.whatsapp.com/send?phone={{ $settings['contact_whatsapp'] ?? '6281234567890' }}&text=Halo%20Admin%20LPK%20Sahabat%20Jepang%20Indonesia,%20saya%20tertarik%20mendaftar%20program%20ke%20Jepang." 
+                        href="{{ $settings['contact_whatsapp_link'] ?? ('https://api.whatsapp.com/send?phone=' . ($settings['contact_whatsapp'] ?? '6281333270022') . '&text=Halo%20Admin%20SJI%20Group,%20saya%20tertarik%20mendaftar%20program%20ke%20Jepang.') }}" 
                         target="_blank"
                         rel="noopener noreferrer"
                         class="w-full sm:w-auto px-7 py-4 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white font-bold text-base transition flex items-center justify-center gap-2 active:scale-95"
                     >
                         <i data-lucide="message-circle" class="w-5 h-5 text-emerald-400"></i>
-                        <span>Chat via WhatsApp Langsung</span>
+                        <span>Chat via WhatsApp SJI Group</span>
                     </a>
                 </div>
 

@@ -58,7 +58,7 @@
     </div>
 
     <!-- Add New Affiliate Card -->
-    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 max-w-4xl">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 w-full">
         <div class="border-b border-slate-100 pb-3 flex items-center gap-2">
             <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
                 <i data-lucide="plus" class="w-4 h-4"></i>

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Profil Perusahaan • PT SAHABAT JEPANG INDONESIA GROUP')
-@section('meta_description', 'Profil resmi PT Sahabat Jepang Indonesia Group (SJI Group) - Holding Sending Organization resmi Tokutei Ginou, Ginou Jisshusei, dan jaringan sekolah bahasa Jepang terpadu di Indonesia dan Jepang.')
+@section('title', 'Profil SJI Group • PT SAHABAT JEPANG INDONESIA GROUP - Penyalur Resmi & Holding Sending Organization')
+@section('meta_description', 'Profil resmi PT Sahabat Jepang Indonesia Group (SJI Group) - Holding Sending Organization resmi Tokutei Ginou, Ginou Jisshusei, dan jaringan 9 cabang & kantor terpadu di Indonesia dan Jepang.')
 
 @section('content')
 <!-- Header Hero Banner (Japanese Zen Luxury) -->
@@ -28,59 +28,64 @@
                 </h1>
 
                 <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
-                    Lembaga induk pengirim resmi pekerja migran Indonesia (PMI) berketerampilan khusus (Tokutei Ginou / SSW) dan pemagang teknis (Ginou Jisshusei) berizin Kemenaker RI, menaungi 7 cabang lembaga pendidikan di Indonesia serta 2 kantor perwakilan & balai karantina resmi di Tokyo dan Chiba, Jepang.
+                    Lembaga induk pengirim resmi pekerja migran Indonesia (PMI) berketerampilan khusus (Tokutei Ginou / SSW) dan pemagang teknis (Ginou Jisshusei) berizin Kemenaker RI, menaungi {{ $indonesiaBranches->count() }} cabang lembaga pendidikan di Indonesia serta {{ $japanBranches->count() }} kantor perwakilan & balai karantina resmi di {{ $corporate['japan_offices'] }}, Jepang.
                 </p>
 
                 <!-- Official Badges Row -->
                 <div class="flex flex-wrap items-center gap-3 pt-2">
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-xs text-slate-200">
                         <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
-                        <span>850+ Alumni Sukses di Jepang</span>
+                        <span>{{ $corporate['alumni_sent'] }} Alumni Sukses di Jepang</span>
                     </span>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-xs text-slate-200">
                         <i data-lucide="building-2" class="w-4 h-4 text-red-400"></i>
-                        <span>Kantor Resmi di Tokyo & Chiba</span>
+                        <span>Kantor Resmi di {{ $corporate['japan_offices'] }}</span>
                     </span>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-xs text-slate-200">
                         <i data-lucide="graduation-cap" class="w-4 h-4 text-amber-400"></i>
-                        <span>MoU Poltekkes & SMK Nasional</span>
+                        <span>{{ $corporate['mou_label'] }}</span>
                     </span>
                 </div>
             </div>
 
-            <!-- Quick Action Box / Official Portals -->
+            <!-- Quick Action / Official Accreditation Card -->
             <div class="w-full md:w-auto flex-shrink-0 bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6 space-y-4 max-w-sm">
                 <div class="flex items-center gap-3 pb-3 border-b border-white/10">
                     <div class="w-12 h-12 rounded-2xl bg-japan-600 flex items-center justify-center font-bold text-white text-xl shadow-lg shadow-red-600/30">
                         友
                     </div>
                     <div>
-                        <p class="text-xs text-slate-400 font-medium uppercase">Portal Resmi Korporasi</p>
+                        <p class="text-xs text-slate-400 font-medium uppercase">Ekosistem Korporasi SJI</p>
                         <p class="text-sm font-extrabold text-white">SJI Group Ecosystem</p>
                     </div>
                 </div>
 
-                <div class="space-y-2 text-xs">
-                    <a href="https://sjigroup.co.id/" target="_blank" class="flex items-center justify-between p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition group border border-white/5">
+                <div class="space-y-2.5 text-xs">
+                    <div class="p-3 rounded-2xl bg-white/5 border border-white/10 space-y-1">
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-400">Status Legalitas:</span>
+                            <span class="font-bold text-emerald-400 flex items-center gap-1">
+                                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                                Resmi & Terdaftar
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-slate-300">Sending Organization (SO) Kemnaker RI & Pengawasan OTIT/JITCO Jepang</p>
+                    </div>
+
+                    <a href="{{ route('education.curriculum') }}" class="flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-red-600/30 to-amber-600/30 hover:from-red-600/40 hover:to-amber-600/40 text-white transition group border border-red-500/30">
                         <span class="font-bold flex items-center gap-2">
-                            <i data-lucide="globe" class="w-3.5 h-3.5 text-red-400"></i>
-                            <span>SJI Group Website</span>
+                            <i data-lucide="book-open" class="w-4 h-4 text-amber-400"></i>
+                            <span>Kurikulum & Edukasi Terpadu</span>
                         </span>
-                        <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i data-lucide="arrow-right" class="w-4 h-4 text-slate-300 group-hover:translate-x-1 transition-transform"></i>
                     </a>
-                    <a href="https://sjigroup.co.id/jp-0/" target="_blank" class="flex items-center justify-between p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition group border border-white/5">
-                        <span class="font-bold flex items-center gap-2">
-                            <i data-lucide="briefcase" class="w-3.5 h-3.5 text-amber-400"></i>
-                            <span>Company Profile (JP)</span>
+
+                    <a href="#network" class="flex items-center justify-between p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition group border border-white/5">
+                        <span class="font-semibold flex items-center gap-2">
+                            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-red-400"></i>
+                            <span>{{ $indonesiaBranches->count() }} Cabang Indonesia & {{ $japanBranches->count() }} Kantor Jepang</span>
                         </span>
-                        <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
-                    </a>
-                    <a href="https://sjigroup.co.id/jp-2/" target="_blank" class="flex items-center justify-between p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white transition group border border-white/5">
-                        <span class="font-bold flex items-center gap-2">
-                            <i data-lucide="book-open" class="w-3.5 h-3.5 text-blue-400"></i>
-                            <span>Kurikulum & Edukasi (JP)</span>
-                        </span>
-                        <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
                     </a>
                 </div>
 
@@ -96,30 +101,28 @@
 <!-- Interactive Section Tabs Navigation -->
 <div class="sticky top-20 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center gap-2 overflow-x-auto py-3 no-scrollbar select-none text-xs sm:text-sm font-bold text-slate-600">
-            <a href="#about" class="px-3.5 py-1.5 rounded-xl bg-red-50 text-japan-600 border border-red-200/80 hover:bg-red-100 transition flex items-center gap-1.5 whitespace-nowrap">
-                <i data-lucide="building" class="w-4 h-4"></i>
-                <span>Tentang & Pimpinan</span>
-            </a>
-            <a href="#network" class="px-3.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition flex items-center gap-1.5 whitespace-nowrap">
-                <i data-lucide="map-pin" class="w-4 h-4 text-japan-600"></i>
-                <span>Jaringan Cabang ({{ $allBranches->count() }})</span>
-            </a>
-            <a href="#strengths" class="px-3.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition flex items-center gap-1.5 whitespace-nowrap">
-                <i data-lucide="star" class="w-4 h-4 text-amber-500"></i>
-                <span>Keunggulan SJI</span>
-            </a>
-            <a href="#education" class="px-3.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition flex items-center gap-1.5 whitespace-nowrap">
-                <i data-lucide="graduation-cap" class="w-4 h-4 text-blue-500"></i>
-                <span>Kurikulum & Fasilitas</span>
-            </a>
-            <a href="#schedule" class="px-3.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition flex items-center gap-1.5 whitespace-nowrap">
-                <i data-lucide="clock" class="w-4 h-4 text-purple-500"></i>
-                <span>Jadwal Harian Siswa</span>
-            </a>
-            <a href="#kaisha-guide" class="px-3.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition flex items-center gap-1.5 whitespace-nowrap">
-                <i data-lucide="book-heart" class="w-4 h-4 text-emerald-600"></i>
-                <span>Panduan Perusahaan Jepang (Kaisha)</span>
+        <div class="flex items-center justify-between gap-2 overflow-x-auto py-3 no-scrollbar select-none text-xs sm:text-sm font-bold text-slate-600">
+            <div class="flex items-center gap-2">
+                <a href="#about" class="px-3.5 py-1.5 rounded-xl bg-red-50 text-japan-600 border border-red-200/80 hover:bg-red-100 transition flex items-center gap-1.5 whitespace-nowrap">
+                    <i data-lucide="user" class="w-4 h-4"></i>
+                    <span>Pimpinan & Visi Misi</span>
+                </a>
+                <a href="#network" class="px-3.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition flex items-center gap-1.5 whitespace-nowrap">
+                    <i data-lucide="map-pin" class="w-4 h-4 text-japan-600"></i>
+                    <span>Jaringan Cabang ({{ $allBranches->count() }})</span>
+                </a>
+                <a href="#strengths" class="px-3.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition flex items-center gap-1.5 whitespace-nowrap">
+                    <i data-lucide="star" class="w-4 h-4 text-amber-500"></i>
+                    <span>Keunggulan Korporasi</span>
+                </a>
+                <a href="#kaisha-guide" class="px-3.5 py-1.5 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition flex items-center gap-1.5 whitespace-nowrap">
+                    <i data-lucide="book-heart" class="w-4 h-4 text-emerald-600"></i>
+                    <span>Panduan Perusahaan Jepang (Kaisha)</span>
+                </a>
+            </div>
+            <a href="{{ route('education.curriculum') }}" class="flex-shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-japan-600 hover:bg-japan-700 text-white transition font-bold shadow-xs whitespace-nowrap">
+                <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                <span>Kurikulum & Edukasi &rarr;</span>
             </a>
         </div>
     </div>
@@ -129,56 +132,100 @@
 
     <!-- 1. About & Leadership (Sambutan Pimpinan & Visi Misi) -->
     <section id="about" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-36">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
-            <!-- Left: Greetings from Representative Director -->
-            <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-sm space-y-6">
-                <div class="flex items-center gap-3">
-                    <span class="px-3 py-1 rounded-full bg-red-100 text-japan-700 text-xs font-extrabold uppercase tracking-wider font-japanese">代表挨拶</span>
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Greetings from the Representative</span>
+        <div class="space-y-10">
+            <!-- Header Section -->
+            <div class="text-center max-w-3xl mx-auto space-y-3">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-red-100 text-japan-700 text-xs font-black uppercase tracking-wider font-japanese">
+                    <span>代表挨拶 • Leadership & Vision</span>
                 </div>
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">
+                    Pimpinan & Visi Strategis SJI Group
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-500">
+                    Mendedikasikan diri untuk masa depan generasi muda Indonesia di panggung industri berteknologi tinggi Jepang.
+                </p>
+            </div>
 
-                <div class="space-y-2">
-                    <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                        Sambutan Direktur Utama & Chairman
-                    </h2>
-                    <p class="text-sm font-bold text-japan-600 font-japanese">
-                        代表取締役会長 • {{ $corporate['leader_name'] }}
-                    </p>
-                </div>
+            <!-- Leadership Main Box: Photo & Greetings Side-by-Side -->
+            <div class="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-sm">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                    
+                    <!-- Leader Photo Card (Executive Japanese Style) -->
+                    <div class="lg:col-span-4 flex flex-col items-center">
+                        <div class="relative w-full max-w-xs mx-auto">
+                            <!-- Background Aura -->
+                            <div class="absolute -inset-2 bg-gradient-to-tr from-red-600 to-amber-500 rounded-3xl blur-lg opacity-25"></div>
+                            
+                            <div class="relative rounded-3xl overflow-hidden border-4 border-white shadow-xl bg-slate-900 aspect-[4/5] group">
+                                @if(!empty($corporate['leader_photo']))
+                                    <img src="{{ $corporate['leader_photo'] }}" alt="{{ $corporate['leader_name'] }}" class="w-full h-full object-cover object-top group-hover:scale-105 transition duration-500">
+                                @else
+                                    <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-slate-800 to-slate-950 text-white p-6 text-center">
+                                        <div class="w-20 h-20 rounded-full bg-japan-600/30 border-2 border-japan-500 flex items-center justify-center text-3xl font-japanese font-black text-red-400 mb-3 shadow-inner">
+                                            吉
+                                        </div>
+                                        <p class="text-base font-extrabold text-white">{{ $corporate['leader_name'] }}</p>
+                                        <p class="text-xs text-japan-300 font-medium mt-1">{{ $corporate['leader_title'] }}</p>
+                                        <span class="mt-4 px-3 py-1 rounded-full bg-white/10 text-[10px] text-slate-300 border border-white/10">Foto Resmi Pimpinan</span>
+                                    </div>
+                                @endif
 
-                <!-- Quote Card -->
-                <div class="p-6 rounded-2xl bg-gradient-to-br from-red-50/70 via-white to-amber-50/40 border border-red-100 text-slate-800 space-y-4">
-                    <i data-lucide="quote" class="w-8 h-8 text-japan-400"></i>
-                    <p class="text-sm sm:text-base leading-relaxed italic text-slate-700 font-serif">
-                        "{{ $corporate['leader_message'] }}"
-                    </p>
-                    <div class="pt-2 border-t border-red-100/60 flex items-center justify-between">
-                        <div>
-                            <p class="font-extrabold text-slate-900 text-sm">{{ $corporate['leader_name'] }}</p>
-                            <p class="text-xs text-slate-500">{{ $corporate['leader_title'] }}</p>
-                        </div>
-                        <div class="w-10 h-10 rounded-xl bg-japan-600 text-white flex items-center justify-center font-japanese font-black shadow-sm">
-                            吉
+                                <!-- Gold Kanji Seal Badge Overlay -->
+                                <div class="absolute top-3 right-3 px-3 py-1.5 rounded-xl bg-japan-700/90 backdrop-blur-md border border-red-400/40 text-white font-japanese text-xs font-black shadow-lg">
+                                    代表取締役会長
+                                </div>
+
+                                <!-- Name Pill at Bottom -->
+                                <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent p-5 text-white">
+                                    <p class="text-xs text-amber-400 font-bold uppercase tracking-wider font-japanese">SJI GROUP 代表</p>
+                                    <h3 class="text-lg font-black tracking-tight text-white">{{ $corporate['leader_name'] }}</h3>
+                                    <p class="text-xs text-slate-300">{{ $corporate['leader_title'] }}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="text-xs sm:text-sm text-slate-600 space-y-3 leading-relaxed">
-                    <p>
-                        <strong>PT SAHABAT JEPANG INDONESIA GROUP (SJI Group)</strong> telah memperoleh izin resmi pemerintah untuk memberangkatkan pekerja migran Indonesia (PMI) ke berbagai prefektur di Jepang. Hingga saat ini, SJI Group telah sukses mendidik dan menerbangkan <strong>lebih dari {{ $corporate['alumni_sent'] }} pemuda-pemudi Indonesia</strong> ke Jepang.
-                    </p>
-                    <p>
-                        Kami telah meresmikan kemitraan pendidikan komprehensif dengan universitas dan politeknik terkemuka di Indonesia, memungkinkan kami mencetak sumber daya manusia berkeahlian tinggi untuk segera mengisi kebutuhan industri vital Jepang. Kantor perwakilan kami di Tokyo dan balai karantina di Chiba menjamin pendampingan penuh secara akurat dan cepat sejak hari pertama pendaratan.
-                    </p>
+                    <!-- Greetings Content -->
+                    <div class="lg:col-span-8 space-y-6">
+                        <div class="flex items-center gap-2 text-japan-600 text-xs font-black tracking-widest uppercase">
+                            <span class="w-2 h-2 rounded-full bg-japan-600"></span>
+                            <span>Amanat Direktur Utama & Chairman</span>
+                        </div>
+
+                        <!-- Quote Box -->
+                        <div class="p-6 rounded-2xl bg-gradient-to-br from-red-50/80 via-white to-amber-50/40 border border-red-100 text-slate-800 space-y-4">
+                            <i data-lucide="quote" class="w-8 h-8 text-japan-400"></i>
+                            <p class="text-sm sm:text-base leading-relaxed italic text-slate-700 font-serif">
+                                "{{ $corporate['leader_message'] }}"
+                            </p>
+                            <div class="pt-3 border-t border-red-100/60 flex items-center justify-between">
+                                <div>
+                                    <p class="font-black text-slate-900 text-sm">{{ $corporate['leader_name'] }}</p>
+                                    <p class="text-xs text-slate-500">{{ $corporate['leader_title'] }}</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-xl bg-japan-600 text-white flex items-center justify-center font-japanese font-black shadow-md">
+                                    吉
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-xs sm:text-sm text-slate-600 space-y-3 leading-relaxed">
+                            <p>
+                                <strong>PT SAHABAT JEPANG INDONESIA GROUP (SJI Group)</strong> telah memperoleh izin resmi pemerintah untuk memberangkatkan pekerja migran Indonesia (PMI) berketerampilan khusus (Tokutei Ginou / SSW) dan pemagang teknis (Ginou Jisshusei) ke berbagai prefektur di Jepang. Hingga saat ini, SJI Group telah sukses mendidik dan menerbangkan <strong>lebih dari {{ $corporate['alumni_sent'] }} pemuda-pemudi Indonesia</strong> ke Jepang.
+                            </p>
+                            <p>
+                                Kami telah meresmikan kemitraan pendidikan komprehensif dengan universitas dan politeknik terkemuka di Indonesia, memungkinkan kami mencetak sumber daya manusia berkeahlian tinggi untuk segera mengisi kebutuhan industri vital Jepang. Kantor perwakilan kami di Tokyo dan balai karantina di Chiba menjamin pendampingan penuh secara akurat dan cepat sejak hari pertama pendaratan.
+                            </p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
-            <!-- Right: Vision, Mission & Slogan -->
-            <div class="lg:col-span-5 space-y-6">
-                
-                <!-- Vision Card -->
-                <div class="bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-800 space-y-4">
+            <!-- Vision & Mission Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Vision Card (Left 5 Cols) -->
+                <div class="lg:col-span-5 bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-800 space-y-4">
                     <div class="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
                         <i data-lucide="eye" class="w-4 h-4"></i>
                         <span>Visi Korporasi (VISION)</span>
@@ -189,42 +236,34 @@
                     </p>
                 </div>
 
-                <!-- Mission Card -->
-                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
+                <!-- Mission Card (Right 7 Cols) -->
+                <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
                     <div class="flex items-center gap-2 text-japan-600 text-xs font-bold uppercase tracking-wider">
                         <i data-lucide="target" class="w-4 h-4"></i>
-                        <span>Misi Perusahaan (MISSION)</span>
+                        <span>4 Pilar Misi Perusahaan (MISSION)</span>
                     </div>
                     <h3 class="text-base font-extrabold text-slate-900">Komitmen Mutu & Profesionalisme Berkelanjutan</h3>
                     
-                    <ul class="space-y-3 text-xs sm:text-sm text-slate-600">
-                        <li class="flex items-start gap-3">
+                    <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-slate-600">
+                        <li class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
                             <span class="w-6 h-6 rounded-full bg-red-100 text-japan-600 flex items-center justify-center text-xs font-extrabold flex-shrink-0 mt-0.5">1</span>
-                            <span>Mendorong pengembangan kompetensi sumber daya manusia Indonesia secara konsisten dan terukur.</span>
+                            <span>Mendorong pengembangan kompetensi SDM Indonesia secara konsisten dan terukur.</span>
                         </li>
-                        <li class="flex items-start gap-3">
+                        <li class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
                             <span class="w-6 h-6 rounded-full bg-red-100 text-japan-600 flex items-center justify-center text-xs font-extrabold flex-shrink-0 mt-0.5">2</span>
                             <span>Perlindungan hukum dan peningkatan kesejahteraan pekerja selama bertugas di Jepang.</span>
                         </li>
-                        <li class="flex items-start gap-3">
+                        <li class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
                             <span class="w-6 h-6 rounded-full bg-red-100 text-japan-600 flex items-center justify-center text-xs font-extrabold flex-shrink-0 mt-0.5">3</span>
                             <span>Membangun sistem kerjasama internasional yang kokoh, transparan, dan berkesinambungan.</span>
                         </li>
-                        <li class="flex items-start gap-3">
+                        <li class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
                             <span class="w-6 h-6 rounded-full bg-red-100 text-japan-600 flex items-center justify-center text-xs font-extrabold flex-shrink-0 mt-0.5">4</span>
                             <span>Komitmen teguh pada tanggung jawab sosial (CSR) serta etika kemanusiaan.</span>
                         </li>
                     </ul>
-
-                    <div class="pt-4 border-t border-slate-100 text-center">
-                        <span class="text-xs font-black text-japan-700 uppercase tracking-widest font-japanese">
-                            ともに未来を創る • SJI GROUP GO TO JAPAN!
-                        </span>
-                    </div>
                 </div>
-
             </div>
-
         </div>
     </section>
 
@@ -236,7 +275,7 @@
                 <span>Jaringan Lembaga & Kantor Cabang SJI Group</span>
             </div>
             <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                7 Kampus di Indonesia & 2 Kantor Representatif di Jepang
+                {{ $indonesiaBranches->count() }} Kampus di Indonesia & {{ $japanBranches->count() }} Kantor Representatif di Jepang
             </h2>
             <p class="text-xs sm:text-sm text-slate-500">
                 Semua entitas di bawah naungan PT SAHABAT JEPANG INDONESIA GROUP beroperasi dengan kurikulum terstandarisasi, fasilitas asrama representatif, dan pendampingan resmi langsung di Jepang.
@@ -436,182 +475,37 @@
         </div>
     </section>
 
-    <!-- 4. SJI Education Flow & Facilities (Kurikulum & Fasilitas Belajar) -->
-    <section id="education" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-36">
-        <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-extrabold uppercase tracking-wider font-japanese">
-                <span>SJIグループの教育について</span>
-            </div>
-            <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                Alur Pendidikan Berjenjang & Standar Kompetensi
-            </h2>
-            <p class="text-xs sm:text-sm text-slate-500">
-                Pendidikan di SJI Group melampaui sekadar kelulusan tes JLPT / JFT-Basic. Kami berfokus pada aplikasi praktis di Jepang, pemahaman budaya kerja, dan integritas sebagai anggota masyarakat yang bertanggung jawab.
-            </p>
-        </div>
-
-        <!-- 4 Steps Course Flow -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            
-            <!-- Step 1: Screening Class -->
-            <div class="bg-white rounded-3xl p-6 border-2 border-red-200 shadow-sm relative space-y-3">
-                <div class="w-8 h-8 rounded-full bg-japan-600 text-white font-extrabold text-xs flex items-center justify-center">
-                    01
-                </div>
-                <h3 class="font-extrabold text-slate-900 text-base">Screening Class</h3>
-                <p class="text-xs font-bold text-japan-600 font-japanese">選抜・適性評価クラス (1-2 Bulan)</p>
-                <p class="text-xs text-slate-600 leading-relaxed">
-                    Evaluasi komprehensif kepatutan berangkat ke Jepang. Pembelajaran huruf Hiragana, Katakana, angka, berhitung, tata tertib, dan persiapan wawancara user.
-                </p>
-                <div class="pt-2 border-t border-slate-100 text-[11px] text-red-600 font-semibold flex items-center gap-1">
-                    <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
-                    <span>Evaluasi buruk: diskualifikasi</span>
-                </div>
-            </div>
-
-            <!-- Step 2: Beginner Class -->
-            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative space-y-3">
-                <div class="w-8 h-8 rounded-full bg-slate-900 text-white font-extrabold text-xs flex items-center justify-center">
-                    02
-                </div>
-                <h3 class="font-extrabold text-slate-900 text-base">Beginner Class</h3>
-                <p class="text-xs font-bold text-slate-600 font-japanese">初級クラス (N5 & JFT-Basic)</p>
-                <p class="text-xs text-slate-600 leading-relaxed">
-                    Penguasaan pola kalimat dasar, kosakata esensial, pemahaman teks pendek, dan latihan simulasi CBT untuk menembus ambang batas kelulusan tes resmi.
-                </p>
-            </div>
-
-            <!-- Step 3: N4 Conversation -->
-            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative space-y-3">
-                <div class="w-8 h-8 rounded-full bg-slate-900 text-white font-extrabold text-xs flex items-center justify-center">
-                    03
-                </div>
-                <h3 class="font-extrabold text-slate-900 text-base">N4 Conversation</h3>
-                <p class="text-xs font-bold text-slate-600 font-japanese">N4会話実践クラス (Native Sensei)</p>
-                <p class="text-xs text-slate-600 leading-relaxed">
-                    Pendalaman pola kalimat N4 melalui percakapan intensif dengan instruktur asli Jepang. Melatih respon spontan dan intonasi alami dalam instruksi kerja.
-                </p>
-            </div>
-
-            <!-- Step 4: N3 & Job-Ready -->
-            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm relative space-y-3">
-                <div class="w-8 h-8 rounded-full bg-slate-900 text-white font-extrabold text-xs flex items-center justify-center">
-                    04
-                </div>
-                <h3 class="font-extrabold text-slate-900 text-base">N3 & Kejuruan</h3>
-                <p class="text-xs font-bold text-slate-600 font-japanese">N3対策・専門研修クラス</p>
-                <p class="text-xs text-slate-600 leading-relaxed">
-                    Persiapan N3, kosakata teknis per bidang industri, bahasa Jepang perawatan lansia (Kaigo), etika bisnis, dan pembekalan budaya sebelum penerbangan.
-                </p>
-            </div>
-
-        </div>
-
-        <!-- Learning Environment & Authentic Workshops -->
-        <div class="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200 shadow-sm space-y-6">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-japan-50 text-japan-600 flex items-center justify-center font-bold">
-                    <i data-lucide="building" class="w-5 h-5"></i>
-                </div>
-                <div>
-                    <h3 class="text-lg font-black text-slate-900">Lingkungan Belajar & Asrama Terpadu</h3>
-                    <p class="text-xs text-slate-500">Menciptakan ruang belajar kondusif dari ruang kelas multimedia hingga asrama yang nyaman</p>
-                </div>
-            </div>
-
-            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Kekuatan kami terletak pada ruang kantor yang sangat fungsional, asrama yang nyaman untuk memulihkan raga dan pikiran siswa setelah pelatihan, dan di atas segalanya: <strong>ruang kelas praktikum kejuruan khusus</strong> yang dilengkapi dengan peralatan nyata seperti di pabrik dan panti jompo Jepang. Melalui pelatihan di "lingkungan kerja autentik" ini, siswa memperoleh keterampilan nyata yang dapat langsung diaplikasikan di lapangan.
-            </p>
-        </div>
-    </section>
-
-    <!-- 5. Daily Schedule (Jadwal Harian Siswa: Weekday vs Weekend) -->
-    <section id="schedule" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-36">
-        <div class="text-center max-w-3xl mx-auto space-y-3 mb-10">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 border border-purple-200 text-purple-700 text-xs font-extrabold uppercase tracking-wider font-japanese">
-                <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
-                <span>一日のスケジュール • Daily Routine</span>
-            </div>
-            <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                Disiplin Ketat: Jadwal Kegiatan Siswa (04.00 - 22.00)
-            </h2>
-            <p class="text-xs sm:text-sm text-slate-500">
-                Pola hidup teratur melatih kemandirian, etos kerja, dan stamina yang dibutuhkan untuk sukses bekerja di iklim empat musim Jepang.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
-            <!-- Weekday Routine (Hari Kerja: Senin - Jumat) -->
-            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
-                <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-red-100 text-japan-600 flex items-center justify-center font-bold">
-                            <i data-lucide="sun" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-extrabold text-slate-900 text-base">Jadwal Hari Kerja (Weekday)</h3>
-                            <p class="text-xs text-slate-500 font-japanese">平日スケジュール (Senin s/d Jumat)</p>
-                        </div>
+    <!-- Dedicated Education & Curriculum Feature Banner -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="relative rounded-3xl overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-red-950 text-white p-8 sm:p-12 border border-slate-800 shadow-xl">
+            <div class="absolute -right-12 -bottom-12 w-64 h-64 bg-japan-600/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+                <div class="space-y-4 max-w-2xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-japan-600/30 border border-japan-500/40 text-red-300 text-xs font-black uppercase tracking-wider font-japanese">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+                        <span>SJI 教育システム • Dedicated Page</span>
                     </div>
-                    <span class="px-2.5 py-1 rounded-full bg-red-50 text-japan-700 text-[10px] font-black uppercase">Intensif</span>
-                </div>
-
-                <div class="space-y-4">
-                    @foreach($schedules['weekday'] as $item)
-                        <div class="flex items-start gap-4 p-3 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-200">
-                            <div class="flex-shrink-0 text-center w-20">
-                                <span class="text-xs font-mono font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-lg block">
-                                    {{ $item['time'] }}
-                                </span>
-                            </div>
-                            <div class="space-y-0.5 flex-1">
-                                <p class="text-xs sm:text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                                    <span>{{ $item['title'] }}</span>
-                                    <span class="text-[10px] font-japanese text-japan-600 font-bold">({{ $item['title_jp'] }})</span>
-                                </p>
-                                <p class="text-xs text-slate-500">{{ $item['desc'] }}</p>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-            <!-- Weekend Routine (Akhir Pekan: Sabtu - Minggu) -->
-            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
-                <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
-                            <i data-lucide="coffee" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-extrabold text-slate-900 text-base">Jadwal Akhir Pekan (Weekend)</h3>
-                            <p class="text-xs text-slate-500 font-japanese">週末スケジュール (Sabtu & Minggu)</p>
-                        </div>
+                    <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                        Kurikulum Bahasa Jepang & Sistem Edukasi Terpadu
+                    </h2>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        Kunjungi halaman khusus untuk mempelajari alur pendidikan 4 jenjang (Screening, N5, N4, N3/Kaigo), profil 20 tenaga pendidik profesional & 3 native sensei Jepang, fasilitas bengkel kerja autentik, asrama mandiri, serta jadwal disiplin harian (04.00 - 22.00).
+                    </p>
+                    <div class="flex flex-wrap items-center gap-3 pt-2 text-xs text-slate-300">
+                        <span class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> 4-Tier Language Roadmap</span>
+                        <span class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> 3 Native Sensei Jepang</span>
+                        <span class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> Laboratorium Praktikum & Asrama</span>
                     </div>
-                    <span class="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-[10px] font-black uppercase">Kaiwa & Praktik</span>
                 </div>
 
-                <div class="space-y-4">
-                    @foreach($schedules['weekend'] as $item)
-                        <div class="flex items-start gap-4 p-3 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-200">
-                            <div class="flex-shrink-0 text-center w-20">
-                                <span class="text-xs font-mono font-black text-slate-900 bg-slate-100 px-2 py-1 rounded-lg block">
-                                    {{ $item['time'] }}
-                                </span>
-                            </div>
-                            <div class="space-y-0.5 flex-1">
-                                <p class="text-xs sm:text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                                    <span>{{ $item['title'] }}</span>
-                                    <span class="text-[10px] font-japanese text-blue-600 font-bold">({{ $item['title_jp'] }})</span>
-                                </p>
-                                <p class="text-xs text-slate-500">{{ $item['desc'] }}</p>
-                            </div>
-                        </div>
-                    @endforeach
+                <div class="flex-shrink-0">
+                    <a href="{{ route('education.curriculum') }}" class="inline-flex items-center gap-3 px-6 py-4 rounded-2xl bg-japan-600 hover:bg-japan-700 text-white font-black text-sm transition shadow-lg shadow-red-600/30 hover:scale-[1.02] active:scale-[0.98]">
+                        <i data-lucide="book-open" class="w-5 h-5"></i>
+                        <span>Buka Kurikulum & Edukasi</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
                 </div>
             </div>
-
         </div>
     </section>
 

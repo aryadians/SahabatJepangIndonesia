@@ -40,6 +40,20 @@ class Teacher extends Model
     ];
 
     /**
+     * Auto clear synced stats cache on teacher change
+     */
+    protected static function booted(): void
+    {
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('sji_corporate_synced_stats');
+        });
+
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('sji_corporate_synced_stats');
+        });
+    }
+
+    /**
      * Scope untuk jajaran eksekutif (CEO, Owner, Direktur)
      */
     public function scopeExecutives($query)

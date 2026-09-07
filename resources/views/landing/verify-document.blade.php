@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Verifikasi Keaslian Dokumen Resmi & QR Code - LPK Sahabat Jepang Indonesia')
-@section('meta_description', 'Sistem verifikasi publik keaslian kwitansi, invoice, dan dokumen resmi LPK Sahabat Jepang Indonesia berizin SO Kemnaker RI.')
+@section('title', 'Verifikasi Keaslian Dokumen Resmi & QR Code - SJI Group')
+@section('meta_description', 'Sistem verifikasi publik keaslian kwitansi, invoice, dan dokumen resmi PT Sahabat Jepang Indonesia Group (SJI Group) berizin SO Kemnaker RI.')
 @section('meta_keywords', 'verifikasi kwitansi lpk jepang, scan qr kwitansi sahabat jepang indonesia, cek keaslian dokumen resmi so kemnaker')
 
 @section('content')

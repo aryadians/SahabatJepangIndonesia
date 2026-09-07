@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Katalog & Unduh Brosur Resmi Pelatihan Kerja Jepang - LPK Sahabat Jepang Indonesia')
+@section('title', 'Katalog & Unduh Brosur Resmi Pelatihan Kerja Jepang - SJI Group')
 @section('meta_description', 'Unduh resmi silabus kurikulum 6 bulan, rincian biaya transparan tanpa pungutan liar, standar gaji di Jepang, serta beasiswa SMILE Project Kemenkes 100% Gratis.')
 @section('meta_keywords', 'unduh brosur lpk jepang, silabus pelatihan jepang, rincian biaya magang jepang, beasiswa kemenkes jepang, sahabat jepang indonesia brosur')
 

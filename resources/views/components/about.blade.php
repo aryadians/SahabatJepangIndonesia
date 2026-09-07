@@ -10,14 +10,14 @@
         <div class="text-center max-w-3xl mx-auto mb-16 space-y-3 reveal-on-scroll">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-japan-700 text-xs font-bold uppercase tracking-wider">
                 <span class="font-japanese text-sm">会社概要</span>
-                <span>• Tentang LPK Sahabat Jepang Indonesia</span>
+                <span>• Tentang PT SAHABAT JEPANG INDONESIA GROUP (SJI Group)</span>
             </div>
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
                 Membangun Generasi Unggul & <br class="hidden sm:inline">
                 <span class="text-japan-600">Berkarir Profesional di Jepang</span>
             </h2>
             <p class="text-base sm:text-lg text-slate-600 leading-relaxed">
-                LPK Sahabat Jepang Indonesia (SJI) hadir sebagai jembatan persahabatan dan pembinaan talenta muda Indonesia untuk mencapai sukses karir di industri Jepang secara legal, aman, dan bermartabat.
+                PT SAHABAT JEPANG INDONESIA GROUP (SJI Group) hadir sebagai holding resmi dan jembatan persahabatan pembinaan talenta muda Indonesia untuk mencapai sukses karir di industri Jepang secara legal, aman, dan bermartabat.
             </p>
         </div>
 
@@ -389,6 +389,19 @@
                     </div>
                 @endif
             </div>
+        </div>
+
+        <!-- Quick Links to Dedicated Corporate Profile & Curriculum Pages -->
+        <div class="mt-12 pt-8 border-t border-slate-100 text-center flex flex-wrap items-center justify-center gap-4 reveal-on-scroll">
+            <a href="{{ route('company.profile') }}" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-japan-600 hover:bg-japan-700 text-white font-extrabold text-xs sm:text-sm transition shadow-md shadow-red-600/20 hover:scale-[1.02] active:scale-[0.98]">
+                <i data-lucide="building-2" class="w-4 h-4"></i>
+                <span>Profil Resmi SJI Group & 9 Cabang</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+            <a href="{{ route('education.curriculum') }}" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs sm:text-sm border border-slate-200 transition hover:scale-[1.02] active:scale-[0.98]">
+                <i data-lucide="book-open" class="w-4 h-4 text-japan-600"></i>
+                <span>Kurikulum Terpadu & Jadwal Harian Siswa</span>
+            </a>
         </div>
 
     </div>

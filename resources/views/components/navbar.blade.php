@@ -10,58 +10,95 @@
             @endphp
 
             <!-- Brand Logo (Left) -->
-            <a href="{{ route('home') }}" class="flex items-center gap-3 group shrink-0">
+            <a href="{{ route('home') }}" class="flex items-center gap-2.5 sm:gap-3 group shrink-0 py-1">
                 @if(!empty($logoSrc))
-                    <img src="{{ $logoSrc }}" alt="{{ $settings['site_name'] ?? 'PT Sahabat Jepang Indonesia Group' }}" class="h-11 w-auto object-contain max-w-[160px] rounded-lg">
+                    <img src="{{ $logoSrc }}" alt="{{ $settings['site_name'] ?? 'PT Sahabat Jepang Indonesia Group' }}" class="h-10 sm:h-12 lg:h-12 w-auto object-contain max-w-[140px] sm:max-w-[170px] drop-shadow-sm group-hover:scale-105 transition-transform duration-200">
                 @else
                     <div class="w-10 h-10 rounded-2xl bg-japan-600 text-white flex items-center justify-center font-japanese font-black text-xl shadow-md shadow-red-600/20 group-hover:scale-105 transition shrink-0">
                         友
                     </div>
                 @endif
                 <div class="flex flex-col justify-center">
-                    <div class="flex items-center gap-2">
-                        <span class="font-black text-sm xl:text-base text-slate-900 tracking-tight leading-none uppercase whitespace-nowrap">
-                            {{ $settings['site_name'] ?? 'PT SAHABAT JEPANG INDONESIA GROUP' }}
-                        </span>
-                        <span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-red-100 text-japan-700 border border-red-200 uppercase tracking-wider whitespace-nowrap">
+                    <div class="flex items-center gap-1.5">
+                        <span class="font-black text-sm sm:text-base lg:text-lg text-slate-900 tracking-tight leading-none uppercase whitespace-nowrap">
                             SJI GROUP
                         </span>
+                        <span class="hidden 2xl:inline-block px-1.5 py-0.5 rounded text-[8px] font-black bg-red-100 text-japan-700 border border-red-200 uppercase tracking-wider whitespace-nowrap">
+                            HOLDING
+                        </span>
                     </div>
-                    <p class="text-[11px] text-slate-400 font-medium flex items-center gap-1.5 mt-1 leading-none whitespace-nowrap">
-                        <span class="font-japanese text-xs text-japan-600 font-bold">友好日本</span>
+                    <p class="hidden xl:flex text-[10px] text-slate-400 font-medium items-center gap-1 mt-0.5 leading-none whitespace-nowrap">
+                        <span class="font-japanese text-japan-600 font-bold">友好日本</span>
                         <span class="text-slate-300">•</span>
-                        <span>{{ $settings['site_tagline'] ?? 'Sending Organization & Nihongo Gakkou' }}</span>
+                        <span>Sending Org & Academy</span>
                     </p>
                 </div>
             </a>
 
-            <!-- Desktop Nav Links (Center - Balanced, Clean & Zen) -->
-            <nav class="hidden lg:flex items-center gap-1 xl:gap-2">
-                <a href="{{ route('home') }}#beranda" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-japan-600 hover:bg-slate-100/70 transition">
+            <!-- Desktop Nav Links (Center - Balanced, Clean & Single-Line Zen) -->
+            <nav class="hidden lg:flex items-center gap-0.5 xl:gap-1.5">
+                <a href="{{ route('home') }}#beranda" class="px-2.5 xl:px-3 py-1.5 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-japan-600 hover:bg-slate-100/70 transition whitespace-nowrap">
                     Beranda
                 </a>
 
-                <a href="{{ route('company.profile') }}" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold {{ request()->routeIs('company.profile') ? 'text-japan-600 bg-red-50/80 font-black' : 'text-slate-700 hover:text-japan-600 hover:bg-slate-100/70' }} transition flex items-center gap-1.5">
-                    <i data-lucide="building-2" class="w-3.5 h-3.5 text-japan-600"></i>
-                    <span>Profil SJI Group</span>
-                </a>
-
-                <!-- Dropdown Program Karir -->
+                <!-- Dropdown Tentang SJI Group -->
                 <div class="relative group">
-                    <button type="button" class="flex items-center gap-1 px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 group-hover:text-japan-600 group-hover:bg-slate-100/70 transition">
-                        <span>Program Karir</span>
+                    <button type="button" class="flex items-center gap-1 px-2.5 xl:px-3 py-1.5 rounded-xl text-xs xl:text-sm font-bold whitespace-nowrap {{ request()->routeIs('company.*') || request()->routeIs('education.*') ? 'text-japan-600 bg-red-50/90 font-black ring-1 ring-red-200/60' : 'text-slate-700 hover:text-japan-600 hover:bg-slate-100/70' }} transition">
+                        <span>Tentang SJI</span>
                         <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 group-hover:text-japan-600 group-hover:rotate-180 transition-transform duration-200"></i>
                     </button>
 
                     <div class="absolute left-0 top-full pt-2 opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-50 pointer-events-none group-hover:pointer-events-auto">
-                        <div class="w-72 bg-white rounded-2xl shadow-xl border border-slate-200/80 p-2.5 space-y-1 ring-1 ring-black/5">
+                        <div class="w-80 bg-white rounded-2xl shadow-xl border border-slate-200/80 p-2.5 space-y-1 ring-1 ring-black/5">
+                            <a href="{{ route('company.profile') }}" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-red-50 text-slate-700 hover:text-japan-700 transition">
+                                <div class="w-8 h-8 rounded-lg bg-red-100 text-japan-600 flex items-center justify-center font-bold shrink-0">
+                                    <i data-lucide="building-2" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-900">Profil SJI Group & 9 Cabang</p>
+                                    <p class="text-[10px] text-slate-400">Holding SO, legalitas, sambutan Chairman</p>
+                                </div>
+                            </a>
+
+                            <a href="{{ route('education.curriculum') }}" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-red-50 text-slate-700 hover:text-japan-700 transition">
+                                <div class="w-8 h-8 rounded-lg bg-red-100 text-japan-600 flex items-center justify-center font-bold shrink-0">
+                                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-900">Kurikulum & Edukasi</p>
+                                    <p class="text-[10px] text-slate-400">Roadmap N5-N3, jadwal harian, native sensei</p>
+                                </div>
+                            </a>
+
+                            <a href="{{ route('company.profile') }}#branches" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-red-50 text-slate-700 hover:text-japan-700 transition">
+                                <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold shrink-0">
+                                    <i data-lucide="map-pin" class="w-4 h-4"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-900">Jaringan Cabang & Kantor Jepang</p>
+                                    <p class="text-[10px] text-slate-400">{{ $sjiStats['indonesia_branches_count'] ?? 7 }} cabang di RI & kantor resmi {{ $sjiStats['japan_cities_slash'] ?? 'Tokyo/Chiba' }}</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dropdown Program Karir & Beasiswa -->
+                <div class="relative group">
+                    <button type="button" class="flex items-center gap-1 px-2.5 xl:px-3 py-1.5 rounded-xl text-xs xl:text-sm font-bold text-slate-700 group-hover:text-japan-600 group-hover:bg-slate-100/70 transition whitespace-nowrap">
+                        <span>Program & Karir</span>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 group-hover:text-japan-600 group-hover:rotate-180 transition-transform duration-200"></i>
+                    </button>
+
+                    <div class="absolute left-0 top-full pt-2 opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-50 pointer-events-none group-hover:pointer-events-auto">
+                        <div class="w-80 bg-white rounded-2xl shadow-xl border border-slate-200/80 p-2.5 space-y-1 ring-1 ring-black/5">
                             <a href="{{ route('home') }}#program" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-red-50 text-slate-700 hover:text-japan-700 transition">
                                 <div class="w-8 h-8 rounded-lg bg-red-100 text-japan-600 flex items-center justify-center font-bold flex-shrink-0">
                                     <i data-lucide="briefcase" class="w-4 h-4"></i>
                                 </div>
                                 <div>
                                     <p class="text-xs font-bold text-slate-900">Tokutei Ginou (SSW)</p>
-                                    <p class="text-[10px] text-slate-400">Pekerja berketerampilan spesifik</p>
+                                    <p class="text-[10px] text-slate-400">Pekerja berketerampilan spesifik gaji tinggi</p>
                                 </div>
                             </a>
 
@@ -71,43 +108,10 @@
                                 </div>
                                 <div>
                                     <p class="text-xs font-bold text-slate-900">Ginou Jisshusei (Magang)</p>
-                                    <p class="text-[10px] text-slate-400">Praktik kerja resmi 3 tahun</p>
+                                    <p class="text-[10px] text-slate-400">Praktik kerja resmi 3 tahun bersertifikat JITCO</p>
                                 </div>
                             </a>
 
-                            <a href="{{ route('home') }}#program" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-red-50 text-slate-700 hover:text-japan-700 transition">
-                                <div class="w-8 h-8 rounded-lg bg-red-100 text-japan-600 flex items-center justify-center font-bold flex-shrink-0">
-                                    <i data-lucide="code" class="w-4 h-4"></i>
-                                </div>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-900">Engineer & IT Profesional</p>
-                                    <p class="text-[10px] text-slate-400">Jalur sarjana & diploma teknik</p>
-                                </div>
-                            </a>
-
-                            <a href="{{ route('home') }}#program" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-red-50 text-slate-700 hover:text-japan-700 transition">
-                                <div class="w-8 h-8 rounded-lg bg-red-100 text-japan-600 flex items-center justify-center font-bold flex-shrink-0">
-                                    <i data-lucide="languages" class="w-4 h-4"></i>
-                                </div>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-900">Kursus Bahasa Intensif</p>
-                                    <p class="text-[10px] text-slate-400">Persiapan N5, N4, N3</p>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Dropdown Program Pemerintah & Kemitraan -->
-                <div class="relative group">
-                    <button type="button" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 group-hover:text-emerald-700 group-hover:bg-emerald-50/70 transition">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span>Program Pemerintah</span>
-                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-700 group-hover:rotate-180 transition-transform duration-200"></i>
-                    </button>
-
-                    <div class="absolute left-0 top-full pt-2 opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-50 pointer-events-none group-hover:pointer-events-auto">
-                        <div class="w-80 bg-white rounded-2xl shadow-xl border border-emerald-100 p-2.5 space-y-1 ring-1 ring-black/5">
                             <a href="{{ route('home') }}#kemitraan" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 transition">
                                 <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold flex-shrink-0">
                                     <i data-lucide="award" class="w-4 h-4"></i>
@@ -130,34 +134,34 @@
                                         <span>SMK Go Japan</span>
                                         <span class="px-1.5 py-0.2 rounded bg-blue-200 text-blue-900 text-[9px] font-black">VOKASI</span>
                                     </p>
-                                    <p class="text-[10px] text-slate-400">Khusus siswa & lulusan SMK</p>
+                                    <p class="text-[10px] text-slate-400">Jalur percepatan alumni SMK binaan</p>
                                 </div>
                             </a>
 
-                            <a href="{{ route('home') }}#kemitraan" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 text-slate-700 hover:text-slate-900 transition">
-                                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold flex-shrink-0">
-                                    <i data-lucide="image" class="w-4 h-4"></i>
+                            <a href="{{ route('home') }}#program" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-red-50 text-slate-700 hover:text-japan-700 transition">
+                                <div class="w-8 h-8 rounded-lg bg-red-100 text-japan-600 flex items-center justify-center font-bold flex-shrink-0">
+                                    <i data-lucide="code" class="w-4 h-4"></i>
                                 </div>
                                 <div>
-                                    <p class="text-xs font-bold text-slate-900">Galeri Kunjungan & MoU</p>
-                                    <p class="text-[10px] text-slate-400">Dokumentasi 4 gelombang keberangkatan</p>
+                                    <p class="text-xs font-bold text-slate-900">Engineer & IT Profesional</p>
+                                    <p class="text-[10px] text-slate-400">Jalur sarjana & diploma teknik</p>
                                 </div>
                             </a>
                         </div>
                     </div>
                 </div>
 
-                <a href="{{ route('home') }}#kalkulator" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-japan-600 hover:bg-slate-100/70 transition">
-                    Simulasi Biaya & Gaji
+                <a href="{{ route('home') }}#kalkulator" class="px-2.5 xl:px-3 py-1.5 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-japan-600 hover:bg-slate-100/70 transition whitespace-nowrap">
+                    Simulasi Biaya
                 </a>
 
-                <a href="{{ route('brochure.index') }}" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-japan-600 hover:bg-slate-100/70 transition">
+                <a href="{{ route('brochure.index') }}" class="px-2.5 xl:px-3 py-1.5 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-japan-600 hover:bg-slate-100/70 transition whitespace-nowrap">
                     Unduh Brosur
                 </a>
 
-                <!-- Dropdown Lainnya -->
+                <!-- Dropdown Layanan & Fitur Lainnya -->
                 <div class="relative group">
-                    <button type="button" class="flex items-center gap-1 px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 group-hover:text-japan-600 group-hover:bg-slate-100/70 transition">
+                    <button type="button" class="flex items-center gap-1 px-2.5 xl:px-3 py-1.5 rounded-xl text-xs xl:text-sm font-bold text-slate-700 group-hover:text-japan-600 group-hover:bg-slate-100/70 transition whitespace-nowrap">
                         <span>Lainnya</span>
                         <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 group-hover:text-japan-600 group-hover:rotate-180 transition-transform duration-200"></i>
                     </button>
@@ -181,9 +185,9 @@
                                 <div class="flex-1">
                                     <div class="flex items-center justify-between">
                                         <p class="text-xs font-bold text-slate-900">Peta Sebaran Alumni</p>
-                                        <span class="px-1.5 py-0.5 rounded bg-red-100 text-japan-700 text-[9px] font-black uppercase">Peta 47 Prefektur 🇯🇵</span>
+                                        <span class="px-1.5 py-0.5 rounded bg-red-100 text-japan-700 text-[9px] font-black uppercase">47 Prefektur</span>
                                     </div>
-                                    <p class="text-[10px] text-slate-400">Peta interaktif sebaran 8 region Jepang</p>
+                                    <p class="text-[10px] text-slate-400">Peta interaktif sebaran alumni di Jepang</p>
                                 </div>
                             </a>
 
@@ -281,6 +285,10 @@
             <a href="{{ route('company.profile') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold {{ request()->routeIs('company.profile') ? 'text-japan-600 bg-red-50 font-black' : 'text-slate-700 hover:text-japan-600 hover:bg-red-50' }} transition">
                 <i data-lucide="building-2" class="w-4 h-4 text-japan-600"></i>
                 <span>Profil SJI Group & Jaringan Cabang</span>
+            </a>
+            <a href="{{ route('education.curriculum') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold {{ request()->routeIs('education.curriculum') ? 'text-japan-600 bg-red-50 font-black' : 'text-slate-700 hover:text-japan-600 hover:bg-red-50' }} transition">
+                <i data-lucide="book-open" class="w-4 h-4 text-japan-600"></i>
+                <span>Kurikulum & Edukasi Terpadu</span>
             </a>
             <a href="{{ route('exam.simulator') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-japan-600 bg-red-50/60 hover:bg-red-50 transition">
                 <i data-lucide="file-check" class="w-4 h-4 text-japan-600"></i>

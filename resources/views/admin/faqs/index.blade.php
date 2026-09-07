@@ -7,7 +7,7 @@
 <div class="space-y-8">
     
     <!-- Add Form -->
-    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 max-w-4xl">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 w-full">
         <div class="border-b border-slate-100 pb-3 flex items-center gap-2">
             <div class="w-8 h-8 rounded-lg bg-red-50 text-japan-600 flex items-center justify-center font-bold">
                 <i data-lucide="plus" class="w-4 h-4"></i>
@@ -49,7 +49,7 @@
     <div class="space-y-4">
         <h3 class="font-extrabold text-slate-900 text-base">Daftar Pertanyaan FAQ ({{ $faqs->count() }})</h3>
         
-        <div class="space-y-3 max-w-4xl">
+        <div class="space-y-3 w-full">
             @forelse($faqs as $faq)
                 <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-start justify-between gap-4">
                     <div class="space-y-1.5 flex-1">

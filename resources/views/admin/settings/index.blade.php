@@ -4,41 +4,41 @@
 @section('page_title', 'Pengaturan Website & Logo Header')
 
 @section('content')
-<form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data" class="space-y-8 max-w-5xl">
+<form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data" class="space-y-8 w-full">
     @csrf
 
     <!-- Quick Sticky Navigation Sub-Bar (Docked right below h-16 Topbar) -->
-    <div class="sticky top-16 z-20 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2.5 bg-slate-100/95 backdrop-blur-md border-b border-slate-200/80 mb-6 flex items-center justify-between gap-3 overflow-x-auto select-none shadow-xs">
-        <div class="flex items-center gap-2 flex-nowrap min-w-max text-xs font-bold">
-            <a href="#sec-logo" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
+    <div class="sticky top-16 z-20 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2.5 bg-slate-100/95 backdrop-blur-md border-b border-slate-200/80 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 select-none shadow-xs">
+        <div class="flex items-center gap-2 flex-wrap text-xs font-bold w-full sm:w-auto">
+            <a href="#sec-logo" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs whitespace-nowrap">
                 <i data-lucide="image" class="w-3.5 h-3.5 text-japan-600"></i>
                 <span>Logo & Brand</span>
             </a>
-            <a href="#sec-hero" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
+            <a href="#sec-hero" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs whitespace-nowrap">
                 <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
                 <span>Hero & Banner</span>
             </a>
-            <a href="#sec-stats" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
+            <a href="#sec-stats" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs whitespace-nowrap">
                 <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-blue-500"></i>
                 <span>Statistik</span>
             </a>
-            <a href="#sec-contact" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
+            <a href="#sec-contact" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs whitespace-nowrap">
                 <i data-lucide="phone" class="w-3.5 h-3.5 text-emerald-500"></i>
                 <span>Kontak & CS</span>
             </a>
-            <a href="#sec-social" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
+            <a href="#sec-social" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs whitespace-nowrap">
                 <i data-lucide="share-2" class="w-3.5 h-3.5 text-rose-500"></i>
                 <span>Media Sosial</span>
             </a>
-            <a href="#sec-corporate" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
+            <a href="#sec-corporate" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs whitespace-nowrap">
                 <i data-lucide="building" class="w-3.5 h-3.5 text-indigo-500"></i>
                 <span>Profil SJI Group</span>
             </a>
-            <a href="#sec-ticker" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
+            <a href="#sec-ticker" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs whitespace-nowrap">
                 <i data-lucide="bell" class="w-3.5 h-3.5 text-purple-500"></i>
                 <span>Social Proof Ticker</span>
             </a>
-            <a href="#sec-fonnte" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-emerald-400 hover:text-emerald-700 text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
+            <a href="#sec-fonnte" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-emerald-400 hover:text-emerald-700 text-slate-700 transition flex items-center gap-1.5 shadow-2xs whitespace-nowrap">
                 <i data-lucide="message-square-code" class="w-3.5 h-3.5 text-emerald-600"></i>
                 <span>WhatsApp Fonnte</span>
                 @if(($settings['fonnte_enabled'] ?? '0') === '1' && !empty($settings['fonnte_api_token']))
@@ -47,9 +47,9 @@
             </a>
         </div>
 
-        <button type="submit" class="px-4 py-1.5 rounded-xl bg-japan-600 hover:bg-japan-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm flex-shrink-0">
-            <i data-lucide="save" class="w-3.5 h-3.5"></i>
-            <span>Simpan</span>
+        <button type="submit" class="px-5 py-2 rounded-xl bg-japan-600 hover:bg-japan-700 text-white text-xs font-black transition flex items-center gap-2 shadow-sm shrink-0 whitespace-nowrap ml-auto sm:ml-0">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            <span>Simpan Perubahan</span>
         </button>
     </div>
 
@@ -169,7 +169,7 @@
                             type="text" 
                             id="inputSiteName"
                             name="site_name" 
-                            value="{{ $settings['site_name'] ?? 'SAHABAT JEPANG' }}" 
+                            value="{{ $settings['site_name'] ?? 'PT SAHABAT JEPANG INDONESIA GROUP' }}" 
                             class="w-full px-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600 font-bold"
                         >
                     </div>
@@ -180,7 +180,7 @@
                             type="text" 
                             id="inputSiteTagline"
                             name="site_tagline" 
-                            value="{{ $settings['site_tagline'] ?? 'Penyalur Resmi Kemenaker' }}" 
+                            value="{{ $settings['site_tagline'] ?? 'Sending Organization & Japanese Academy' }}" 
                             class="w-full px-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600"
                         >
                     </div>
@@ -188,6 +188,66 @@
 
             </div>
 
+        </div>
+
+        <!-- Favicon Browser Tab Settings -->
+        <div class="pt-6 border-t border-slate-100">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-red-50 text-japan-600 flex items-center justify-center font-bold">
+                    <i data-lucide="globe" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h4 class="font-extrabold text-slate-800 text-sm">Favicon Browser (Tab Icon)</h4>
+                    <p class="text-[11px] text-slate-400">Ikon kecil yang tampil di tab browser pengunjung dan dashboard admin (Format PNG, ICO, atau SVG)</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                <div class="md:col-span-3 p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center text-center space-y-2.5">
+                    <div class="flex items-center justify-between w-full">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Preview Tab</p>
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-red-100 text-japan-700 border border-red-200">
+                            Lingkaran
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-2 px-3 py-2 bg-slate-200/70 rounded-t-xl border border-slate-300 w-full justify-start shadow-xs">
+                        <div class="w-6 h-6 rounded-full flex items-center justify-center bg-white p-0.5 overflow-hidden border-2 border-red-500 shadow-sm shrink-0 ring-2 ring-red-100">
+                            @php
+                                $favVal = $settings['site_favicon'] ?? (file_exists(public_path('images/favicon-circle.png')) ? '/images/favicon-circle.png' : ($settings['site_logo'] ?? asset('images/logo.png')));
+                                $favSrc = str_starts_with($favVal, 'data:') || str_starts_with($favVal, 'http') ? $favVal : asset(ltrim($favVal, '/'));
+                            @endphp
+                            <img id="faviconPreviewImg" src="{{ $favSrc }}" alt="Favicon" class="h-full w-full object-contain rounded-full">
+                        </div>
+                        <span class="text-[10px] font-bold text-slate-700 truncate">SJI Group</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 leading-tight">Ikon tab otomatis dipotong bulat</p>
+                </div>
+                <div class="md:col-span-9 space-y-3">
+                    <div class="space-y-1">
+                        <label class="block text-xs font-bold text-slate-700 uppercase">1. Unggah File Favicon Baru (Otomatis Dibuat Lingkaran & Transparan)</label>
+                        <input 
+                            type="file" 
+                            id="siteFaviconFileInput"
+                            name="site_favicon_file" 
+                            accept="image/*" 
+                            onchange="previewImageFile(this, 'faviconPreviewImg')"
+                            class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-japan-700 hover:file:bg-red-100 cursor-pointer"
+                        >
+                        <p id="faviconFileFeedback" class="text-[10px] text-slate-400">Unggah file PNG/JPG/WEBP apa saja, sistem akan otomatis mengubahnya menjadi favicon <strong>lingkaran sempurna</strong> dengan background luar transparan.</p>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-xs font-bold text-slate-700 uppercase">2. Atau Masukkan URL / Path Favicon Bulat</label>
+                        <input 
+                            type="text" 
+                            id="siteFaviconTextInput"
+                            name="site_favicon" 
+                            value="{{ $settings['site_favicon'] ?? '/images/favicon-circle.png' }}" 
+                            placeholder="/images/favicon-circle.png atau https://..." 
+                            class="w-full px-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-japan-600 font-mono"
+                        >
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -714,6 +774,70 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <!-- Foto Resmi Pimpinan (Chairman) -->
+            <div class="sm:col-span-2 p-5 rounded-2xl bg-indigo-50/50 border border-indigo-100 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <i data-lucide="user-check" class="w-4 h-4 text-indigo-600"></i>
+                        <h4 class="text-xs font-black text-slate-800 uppercase tracking-wider">Foto Resmi Pimpinan / Chairman</h4>
+                    </div>
+                    <button 
+                        type="button" 
+                        onclick="resetLeaderPhotoToDefault()" 
+                        class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 transition underline"
+                    >
+                        Gunakan Foto Profil Standar
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-5 items-center">
+                    <div class="sm:col-span-4 flex flex-col items-center justify-center">
+                        <div class="w-28 h-36 rounded-2xl overflow-hidden border-2 border-indigo-300 shadow-md bg-white flex items-center justify-center relative group">
+                            @php
+                                $leaderPhotoVal = $settings['corporate_leader_photo'] ?? '';
+                                $leaderPhotoSrc = !empty($leaderPhotoVal) 
+                                    ? (str_starts_with($leaderPhotoVal, 'data:') || str_starts_with($leaderPhotoVal, 'http') ? $leaderPhotoVal : asset(ltrim($leaderPhotoVal, '/')))
+                                    : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80';
+                            @endphp
+                            <img 
+                                id="leaderPhotoPreviewImg" 
+                                src="{{ $leaderPhotoSrc }}" 
+                                alt="Foto Pimpinan" 
+                                class="w-full h-full object-cover"
+                            >
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-2 text-center">Rasio Potret 3:4 atau 1:1</p>
+                    </div>
+
+                    <div class="sm:col-span-8 space-y-3">
+                        <div class="space-y-1">
+                            <label class="block text-xs font-bold text-slate-700 uppercase">1. Unggah File Foto Baru</label>
+                            <input 
+                                type="file" 
+                                id="leaderPhotoFileInput"
+                                name="corporate_leader_photo_file" 
+                                accept="image/*" 
+                                onchange="previewImageFile(this, 'leaderPhotoPreviewImg')"
+                                class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-100 file:text-indigo-700 hover:file:bg-indigo-200 cursor-pointer"
+                            >
+                            <p id="leaderPhotoFileFeedback" class="text-[10px] text-slate-400">Maks 2 MB (Otomatis dikonversi ke Base64 aman)</p>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-xs font-bold text-slate-700 uppercase">2. Atau Masukkan URL / Data Base64 Foto</label>
+                            <input 
+                                type="text" 
+                                id="leaderPhotoTextInput"
+                                name="corporate_leader_photo" 
+                                value="{{ $settings['corporate_leader_photo'] ?? '' }}" 
+                                placeholder="https://... atau data:image/jpeg;base64,..." 
+                                class="w-full px-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-indigo-600 font-mono"
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="space-y-1.5">
                 <label class="block text-xs font-bold text-slate-700 uppercase">Nama Pimpinan / Chairman</label>
                 <input 
@@ -762,13 +886,81 @@
             </div>
 
             <div class="space-y-1.5">
-                <label class="block text-xs font-bold text-slate-700 uppercase">Total Siswa Terkirim ke Jepang</label>
+                <label class="block text-xs font-bold text-slate-700 uppercase">Total Alumni Sukses di Jepang</label>
                 <input 
                     type="text" 
                     name="corporate_alumni_sent" 
                     value="{{ $settings['corporate_alumni_sent'] ?? '850+' }}" 
                     class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600 font-bold"
+                    placeholder="Contoh: 850+"
                 >
+                <p class="text-[10px] text-slate-400">Tersinkron otomatis ke Beranda, Halaman Profil Perusahaan, dan Kurikulum.</p>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700 uppercase">Label Kemitraan & MoU Resmi</label>
+                <input 
+                    type="text" 
+                    name="corporate_mou_label" 
+                    value="{{ $settings['corporate_mou_label'] ?? 'MoU Poltekkes & SMK Nasional' }}" 
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600 font-bold"
+                    placeholder="Contoh: MoU Poltekkes & SMK Nasional"
+                >
+                <p class="text-[10px] text-slate-400">Tersinkron otomatis ke badge profil dan kurikulum.</p>
+            </div>
+
+            <!-- Real-Time Synced Curriculum & Faculty Metrics -->
+            <div class="sm:col-span-2 pt-4 border-t border-slate-100 space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-japan-600"></i>
+                            <span>Sinkronisasi Otomatis Angka Pendidik & Kurikulum</span>
+                        </h4>
+                        <p class="text-[11px] text-slate-500">Angka di bawah ini otomatis terhubung dengan database Sensei & Karyawan serta tampil di Halaman Kurikulum & Edukasi</p>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-black">
+                        ⚡ Real-Time Synced
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-1.5 hover:border-japan-300 transition">
+                        <label class="block text-[11px] font-extrabold text-slate-700">Instruktur Berpengalaman</label>
+                        <input 
+                            type="number" 
+                            name="stat_instructors_count" 
+                            value="{{ $settings['stat_instructors_count'] ?? 20 }}" 
+                            class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-bold focus:outline-none focus:border-japan-600 bg-white"
+                            placeholder="20"
+                        >
+                        <p class="text-[10px] text-slate-500">Tampil dengan akhiran '+' (Contoh: 20+). Terhubung juga ke database pengajar.</p>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-1.5 hover:border-japan-300 transition">
+                        <label class="block text-[11px] font-extrabold text-slate-700">Native Sensei Jepang</label>
+                        <input 
+                            type="number" 
+                            name="stat_native_teachers" 
+                            value="{{ $settings['stat_native_teachers'] ?? 3 }}" 
+                            class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-bold focus:outline-none focus:border-japan-600 bg-white"
+                            placeholder="3"
+                        >
+                        <p class="text-[10px] text-slate-500">Sensei penutur asli Jepang (Native Speakers).</p>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-1.5 hover:border-japan-300 transition">
+                        <label class="block text-[11px] font-extrabold text-slate-700">Alumni Urawa Sensei</label>
+                        <input 
+                            type="number" 
+                            name="stat_urawa_teachers" 
+                            value="{{ $settings['stat_urawa_teachers'] ?? 3 }}" 
+                            class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-bold focus:outline-none focus:border-japan-600 bg-white"
+                            placeholder="3"
+                        >
+                        <p class="text-[10px] text-slate-500">Sensei lulusan Japan Foundation Urawa Center.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1155,13 +1347,21 @@
             const file = input.files[0];
             const isLogo = targetImgId === 'logoPreviewImg';
             const isHero = targetImgId === 'previewHeroImg';
+            const isFavicon = targetImgId === 'faviconPreviewImg';
+            const isLeader = targetImgId === 'leaderPhotoPreviewImg';
 
-            const feedbackEl = isLogo ? document.getElementById('logoFileFeedback') : document.getElementById('heroFileFeedback');
+            let feedbackEl = null;
+            if (isLogo) feedbackEl = document.getElementById('logoFileFeedback');
+            else if (isHero) feedbackEl = document.getElementById('heroFileFeedback');
+            else if (isFavicon) feedbackEl = document.getElementById('faviconFileFeedback');
+            else if (isLeader) feedbackEl = document.getElementById('leaderPhotoFileFeedback');
+
             if (feedbackEl) {
                 feedbackEl.innerHTML = `<span class="text-japan-600 font-bold animate-pulse">⏳ Memproses & mengompresi gambar...</span>`;
             }
 
-            compressAndConvertImage(file, isLogo ? 800 : 1600, 0.85, function(base64Uri, sizeKb) {
+            const maxW = isFavicon ? 256 : (isLogo ? 800 : (isLeader ? 600 : 1600));
+            compressAndConvertImage(file, maxW, 0.85, function(base64Uri, sizeKb) {
                 const img = document.getElementById(targetImgId);
                 if (img) {
                     img.src = base64Uri;
@@ -1186,12 +1386,42 @@
                     if (feedbackEl) {
                         feedbackEl.innerHTML = `<span class="text-emerald-600 font-bold">✓ Siap Disimpan: ${file.name} (Optimal: ~${sizeKb} KB)</span>`;
                     }
+                } else if (isFavicon) {
+                    const favTextInput = document.getElementById('siteFaviconTextInput');
+                    if (favTextInput) favTextInput.value = base64Uri;
+                    if (feedbackEl) {
+                        feedbackEl.innerHTML = `<span class="text-emerald-600 font-bold">✓ Siap Disimpan: ${file.name} (~${sizeKb} KB)</span>`;
+                    }
+                } else if (isLeader) {
+                    const leaderTextInput = document.getElementById('leaderPhotoTextInput');
+                    if (leaderTextInput) leaderTextInput.value = base64Uri;
+                    if (feedbackEl) {
+                        feedbackEl.innerHTML = `<span class="text-emerald-600 font-bold">✓ Siap Disimpan: ${file.name} (~${sizeKb} KB)</span>`;
+                    }
                 }
 
                 if (typeof checkFormDirty === 'function') {
                     checkFormDirty();
                 }
             });
+        }
+    }
+
+    function resetLeaderPhotoToDefault() {
+        const defaultPhotoUrl = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80';
+        const leaderTextInput = document.getElementById('leaderPhotoTextInput');
+        const leaderFileInput = document.getElementById('leaderPhotoFileInput');
+        const previewImg = document.getElementById('leaderPhotoPreviewImg');
+        const feedbackEl = document.getElementById('leaderPhotoFileFeedback');
+
+        if (leaderTextInput) leaderTextInput.value = defaultPhotoUrl;
+        if (leaderFileInput) leaderFileInput.value = '';
+        if (previewImg) previewImg.src = defaultPhotoUrl;
+        if (feedbackEl) {
+            feedbackEl.innerHTML = `<span class="text-slate-500 font-semibold">Menggunakan foto profil standar. Klik Simpan untuk menerapkan.</span>`;
+        }
+        if (typeof checkFormDirty === 'function') {
+            checkFormDirty();
         }
     }
 
@@ -1870,7 +2100,7 @@
        ========================================================== */
     function initSettingScrollspy() {
         const pills = document.querySelectorAll('.setting-pill');
-        const sections = ['sec-logo', 'sec-hero', 'sec-stats', 'sec-contact', 'sec-ticker', 'sec-fonnte']
+        const sections = ['sec-logo', 'sec-hero', 'sec-stats', 'sec-contact', 'sec-social', 'sec-corporate', 'sec-ticker', 'sec-fonnte']
             .map(id => document.getElementById(id))
             .filter(Boolean);
 

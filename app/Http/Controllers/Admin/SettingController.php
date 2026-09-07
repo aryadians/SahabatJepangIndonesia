@@ -26,9 +26,9 @@ class SettingController extends Controller
     public function update(Request $request)
     {
         // 1. Ambil semua input kecuali token dan file
-        $inputs = $request->except(['_token', '_method', 'site_logo_file', 'hero_image_file']);
+        $inputs = $request->except(['_token', '_method', 'site_logo_file', 'hero_image_file', 'site_favicon_file', 'corporate_leader_photo_file']);
 
-        // 2. Prioritaskan Upload File Gambar untuk Logo & Hero
+        // 2. Prioritaskan Upload File Gambar untuk Logo, Hero, Favicon, & Foto Pimpinan
         if ($request->hasFile('site_logo_file')) {
             $base64Logo = $this->handleImageUpload($request, 'site_logo_file', 'site_logo');
             $inputs['site_logo'] = $base64Logo;
@@ -37,6 +37,24 @@ class SettingController extends Controller
         } else {
             // Jangan timpa logo lama jika input dikosongkan tanpa file baru
             unset($inputs['site_logo']);
+        }
+
+        if ($request->hasFile('site_favicon_file')) {
+            $circleFavicon = $this->createCircularFavicon($request->file('site_favicon_file'));
+            $inputs['site_favicon'] = $circleFavicon ?? $this->handleImageUpload($request, 'site_favicon_file', 'site_favicon');
+        } elseif ($request->filled('site_favicon')) {
+            $inputs['site_favicon'] = trim($request->input('site_favicon'));
+        } else {
+            unset($inputs['site_favicon']);
+        }
+
+        if ($request->hasFile('corporate_leader_photo_file')) {
+            $base64LeaderPhoto = $this->handleImageUpload($request, 'corporate_leader_photo_file', 'corporate_leader_photo');
+            $inputs['corporate_leader_photo'] = $base64LeaderPhoto;
+        } elseif ($request->filled('corporate_leader_photo')) {
+            $inputs['corporate_leader_photo'] = trim($request->input('corporate_leader_photo'));
+        } else {
+            unset($inputs['corporate_leader_photo']);
         }
 
         if ($request->hasFile('hero_image_file')) {
@@ -89,6 +107,7 @@ class SettingController extends Controller
 
         // 7. Invalidate dan flush cache agar seketika sinkron di halaman guest
         \Illuminate\Support\Facades\Cache::forget('site_settings_all');
+        \Illuminate\Support\Facades\Cache::forget('sji_corporate_synced_stats');
         try {
             \Illuminate\Support\Facades\Cache::flush();
             \Illuminate\Support\Facades\Artisan::call('view:clear');
@@ -96,7 +115,7 @@ class SettingController extends Controller
             // ignore if redis/tag cache not supporting full flush
         }
 
-        return back()->with('success', 'Pengaturan website, banner hero, dan logo berhasil disimpan dan seketika disinkronkan ke seluruh halaman publik.');
+        return back()->with('success', 'Pengaturan website, banner hero, dan profil korporasi berhasil disimpan dan seketika disinkronkan ke seluruh halaman publik.');
     }
 
     /**
@@ -131,5 +150,80 @@ class SettingController extends Controller
     {
         $status = \App\Services\FonnteService::checkDevice();
         return response()->json($status);
+    }
+
+    /**
+     * Konversi upload favicon menjadi PNG bulat / lingkaran sempurna (Circular Favicon)
+     */
+    protected function createCircularFavicon($file): ?string
+    {
+        if (!extension_loaded('gd')) {
+            return null;
+        }
+
+        try {
+            $raw = file_get_contents($file->getRealPath());
+            $src = @imagecreatefromstring($raw);
+            if (!$src) {
+                return null;
+            }
+
+            $size = 128;
+            $dst = imagecreatetruecolor($size, $size);
+            imagesavealpha($dst, true);
+            $transparent = imagecolorallocatealpha($dst, 0, 0, 0, 127);
+            imagefill($dst, 0, 0, $transparent);
+
+            $srcW = imagesx($src);
+            $srcH = imagesy($src);
+
+            // Scale to fit inside circle (approx 78% of diameter)
+            $maxInner = 98;
+            if ($srcW >= $srcH) {
+                $targetW = $maxInner;
+                $targetH = max(1, (int)($srcH * ($targetW / $srcW)));
+            } else {
+                $targetH = $maxInner;
+                $targetW = max(1, (int)($srcW * ($targetH / $srcH)));
+            }
+
+            $dstX = (int)(($size - $targetW) / 2);
+            $dstY = (int)(($size - $targetH) / 2);
+
+            // White circular background with crimson rim
+            $white = imagecolorallocate($dst, 255, 255, 255);
+            $redBorder = imagecolorallocate($dst, 225, 29, 72);
+            imagefilledellipse($dst, (int)($size / 2), (int)($size / 2), $size - 2, $size - 2, $redBorder);
+            imagefilledellipse($dst, (int)($size / 2), (int)($size / 2), $size - 6, $size - 6, $white);
+
+            imagecopyresampled($dst, $src, $dstX, $dstY, 0, 0, $targetW, $targetH, $srcW, $srcH);
+            imagedestroy($src);
+
+            // Alpha mask outer corners outside circle
+            $radius = $size / 2;
+            for ($x = 0; $x < $size; $x++) {
+                for ($y = 0; $y < $size; $y++) {
+                    $dx = $x - $radius;
+                    $dy = $y - $radius;
+                    $dist = sqrt($dx * $dx + $dy * $dy);
+                    if ($dist > ($radius - 1)) {
+                        imagesetpixel($dst, $x, $y, $transparent);
+                    }
+                }
+            }
+
+            ob_start();
+            imagepng($dst, null, 9);
+            $pngData = ob_get_clean();
+            imagedestroy($dst);
+
+            // Also refresh circular favicon file on disk
+            @file_put_contents(public_path('images/favicon-circle.png'), $pngData);
+            @file_put_contents(public_path('favicon.ico'), $pngData);
+
+            return 'data:image/png;base64,' . base64_encode($pngData);
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 }

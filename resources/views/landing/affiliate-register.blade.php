@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Program Kemitraan Sekolah & Afiliasi - LPK Sahabat Jepang Indonesia')
+@section('title', 'Program Kemitraan Sekolah & Afiliasi - SJI Group')
 
 @section('content')
 @php

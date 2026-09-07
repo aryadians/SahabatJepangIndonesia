@@ -4,10 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Admin Dashboard') - LPK Sahabat Jepang Indonesia</title>
+    @php
+        $adminFavVal = !empty($settings['site_favicon']) 
+            ? $settings['site_favicon'] 
+            : (file_exists(public_path('images/favicon-circle.png')) ? asset('images/favicon-circle.png') : asset('images/logo.png'));
+        $adminFavSrc = (str_starts_with($adminFavVal, 'data:') || str_starts_with($adminFavVal, 'http')) ? $adminFavVal : asset(ltrim($adminFavVal, '/'));
+        
+        $adminLogoVal = $settings['site_logo'] ?? '';
+        $adminLogoSrc = !empty($adminLogoVal) 
+            ? (str_starts_with($adminLogoVal, 'data:') || str_starts_with($adminLogoVal, 'http') ? $adminLogoVal : asset(ltrim($adminLogoVal, '/')))
+            : (file_exists(public_path('images/logo.png')) ? asset('images/logo.png') : null);
+        $adminBrandName = $settings['site_name'] ?? 'PT SAHABAT JEPANG INDONESIA GROUP';
+    @endphp
+    <title>@yield('title', 'Admin Dashboard') - {{ $adminBrandName }}</title>
 
-    <!-- Favicon (SVG Torii / Kanji Japanese Emblem) -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23DC2626'/><circle cx='50' cy='50' r='38' fill='white'/><text x='50' y='66' font-size='46' font-weight='900' font-family='sans-serif' text-anchor='middle' fill='%23DC2626'>友</text></svg>">
+    <!-- Favicon (Configurable & Circular via Settings) -->
+    <link rel="icon" type="image/png" href="{{ $adminFavSrc }}">
+    <link rel="shortcut icon" href="{{ $adminFavSrc }}">
+    <link rel="apple-touch-icon" href="{{ $adminFavSrc }}">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -80,18 +94,26 @@
     <div id="adminSidebarBackdrop" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-30 hidden md:hidden" onclick="toggleAdminSidebar(false)"></div>
 
     <!-- Sidebar Navigation (Fixed Full-Height App Shell) -->
-    <aside id="adminSidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-slate-900 text-slate-300 flex-shrink-0 flex flex-col h-full transition-transform duration-300 -translate-x-full md:translate-x-0 md:static border-r border-slate-800 select-none">
+    <aside id="adminSidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-slate-900 text-slate-300 shrink-0 flex flex-col h-full transition-transform duration-300 -translate-x-full md:translate-x-0 md:static border-r border-slate-800 select-none">
         
-        <!-- Sidebar Header (Fixed at top) -->
-        <div class="h-16 flex-shrink-0 flex items-center justify-between px-5 border-b border-slate-800 bg-slate-950/60">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-japan-600 text-white flex items-center justify-center font-japanese font-black text-base shadow-md">
-                    友
-                </div>
-                <div>
-                    <h2 class="font-black text-white text-xs tracking-tight uppercase leading-none">LPK SAHABAT JEPANG</h2>
-                    <p class="text-[10px] text-red-400 font-semibold font-japanese mt-0.5">
-                        {{ auth()->user()->role === 'teacher' ? 'Portal Pengajar / Sensei' : 'Admin Management' }}
+        <!-- Sidebar Header (Fixed at top - Dynamic Logo & Brand from Settings) -->
+        <div class="h-16 shrink-0 flex items-center justify-between px-4 border-b border-slate-800 bg-slate-950/70">
+            <div class="flex items-center gap-3 min-w-0">
+                @if(!empty($adminLogoSrc))
+                    <div class="h-9 w-9 rounded-xl bg-white flex items-center justify-center p-1 shadow-md shrink-0 overflow-hidden border border-slate-700/60">
+                        <img src="{{ $adminLogoSrc }}" alt="{{ $adminBrandName }}" class="max-h-full max-w-full object-contain">
+                    </div>
+                @else
+                    <div class="w-9 h-9 rounded-xl bg-japan-600 text-white flex items-center justify-center font-japanese font-black text-base shadow-md shrink-0">
+                        友
+                    </div>
+                @endif
+                <div class="min-w-0 flex-1">
+                    <h2 class="font-black text-white text-xs tracking-tight uppercase leading-tight truncate" title="{{ $adminBrandName }}">
+                        {{ $adminBrandName }}
+                    </h2>
+                    <p class="text-[10px] text-red-400 font-semibold font-japanese mt-0.5 truncate">
+                        {{ auth()->user()->role === 'teacher' ? 'Portal Pengajar / Sensei' : 'Holding Management' }}
                     </p>
                 </div>
             </div>

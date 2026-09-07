@@ -5,51 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     
+    @php
+        $siteBrandName = $settings['site_name'] ?? 'PT SAHABAT JEPANG INDONESIA GROUP';
+        $siteFavVal = !empty($settings['site_favicon']) 
+            ? $settings['site_favicon'] 
+            : (file_exists(public_path('images/favicon-circle.png')) ? asset('images/favicon-circle.png') : (!empty($settings['site_logo']) ? $settings['site_logo'] : asset('images/logo.png')));
+        $siteFavSrc = (str_starts_with($siteFavVal, 'data:') || str_starts_with($siteFavVal, 'http')) ? $siteFavVal : asset(ltrim($siteFavVal, '/'));
+    @endphp
+
     <!-- Primary Meta Tags -->
-    <title>@yield('title', ($settings['site_name'] ?? 'LPK Sahabat Jepang Indonesia') . ' - Penyalur Resmi & Pelatihan Kerja ke Jepang')</title>
-    <meta name="title" content="@yield('title', ($settings['site_name'] ?? 'LPK Sahabat Jepang Indonesia') . ' - Penyalur Resmi & Pelatihan Kerja ke Jepang')">
-    <meta name="description" content="@yield('meta_description', ($settings['site_tagline'] ?? 'Sending Organization Resmi Kemnaker RI Izin KEP.224/LATTAS/XII/2023') . '. Program Tokutei Ginou (SSW), Magang Kerja (Ginou Jisshusei), Beasiswa Kemenkes SMILE Project 100% Gratis, dan SMK Go Japan.')">
-    <meta name="keywords" content="@yield('meta_keywords', 'LPK Jepang resmi, magang jepang kemenaker, tokutei ginou ssw, beasiswa kemenkes kaigo smile project, smk go japan vokasi, kursus bahasa jepang n4 n3, sending organization jepang, gaji kerja di jepang, sahabat jepang indonesia')">
-    <meta name="author" content="{{ $settings['site_name'] ?? 'LPK Sahabat Jepang Indonesia' }}">
+    <title>@yield('title', 'SJI Group • ' . $siteBrandName . ' - Penyalur Resmi & Akademi Vokasi Jepang')</title>
+    <meta name="title" content="@yield('title', 'SJI Group • ' . $siteBrandName . ' - Penyalur Resmi & Akademi Vokasi Jepang')">
+    <meta name="description" content="@yield('meta_description', ($settings['site_tagline'] ?? 'Sending Organization & Japanese Academy') . '. Program Tokutei Ginou (SSW), Magang Kerja (Ginou Jisshusei), Beasiswa Kemenkes SMILE Project 100% Gratis, dan SMK Go Japan.')">
+    <meta name="keywords" content="@yield('meta_keywords', 'SJI Group, Sahabat Jepang Indonesia Group, PT SJI Group, magang jepang kemenaker, tokutei ginou ssw, beasiswa kemenkes kaigo smile project, smk go japan vokasi, kursus bahasa jepang n4 n3, sending organization jepang, lpk jepang')">
+    <meta name="author" content="{{ $siteBrandName }}">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="theme-color" content="#DC2626">
     <link rel="canonical" href="{{ url()->current() }}">
 
     <!-- Open Graph / Facebook / WhatsApp Rich Share Card -->
-    <meta property="og:site_name" content="{{ $settings['site_name'] ?? 'LPK Sahabat Jepang Indonesia' }}">
+    <meta property="og:site_name" content="SJI Group • {{ $siteBrandName }}">
     <meta property="og:type" content="@yield('meta_type', 'website')">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('title', ($settings['site_name'] ?? 'LPK Sahabat Jepang Indonesia') . ' - Karir Gemilang di Negeri Sakura')">
-    <meta property="og:description" content="@yield('meta_description', 'Lembaga Pelatihan Kerja & Sending Organization (SO) Resmi Kemnaker RI. Penyaluran resmi Tokutei Ginou (SSW), Magang Kaigo, SMILE Project 100% Gratis, & SMK Go Japan.')">
+    <meta property="og:title" content="@yield('title', 'SJI Group • Karir Gemilang di Negeri Sakura')">
+    <meta property="og:description" content="@yield('meta_description', 'Holding Sending Organization & Jaringan Lembaga Pelatihan Bahasa Jepang Terpadu. Penyaluran resmi Tokutei Ginou (SSW), Magang Kaigo, SMILE Project 100% Gratis, & SMK Go Japan.')">
     <meta property="og:image" content="@yield('meta_image', asset('images/og-share-banner.jpg'))">
     <meta property="og:image:secure_url" content="@yield('meta_image', asset('images/og-share-banner.jpg'))">
     <meta property="og:image:type" content="image/jpeg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="{{ $settings['site_name'] ?? 'LPK Sahabat Jepang Indonesia' }} - Official Banner">
+    <meta property="og:image:alt" content="SJI Group - Official Banner">
     <meta property="og:locale" content="id_ID">
     <meta property="og:locale:alternate" content="ja_JP">
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ url()->current() }}">
-    <meta name="twitter:title" content="@yield('title', 'LPK Sahabat Jepang Indonesia')">
-    <meta name="twitter:description" content="@yield('meta_description', 'Lembaga Pelatihan Kerja & Penyaluran Resmi ke Jepang berizin SO Kemenaker RI.')">
+    <meta name="twitter:title" content="@yield('title', 'SJI Group • PT SAHABAT JEPANG INDONESIA GROUP')">
+    <meta name="twitter:description" content="@yield('meta_description', 'Holding Sending Organization & Jaringan Lembaga Pelatihan Kerja ke Jepang.')">
     <meta name="twitter:image" content="@yield('meta_image', asset('images/og-share-banner.jpg'))">
 
-    <!-- Favicon (SVG Torii / Kanji Japanese Emblem) & Mobile Touch Icon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23DC2626'/><circle cx='50' cy='50' r='38' fill='white'/><text x='50' y='66' font-size='46' font-weight='900' font-family='sans-serif' text-anchor='middle' fill='%23DC2626'>友</text></svg>">
-    <link rel="apple-touch-icon" href="{{ asset('images/icons/icon-192x192.png') }}">
+    <!-- Favicon & Mobile Touch Icon (Configurable via Admin) -->
+    <link rel="icon" type="image/png" href="{{ $siteFavSrc }}">
+    <link rel="shortcut icon" href="{{ $siteFavSrc }}">
+    <link rel="apple-touch-icon" href="{{ $siteFavSrc }}">
 
     <!-- Progressive Web App (PWA) Manifest & Mobile App Capabilities -->
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="LPK SJI">
-    <meta name="application-name" content="LPK SJI">
+    <meta name="apple-mobile-web-app-title" content="SJI Group">
+    <meta name="application-name" content="SJI Group">
     <meta name="msapplication-TileColor" content="#DC2626">
-    <meta name="msapplication-TileImage" content="{{ asset('images/icons/icon-192x192.png') }}">
+    <meta name="msapplication-TileImage" content="{{ $siteFavSrc }}">
 
 
     <!-- Google Fonts -->

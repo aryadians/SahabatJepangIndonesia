@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Artikel & Wawasan Karir Jepang - LPK Sahabat Jepang Indonesia')
+@section('title', 'Artikel & Wawasan Karir Jepang - SJI Group')
 
 @section('content')
 <!-- Header Banner -->

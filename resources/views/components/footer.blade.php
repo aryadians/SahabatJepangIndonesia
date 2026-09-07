@@ -17,9 +17,9 @@
                 @endphp
                 <div class="flex items-center gap-3">
                     @if(!empty($footerLogo))
-                        <img src="{{ $footerLogo }}" alt="{{ $settings['site_name'] ?? 'PT Sahabat Jepang Indonesia Group' }}" class="h-12 w-auto object-contain max-w-[160px] rounded-lg bg-white/10 p-1">
+                        <img src="{{ $footerLogo }}" alt="{{ $settings['site_name'] ?? 'PT Sahabat Jepang Indonesia Group' }}" class="h-14 w-auto object-contain max-w-[200px] rounded-lg bg-white/10 p-1">
                     @else
-                        <div class="w-10 h-10 rounded-2xl bg-japan-600 flex items-center justify-center text-white font-japanese font-black text-xl shadow-md">
+                        <div class="w-11 h-11 rounded-2xl bg-japan-600 flex items-center justify-center text-white font-japanese font-black text-2xl shadow-md">
                             友
                         </div>
                     @endif
@@ -57,6 +57,7 @@
                     <li><a href="{{ route('home') }}#program" class="hover:text-red-400 transition">Tokutei Ginou (SSW)</a></li>
                     <li><a href="{{ route('home') }}#program" class="hover:text-red-400 transition">Magang (Jisshusei)</a></li>
                     <li><a href="{{ route('company.profile') }}" class="hover:text-red-400 transition font-bold text-slate-200">Profil SJI Group</a></li>
+                    <li><a href="{{ route('education.curriculum') }}" class="hover:text-red-400 transition font-bold text-slate-200">Kurikulum & Edukasi</a></li>
                     <li><a href="{{ route('student.portal') }}" class="hover:text-emerald-400 transition flex items-center gap-1 font-bold text-emerald-400"><span>Portal Cek Siswa</span> <span class="px-1 py-0.2 rounded bg-emerald-600 text-white text-[8px]">Kwitansi</span></a></li>
                     <li><a href="{{ route('exam.simulator') }}" class="hover:text-red-400 transition flex items-center gap-1 font-bold text-slate-300"><span>Tryout JLPT CBT</span> <span class="px-1 py-0.2 rounded bg-japan-600 text-white text-[8px]">Gratis</span></a></li>
                     <li><a href="{{ route('alumni.map') }}" class="hover:text-red-400 transition">Peta Sebaran Alumni</a></li>
@@ -70,10 +71,11 @@
                 <ul class="space-y-2 text-xs sm:text-sm text-slate-400">
                     <li><a href="{{ route('home') }}#beranda" class="hover:text-red-400 transition">Beranda</a></li>
                     <li><a href="{{ route('company.profile') }}" class="hover:text-red-400 transition font-semibold text-slate-300">Profil SJI Group</a></li>
-                    <li><a href="{{ route('company.profile') }}#network" class="hover:text-red-400 transition">Direktori 9 Cabang</a></li>
-                    <li><a href="{{ route('company.profile') }}#schedule" class="hover:text-red-400 transition">Jadwal Harian Siswa</a></li>
-                    <li><a href="{{ route('home') }}#pengajar" class="hover:text-red-400 transition">Sensei & Pengajar</a></li>
-                    <li><a href="{{ route('home') }}#fasilitas" class="hover:text-red-400 transition">Fasilitas & Asrama</a></li>
+                    <li><a href="{{ route('education.curriculum') }}" class="hover:text-red-400 transition font-semibold text-slate-300">Kurikulum & Edukasi</a></li>
+                    <li><a href="{{ route('company.profile') }}#branches" class="hover:text-red-400 transition">Direktori 9 Cabang</a></li>
+                    <li><a href="{{ route('education.curriculum') }}#schedule" class="hover:text-red-400 transition">Jadwal Harian Siswa</a></li>
+                    <li><a href="{{ route('education.curriculum') }}#faculty" class="hover:text-red-400 transition">Sensei & Pengajar</a></li>
+                    <li><a href="{{ route('education.curriculum') }}#facilities" class="hover:text-red-400 transition">Fasilitas & Workshop Lab</a></li>
                     <li><a href="{{ route('articles.index') }}" class="hover:text-red-400 transition">Artikel & Berita</a></li>
                 </ul>
             </div>

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Portal Cek Status Mandiri Siswa & Tracking Berkas - LPK Sahabat Jepang Indonesia')
+@section('title', 'Portal Cek Status Mandiri Siswa & Tracking Berkas - SJI Group')
 @section('meta_description', 'Portal mandiri siswa dan orang tua untuk memantau progres berkas, hasil MCU, jadwal wawancara Kaisha, status CoE & visa, serta unduh kwitansi pembayaran resmi.')
 @section('meta_keywords', 'cek status siswa lpk jepang, tracking berkas visa jepang, unduh kwitansi lpk sahabat jepang, portal siswa sji')
 

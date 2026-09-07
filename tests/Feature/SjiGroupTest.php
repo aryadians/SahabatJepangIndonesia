@@ -175,6 +175,47 @@ class SjiGroupTest extends TestCase
     }
 
     /**
+     * Test guest can access dedicated curriculum and education page.
+     */
+    public function test_guest_can_access_curriculum_and_education_page()
+    {
+        $response = $this->get(route('education.curriculum'));
+
+        $response->assertStatus(200);
+        $response->assertSee('PT SAHABAT JEPANG INDONESIA GROUP');
+        $response->assertSee('Kurikulum Terpadu');
+        $response->assertSee('SCREENING CLASS');
+        $response->assertSee('N5 / JFT-BASIC A2');
+        $response->assertSee('N4 / KAIWA KERJA');
+        $response->assertSee('N3 / SPESIFIK BIDANG');
+        $response->assertSee('Native Sensei Asli Jepang');
+        $response->assertSee('04:00 AM');
+        $response->assertSee('Bangun Tidur');
+
+        // Test route aliases redirect to education.curriculum
+        $this->get('/kurikulum')->assertRedirect(route('education.curriculum'));
+        $this->get('/edukasi')->assertRedirect(route('education.curriculum'));
+    }
+
+    /**
+     * Test admin can update site favicon and corporate leader photo.
+     */
+    public function test_admin_can_update_favicon_and_leader_photo()
+    {
+        $admin = User::where('role', 'admin')->first() ?? User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->post(route('admin.settings.update'), [
+            'site_favicon' => 'https://example.com/custom-favicon.ico',
+            'corporate_leader_photo' => 'https://example.com/custom-leader.jpg',
+            'corporate_leader_name' => 'YOYOK WIDODO',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertEquals('https://example.com/custom-favicon.ico', SiteSetting::get('site_favicon'));
+        $this->assertEquals('https://example.com/custom-leader.jpg', SiteSetting::get('corporate_leader_photo'));
+    }
+
+    /**
      * Test non-admin user (karyawan/teacher) cannot manage group branches.
      */
     public function test_non_admin_cannot_access_group_branches()
@@ -183,5 +224,23 @@ class SjiGroupTest extends TestCase
 
         $response = $this->actingAs($teacher)->get(route('admin.group-branches.index'));
         $response->assertStatus(403);
+    }
+
+    /**
+     * Test admin can upload favicon file which is converted into circular PNG data uri.
+     */
+    public function test_admin_can_upload_circular_favicon_file()
+    {
+        $admin = User::where('role', 'admin')->first() ?? User::factory()->create(['role' => 'admin']);
+        $file = \Illuminate\Http\UploadedFile::fake()->image('square_favicon.png', 100, 100);
+
+        $response = $this->actingAs($admin)->post(route('admin.settings.update'), [
+            'site_favicon_file' => $file,
+        ]);
+
+        $response->assertRedirect();
+        $storedFav = SiteSetting::get('site_favicon');
+        $this->assertNotNull($storedFav);
+        $this->assertStringStartsWith('data:image/png;base64,', $storedFav);
     }
 }

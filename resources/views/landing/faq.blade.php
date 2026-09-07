@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Tanya Jawab & Syarat Resmi Pelatihan Kerja ke Jepang - FAQ LPK Sahabat Jepang Indonesia')
-@section('meta_description', 'Pusat informasi dan FAQ resmi LPK Sahabat Jepang Indonesia: syarat fisik (tato, mata minus, tinggi badan), skema dana talangan cicil kerja, beasiswa SMILE Project Kemenkes, dan alur visa SSW.')
+@section('title', 'Tanya Jawab & Syarat Resmi Pelatihan Kerja ke Jepang - FAQ SJI Group')
+@section('meta_description', 'Pusat informasi dan FAQ resmi PT Sahabat Jepang Indonesia Group (SJI Group): syarat fisik (tato, mata minus, tinggi badan), skema pembiayaan talangan, beasiswa SMILE Project Kemenkes, dan alur visa SSW.')
 @section('meta_keywords', 'faq lpk jepang, syarat fisik kerja jepang, tato kerja di jepang, mata minus magang jepang, dana talangan jepang, beasiswa smile project kemenkes, sahabat jepang indonesia faq')
 
 @section('content')

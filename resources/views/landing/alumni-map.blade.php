@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Peta Interaktif Sebaran Alumni di Seluruh Jepang - LPK Sahabat Jepang Indonesia')
-@section('meta_description', 'Jelajahi peta persebaran alumni LPK Sahabat Jepang Indonesia di 47 prefektur Jepang (Tokyo, Osaka, Aichi, Kanagawa, dll) di sektor Kaigo, Manufaktur, dan Pengolahan Makanan.')
+@section('title', 'Peta Interaktif Sebaran Alumni di Seluruh Jepang - SJI Group')
+@section('meta_description', 'Jelajahi peta persebaran alumni PT Sahabat Jepang Indonesia Group (SJI Group) di 47 prefektur Jepang (Tokyo, Osaka, Aichi, Kanagawa, dll) di sektor Kaigo, Manufaktur, dan Pengolahan Makanan.')
 @section('meta_keywords', 'peta alumni jepang, sebaran magang jepang di 47 prefektur, alumni ssw jepang, penempatan kerja jepang sahabat jepang indonesia')
 
 @section('content')
