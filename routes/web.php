@@ -173,6 +173,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/leads/export', [AdminConsultationController::class, 'exportCsv'])->name('consultations.export');
     Route::get('/leads/export-pdf', [AdminConsultationController::class, 'exportPdf'])->name('consultations.export.pdf');
     Route::get('/leads/{id}/print', [AdminConsultationController::class, 'printForm'])->name('consultations.print');
+    Route::post('/leads/{id}/convert-to-student', [AdminConsultationController::class, 'convertToStudent'])->name('consultations.convert-to-student');
 
     // 3. Site Settings & Hero CMS (Admin Only)
     Route::middleware('role:admin')->group(function () {
@@ -209,6 +210,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
     // 10. Batch Schedules CMS
     Route::resource('schedules', BatchScheduleController::class)->except(['create', 'show', 'edit']);
+
+    // 10b. Modul Manajemen Bank Soal CBT (Admin & Sensei)
+    Route::post('/exam-questions/{id}/toggle-status', [\App\Http\Controllers\Admin\ExamQuestionController::class, 'toggleStatus'])->name('exam-questions.toggle');
+    Route::resource('exam-questions', \App\Http\Controllers\Admin\ExamQuestionController::class);
 
     // 11. Data Diri Siswa & Keuangan LPK
     Route::get('/students/export', [StudentController::class, 'exportCsv'])->name('students.export');
@@ -348,4 +353,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/cabang', fn() => redirect()->route('admin.group-branches.index'));
     Route::get('/branch', fn() => redirect()->route('admin.group-branches.index'));
     Route::get('/sji', fn() => redirect()->route('admin.group-branches.index'));
+    Route::get('/soal', fn() => redirect()->route('admin.exam-questions.index'));
+    Route::get('/cbt', fn() => redirect()->route('admin.exam-questions.index'));
+    Route::get('/exam-question', fn() => redirect()->route('admin.exam-questions.index'));
 });

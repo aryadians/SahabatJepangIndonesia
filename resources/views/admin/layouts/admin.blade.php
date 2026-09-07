@@ -209,6 +209,14 @@
                 <span>Jadwal Angkatan & Kuota</span>
             </a>
 
+            <a 
+                href="{{ route('admin.exam-questions.index') }}" 
+                class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.exam-questions.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+            >
+                <i data-lucide="help-circle" class="w-4 h-4"></i>
+                <span>Bank Soal & Ujian CBT</span>
+            </a>
+
             @if(auth()->user()->canManageFinance())
                 <div class="px-3 pt-3 pb-1 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
                     Keuangan & Pembukuan LPK

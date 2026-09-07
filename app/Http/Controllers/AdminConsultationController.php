@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuditLog;
 use App\Models\Consultation;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -188,5 +190,94 @@ class AdminConsultationController extends Controller
         $consultations = $query->get();
 
         return view('admin.consultations.export_pdf', compact('consultations'));
+    }
+
+    /**
+     * Konversi Data Calon Pendaftar (Lead) Menjadi Siswa Resmi LPK SJI Group
+     */
+    public function convertToStudent(Request $request, $id)
+    {
+        $consultation = Consultation::findOrFail($id);
+
+        $validated = $request->validate([
+            'batch' => 'nullable|string|max:100',
+            'program' => 'required|string|max:100',
+            'city' => 'nullable|string|max:100',
+            'gender' => 'nullable|string|in:Laki-laki,Perempuan',
+            'entry_date' => 'nullable|date',
+            'total_cost' => 'nullable|numeric|min:0',
+            'payment_scheme' => 'nullable|string|in:mandiri,talangan,beasiswa',
+            'registration_category' => 'nullable|string|max:50',
+        ]);
+
+        // Generate NIS Otomatis Berurutan (SJI-Y-XXX)
+        $year = date('Y');
+        $prefix = "SJI-{$year}-";
+        $latestNis = Student::where('nis', 'like', "{$prefix}%")
+            ->orderByDesc('nis')
+            ->value('nis');
+
+        if ($latestNis && preg_match('/-(\d+)$/', $latestNis, $matches)) {
+            $nextNumber = (int)$matches[1] + 1;
+        } else {
+            $nextNumber = Student::count() + 1;
+        }
+
+        $nis = $prefix . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        while (Student::where('nis', $nis)->exists()) {
+            $nextNumber++;
+            $nis = $prefix . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        }
+
+        // Buat record siswa baru
+        $student = Student::create([
+            'nis' => $nis,
+            'name' => $consultation->name,
+            'phone' => $consultation->phone,
+            'city' => $validated['city'] ?? $consultation->city,
+            'education' => $consultation->education,
+            'program' => $validated['program'] ?? $consultation->program ?? 'Tokutei Ginou (SSW)',
+            'batch' => !empty($validated['batch']) ? $validated['batch'] : ('Angkatan ' . date('Y')),
+            'gender' => $validated['gender'] ?? 'Laki-laki',
+            'entry_date' => $validated['entry_date'] ?? now()->toDateString(),
+            'total_cost' => $validated['total_cost'] ?? 15000000,
+            'paid_amount' => 0,
+            'payment_scheme' => $validated['payment_scheme'] ?? 'mandiri',
+            'payment_status' => 'unpaid',
+            'registration_category' => $validated['registration_category'] ?? 'reguler',
+            'status' => 'active',
+        ]);
+
+        // Update status lead menjadi registered
+        $note = "Dikonversi menjadi Siswa Resmi (NIS: {$student->nis}) pada " . now()->format('d/m/Y H:i') . " oleh " . (auth()->user()->name ?? 'Admin');
+        $consultation->update([
+            'status' => 'registered',
+            'admin_notes' => trim(($consultation->admin_notes ? $consultation->admin_notes . "\n" : '') . $note),
+        ]);
+
+        // Audit Log
+        AuditLog::record(
+            'lead_convert_to_student',
+            "Mengonversi calon siswa {$consultation->name} menjadi siswa resmi (NIS: {$student->nis})",
+            [
+                'consultation_id' => $consultation->id,
+                'student_id' => $student->id,
+                'nis' => $student->nis,
+                'program' => $student->program,
+            ]
+        );
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Pendaftar {$consultation->name} berhasil dikonversi menjadi siswa resmi dengan NIS: {$student->nis}.",
+                'student_id' => $student->id,
+                'nis' => $student->nis,
+                'redirect_url' => route('admin.students.edit', $student->id),
+            ]);
+        }
+
+        return redirect()->route('admin.students.edit', $student->id)
+            ->with('success', "Pendaftar {$consultation->name} berhasil dikonversi menjadi siswa resmi dengan NIS: {$student->nis}. Silakan lengkapi biodata atau dokumen siswa.");
     }
 }

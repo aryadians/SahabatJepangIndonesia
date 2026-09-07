@@ -266,6 +266,25 @@
                             <td class="py-3.5 px-4 text-center whitespace-nowrap">
                                 <div class="inline-flex items-center gap-1.5 justify-center">
                                     
+                                    <!-- Convert to Student Button -->
+                                    @if($lead->status !== 'registered')
+                                        <button 
+                                            type="button" 
+                                            data-lead='@json($lead)'
+                                            onclick="openConvertModal(JSON.parse(this.getAttribute('data-lead')))" 
+                                            class="px-2.5 py-1.5 rounded-lg bg-japan-50 hover:bg-japan-100 text-japan-700 text-xs font-bold transition flex items-center gap-1 shadow-2xs border border-japan-200"
+                                            title="Konversi Calon Pendaftar Menjadi Siswa Resmi"
+                                        >
+                                            <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                                            <span>Jadikan Siswa</span>
+                                        </button>
+                                    @else
+                                        <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-[11px] font-bold border border-emerald-200 flex items-center gap-1" title="Sudah Terdaftar Sebagai Siswa Resmi">
+                                            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                                            <span>Siswa Resmi</span>
+                                        </span>
+                                    @endif
+
                                     <!-- Direct WhatsApp Chat -->
                                     <a 
                                         href="https://wa.me/{{ $cleanPhone }}?text={{ $waText }}" 
@@ -407,6 +426,27 @@
                 </div>
             </div>
 
+            <!-- Quick Convert CTA Banner -->
+            <div id="modalConvertCtaBox" class="p-4 rounded-2xl bg-gradient-to-r from-red-50 via-rose-50 to-amber-50 border border-japan-200/80 flex items-center justify-between gap-3 shadow-2xs">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-japan-600 text-white flex items-center justify-center font-bold flex-shrink-0 shadow-xs">
+                        <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-black text-slate-900 leading-tight">Konversi Calon Siswa ke Database Siswa Resmi</p>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Alokasikan NIS resmi otomatis (SJI-{{ date('Y') }}-XXX) & data akademik</p>
+                    </div>
+                </div>
+                <button 
+                    type="button" 
+                    onclick="closeModal('leadDetailModal'); openConvertModal(currentLeadData);" 
+                    class="btn-red-primary px-3.5 py-2 rounded-xl text-xs font-bold shadow-xs whitespace-nowrap flex items-center gap-1.5"
+                >
+                    <i data-lucide="user-plus" class="w-4 h-4"></i>
+                    <span>Konversi Siswa</span>
+                </button>
+            </div>
+
             <!-- Update Status & Notes Form -->
             <form id="leadUpdateForm" method="POST" class="space-y-4 pt-4 border-t border-slate-200">
                 @csrf
@@ -442,8 +482,255 @@
     </div>
 </div>
 
+<!-- Convert Lead to Official Student Modal -->
+<div id="convertLeadModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 custom-modal hidden">
+    <div class="fixed inset-0 modal-backdrop-blur" onclick="closeModal('convertLeadModal')"></div>
+    <div class="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden modal-content-box z-10 flex flex-col max-h-[90vh]">
+        
+        <div class="bg-gradient-to-r from-japan-700 via-japan-600 to-slate-900 text-white p-5 px-6 flex items-center justify-between flex-shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-white/20 text-white flex items-center justify-center font-bold backdrop-blur-sm shadow-xs">
+                    <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-black text-white leading-tight">Konversi Calon Pendaftar Menjadi Siswa</h3>
+                    <p class="text-[11px] text-red-100 mt-0.5">Pembuatan NIS Otomatis & Registrasi Akademik LPK SJI Group</p>
+                </div>
+            </div>
+            <button onclick="closeModal('convertLeadModal')" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition">
+                &times;
+            </button>
+        </div>
+
+        <form id="convertLeadForm" method="POST" class="flex flex-col flex-1 overflow-hidden" onsubmit="submitConvertToStudent(event)">
+            @csrf
+            
+            <div class="p-6 overflow-y-auto space-y-4 flex-1 bg-slate-50/50">
+                <!-- Preview Info Calon Siswa -->
+                <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-2 text-xs">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span class="text-slate-500 font-medium">Nama Calon Siswa:</span>
+                        <span id="convertPreviewName" class="font-black text-slate-900 text-sm">-</span>
+                    </div>
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span class="text-slate-500 font-medium">Nomor Telepon / WA:</span>
+                        <span id="convertPreviewPhone" class="font-mono font-bold text-emerald-600">-</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-slate-500 font-medium">Pendidikan & Domisili Asal:</span>
+                        <span id="convertPreviewEduCity" class="font-semibold text-slate-700">-</span>
+                    </div>
+                </div>
+
+                <!-- Form Fields -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Program -->
+                    <div class="space-y-1 sm:col-span-2">
+                        <label class="block text-xs font-black text-slate-800 uppercase tracking-wider">Program Pelatihan <span class="text-rose-500">*</span></label>
+                        <select name="program" id="convertProgram" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-japan-600 bg-white">
+                            <option value="Tokutei Ginou (SSW)">Tokutei Ginou (SSW) - Pekerja Berketerampilan Khusus</option>
+                            <option value="Magang Teknis (Kenshusei)">Magang Teknis (Kenshusei / Technical Intern)</option>
+                            <option value="Engineering / Gijinkoku">Engineering / Visa Kerja Profesional (Gijinkoku)</option>
+                            <option value="Persiapan Visa Pelajar / Ryugaku">Persiapan Visa Pelajar / Ryugaku (Gakkou)</option>
+                            <option value="Intensif Bahasa Jepang (N5-N3)">Intensif Bahasa Jepang (N5 - N3 / JFT-Basic)</option>
+                        </select>
+                    </div>
+
+                    <!-- Batch / Angkatan -->
+                    <div class="space-y-1">
+                        <label class="block text-xs font-black text-slate-800 uppercase tracking-wider">Angkatan / Batch Kelas</label>
+                        <input type="text" name="batch" id="convertBatch" value="Angkatan {{ date('Y') }}" placeholder="Contoh: Angkatan 45" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-japan-600 bg-white">
+                    </div>
+
+                    <!-- Cabang / Kota -->
+                    <div class="space-y-1">
+                        <label class="block text-xs font-black text-slate-800 uppercase tracking-wider">Cabang / Kota Siswa</label>
+                        <input type="text" name="city" id="convertCity" placeholder="Contoh: Yogyakarta / Cilacap" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-japan-600 bg-white">
+                    </div>
+
+                    <!-- Jenis Kelamin -->
+                    <div class="space-y-1">
+                        <label class="block text-xs font-black text-slate-800 uppercase tracking-wider">Jenis Kelamin</label>
+                        <select name="gender" id="convertGender" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-japan-600 bg-white">
+                            <option value="Laki-laki">Laki-laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+
+                    <!-- Tanggal Masuk -->
+                    <div class="space-y-1">
+                        <label class="block text-xs font-black text-slate-800 uppercase tracking-wider">Tanggal Masuk / Orientasi</label>
+                        <input type="date" name="entry_date" id="convertEntryDate" value="{{ date('Y-m-d') }}" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-japan-600 bg-white">
+                    </div>
+
+                    <!-- Skema Pembayaran -->
+                    <div class="space-y-1">
+                        <label class="block text-xs font-black text-slate-800 uppercase tracking-wider">Skema Pembayaran</label>
+                        <select name="payment_scheme" id="convertPaymentScheme" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-japan-600 bg-white">
+                            <option value="mandiri">Mandiri / Bertahap</option>
+                            <option value="talangan">Dana Talangan Lembaga / Bank</option>
+                            <option value="beasiswa">Beasiswa Penuh / Subsidi</option>
+                        </select>
+                    </div>
+
+                    <!-- Biaya Program -->
+                    <div class="space-y-1">
+                        <label class="block text-xs font-black text-slate-800 uppercase tracking-wider">Total Biaya Pelatihan (Rp)</label>
+                        <input type="number" name="total_cost" id="convertTotalCost" value="15000000" min="0" step="500000" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-800 focus:outline-none focus:border-japan-600 bg-white">
+                    </div>
+                </div>
+
+                <!-- Info Alert -->
+                <div class="p-3 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-xs flex items-start gap-2">
+                    <i data-lucide="info" class="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0"></i>
+                    <p class="leading-relaxed">
+                        Sistem akan mengalokasikan <strong>NIS resmi berurutan (SJI-{{ date('Y') }}-XXX)</strong> secara otomatis, mengubah status lead menjadi <strong>Registered</strong>, dan mengarahkan Anda ke formulir berkas siswa.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 px-6 bg-white border-t border-slate-200 flex items-center justify-end gap-2 flex-shrink-0">
+                <button type="button" onclick="closeModal('convertLeadModal')" class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">
+                    Batal
+                </button>
+                <button type="submit" id="convertSubmitBtn" class="btn-red-primary px-6 py-2.5 rounded-xl text-xs font-bold shadow-md flex items-center gap-1.5">
+                    <i data-lucide="user-check" class="w-4 h-4"></i>
+                    <span>Konfirmasi & Buat Siswa</span>
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
 <script>
     let currentLeadData = null;
+    let leadToConvert = null;
+
+    // Open Convert Lead to Student Modal
+    function openConvertModal(lead) {
+        if (!lead) return;
+        leadToConvert = lead;
+
+        document.getElementById('convertPreviewName').textContent = lead.name;
+        document.getElementById('convertPreviewPhone').textContent = lead.phone;
+        document.getElementById('convertPreviewEduCity').textContent = `${lead.education || '-'} • ${lead.city || 'Domisili belum diisi'}`;
+
+        if (lead.city) {
+            document.getElementById('convertCity').value = lead.city;
+        }
+
+        // Auto-select program if available in options
+        const progSelect = document.getElementById('convertProgram');
+        if (lead.program && progSelect) {
+            let matched = false;
+            for (let i = 0; i < progSelect.options.length; i++) {
+                const optVal = progSelect.options[i].value.toLowerCase();
+                const leadProg = lead.program.toLowerCase();
+                if (optVal.includes(leadProg) || leadProg.includes(optVal) || 
+                    (leadProg.includes('tokutei') && optVal.includes('tokutei')) ||
+                    (leadProg.includes('magang') && optVal.includes('magang')) ||
+                    (leadProg.includes('engineer') && optVal.includes('engineering'))) {
+                    progSelect.selectedIndex = i;
+                    matched = true;
+                    break;
+                }
+            }
+            if (!matched && lead.program) {
+                const newOpt = new Option(lead.program, lead.program, true, true);
+                progSelect.add(newOpt);
+            }
+        }
+
+        const form = document.getElementById('convertLeadForm');
+        form.action = `/admin/leads/${lead.id}/convert-to-student`;
+
+        // Reset submit button state
+        const submitBtn = document.getElementById('convertSubmitBtn');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `
+                <i data-lucide="user-check" class="w-4 h-4"></i>
+                <span>Konfirmasi & Buat Siswa</span>
+            `;
+        }
+
+        openModal('convertLeadModal');
+        if (window.lucide) lucide.createIcons();
+    }
+
+    // Submit Lead Conversion via AJAX
+    function submitConvertToStudent(e) {
+        e.preventDefault();
+        if (!leadToConvert) return;
+
+        const form = document.getElementById('convertLeadForm');
+        const submitBtn = document.getElementById('convertSubmitBtn');
+        const originalText = submitBtn.innerHTML;
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+            </svg>
+            <span>Membuat Siswa Resmi...</span>
+        `;
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                closeModal('convertLeadModal');
+                showMiniToast(data.message);
+                if (window.Swal) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Konversi Siswa Berhasil!',
+                        html: `Calon siswa resmi terdaftar dengan <strong>NIS: ${data.nis}</strong>.<br><br>Membuka lembar data diri siswa...`,
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then(() => {
+                        window.location.href = data.redirect_url;
+                    });
+                } else {
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url;
+                    }, 1200);
+                }
+            } else {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                if (window.lucide) lucide.createIcons();
+
+                if (window.Swal) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Konversi',
+                        text: data.message || 'Terjadi kesalahan saat memproses data.',
+                        confirmButtonColor: '#DC2626'
+                    });
+                } else {
+                    alert(data.message || 'Terjadi kesalahan saat memproses data.');
+                }
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            // In case of parsing or connectivity error, fallback to normal submission
+            form.submit();
+        });
+    }
 
     // Open Lead Detail Modal
     function openLeadDetail(lead) {
@@ -458,6 +745,16 @@
         document.getElementById('modalLeadMessage').textContent = lead.message || 'Tidak ada pesan tambahan.';
         document.getElementById('modalLeadStatus').value = lead.status;
         document.getElementById('modalLeadNotes').value = lead.admin_notes || '';
+
+        // Toggle Convert CTA based on registration status
+        const convertCtaBox = document.getElementById('modalConvertCtaBox');
+        if (convertCtaBox) {
+            if (lead.status === 'registered') {
+                convertCtaBox.classList.add('hidden');
+            } else {
+                convertCtaBox.classList.remove('hidden');
+            }
+        }
 
         // Form action url
         const form = document.getElementById('leadUpdateForm');
