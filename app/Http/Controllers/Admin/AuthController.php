@@ -38,6 +38,13 @@ class AuthController extends Controller
         // Check if user is active
         $user = User::where('email', $credentials['email'])->first();
         if ($user && isset($user->is_active) && !$user->is_active) {
+            \App\Models\AuditLog::record(
+                'auth.failed', 
+                "Percobaan login ditolak: akun {$user->name} ({$credentials['email']}) berstatus nonaktif.", 
+                ['email' => $credentials['email'], 'reason' => 'account_disabled'],
+                $user
+            );
+
             return back()->withErrors([
                 'email' => 'Akun Anda telah dinonaktifkan oleh administrator. Silakan hubungi bagian IT/SDM LPK SJI.',
             ])->onlyInput('email');
@@ -45,9 +52,25 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
-            $roleName = Auth::user()->role_name ?? 'User';
-            return redirect()->route('admin.dashboard')->with('success', "Selamat datang kembali, {$roleName} " . Auth::user()->name . "!");
+            /** @var User $authenticatedUser */
+            $authenticatedUser = Auth::user();
+            $roleName = $authenticatedUser->role_name ?? 'User';
+
+            \App\Models\AuditLog::record(
+                'auth.login',
+                "Pengguna {$authenticatedUser->name} ({$roleName}) berhasil masuk ke sistem.",
+                ['email' => $authenticatedUser->email, 'role' => $authenticatedUser->role],
+                $authenticatedUser
+            );
+
+            return redirect()->route('admin.dashboard')->with('success', "Selamat datang kembali, {$roleName} " . $authenticatedUser->name . "!");
         }
+
+        \App\Models\AuditLog::record(
+            'auth.failed',
+            "Percobaan login gagal dengan email atau kata sandi keliru untuk: {$credentials['email']}.",
+            ['email' => $credentials['email'], 'reason' => 'invalid_credentials']
+        );
 
         return back()->withErrors([
             'email' => 'Email atau kata sandi yang Anda masukkan tidak sesuai.',
@@ -59,6 +82,17 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
+        if (Auth::check()) {
+            /** @var User $user */
+            $user = Auth::user();
+            \App\Models\AuditLog::record(
+                'auth.logout',
+                "Pengguna {$user->name} ({$user->role_name}) keluar dari sistem.",
+                ['email' => $user->email],
+                $user
+            );
+        }
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

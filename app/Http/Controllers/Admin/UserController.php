@@ -78,7 +78,7 @@ class UserController extends Controller
 
         $role = $validated['role'] === 'karyawan' ? 'staff' : $validated['role'];
 
-        User::create([
+        $createdUser = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'role' => $role,
@@ -93,6 +93,12 @@ class UserController extends Controller
             'staff' => 'Karyawan / Staf LPK',
             default => ucfirst($role)
         };
+
+        \App\Models\AuditLog::record(
+            'user.created',
+            "Administrator membuat akun baru: {$createdUser->name} ({$roleLabel}) [{$createdUser->email}].",
+            ['target_user_id' => $createdUser->id, 'role' => $role]
+        );
 
         return back()->with('success', "Akun pengguna {$validated['name']} ({$roleLabel}) berhasil dibuat.");
     }
@@ -133,6 +139,12 @@ class UserController extends Controller
 
         $user->update($data);
 
+        \App\Models\AuditLog::record(
+            'user.updated',
+            "Administrator memperbarui data akun: {$user->name} ({$user->role_name}).",
+            ['target_user_id' => $user->id, 'role' => $role]
+        );
+
         return back()->with('success', "Data pengguna {$user->name} berhasil diperbarui.");
     }
 
@@ -155,6 +167,13 @@ class UserController extends Controller
         $user->save();
 
         $statusMsg = $user->is_active ? 'diaktifkan' : 'dinonaktifkan';
+
+        \App\Models\AuditLog::record(
+            'user.toggle_status',
+            "Administrator {$statusMsg} akun: {$user->name} ({$user->role_name}).",
+            ['target_user_id' => $user->id, 'is_active' => $user->is_active]
+        );
+
         return back()->with('success', "Status akun {$user->name} berhasil {$statusMsg}.");
     }
 
@@ -174,7 +193,14 @@ class UserController extends Controller
         }
 
         $userName = $user->name;
+        $userRole = $user->role_name;
         $user->delete();
+
+        \App\Models\AuditLog::record(
+            'user.deleted',
+            "Administrator menghapus akun pengguna: {$userName} ({$userRole}).",
+            ['deleted_user_name' => $userName]
+        );
 
         return back()->with('success', "Pengguna {$userName} berhasil dihapus.");
     }

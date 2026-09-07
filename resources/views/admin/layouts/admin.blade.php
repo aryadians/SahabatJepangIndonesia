@@ -364,6 +364,14 @@
                     <i data-lucide="users" class="w-4 h-4"></i>
                     <span>Manajemen Pengguna (RBAC)</span>
                 </a>
+
+                <a 
+                    href="{{ route('admin.audit-logs.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.audit-logs.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="shield-alert" class="w-4 h-4"></i>
+                    <span>Audit Log & Keamanan</span>
+                </a>
             @endif
 
             <a 
@@ -528,8 +536,12 @@
                     <p class="text-[10px] text-slate-400">{{ auth()->user()->email ?? 'admin@sahabatjepangindonesia.com' }}</p>
                 </div>
                 
-                <a href="{{ route('admin.profile.index') }}" class="w-9 h-9 rounded-xl bg-red-100 text-japan-700 font-bold flex items-center justify-center text-xs shadow-sm hover:ring-2 hover:ring-red-400 transition" title="Edit Profil">
-                    {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
+                <a href="{{ route('admin.profile.index') }}" class="w-9 h-9 rounded-xl bg-red-100 text-japan-700 font-bold flex items-center justify-center text-xs shadow-sm hover:ring-2 hover:ring-red-400 transition overflow-hidden" title="Profil Saya">
+                    @if(auth()->user()->avatar)
+                        <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->name }}" class="w-full h-full object-cover">
+                    @else
+                        {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
+                    @endif
                 </a>
             </div>
         </header>

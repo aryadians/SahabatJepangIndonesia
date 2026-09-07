@@ -292,6 +292,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::post('/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle');
         Route::resource('users', UserController::class)->except(['create', 'show', 'edit']);
+
+        // Audit Trail & System Activity Logs
+        Route::get('/audit-logs', [\App\Http\Controllers\Admin\AuditLogController::class, 'index'])->name('audit-logs.index');
+        Route::delete('/audit-logs/clear', [\App\Http\Controllers\Admin\AuditLogController::class, 'clear'])->name('audit-logs.clear');
     });
 
     // 17. Kalender Wawancara Kerja & Matching Kaisha
@@ -300,7 +304,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('/interviews/{interviewId}/candidates/{studentId}', [JobInterviewController::class, 'updateCandidateResult'])->name('interviews.candidates.result');
     Route::resource('interviews', JobInterviewController::class)->except(['create', 'show', 'edit']);
 
-    // 18. Admin Profile & Password
+    // 18. User Profile & Password (All Authenticated Roles)
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
@@ -328,4 +332,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/affiliate', fn() => redirect()->route('admin.affiliates.index'));
     Route::get('/interview', fn() => redirect()->route('admin.interviews.index'));
     Route::get('/wawancara', fn() => redirect()->route('admin.interviews.index'));
+    Route::get('/audit-log', fn() => redirect()->route('admin.audit-logs.index'));
+    Route::get('/audit', fn() => redirect()->route('admin.audit-logs.index'));
+    Route::get('/logs', fn() => redirect()->route('admin.audit-logs.index'));
 });
