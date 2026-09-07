@@ -35,6 +35,9 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 Route::get('/', [LandingPageController::class, 'index'])->name('home');
+Route::get('/profil-perusahaan', [\App\Http\Controllers\SjiGroupController::class, 'index'])->name('company.profile');
+Route::get('/sji-group', fn() => redirect()->route('company.profile'))->name('sji.group');
+Route::get('/tentang-kami', fn() => redirect()->route('company.profile'));
 Route::post('/konsultasi', [LandingPageController::class, 'storeConsultation'])->name('consultation.store')->middleware('throttle:10,1');
 Route::get('/artikel', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/artikel/{slug}', [ArticleController::class, 'show'])->name('articles.show');
@@ -293,6 +296,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::post('/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle');
         Route::resource('users', UserController::class)->except(['create', 'show', 'edit']);
 
+        // SJI Group Branches & Network Management
+        Route::post('/group-branches/{id}/toggle-status', [\App\Http\Controllers\Admin\GroupBranchController::class, 'toggleStatus'])->name('group-branches.toggle');
+        Route::resource('group-branches', \App\Http\Controllers\Admin\GroupBranchController::class)->except(['create', 'show', 'edit']);
+
         // Audit Trail & System Activity Logs
         Route::get('/audit-logs', [\App\Http\Controllers\Admin\AuditLogController::class, 'index'])->name('audit-logs.index');
         Route::delete('/audit-logs/clear', [\App\Http\Controllers\Admin\AuditLogController::class, 'clear'])->name('audit-logs.clear');
@@ -335,4 +342,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/audit-log', fn() => redirect()->route('admin.audit-logs.index'));
     Route::get('/audit', fn() => redirect()->route('admin.audit-logs.index'));
     Route::get('/logs', fn() => redirect()->route('admin.audit-logs.index'));
+    Route::get('/cabang', fn() => redirect()->route('admin.group-branches.index'));
+    Route::get('/branch', fn() => redirect()->route('admin.group-branches.index'));
+    Route::get('/sji', fn() => redirect()->route('admin.group-branches.index'));
 });

@@ -10,22 +10,27 @@
             
             <!-- Col 1: Brand & Bio (5 cols) -->
             <div class="lg:col-span-5 space-y-4">
+                @php
+                    $footerLogo = !empty($settings['site_logo']) 
+                        ? (str_starts_with($settings['site_logo'], 'data:') || str_starts_with($settings['site_logo'], 'http') ? $settings['site_logo'] : asset(ltrim($settings['site_logo'], '/'))) 
+                        : (file_exists(public_path('images/logo.png')) ? asset('images/logo.png') : null);
+                @endphp
                 <div class="flex items-center gap-3">
-                    @if(!empty($settings['site_logo']))
-                        <img src="{{ $settings['site_logo'] }}" alt="{{ $settings['site_name'] ?? 'LPK Sahabat Jepang' }}" class="h-10 w-auto object-contain max-w-[140px] rounded-lg bg-white/10 p-1">
+                    @if(!empty($footerLogo))
+                        <img src="{{ $footerLogo }}" alt="{{ $settings['site_name'] ?? 'PT Sahabat Jepang Indonesia Group' }}" class="h-12 w-auto object-contain max-w-[160px] rounded-lg bg-white/10 p-1">
                     @else
                         <div class="w-10 h-10 rounded-2xl bg-japan-600 flex items-center justify-center text-white font-japanese font-black text-xl shadow-md">
                             友
                         </div>
                     @endif
                     <div>
-                        <h3 class="font-black text-lg text-white tracking-tight">{{ $settings['site_name'] ?? 'LPK SAHABAT JEPANG INDONESIA' }}</h3>
-                        <p class="text-xs text-slate-400 font-japanese">友好日本インドネシア • Sending Organization</p>
+                        <h3 class="font-black text-base sm:text-lg text-white tracking-tight">{{ $settings['site_name'] ?? 'PT SAHABAT JEPANG INDONESIA GROUP' }}</h3>
+                        <p class="text-xs text-slate-400 font-japanese">友好日本インドネシア • SJI Group Sending Organization</p>
                     </div>
                 </div>
 
                 <p class="text-xs sm:text-sm text-slate-400 leading-relaxed pr-4">
-                    Lembaga Pelatihan Kerja (LPK) dan Sending Organization (SO) resmi berizin Kementerian Ketenagakerjaan RI, mendedikasikan diri untuk membina dan memberangkatkan tenaga kerja terampil Indonesia menuju masa depan sukses di Jepang.
+                    Induk korporasi pengirim resmi pekerja migran Indonesia (PMI) berketerampilan khusus (Tokutei Ginou / SSW) dan pemagang teknis (Ginou Jisshusei) berizin Kemenaker RI, menaungi 7 kampus di Indonesia serta kantor perwakilan dan balai karantina di Tokyo dan Chiba, Jepang.
                 </p>
 
                 <!-- Legal Certification Badges -->
@@ -36,7 +41,11 @@
                     </span>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-[11px] font-semibold text-slate-300">
                         <i data-lucide="award" class="w-3.5 h-3.5 text-amber-400"></i>
-                        <span>Akreditasi LPK Nasional</span>
+                        <span>Akreditasi Lembaga Nasional</span>
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-[11px] font-semibold text-slate-300">
+                        <i data-lucide="building" class="w-3.5 h-3.5 text-red-400"></i>
+                        <span>9 Jaringan Cabang & Kantor</span>
                     </span>
                 </div>
             </div>
@@ -47,7 +56,8 @@
                 <ul class="space-y-2 text-xs sm:text-sm text-slate-400">
                     <li><a href="{{ route('home') }}#program" class="hover:text-red-400 transition">Tokutei Ginou (SSW)</a></li>
                     <li><a href="{{ route('home') }}#program" class="hover:text-red-400 transition">Magang (Jisshusei)</a></li>
-                    <li><a href="{{ route('student.portal') }}" class="hover:text-emerald-400 transition flex items-center gap-1 font-bold text-emerald-400"><span>Portal Cek Status Siswa</span> <span class="px-1 py-0.2 rounded bg-emerald-600 text-white text-[8px]">Kwitansi</span></a></li>
+                    <li><a href="{{ route('company.profile') }}" class="hover:text-red-400 transition font-bold text-slate-200">Profil SJI Group</a></li>
+                    <li><a href="{{ route('student.portal') }}" class="hover:text-emerald-400 transition flex items-center gap-1 font-bold text-emerald-400"><span>Portal Cek Siswa</span> <span class="px-1 py-0.2 rounded bg-emerald-600 text-white text-[8px]">Kwitansi</span></a></li>
                     <li><a href="{{ route('exam.simulator') }}" class="hover:text-red-400 transition flex items-center gap-1 font-bold text-slate-300"><span>Tryout JLPT CBT</span> <span class="px-1 py-0.2 rounded bg-japan-600 text-white text-[8px]">Gratis</span></a></li>
                     <li><a href="{{ route('alumni.map') }}" class="hover:text-red-400 transition">Peta Sebaran Alumni</a></li>
                     <li><a href="{{ route('affiliates.public.register') }}" class="hover:text-red-400 transition text-emerald-400 font-bold">Kemitraan SMK / BKK</a></li>
@@ -59,8 +69,9 @@
                 <h4 class="font-extrabold text-white text-sm uppercase tracking-wider">Navigasi</h4>
                 <ul class="space-y-2 text-xs sm:text-sm text-slate-400">
                     <li><a href="{{ route('home') }}#beranda" class="hover:text-red-400 transition">Beranda</a></li>
-                    <li><a href="{{ route('home') }}#tentang" class="hover:text-red-400 transition">Tentang Kami</a></li>
-                    <li><a href="{{ route('home') }}#jadwal" class="hover:text-red-400 transition">Jadwal Angkatan</a></li>
+                    <li><a href="{{ route('company.profile') }}" class="hover:text-red-400 transition font-semibold text-slate-300">Profil SJI Group</a></li>
+                    <li><a href="{{ route('company.profile') }}#network" class="hover:text-red-400 transition">Direktori 9 Cabang</a></li>
+                    <li><a href="{{ route('company.profile') }}#schedule" class="hover:text-red-400 transition">Jadwal Harian Siswa</a></li>
                     <li><a href="{{ route('home') }}#pengajar" class="hover:text-red-400 transition">Sensei & Pengajar</a></li>
                     <li><a href="{{ route('home') }}#fasilitas" class="hover:text-red-400 transition">Fasilitas & Asrama</a></li>
                     <li><a href="{{ route('articles.index') }}" class="hover:text-red-400 transition">Artikel & Berita</a></li>
@@ -144,15 +155,18 @@
 
                         <!-- WhatsApp Direct -->
                         @php
-                            $waAdmin = $settings['contact_whatsapp'] ?? '6281234567890';
+                            $waAdmin = $settings['contact_whatsapp'] ?? '6281333270022';
                             $cleanWa = preg_replace('/[^0-9]/', '', $waAdmin);
                             if (str_starts_with($cleanWa, '0')) $cleanWa = '62' . substr($cleanWa, 1);
+                            $waDirectLink = !empty($settings['contact_whatsapp_link']) 
+                                ? $settings['contact_whatsapp_link'] 
+                                : "https://api.whatsapp.com/send?phone={$cleanWa}&text=" . urlencode('Hallo Admin, saya ingin tanya informasi program SJI Group.');
                         @endphp
                         <a 
-                            href="https://api.whatsapp.com/send?phone={{ $cleanWa }}&text=Halo%20Admin%20LPK%20Sahabat%20Jepang%20Indonesia,%20saya%20ingin%20konsultasi." 
+                            href="{{ $waDirectLink }}" 
                             target="_blank" 
                             class="w-9 h-9 rounded-xl bg-slate-900 border border-slate-800 hover:bg-emerald-600 text-slate-300 hover:text-white flex items-center justify-center transition shadow-sm group"
-                            title="WhatsApp Konsultasi"
+                            title="WhatsApp Konsultasi Resmi"
                         >
                             <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                                 <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
@@ -167,7 +181,7 @@
 
         <!-- Bottom Copyright & Admin Portal Access -->
         <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-            <p>© 2026 LPK Sahabat Jepang Indonesia. Seluruh Hak Cipta Dilindungi.</p>
+            <p>© 2026 PT SAHABAT JEPANG INDONESIA GROUP (SJI Group). Seluruh Hak Cipta Dilindungi.</p>
             
             <div class="flex items-center gap-4">
                 <a href="{{ route('home') }}#tentang" class="hover:text-slate-400">Legalitas & Akreditasi</a>

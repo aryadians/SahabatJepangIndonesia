@@ -288,6 +288,14 @@
                 </a>
 
                 <a 
+                    href="{{ route('admin.group-branches.index') }}" 
+                    class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.group-branches.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
+                >
+                    <i data-lucide="network" class="w-4 h-4"></i>
+                    <span>SJI Group & Cabang</span>
+                </a>
+
+                <a 
                     href="{{ route('admin.programs.index') }}" 
                     class="flex items-center gap-3 px-3 py-2 rounded-xl transition {{ request()->routeIs('admin.programs.*') ? 'bg-japan-600 text-white font-bold shadow-sm' : 'hover:bg-slate-800 hover:text-white text-slate-300' }}"
                 >

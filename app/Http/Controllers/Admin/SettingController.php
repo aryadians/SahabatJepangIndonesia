@@ -77,6 +77,8 @@ class SettingController extends Controller
                 $group = 'ticker';
             } elseif (str_starts_with($key, 'fonnte_')) {
                 $group = 'whatsapp';
+            } elseif (str_starts_with($key, 'corporate_') || str_starts_with($key, 'social_')) {
+                $group = 'corporate';
             }
 
             SiteSetting::updateOrCreate(

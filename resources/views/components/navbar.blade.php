@@ -3,28 +3,34 @@
     <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10">
         <div class="flex items-center justify-between h-20 gap-4 xl:gap-8">
             
+            @php
+                $logoSrc = !empty($settings['site_logo']) 
+                    ? (str_starts_with($settings['site_logo'], 'data:') || str_starts_with($settings['site_logo'], 'http') ? $settings['site_logo'] : asset(ltrim($settings['site_logo'], '/'))) 
+                    : (file_exists(public_path('images/logo.png')) ? asset('images/logo.png') : null);
+            @endphp
+
             <!-- Brand Logo (Left) -->
-            <a href="{{ route('home') }}" class="flex items-center gap-3 group flex-shrink-0">
-                @if(!empty($settings['site_logo']))
-                    <img src="{{ $settings['site_logo'] }}" alt="{{ $settings['site_name'] ?? 'LPK Sahabat Jepang' }}" class="h-10 w-auto object-contain max-w-[140px] rounded-lg">
+            <a href="{{ route('home') }}" class="flex items-center gap-3 group shrink-0">
+                @if(!empty($logoSrc))
+                    <img src="{{ $logoSrc }}" alt="{{ $settings['site_name'] ?? 'PT Sahabat Jepang Indonesia Group' }}" class="h-11 w-auto object-contain max-w-[160px] rounded-lg">
                 @else
-                    <div class="w-10 h-10 rounded-2xl bg-japan-600 text-white flex items-center justify-center font-japanese font-black text-xl shadow-md shadow-red-600/20 group-hover:scale-105 transition flex-shrink-0">
+                    <div class="w-10 h-10 rounded-2xl bg-japan-600 text-white flex items-center justify-center font-japanese font-black text-xl shadow-md shadow-red-600/20 group-hover:scale-105 transition shrink-0">
                         友
                     </div>
                 @endif
                 <div class="flex flex-col justify-center">
                     <div class="flex items-center gap-2">
                         <span class="font-black text-sm xl:text-base text-slate-900 tracking-tight leading-none uppercase whitespace-nowrap">
-                            {{ $settings['site_name'] ?? 'LPK SAHABAT JEPANG INDONESIA' }}
+                            {{ $settings['site_name'] ?? 'PT SAHABAT JEPANG INDONESIA GROUP' }}
                         </span>
                         <span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-red-100 text-japan-700 border border-red-200 uppercase tracking-wider whitespace-nowrap">
-                            LPK & SO
+                            SJI GROUP
                         </span>
                     </div>
                     <p class="text-[11px] text-slate-400 font-medium flex items-center gap-1.5 mt-1 leading-none whitespace-nowrap">
                         <span class="font-japanese text-xs text-japan-600 font-bold">友好日本</span>
                         <span class="text-slate-300">•</span>
-                        <span>{{ $settings['site_tagline'] ?? 'Sending Organization Resmi Kemnaker RI' }}</span>
+                        <span>{{ $settings['site_tagline'] ?? 'Sending Organization & Nihongo Gakkou' }}</span>
                     </p>
                 </div>
             </a>
@@ -33,6 +39,11 @@
             <nav class="hidden lg:flex items-center gap-1 xl:gap-2">
                 <a href="{{ route('home') }}#beranda" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold text-slate-700 hover:text-japan-600 hover:bg-slate-100/70 transition">
                     Beranda
+                </a>
+
+                <a href="{{ route('company.profile') }}" class="px-3 py-2 rounded-xl text-xs xl:text-sm font-bold {{ request()->routeIs('company.profile') ? 'text-japan-600 bg-red-50/80 font-black' : 'text-slate-700 hover:text-japan-600 hover:bg-slate-100/70' }} transition flex items-center gap-1.5">
+                    <i data-lucide="building-2" class="w-3.5 h-3.5 text-japan-600"></i>
+                    <span>Profil SJI Group</span>
                 </a>
 
                 <!-- Dropdown Program Karir -->
@@ -266,6 +277,10 @@
             <a href="{{ route('home') }}#beranda" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:text-japan-600 hover:bg-red-50 transition">
                 <i data-lucide="home" class="w-4 h-4 text-japan-600"></i>
                 <span>Beranda</span>
+            </a>
+            <a href="{{ route('company.profile') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold {{ request()->routeIs('company.profile') ? 'text-japan-600 bg-red-50 font-black' : 'text-slate-700 hover:text-japan-600 hover:bg-red-50' }} transition">
+                <i data-lucide="building-2" class="w-4 h-4 text-japan-600"></i>
+                <span>Profil SJI Group & Jaringan Cabang</span>
             </a>
             <a href="{{ route('exam.simulator') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-japan-600 bg-red-50/60 hover:bg-red-50 transition">
                 <i data-lucide="file-check" class="w-4 h-4 text-japan-600"></i>

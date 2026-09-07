@@ -26,6 +26,14 @@
                 <i data-lucide="phone" class="w-3.5 h-3.5 text-emerald-500"></i>
                 <span>Kontak & CS</span>
             </a>
+            <a href="#sec-social" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
+                <i data-lucide="share-2" class="w-3.5 h-3.5 text-rose-500"></i>
+                <span>Media Sosial</span>
+            </a>
+            <a href="#sec-corporate" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
+                <i data-lucide="building" class="w-3.5 h-3.5 text-indigo-500"></i>
+                <span>Profil SJI Group</span>
+            </a>
             <a href="#sec-ticker" class="setting-pill px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-japan-400 hover:text-japan-600 text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
                 <i data-lucide="bell" class="w-3.5 h-3.5 text-purple-500"></i>
                 <span>Social Proof Ticker</span>
@@ -604,6 +612,163 @@
             <div class="space-y-1.5 sm:col-span-2">
                 <label class="block text-xs font-bold text-slate-700 uppercase">Alamat Kantor / Training Center</label>
                 <textarea name="contact_address" rows="2" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600">{{ $settings['contact_address'] ?? 'Jl. Sakura Raya No. 88, Kawasan Pendidikan & Pelatihan Karir Jepang, Jakarta' }}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5b. Social Media Channels (Facebook, Instagram, YouTube, TikTok, WhatsApp Link) -->
+    <div id="sec-social" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 scroll-mt-32">
+        <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
+                <i data-lucide="share-2" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <h3 class="font-extrabold text-slate-900 text-base">Media Sosial Resmi SJI Group</h3>
+                <p class="text-xs text-slate-500">Tautan resmi Facebook Group, Instagram, YouTube, TikTok, dan URL tombol WhatsApp</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700 uppercase flex items-center gap-1.5">
+                    <i data-lucide="facebook" class="w-3.5 h-3.5 text-blue-600"></i>
+                    <span>Tautan Facebook Group</span>
+                </label>
+                <input 
+                    type="url" 
+                    name="social_facebook" 
+                    value="{{ $settings['social_facebook'] ?? 'https://www.facebook.com/groups/1402737939919037/' }}" 
+                    placeholder="https://www.facebook.com/..." 
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600"
+                >
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700 uppercase flex items-center gap-1.5">
+                    <i data-lucide="instagram" class="w-3.5 h-3.5 text-pink-600"></i>
+                    <span>Tautan Instagram Resmi</span>
+                </label>
+                <input 
+                    type="url" 
+                    name="social_instagram" 
+                    value="{{ $settings['social_instagram'] ?? 'https://www.instagram.com/pt.sjigroup/' }}" 
+                    placeholder="https://www.instagram.com/..." 
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600"
+                >
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700 uppercase flex items-center gap-1.5">
+                    <i data-lucide="youtube" class="w-3.5 h-3.5 text-red-600"></i>
+                    <span>Tautan Channel YouTube</span>
+                </label>
+                <input 
+                    type="url" 
+                    name="social_youtube" 
+                    value="{{ $settings['social_youtube'] ?? 'https://www.youtube.com/@SJIGroup?si=R7p2Z5VY_2RdXzhU' }}" 
+                    placeholder="https://www.youtube.com/..." 
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600"
+                >
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700 uppercase flex items-center gap-1.5">
+                    <i data-lucide="video" class="w-3.5 h-3.5 text-slate-900"></i>
+                    <span>Tautan Akun TikTok</span>
+                </label>
+                <input 
+                    type="url" 
+                    name="social_tiktok" 
+                    value="{{ $settings['social_tiktok'] ?? 'https://www.tiktok.com/@sji.group' }}" 
+                    placeholder="https://www.tiktok.com/..." 
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600"
+                >
+            </div>
+
+            <div class="space-y-1.5 sm:col-span-2">
+                <label class="block text-xs font-bold text-slate-700 uppercase flex items-center gap-1.5">
+                    <i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
+                    <span>URL Tombol WhatsApp Langsung (Direct Send Link)</span>
+                </label>
+                <input 
+                    type="url" 
+                    name="contact_whatsapp_link" 
+                    value="{{ $settings['contact_whatsapp_link'] ?? 'https://api.whatsapp.com/send?phone=6281333270022&text=Hallo%20Admin.Saya%20mau%20tanya%20tentang%20magang%20ke%20jepang.' }}" 
+                    placeholder="https://api.whatsapp.com/send?phone=..." 
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600 font-mono text-emerald-700"
+                >
+            </div>
+        </div>
+    </div>
+
+    <!-- 5c. SJI Group Corporate Profile & Leadership Settings -->
+    <div id="sec-corporate" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5 scroll-mt-32">
+        <div class="border-b border-slate-100 pb-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+                <i data-lucide="building" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <h3 class="font-extrabold text-slate-900 text-base">Profil Korporasi & Pimpinan SJI Group</h3>
+                <p class="text-xs text-slate-500">Informasi Chairman, Visi & Misi, serta statistik alumni yang tampil di halaman profil publik</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700 uppercase">Nama Pimpinan / Chairman</label>
+                <input 
+                    type="text" 
+                    name="corporate_leader_name" 
+                    value="{{ $settings['corporate_leader_name'] ?? 'YOYOK WIDODO' }}" 
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600 font-black"
+                >
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700 uppercase">Jabatan Pimpinan</label>
+                <input 
+                    type="text" 
+                    name="corporate_leader_title" 
+                    value="{{ $settings['corporate_leader_title'] ?? 'Representative Director and Chairman' }}" 
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600 font-semibold"
+                >
+            </div>
+
+            <div class="space-y-1.5 sm:col-span-2">
+                <label class="block text-xs font-bold text-slate-700 uppercase">Pesan Sambutan Pimpinan (Greetings from Representative)</label>
+                <textarea 
+                    name="corporate_leader_message" 
+                    rows="3" 
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600 leading-relaxed"
+                >{{ $settings['corporate_leader_message'] ?? 'Our mission is to maximize the potential of individuals and organizations, and we continue to create value from a global perspective. Based on trust and a commitment to innovation, we will work together to achieve sustainable growth.' }}</textarea>
+            </div>
+
+            <div class="space-y-1.5 sm:col-span-2">
+                <label class="block text-xs font-bold text-slate-700 uppercase">Visi Perusahaan (VISION)</label>
+                <textarea 
+                    name="corporate_vision" 
+                    rows="2" 
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600 leading-relaxed"
+                >{{ $settings['corporate_vision'] ?? 'Become a leading partner in sending Indonesian talent that is honest, trustworthy, and possesses high levels of expertise. We aim to cultivate individuals who will act as "national ambassadors," promoting Indonesia\'s outstanding values in Japan and around the world.' }}</textarea>
+            </div>
+
+            <div class="space-y-1.5 sm:col-span-2">
+                <label class="block text-xs font-bold text-slate-700 uppercase">Misi Perusahaan (MISSION)</label>
+                <textarea 
+                    name="corporate_mission" 
+                    rows="4" 
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600 leading-relaxed"
+                >{{ $settings['corporate_mission'] ?? "1. Promoting continuous human resource development\n2. Protection and improvement of workers' welfare\n3. Building a robust international cooperation system\n4. A firm commitment to social responsibility" }}</textarea>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-slate-700 uppercase">Total Siswa Terkirim ke Jepang</label>
+                <input 
+                    type="text" 
+                    name="corporate_alumni_sent" 
+                    value="{{ $settings['corporate_alumni_sent'] ?? '850+' }}" 
+                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-japan-600 font-bold"
+                >
             </div>
         </div>
     </div>

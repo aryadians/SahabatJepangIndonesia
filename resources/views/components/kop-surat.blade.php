@@ -1,11 +1,13 @@
 @php
     $siteSettings = \App\Models\SiteSetting::allCached();
-    $companyName = $siteSettings['site_name'] ?? 'LPK SAHABAT JEPANG INDONESIA';
-    $companyTagline = $siteSettings['site_tagline'] ?? '友好日本インドネシア • SENDING ORGANIZATION (SO)';
-    $companyPhone = $siteSettings['contact_phone'] ?? '+62 812-3456-7890';
+    $companyName = $siteSettings['site_name'] ?? 'PT SAHABAT JEPANG INDONESIA GROUP';
+    $companyTagline = $siteSettings['site_tagline'] ?? '友好日本インドネシア • SJI Group Sending Organization';
+    $companyPhone = $siteSettings['contact_phone'] ?? '+62 813-3327-0022';
     $companyEmail = $siteSettings['contact_email'] ?? 'info@sahabatjepangindonesia.com';
-    $companyAddress = $siteSettings['contact_address'] ?? 'Jl. Sakura Raya No. 88, Jakarta Selatan';
-    $companyLogo = $siteSettings['site_logo'] ?? null;
+    $companyAddress = $siteSettings['contact_address'] ?? 'Jl. Gracia Land Ruko A-01, Pepe, Sedati, Sidoarjo, Jawa Timur';
+    $companyLogo = !empty($siteSettings['site_logo']) 
+        ? (str_starts_with($siteSettings['site_logo'], 'data:') || str_starts_with($siteSettings['site_logo'], 'http') ? $siteSettings['site_logo'] : asset(ltrim($siteSettings['site_logo'], '/'))) 
+        : (file_exists(public_path('images/logo.png')) ? asset('images/logo.png') : null);
     $docCode = $code ?? null;
     $docStatus = $status ?? null;
     $docDate = $date ?? date('d F Y');
