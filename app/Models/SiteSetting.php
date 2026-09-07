@@ -21,15 +21,18 @@ class SiteSetting extends Model
      */
     protected static function booted(): void
     {
-        static::saved(function () {
+        $clearCaches = function () {
             Cache::forget('site_settings_all');
+            Cache::forget('site_settings_lite');
             Cache::forget('sji_corporate_synced_stats');
-        });
+            // Per-key heavy-field caches used by views
+            foreach (['site_logo', 'site_favicon', 'hero_image', 'corporate_leader_photo'] as $k) {
+                Cache::forget('site_setting_' . $k);
+            }
+        };
 
-        static::deleted(function () {
-            Cache::forget('site_settings_all');
-            Cache::forget('sji_corporate_synced_stats');
-        });
+        static::saved($clearCaches);
+        static::deleted($clearCaches);
     }
 
     /**
@@ -42,7 +45,8 @@ class SiteSetting extends Model
     }
 
     /**
-     * Get all settings cached in memory
+     * Get all settings cached in memory (includes binary/base64 fields).
+     * Avoid using this in view composers — use allCachedLite() instead.
      */
     public static function allCached(): array
     {
@@ -52,12 +56,36 @@ class SiteSetting extends Model
     }
 
     /**
+     * Lightweight version of allCached() that excludes large base64 / binary
+     * columns so it can be used safely inside View::composer without causing
+     * PHP execution-time-exceeded errors.
+     *
+     * Keys excluded: hero_image, site_logo, site_favicon, corporate_leader_photo
+     */
+    public static function allCachedLite(): array
+    {
+        // Large binary / base64 keys that should NOT be loaded on every request
+        static $heavyKeys = [
+            'hero_image',
+            'site_logo',
+            'site_favicon',
+            'corporate_leader_photo',
+        ];
+
+        return Cache::remember('site_settings_lite', 3600, function () use ($heavyKeys) {
+            return static::whereNotIn('key', $heavyKeys)
+                ->pluck('value', 'key')
+                ->toArray();
+        });
+    }
+
+    /**
      * Get real-time synchronized corporate statistics across entire web portal
      */
     public static function getCorporateStats(): array
     {
-        return Cache::remember('sji_corporate_synced_stats', 600, function () {
-            $settings = static::allCached();
+        return Cache::remember('sji_corporate_synced_stats', 3600, function () {
+            $settings = static::allCachedLite();
 
             // 1. Branches Count & Cities from GroupBranch
             $indonesiaBranchesCount = GroupBranch::where('is_active', true)->where('country', 'ID')->count();
@@ -134,7 +162,9 @@ class SiteSetting extends Model
             ['value' => $value, 'group' => $group]
         );
         Cache::forget('site_settings_all');
+        Cache::forget('site_settings_lite');
         Cache::forget('sji_corporate_synced_stats');
+        Cache::forget('site_setting_' . $key);
         return $setting;
     }
 }

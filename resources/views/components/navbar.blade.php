@@ -4,9 +4,19 @@
         <div class="flex items-center justify-between h-20 gap-4 xl:gap-8">
             
             @php
-                $logoSrc = !empty($settings['site_logo']) 
-                    ? (str_starts_with($settings['site_logo'], 'data:') || str_starts_with($settings['site_logo'], 'http') ? $settings['site_logo'] : asset(ltrim($settings['site_logo'], '/'))) 
-                    : (file_exists(public_path('images/logo.png')) ? asset('images/logo.png') : null);
+                // Load site_logo on-demand (excluded from the global lite settings cache
+                // to avoid serializing a large base64 blob on every request).
+                $rawLogo = \Illuminate\Support\Facades\Cache::remember(
+                    'site_setting_site_logo', 3600,
+                    fn () => \App\Models\SiteSetting::where('key', 'site_logo')->value('value')
+                );
+                if (!empty($rawLogo)) {
+                    $logoSrc = (str_starts_with($rawLogo, 'data:') || str_starts_with($rawLogo, 'http'))
+                        ? $rawLogo
+                        : asset(ltrim($rawLogo, '/'));
+                } else {
+                    $logoSrc = file_exists(public_path('images/logo.png')) ? asset('images/logo.png') : null;
+                }
             @endphp
 
             <!-- Brand Logo (Left) -->

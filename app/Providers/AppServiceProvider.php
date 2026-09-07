@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
             if (\Illuminate\Support\Facades\Schema::hasTable('site_settings')) {
                 \Illuminate\Support\Facades\View::composer('*', function ($view) {
                     $view->with([
-                        'settings' => \App\Models\SiteSetting::allCached(),
+                        'settings' => \App\Models\SiteSetting::allCachedLite(),
                         'sjiStats' => \App\Models\SiteSetting::getCorporateStats(),
                     ]);
                 });
