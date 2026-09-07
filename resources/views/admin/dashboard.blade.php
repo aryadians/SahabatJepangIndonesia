@@ -11,13 +11,19 @@
         <div class="space-y-2 relative z-10">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs font-bold border border-red-500/30">
                 <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-                <span>LPK Sahabat Jepang Indonesia • Portal Administrator</span>
+                <span>LPK Sahabat Jepang Indonesia • Portal {{ auth()->user()->role_name }}</span>
             </div>
             <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">
-                Selamat Datang, {{ auth()->user()->name ?? 'Administrator' }}! 👋
+                Selamat Datang, {{ auth()->user()->name }}! 👋
             </h2>
             <p class="text-xs sm:text-sm text-slate-400 max-w-xl">
-                Pantau perkembangan pendaftar calon siswa, status pelatihan, keberangkatan ke Jepang, serta pengelolaan administrasi keuangan lembaga secara terpadu.
+                @if(auth()->user()->isTeacher())
+                    Pantau perkembangan akademik kesiswaan, penguasaan materi N5-N3, evaluasi disiplin, serta jadwal wawancara kerja kaisha Jepang.
+                @elseif(auth()->user()->isStaff())
+                    Pantau operasional kesiswaan, registrasi pendaftar, buku kas umum, dokumen keberangkatan, dan arsip digital LPK SJI.
+                @else
+                    Pantau perkembangan pendaftar calon siswa, status pelatihan, keberangkatan ke Jepang, serta tata kelola administrasi keuangan lembaga secara terpadu.
+                @endif
             </p>
         </div>
 
@@ -109,26 +115,48 @@
             </div>
         </div>
 
-        <!-- Sisa Tanggungan / Piutang -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:shadow-md hover:border-amber-300 transition-all duration-200 group relative overflow-hidden">
-            <div class="flex items-center justify-between">
-                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Sisa Piutang Biaya</span>
-                <span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 text-[10px] font-bold">{{ $counts['recovery_rate'] }}% Lunas</span>
-            </div>
-            <div class="flex items-end justify-between mt-2">
-                <div>
-                    <h3 data-admin-stat="receivables" class="text-xl sm:text-2xl font-black text-amber-600 leading-none">Rp {{ number_format($counts['receivables'], 0, ',', '.') }}</h3>
-                    <p class="text-[11px] text-slate-400 mt-1">Dari total {{ number_format($counts['total_cost'] / 1000000, 1) }} jt</p>
+        <!-- Card 4: Sisa Piutang (Admin/Staff) ATAU Wawancara Terjadwal (Sensei) -->
+        @if(auth()->user()->canManageFinance())
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:shadow-md hover:border-amber-300 transition-all duration-200 group relative overflow-hidden">
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Sisa Piutang Biaya</span>
+                    <span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 text-[10px] font-bold">{{ $counts['recovery_rate'] }}% Lunas</span>
                 </div>
-                <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold group-hover:bg-amber-600 group-hover:text-white transition">
-                    <i data-lucide="wallet" class="w-5 h-5"></i>
+                <div class="flex items-end justify-between mt-2">
+                    <div>
+                        <h3 data-admin-stat="receivables" class="text-xl sm:text-2xl font-black text-amber-600 leading-none">Rp {{ number_format($counts['receivables'], 0, ',', '.') }}</h3>
+                        <p class="text-[11px] text-slate-400 mt-1">Dari total {{ number_format($counts['total_cost'] / 1000000, 1) }} jt</p>
+                    </div>
+                    <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold group-hover:bg-amber-600 group-hover:text-white transition">
+                        <i data-lucide="wallet" class="w-5 h-5"></i>
+                    </div>
+                </div>
+                <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                    <a href="{{ route('admin.students.index') }}" class="font-bold text-amber-700 hover:underline">Pantau Pembayaran &rarr;</a>
+                    <span class="text-slate-400 font-mono text-[10px]">Arus Kas</span>
                 </div>
             </div>
-            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                <a href="{{ route('admin.students.index') }}" class="font-bold text-amber-700 hover:underline">Pantau Pembayaran &rarr;</a>
-                <span class="text-slate-400 font-mono text-[10px]">Arus Kas</span>
+        @else
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:shadow-md hover:border-amber-300 transition-all duration-200 group relative overflow-hidden">
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Wawancara Kaisha</span>
+                    <span class="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-bold">Kandidat</span>
+                </div>
+                <div class="flex items-end justify-between mt-2">
+                    <div>
+                        <h3 class="text-3xl font-black text-amber-600 leading-none">{{ $counts['pipe_interview'] }}</h3>
+                        <p class="text-[11px] text-slate-400 mt-1">Siswa dalam proses seleksi</p>
+                    </div>
+                    <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold group-hover:bg-amber-600 group-hover:text-white transition">
+                        <i data-lucide="video" class="w-5 h-5"></i>
+                    </div>
+                </div>
+                <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                    <a href="{{ route('admin.interviews.index') }}" class="font-bold text-amber-700 hover:underline">Lihat Jadwal Wawancara &rarr;</a>
+                    <span class="text-slate-400 font-mono text-[10px]">Kaisha Match</span>
+                </div>
             </div>
-        </div>
+        @endif
 
     </div>
 
@@ -362,85 +390,139 @@
         </div>
     </div>
 
-    <!-- 4b. Executive Operational Finance & Digital Archives (Reimbursement & Arsip Explorer) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        
-        <!-- Saldo Kas Umum (General Ledger) -->
-        <div class="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-4 border border-slate-200 shadow-xs flex items-center justify-between hover:border-slate-300 transition">
-            <div class="min-w-0">
-                <div class="flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full {{ $counts['cash_balance'] >= 0 ? 'bg-emerald-500' : 'bg-rose-500' }}"></span>
-                    <p class="text-[11px] font-bold text-slate-700 uppercase tracking-wider truncate">Saldo Kas Umum</p>
+    <!-- 4b. Executive Operational Finance & Digital Archives (Admin/Staff) OR Academic Dock (Sensei) -->
+    @if(auth()->user()->canManageFinance())
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            
+            <!-- Saldo Kas Umum (General Ledger) -->
+            <div class="bg-gradient-to-br from-white to-slate-50 rounded-2xl p-4 border border-slate-200 shadow-xs flex items-center justify-between hover:border-slate-300 transition">
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full {{ $counts['cash_balance'] >= 0 ? 'bg-emerald-500' : 'bg-rose-500' }}"></span>
+                        <p class="text-[11px] font-bold text-slate-700 uppercase tracking-wider truncate">Saldo Kas Umum</p>
+                    </div>
+                    <h4 class="text-lg font-black {{ $counts['cash_balance'] >= 0 ? 'text-slate-900' : 'text-rose-600' }} mt-1 truncate">Rp {{ number_format($counts['cash_balance'], 0, ',', '.') }}</h4>
+                    <a href="{{ route('admin.cash-book.index') }}" class="text-[11px] font-bold text-japan-600 hover:underline inline-block mt-0.5">Buka Buku Kas &rarr;</a>
                 </div>
-                <h4 class="text-lg font-black {{ $counts['cash_balance'] >= 0 ? 'text-slate-900' : 'text-rose-600' }} mt-1 truncate">Rp {{ number_format($counts['cash_balance'], 0, ',', '.') }}</h4>
-                <a href="{{ route('admin.cash-book.index') }}" class="text-[11px] font-bold text-japan-600 hover:underline inline-block mt-0.5">Buka Buku Kas &rarr;</a>
-            </div>
-            <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center font-bold shrink-0">
-                <i data-lucide="book-open" class="w-5 h-5"></i>
-            </div>
-        </div>
-
-        <!-- Reimburse Dicairkan -->
-        <div class="bg-gradient-to-br from-white to-emerald-50/40 rounded-2xl p-4 border border-emerald-200/80 shadow-xs flex items-center justify-between hover:border-emerald-300 transition">
-            <div class="min-w-0">
-                <div class="flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <p class="text-[11px] font-bold text-emerald-800 uppercase tracking-wider truncate">Reimburse Cair</p>
+                <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 flex items-center justify-center font-bold shrink-0">
+                    <i data-lucide="book-open" class="w-5 h-5"></i>
                 </div>
-                <h4 class="text-lg font-black text-slate-900 mt-1 truncate">Rp {{ number_format($counts['reimbursements_paid'], 0, ',', '.') }}</h4>
-                <a href="{{ route('admin.reimbursements.index', ['type' => 'reimbursement']) }}" class="text-[11px] font-bold text-emerald-700 hover:underline inline-block mt-0.5">Kelola Reimburse &rarr;</a>
             </div>
-            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold shrink-0">
-                <i data-lucide="wallet" class="w-5 h-5"></i>
-            </div>
-        </div>
 
-        <!-- Uang Muka / Kasbon Berjalan -->
-        <div class="bg-gradient-to-br from-white to-purple-50/40 rounded-2xl p-4 border border-purple-200/80 shadow-xs flex items-center justify-between hover:border-purple-300 transition">
-            <div class="min-w-0">
-                <div class="flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-purple-500"></span>
-                    <p class="text-[11px] font-bold text-purple-800 uppercase tracking-wider truncate">Kasbon Dinas Aktif</p>
+            <!-- Reimburse Dicairkan -->
+            <div class="bg-gradient-to-br from-white to-emerald-50/40 rounded-2xl p-4 border border-emerald-200/80 shadow-xs flex items-center justify-between hover:border-emerald-300 transition">
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <p class="text-[11px] font-bold text-emerald-800 uppercase tracking-wider truncate">Reimburse Cair</p>
+                    </div>
+                    <h4 class="text-lg font-black text-slate-900 mt-1 truncate">Rp {{ number_format($counts['reimbursements_paid'], 0, ',', '.') }}</h4>
+                    <a href="{{ route('admin.reimbursements.index', ['type' => 'reimbursement']) }}" class="text-[11px] font-bold text-emerald-700 hover:underline inline-block mt-0.5">Kelola Reimburse &rarr;</a>
                 </div>
-                <h4 class="text-lg font-black text-purple-900 mt-1 truncate">Rp {{ number_format($counts['advances_active'], 0, ',', '.') }}</h4>
-                <a href="{{ route('admin.reimbursements.index', ['type' => 'cash_advance']) }}" class="text-[11px] font-bold text-purple-700 hover:underline inline-block mt-0.5">{{ $counts['unsettled_advances'] }} Belum SPJ &rarr;</a>
-            </div>
-            <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold shrink-0">
-                <i data-lucide="plane-takeoff" class="w-5 h-5"></i>
-            </div>
-        </div>
-
-        <!-- Verifikasi Menunggu -->
-        <div class="bg-gradient-to-br from-white to-amber-50/40 rounded-2xl p-4 border border-amber-200/80 shadow-xs flex items-center justify-between hover:border-amber-300 transition">
-            <div class="min-w-0">
-                <div class="flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                    <p class="text-[11px] font-bold text-amber-800 uppercase tracking-wider truncate">Klaim Menunggu</p>
+                <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold shrink-0">
+                    <i data-lucide="wallet" class="w-5 h-5"></i>
                 </div>
-                <h4 class="text-lg font-black text-amber-900 mt-1 truncate">{{ $counts['reimbursements_pending'] }} Berkas</h4>
-                <a href="{{ route('admin.reimbursements.index', ['status' => 'submitted']) }}" class="text-[11px] font-bold text-amber-700 hover:underline inline-block mt-0.5">Verifikasi Segera &rarr;</a>
             </div>
-            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold shrink-0">
-                <i data-lucide="clock" class="w-5 h-5"></i>
-            </div>
-        </div>
 
-        <!-- Arsip Digital Explorer -->
-        <div class="bg-gradient-to-br from-white to-blue-50/40 rounded-2xl p-4 border border-blue-200/80 shadow-xs flex items-center justify-between hover:border-blue-300 transition">
-            <div class="min-w-0">
-                <div class="flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                    <p class="text-[11px] font-bold text-blue-800 uppercase tracking-wider truncate">Arsip Explorer SPA</p>
+            <!-- Uang Muka / Kasbon Berjalan -->
+            <div class="bg-gradient-to-br from-white to-purple-50/40 rounded-2xl p-4 border border-purple-200/80 shadow-xs flex items-center justify-between hover:border-purple-300 transition">
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                        <p class="text-[11px] font-bold text-purple-800 uppercase tracking-wider truncate">Kasbon Dinas Aktif</p>
+                    </div>
+                    <h4 class="text-lg font-black text-purple-900 mt-1 truncate">Rp {{ number_format($counts['advances_active'], 0, ',', '.') }}</h4>
+                    <a href="{{ route('admin.reimbursements.index', ['type' => 'cash_advance']) }}" class="text-[11px] font-bold text-purple-700 hover:underline inline-block mt-0.5">{{ $counts['unsettled_advances'] }} Belum SPJ &rarr;</a>
                 </div>
-                <h4 class="text-lg font-black text-slate-900 mt-1 truncate">{{ $counts['archives_total'] }} Berkas</h4>
-                <a href="{{ route('admin.digital-archives.index') }}" class="text-[11px] font-bold text-blue-700 hover:underline inline-block mt-0.5">{{ $counts['folders_total'] }} Folder &rarr;</a>
+                <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold shrink-0">
+                    <i data-lucide="plane-takeoff" class="w-5 h-5"></i>
+                </div>
             </div>
-            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold shrink-0">
-                <i data-lucide="folder-git-2" class="w-5 h-5"></i>
-            </div>
-        </div>
 
-    </div>
+            <!-- Verifikasi Menunggu -->
+            <div class="bg-gradient-to-br from-white to-amber-50/40 rounded-2xl p-4 border border-amber-200/80 shadow-xs flex items-center justify-between hover:border-amber-300 transition">
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                        <p class="text-[11px] font-bold text-amber-800 uppercase tracking-wider truncate">Klaim Menunggu</p>
+                    </div>
+                    <h4 class="text-lg font-black text-amber-900 mt-1 truncate">{{ $counts['reimbursements_pending'] }} Berkas</h4>
+                    <a href="{{ route('admin.reimbursements.index', ['status' => 'submitted']) }}" class="text-[11px] font-bold text-amber-700 hover:underline inline-block mt-0.5">Verifikasi Segera &rarr;</a>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold shrink-0">
+                    <i data-lucide="clock" class="w-5 h-5"></i>
+                </div>
+            </div>
+
+            <!-- Arsip Digital Explorer -->
+            <div class="bg-gradient-to-br from-white to-blue-50/40 rounded-2xl p-4 border border-blue-200/80 shadow-xs flex items-center justify-between hover:border-blue-300 transition">
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                        <p class="text-[11px] font-bold text-blue-800 uppercase tracking-wider truncate">Arsip Explorer SPA</p>
+                    </div>
+                    <h4 class="text-lg font-black text-slate-900 mt-1 truncate">{{ $counts['archives_total'] }} Berkas</h4>
+                    <a href="{{ route('admin.digital-archives.index') }}" class="text-[11px] font-bold text-blue-700 hover:underline inline-block mt-0.5">{{ $counts['folders_total'] }} Folder &rarr;</a>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold shrink-0">
+                    <i data-lucide="folder-git-2" class="w-5 h-5"></i>
+                </div>
+            </div>
+
+        </div>
+    @else
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <!-- Siswa Aktif Belajar -->
+            <div class="bg-gradient-to-br from-white to-blue-50/40 rounded-2xl p-4 border border-blue-200/80 shadow-xs flex items-center justify-between hover:border-blue-300 transition">
+                <div class="min-w-0">
+                    <p class="text-[11px] font-bold text-blue-800 uppercase tracking-wider truncate">Aktif di Kelas</p>
+                    <h4 class="text-xl font-black text-blue-900 mt-1">{{ $counts['students_active'] }} Siswa</h4>
+                    <a href="{{ route('admin.students.index', ['status' => 'active']) }}" class="text-[11px] font-bold text-blue-700 hover:underline inline-block mt-0.5">Daftar Presensi & Nilai &rarr;</a>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold shrink-0">
+                    <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+                </div>
+            </div>
+
+            <!-- Jadwal Wawancara Kaisha -->
+            <div class="bg-gradient-to-br from-white to-amber-50/40 rounded-2xl p-4 border border-amber-200/80 shadow-xs flex items-center justify-between hover:border-amber-300 transition">
+                <div class="min-w-0">
+                    <p class="text-[11px] font-bold text-amber-800 uppercase tracking-wider truncate">Wawancara Kaisha</p>
+                    <h4 class="text-xl font-black text-amber-900 mt-1">{{ $counts['pipe_interview'] }} Peserta</h4>
+                    <a href="{{ route('admin.interviews.index') }}" class="text-[11px] font-bold text-amber-700 hover:underline inline-block mt-0.5">Kalender Interview &rarr;</a>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold shrink-0">
+                    <i data-lucide="video" class="w-5 h-5"></i>
+                </div>
+            </div>
+
+            <!-- Lolos Interview (COE & Visa) -->
+            <div class="bg-gradient-to-br from-white to-emerald-50/40 rounded-2xl p-4 border border-emerald-200/80 shadow-xs flex items-center justify-between hover:border-emerald-300 transition">
+                <div class="min-w-0">
+                    <p class="text-[11px] font-bold text-emerald-800 uppercase tracking-wider truncate">Lolos Seleksi Kaisha</p>
+                    <h4 class="text-xl font-black text-emerald-900 mt-1">{{ $counts['pipe_passed'] }} Siswa</h4>
+                    <a href="{{ route('admin.flight-readiness.index') }}" class="text-[11px] font-bold text-emerald-700 hover:underline inline-block mt-0.5">Checklist Dokumen &rarr;</a>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold shrink-0">
+                    <i data-lucide="plane-takeoff" class="w-5 h-5"></i>
+                </div>
+            </div>
+
+            <!-- Reimburse / Kasbon Dinas Pribadi -->
+            <div class="bg-gradient-to-br from-white to-purple-50/40 rounded-2xl p-4 border border-purple-200/80 shadow-xs flex items-center justify-between hover:border-purple-300 transition">
+                <div class="min-w-0">
+                    <p class="text-[11px] font-bold text-purple-800 uppercase tracking-wider truncate">Klaim Dinas Pribadi</p>
+                    <h4 class="text-xl font-black text-purple-900 mt-1">Reimburse / Kasbon</h4>
+                    <a href="{{ route('admin.reimbursements.index') }}" class="text-[11px] font-bold text-purple-700 hover:underline inline-block mt-0.5">Ajukan Klaim Sensei &rarr;</a>
+                </div>
+                <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold shrink-0">
+                    <i data-lucide="receipt" class="w-5 h-5"></i>
+                </div>
+            </div>
+
+        </div>
+    @endif
 
     <!-- 3b. Executive PDF Export Quick Hub (Pusat Cetak Dokumen Resmi) -->
     <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-6 text-white shadow-md border border-slate-700/50 space-y-4">
@@ -457,144 +539,227 @@
                     <p class="text-xs text-slate-400">Unduh atau cetak laporan resmi berstempel dan kop surat standar Kemnaker RI dalam format A4</p>
                 </div>
             </div>
-            <span class="text-[11px] text-slate-400 font-mono hidden sm:inline">7 Laporan Tersedia</span>
+            @if(auth()->user()->canManageFinance())
+                <span class="text-[11px] text-slate-400 font-mono hidden sm:inline">7 Laporan Tersedia</span>
+            @else
+                <span class="text-[11px] text-slate-400 font-mono hidden sm:inline">4 Laporan Akademik & Operasional</span>
+            @endif
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-            
-            <!-- 0. PDF Buku Kas Umum -->
-            <a 
-                href="{{ route('admin.cash-book.export.pdf') }}" 
-                target="_blank"
-                class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-emerald-500/50 transition flex flex-col justify-between group space-y-2"
-            >
-                <div class="flex items-center justify-between">
-                    <span class="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold">
-                        <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
-                    </span>
-                    <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-L</span>
-                </div>
-                <div>
-                    <p class="text-xs font-bold text-white group-hover:text-emerald-400 transition">Buku Kas Umum</p>
-                    <p class="text-[10px] text-slate-400 mt-0.5 truncate">Jurnal mutasi kas & bank</p>
-                </div>
-            </a>
-            
-            <!-- 1. PDF Buku Induk Siswa -->
-            <a 
-                href="{{ route('admin.students.export.pdf') }}" 
-                target="_blank"
-                class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-red-500/50 transition flex flex-col justify-between group space-y-2"
-            >
-                <div class="flex items-center justify-between">
-                    <span class="w-7 h-7 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center text-xs font-bold">
-                        <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
-                    </span>
-                    <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-L</span>
-                </div>
-                <div>
-                    <p class="text-xs font-bold text-white group-hover:text-red-400 transition">Buku Induk Siswa</p>
-                    <p class="text-[10px] text-slate-400 mt-0.5 truncate">Database & status Jepang</p>
-                </div>
-            </a>
+        @if(auth()->user()->canManageFinance())
+            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+                
+                <!-- 0. PDF Buku Kas Umum -->
+                <a 
+                    href="{{ route('admin.cash-book.export.pdf') }}" 
+                    target="_blank"
+                    class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-emerald-500/50 transition flex flex-col justify-between group space-y-2"
+                >
+                    <div class="flex items-center justify-between">
+                        <span class="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold">
+                            <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+                        </span>
+                        <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-L</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-white group-hover:text-emerald-400 transition">Buku Kas Umum</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5 truncate">Jurnal mutasi kas & bank</p>
+                    </div>
+                </a>
+                
+                <!-- 1. PDF Buku Induk Siswa -->
+                <a 
+                    href="{{ route('admin.students.export.pdf') }}" 
+                    target="_blank"
+                    class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-red-500/50 transition flex flex-col justify-between group space-y-2"
+                >
+                    <div class="flex items-center justify-between">
+                        <span class="w-7 h-7 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center text-xs font-bold">
+                            <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
+                        </span>
+                        <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-L</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-white group-hover:text-red-400 transition">Buku Induk Siswa</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5 truncate">Database & status Jepang</p>
+                    </div>
+                </a>
 
-            <!-- 2. PDF Proyeksi Keuangan -->
-            <a 
-                href="{{ route('admin.finance.export.pdf') }}" 
-                target="_blank"
-                class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-emerald-500/50 transition flex flex-col justify-between group space-y-2"
-            >
-                <div class="flex items-center justify-between">
-                    <span class="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold">
-                        <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
-                    </span>
-                    <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-P</span>
-                </div>
-                <div>
-                    <p class="text-xs font-bold text-white group-hover:text-emerald-400 transition">Proyeksi Keuangan</p>
-                    <p class="text-[10px] text-slate-400 mt-0.5 truncate">Arus kas & piutang biaya</p>
-                </div>
-            </a>
+                <!-- 2. PDF Proyeksi Keuangan -->
+                <a 
+                    href="{{ route('admin.finance.export.pdf') }}" 
+                    target="_blank"
+                    class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-emerald-500/50 transition flex flex-col justify-between group space-y-2"
+                >
+                    <div class="flex items-center justify-between">
+                        <span class="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold">
+                            <i data-lucide="wallet" class="w-3.5 h-3.5"></i>
+                        </span>
+                        <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-P</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-white group-hover:text-emerald-400 transition">Proyeksi Keuangan</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5 truncate">Arus kas & piutang biaya</p>
+                    </div>
+                </a>
 
-            <!-- 3. PDF Rekap Leads Pendaftar -->
-            <a 
-                href="{{ route('admin.consultations.export.pdf') }}" 
-                target="_blank"
-                class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-500/50 transition flex flex-col justify-between group space-y-2"
-            >
-                <div class="flex items-center justify-between">
-                    <span class="w-7 h-7 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold">
-                        <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
-                    </span>
-                    <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-L</span>
-                </div>
-                <div>
-                    <p class="text-xs font-bold text-white group-hover:text-blue-400 transition">Rekapitulasi Leads</p>
-                    <p class="text-[10px] text-slate-400 mt-0.5 truncate">Pendaftar konsultasi masuk</p>
-                </div>
-            </a>
+                <!-- 3. PDF Rekap Leads Pendaftar -->
+                <a 
+                    href="{{ route('admin.consultations.export.pdf') }}" 
+                    target="_blank"
+                    class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-500/50 transition flex flex-col justify-between group space-y-2"
+                >
+                    <div class="flex items-center justify-between">
+                        <span class="w-7 h-7 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold">
+                            <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                        </span>
+                        <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-L</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-white group-hover:text-blue-400 transition">Rekapitulasi Leads</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5 truncate">Pendaftar konsultasi masuk</p>
+                    </div>
+                </a>
 
-            <!-- 4. PDF Riwayat Wawancara Kaisha -->
-            <a 
-                href="{{ route('admin.interviews.export.pdf') }}" 
-                target="_blank"
-                class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-500/50 transition flex flex-col justify-between group space-y-2"
-            >
-                <div class="flex items-center justify-between">
-                    <span class="w-7 h-7 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs font-bold">
-                        <i data-lucide="briefcase" class="w-3.5 h-3.5"></i>
-                    </span>
-                    <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-P</span>
-                </div>
-                <div>
-                    <p class="text-xs font-bold text-white group-hover:text-amber-400 transition">Riwayat Wawancara</p>
-                    <p class="text-[10px] text-slate-400 mt-0.5 truncate">Hasil seleksi user Kaisha</p>
-                </div>
-            </a>
+                <!-- 4. PDF Riwayat Wawancara Kaisha -->
+                <a 
+                    href="{{ route('admin.interviews.export.pdf') }}" 
+                    target="_blank"
+                    class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-500/50 transition flex flex-col justify-between group space-y-2"
+                >
+                    <div class="flex items-center justify-between">
+                        <span class="w-7 h-7 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs font-bold">
+                            <i data-lucide="briefcase" class="w-3.5 h-3.5"></i>
+                        </span>
+                        <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-P</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-white group-hover:text-amber-400 transition">Riwayat Wawancara</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5 truncate">Hasil seleksi user Kaisha</p>
+                    </div>
+                </a>
 
-            <!-- 5. PDF Dewan Pengajar & Sensei -->
-            <a 
-                href="{{ route('admin.teachers.export.pdf') }}" 
-                target="_blank"
-                class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/50 transition flex flex-col justify-between group space-y-2"
-            >
-                <div class="flex items-center justify-between">
-                    <span class="w-7 h-7 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-bold">
-                        <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
-                    </span>
-                    <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-P</span>
-                </div>
-                <div>
-                    <p class="text-xs font-bold text-white group-hover:text-purple-400 transition">Dewan Sensei</p>
-                    <p class="text-[10px] text-slate-400 mt-0.5 truncate">Instruktur JLPT N1/Native</p>
-                </div>
-            </a>
+                <!-- 5. PDF Dewan Pengajar & Sensei -->
+                <a 
+                    href="{{ route('admin.teachers.export.pdf') }}" 
+                    target="_blank"
+                    class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/50 transition flex flex-col justify-between group space-y-2"
+                >
+                    <div class="flex items-center justify-between">
+                        <span class="w-7 h-7 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-bold">
+                            <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                        </span>
+                        <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-P</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-white group-hover:text-purple-400 transition">Dewan Sensei</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5 truncate">Instruktur JLPT N1/Native</p>
+                    </div>
+                </a>
 
-            <!-- 6. PDF Rekapitulasi Reimburse & Kasbon SPJ -->
-            <a 
-                href="{{ route('admin.reimbursements.export.pdf') }}" 
-                target="_blank"
-                class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-sky-500/50 transition flex flex-col justify-between group space-y-2"
-            >
-                <div class="flex items-center justify-between">
-                    <span class="w-7 h-7 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-xs font-bold">
-                        <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
-                    </span>
-                    <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-P</span>
-                </div>
-                <div>
-                    <p class="text-xs font-bold text-white group-hover:text-sky-400 transition">Klaim Reimburse</p>
-                    <p class="text-[10px] text-slate-400 mt-0.5 truncate">SPJ dinas & uang muka</p>
-                </div>
-            </a>
+                <!-- 6. PDF Rekapitulasi Reimburse & Kasbon SPJ -->
+                <a 
+                    href="{{ route('admin.reimbursements.export.pdf') }}" 
+                    target="_blank"
+                    class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-sky-500/50 transition flex flex-col justify-between group space-y-2"
+                >
+                    <div class="flex items-center justify-between">
+                        <span class="w-7 h-7 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-xs font-bold">
+                            <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
+                        </span>
+                        <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-P</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-white group-hover:text-sky-400 transition">Klaim Reimburse</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5 truncate">SPJ dinas & uang muka</p>
+                    </div>
+                </a>
 
-        </div>
+            </div>
+        @else
+            <!-- PDF Hub Khusus Sensei (Tanpa Akses Keuangan & Leads) -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                
+                <!-- 1. PDF Buku Induk Siswa -->
+                <a 
+                    href="{{ route('admin.students.export.pdf') }}" 
+                    target="_blank"
+                    class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-red-500/50 transition flex flex-col justify-between group space-y-2"
+                >
+                    <div class="flex items-center justify-between">
+                        <span class="w-7 h-7 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center text-xs font-bold">
+                            <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
+                        </span>
+                        <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-L</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-white group-hover:text-red-400 transition">Buku Induk Siswa</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5 truncate">Database & status Jepang</p>
+                    </div>
+                </a>
+
+                <!-- 2. PDF Riwayat Wawancara Kaisha -->
+                <a 
+                    href="{{ route('admin.interviews.export.pdf') }}" 
+                    target="_blank"
+                    class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-500/50 transition flex flex-col justify-between group space-y-2"
+                >
+                    <div class="flex items-center justify-between">
+                        <span class="w-7 h-7 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs font-bold">
+                            <i data-lucide="briefcase" class="w-3.5 h-3.5"></i>
+                        </span>
+                        <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-P</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-white group-hover:text-amber-400 transition">Riwayat Wawancara</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5 truncate">Hasil seleksi user Kaisha</p>
+                    </div>
+                </a>
+
+                <!-- 3. PDF Dewan Pengajar & Sensei -->
+                <a 
+                    href="{{ route('admin.teachers.export.pdf') }}" 
+                    target="_blank"
+                    class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/50 transition flex flex-col justify-between group space-y-2"
+                >
+                    <div class="flex items-center justify-between">
+                        <span class="w-7 h-7 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-bold">
+                            <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                        </span>
+                        <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-P</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-white group-hover:text-purple-400 transition">Dewan Sensei</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5 truncate">Instruktur JLPT N1/Native</p>
+                    </div>
+                </a>
+
+                <!-- 4. PDF Rekapitulasi Reimburse & Kasbon SPJ -->
+                <a 
+                    href="{{ route('admin.reimbursements.export.pdf') }}" 
+                    target="_blank"
+                    class="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-sky-500/50 transition flex flex-col justify-between group space-y-2"
+                >
+                    <div class="flex items-center justify-between">
+                        <span class="w-7 h-7 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-xs font-bold">
+                            <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
+                        </span>
+                        <span class="text-[9px] font-mono font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">A4-P</span>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-white group-hover:text-sky-400 transition">Klaim Reimburse</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5 truncate">SPJ dinas & uang muka</p>
+                    </div>
+                </a>
+
+            </div>
+        @endif
     </div>
 
-    <!-- 4. Side-by-Side Live Data Tables (Students + Leads) -->
+    <!-- 4. Side-by-Side Live Data Tables -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
-        <!-- Tabel 1: Siswa Terbaru Terdaftar -->
+        <!-- Tabel 1: Siswa Terbaru Terdaftar / Aktif Belajar -->
         <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div class="flex items-center gap-2.5">
@@ -602,8 +767,8 @@
                         <i data-lucide="graduation-cap" class="w-4 h-4"></i>
                     </div>
                     <div>
-                        <h3 class="font-black text-slate-900 text-sm">Siswa Terbaru Terdaftar</h3>
-                        <p class="text-[11px] text-slate-400">5 siswa pendaftaran terbaru</p>
+                        <h3 class="font-black text-slate-900 text-sm">Siswa Terdaftar</h3>
+                        <p class="text-[11px] text-slate-400">5 siswa terdaftar terbaru</p>
                     </div>
                 </div>
                 <a href="{{ route('admin.students.index') }}" class="text-xs font-bold text-japan-600 hover:underline">
@@ -617,7 +782,11 @@
                         <tr class="text-slate-400 text-[10px] uppercase font-bold border-b border-slate-100">
                             <th class="py-2">Siswa</th>
                             <th class="py-2">Program</th>
-                            <th class="py-2">Status Biaya</th>
+                            @if(auth()->user()->canManageFinance())
+                                <th class="py-2">Status Biaya</th>
+                            @else
+                                <th class="py-2">Status Pelatihan</th>
+                            @endif
                             <th class="py-2 text-right">Aksi</th>
                         </tr>
                     </thead>
@@ -632,13 +801,19 @@
                                     <span class="text-[11px] font-semibold text-slate-700">{{ $st->program }}</span>
                                 </td>
                                 <td class="py-2.5">
-                                    @if($st->remaining_balance > 0)
-                                        <span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 font-bold text-[10px]">
-                                            Sisa: {{ $st->formatted_remaining_balance }}
-                                        </span>
+                                    @if(auth()->user()->canManageFinance())
+                                        @if($st->remaining_balance > 0)
+                                            <span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 font-bold text-[10px]">
+                                                Sisa: {{ $st->formatted_remaining_balance }}
+                                            </span>
+                                        @else
+                                            <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-bold text-[10px]">
+                                                Lunas
+                                            </span>
+                                        @endif
                                     @else
-                                        <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-bold text-[10px]">
-                                            Lunas
+                                        <span class="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-bold text-[10px]">
+                                            {{ ucfirst(str_replace('_', ' ', $st->status)) }}
                                         </span>
                                     @endif
                                 </td>
@@ -658,131 +833,294 @@
             </div>
         </div>
 
-        <!-- Tabel 2: Leads Pendaftar Konsultasi Terbaru -->
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                        <i data-lucide="message-square" class="w-4 h-4"></i>
+        @if(auth()->user()->isTeacher())
+            <!-- Tabel 2 (Sensei): Jadwal Wawancara Kaisha Mendatang -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                            <i data-lucide="video" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-black text-slate-900 text-sm">Wawancara Kaisha Mendatang</h3>
+                            <p class="text-[11px] text-slate-400">Jadwal seleksi user Jepang terdekat</p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="font-black text-slate-900 text-sm">Leads Konsultasi Masuk</h3>
-                        <p class="text-[11px] text-slate-400">5 pendaftar via website terbaru</p>
-                    </div>
+                    <a href="{{ route('admin.interviews.index') }}" class="text-xs font-bold text-japan-600 hover:underline">
+                        Lihat Semua &rarr;
+                    </a>
                 </div>
-                <a href="{{ route('admin.consultations.index') }}" class="text-xs font-bold text-japan-600 hover:underline">
-                    Lihat Semua &rarr;
-                </a>
-            </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
-                    <thead>
-                        <tr class="text-slate-400 text-[10px] uppercase font-bold border-b border-slate-100">
-                            <th class="py-2">Pendaftar</th>
-                            <th class="py-2">Program Minat</th>
-                            <th class="py-2">Status</th>
-                            <th class="py-2 text-right">Hubungi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        @forelse($latestLeads as $lead)
-                            <tr class="hover:bg-slate-50/80">
-                                <td class="py-2.5">
-                                    <p class="font-bold text-slate-900 leading-tight">{{ $lead->name }}</p>
-                                    <span class="text-[10px] text-slate-400">{{ $lead->phone }}</span>
-                                </td>
-                                <td class="py-2.5">
-                                    <span class="text-[11px] font-semibold text-slate-700">{{ $lead->program }}</span>
-                                </td>
-                                <td class="py-2.5">
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold
-                                        {{ $lead->status === 'pending' ? 'bg-amber-100 text-amber-800' : '' }}
-                                        {{ $lead->status === 'contacted' ? 'bg-blue-100 text-blue-800' : '' }}
-                                        {{ $lead->status === 'registered' ? 'bg-emerald-100 text-emerald-800' : '' }}
-                                        {{ $lead->status === 'cancelled' ? 'bg-slate-100 text-slate-600' : '' }}
-                                    ">
-                                        {{ ucfirst($lead->status) }}
-                                    </span>
-                                </td>
-                                <td class="py-2.5 text-right">
-                                    @php
-                                        $cleanPhone = preg_replace('/[^0-9]/', '', $lead->phone);
-                                        if (str_starts_with($cleanPhone, '0')) $cleanPhone = '62' . substr($cleanPhone, 1);
-                                        $waMsg = urlencode("Halo Kak {$lead->name}, terima kasih telah mendaftar di LPK Sahabat Jepang Indonesia. Kami ingin mengonfirmasi konsultasi pilihan program {$lead->program}.");
-                                    @endphp
-                                    <a 
-                                        href="https://api.whatsapp.com/send?phone={{ $cleanPhone }}&text={{ $waMsg }}" 
-                                        target="_blank" 
-                                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold text-[11px] transition"
-                                    >
-                                        <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
-                                        <span>WA</span>
-                                    </a>
-                                </td>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="text-slate-400 text-[10px] uppercase font-bold border-b border-slate-100">
+                                <th class="py-2">Perusahaan / Kaisha</th>
+                                <th class="py-2">Tanggal</th>
+                                <th class="py-2">Kandidat</th>
+                                <th class="py-2 text-right">Aksi</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="py-6 text-center text-slate-400 text-xs">Belum ada leads masuk.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @forelse($upcomingInterviews as $interview)
+                                <tr class="hover:bg-slate-50/80">
+                                    <td class="py-2.5">
+                                        <p class="font-bold text-slate-900 leading-tight">{{ $interview->company_name }}</p>
+                                        <span class="text-[10px] text-slate-400">{{ $interview->job_title ?? 'Tokutei Ginou / Magang' }}</span>
+                                    </td>
+                                    <td class="py-2.5">
+                                        <span class="text-[11px] font-semibold text-slate-700">
+                                            {{ \Carbon\Carbon::parse($interview->interview_date)->format('d M Y') }}
+                                        </span>
+                                    </td>
+                                    <td class="py-2.5">
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800">
+                                            {{ $interview->candidates_count ?? 0 }} Siswa
+                                        </span>
+                                    </td>
+                                    <td class="py-2.5 text-right">
+                                        <a href="{{ route('admin.interviews.show', $interview->id) }}" class="p-1 rounded-lg text-japan-600 hover:bg-japan-50 inline-block" title="Detail">
+                                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="py-6 text-center text-slate-400 text-xs">Tidak ada jadwal wawancara terdekat.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+        @else
+            <!-- Tabel 2 (Admin & Staff): Leads Pendaftar Konsultasi Terbaru -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                            <i data-lucide="message-square" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-black text-slate-900 text-sm">Leads Konsultasi Masuk</h3>
+                            <p class="text-[11px] text-slate-400">5 pendaftar via website terbaru</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('admin.consultations.index') }}" class="text-xs font-bold text-japan-600 hover:underline">
+                        Lihat Semua &rarr;
+                    </a>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="text-slate-400 text-[10px] uppercase font-bold border-b border-slate-100">
+                                <th class="py-2">Pendaftar</th>
+                                <th class="py-2">Program Minat</th>
+                                <th class="py-2">Status</th>
+                                <th class="py-2 text-right">Hubungi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @forelse($latestLeads as $lead)
+                                <tr class="hover:bg-slate-50/80">
+                                    <td class="py-2.5">
+                                        <p class="font-bold text-slate-900 leading-tight">{{ $lead->name }}</p>
+                                        <span class="text-[10px] text-slate-400">{{ $lead->phone }}</span>
+                                    </td>
+                                    <td class="py-2.5">
+                                        <span class="text-[11px] font-semibold text-slate-700">{{ $lead->program }}</span>
+                                    </td>
+                                    <td class="py-2.5">
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold
+                                            {{ $lead->status === 'pending' ? 'bg-amber-100 text-amber-800' : '' }}
+                                            {{ $lead->status === 'contacted' ? 'bg-blue-100 text-blue-800' : '' }}
+                                            {{ $lead->status === 'registered' ? 'bg-emerald-100 text-emerald-800' : '' }}
+                                            {{ $lead->status === 'cancelled' ? 'bg-slate-100 text-slate-600' : '' }}
+                                        ">
+                                            {{ ucfirst($lead->status) }}
+                                        </span>
+                                    </td>
+                                    <td class="py-2.5 text-right">
+                                        @php
+                                            $cleanPhone = preg_replace('/[^0-9]/', '', $lead->phone);
+                                            if (str_starts_with($cleanPhone, '0')) $cleanPhone = '62' . substr($cleanPhone, 1);
+                                            $waMsg = urlencode("Halo Kak {$lead->name}, terima kasih telah mendaftar di LPK Sahabat Jepang Indonesia. Kami ingin mengonfirmasi konsultasi pilihan program {$lead->program}.");
+                                        @endphp
+                                        <a 
+                                            href="https://api.whatsapp.com/send?phone={{ $cleanPhone }}&text={{ $waMsg }}" 
+                                            target="_blank" 
+                                            class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold text-[11px] transition"
+                                        >
+                                            <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                                            <span>WA</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="py-6 text-center text-slate-400 text-xs">Belum ada leads masuk.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        @endif
 
     </div>
 
-    <!-- 5. Quick CMS Navigation Grid -->
+    <!-- 5. Quick Navigation Grid Berdasarkan Role -->
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         
-        <a href="{{ route('admin.programs.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-japan-600 transition flex flex-col items-center text-center group">
-            <div class="w-9 h-9 rounded-xl bg-red-50 text-japan-600 group-hover:bg-japan-600 group-hover:text-white flex items-center justify-center transition">
-                <i data-lucide="briefcase" class="w-4 h-4"></i>
-            </div>
-            <p class="text-xs font-bold text-slate-900 mt-2">Program Karir</p>
-            <span class="text-[10px] text-slate-400">{{ $counts['programs'] }} Program</span>
-        </a>
+        @if(auth()->user()->isAdmin())
+            <!-- Admin Shortcuts -->
+            <a href="{{ route('admin.programs.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-japan-600 transition flex flex-col items-center text-center group">
+                <div class="w-9 h-9 rounded-xl bg-red-50 text-japan-600 group-hover:bg-japan-600 group-hover:text-white flex items-center justify-center transition">
+                    <i data-lucide="briefcase" class="w-4 h-4"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-900 mt-2">Program Karir</p>
+                <span class="text-[10px] text-slate-400">{{ $counts['programs'] }} Program</span>
+            </a>
 
-        <a href="{{ route('admin.schedules.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-japan-600 transition flex flex-col items-center text-center group">
-            <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 group-hover:bg-amber-600 group-hover:text-white flex items-center justify-center transition">
-                <i data-lucide="calendar" class="w-4 h-4"></i>
-            </div>
-            <p class="text-xs font-bold text-slate-900 mt-2">Jadwal Kelas</p>
-            <span class="text-[10px] text-slate-400">{{ $counts['schedules'] }} Angkatan</span>
-        </a>
+            <a href="{{ route('admin.schedules.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-japan-600 transition flex flex-col items-center text-center group">
+                <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 group-hover:bg-amber-600 group-hover:text-white flex items-center justify-center transition">
+                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-900 mt-2">Jadwal Kelas</p>
+                <span class="text-[10px] text-slate-400">{{ $counts['schedules'] }} Angkatan</span>
+            </a>
 
-        <a href="{{ route('admin.facilities.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-japan-600 transition flex flex-col items-center text-center group">
-            <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white flex items-center justify-center transition">
-                <i data-lucide="building" class="w-4 h-4"></i>
-            </div>
-            <p class="text-xs font-bold text-slate-900 mt-2">Fasilitas</p>
-            <span class="text-[10px] text-slate-400">{{ $counts['facilities'] }} Foto</span>
-        </a>
+            <a href="{{ route('admin.cash-book.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-emerald-600 transition flex flex-col items-center text-center group">
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white flex items-center justify-center transition">
+                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-900 mt-2">Buku Kas</p>
+                <span class="text-[10px] text-slate-400">Jurnal Keuangan</span>
+            </a>
 
-        <a href="{{ route('admin.testimonials.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-japan-600 transition flex flex-col items-center text-center group">
-            <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white flex items-center justify-center transition">
-                <i data-lucide="message-square" class="w-4 h-4"></i>
-            </div>
-            <p class="text-xs font-bold text-slate-900 mt-2">Testimoni</p>
-            <span class="text-[10px] text-slate-400">{{ $counts['testimonials'] }} Cerita</span>
-        </a>
+            <a href="{{ route('admin.digital-archives.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-blue-600 transition flex flex-col items-center text-center group">
+                <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white flex items-center justify-center transition">
+                    <i data-lucide="folder-git-2" class="w-4 h-4"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-900 mt-2">Arsip Digital</p>
+                <span class="text-[10px] text-slate-400">{{ $counts['archives_total'] }} Berkas</span>
+            </a>
 
-        <a href="{{ route('admin.articles.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-japan-600 transition flex flex-col items-center text-center group">
-            <div class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 group-hover:bg-purple-600 group-hover:text-white flex items-center justify-center transition">
-                <i data-lucide="newspaper" class="w-4 h-4"></i>
-            </div>
-            <p class="text-xs font-bold text-slate-900 mt-2">Artikel Blog</p>
-            <span class="text-[10px] text-slate-400">{{ $counts['articles'] }} Post</span>
-        </a>
+            <a href="{{ route('admin.users.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-purple-600 transition flex flex-col items-center text-center group">
+                <div class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 group-hover:bg-purple-600 group-hover:text-white flex items-center justify-center transition">
+                    <i data-lucide="shield-check" class="w-4 h-4"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-900 mt-2">RBAC Akun</p>
+                <span class="text-[10px] text-slate-400">Manajemen Hak Akses</span>
+            </a>
 
-        <a href="{{ route('admin.settings.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-japan-600 transition flex flex-col items-center text-center group">
-            <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 group-hover:bg-slate-900 group-hover:text-white flex items-center justify-center transition">
-                <i data-lucide="sliders" class="w-4 h-4"></i>
-            </div>
-            <p class="text-xs font-bold text-slate-900 mt-2">Logo & Hero</p>
-            <span class="text-[10px] text-slate-400">Pengaturan</span>
-        </a>
+            <a href="{{ route('admin.settings.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-slate-800 transition flex flex-col items-center text-center group">
+                <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 group-hover:bg-slate-900 group-hover:text-white flex items-center justify-center transition">
+                    <i data-lucide="sliders" class="w-4 h-4"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-900 mt-2">Pengaturan</p>
+                <span class="text-[10px] text-slate-400">Situs & Integrasi</span>
+            </a>
+        @elseif(auth()->user()->isTeacher())
+            <!-- Sensei Shortcuts -->
+            <a href="{{ route('admin.students.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-red-600 transition flex flex-col items-center text-center group">
+                <div class="w-9 h-9 rounded-xl bg-red-50 text-japan-600 group-hover:bg-japan-600 group-hover:text-white flex items-center justify-center transition">
+                    <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-900 mt-2">Buku Induk Siswa</p>
+                <span class="text-[10px] text-slate-400">{{ $counts['students'] }} Terdaftar</span>
+            </a>
+
+            <a href="{{ route('admin.schedules.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-amber-600 transition flex flex-col items-center text-center group">
+                <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 group-hover:bg-amber-600 group-hover:text-white flex items-center justify-center transition">
+                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-900 mt-2">Jadwal Kelas</p>
+                <span class="text-[10px] text-slate-400">{{ $counts['schedules'] }} Angkatan</span>
+            </a>
+
+            <a href="{{ route('admin.interviews.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-blue-600 transition flex flex-col items-center text-center group">
+                <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white flex items-center justify-center transition">
+                    <i data-lucide="video" class="w-4 h-4"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-900 mt-2">Wawancara Kaisha</p>
+                <span class="text-[10px] text-slate-400">{{ $counts['pipe_interview'] }} Terjadwal</span>
+            </a>
+
+            <a href="{{ route('admin.flight-readiness.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-emerald-600 transition flex flex-col items-center text-center group">
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white flex items-center justify-center transition">
+                    <i data-lucide="plane-takeoff" class="w-4 h-4"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-900 mt-2">Kesiapan Terbang</p>
+                <span class="text-[10px] text-slate-400">{{ $counts['pipe_passed'] }} Lolos Seleksi</span>
+            </a>
+
+            <a href="{{ route('admin.reimbursements.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-purple-600 transition flex flex-col items-center text-center group">
+                <div class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 group-hover:bg-purple-600 group-hover:text-white flex items-center justify-center transition">
+                    <i data-lucide="receipt" class="w-4 h-4"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-900 mt-2">Klaim Reimburse</p>
+                <span class="text-[10px] text-slate-400">Pengajuan Dinas</span>
+            </a>
+
+            <a href="{{ route('admin.articles.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-sky-600 transition flex flex-col items-center text-center group">
+                <div class="w-9 h-9 rounded-xl bg-sky-50 text-sky-600 group-hover:bg-sky-600 group-hover:text-white flex items-center justify-center transition">
+                    <i data-lucide="newspaper" class="w-4 h-4"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-900 mt-2">Materi & Artikel</p>
+                <span class="text-[10px] text-slate-400">{{ $counts['articles'] }} Post</span>
+            </a>
+        @else
+            <!-- Staff / Karyawan Shortcuts -->
+            <a href="{{ route('admin.consultations.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-emerald-600 transition flex flex-col items-center text-center group">
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white flex items-center justify-center transition">
+                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-900 mt-2">Leads Pendaftar</p>
+                <span class="text-[10px] text-slate-400">{{ $counts['leads_total'] }} Kontak</span>
+            </a>
+
+            <a href="{{ route('admin.cash-book.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-emerald-600 transition flex flex-col items-center text-center group">
+                <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white flex items-center justify-center transition">
+                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-900 mt-2">Buku Kas</p>
+                <span class="text-[10px] text-slate-400">Jurnal Operasional</span>
+            </a>
+
+            <a href="{{ route('admin.digital-archives.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-blue-600 transition flex flex-col items-center text-center group">
+                <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white flex items-center justify-center transition">
+                    <i data-lucide="folder-git-2" class="w-4 h-4"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-900 mt-2">Arsip Digital</p>
+                <span class="text-[10px] text-slate-400">{{ $counts['archives_total'] }} Dokumen</span>
+            </a>
+
+            <a href="{{ route('admin.schedules.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-amber-600 transition flex flex-col items-center text-center group">
+                <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 group-hover:bg-amber-600 group-hover:text-white flex items-center justify-center transition">
+                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-900 mt-2">Jadwal Kelas</p>
+                <span class="text-[10px] text-slate-400">{{ $counts['schedules'] }} Angkatan</span>
+            </a>
+
+            <a href="{{ route('admin.testimonials.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-purple-600 transition flex flex-col items-center text-center group">
+                <div class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 group-hover:bg-purple-600 group-hover:text-white flex items-center justify-center transition">
+                    <i data-lucide="quote" class="w-4 h-4"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-900 mt-2">Testimoni</p>
+                <span class="text-[10px] text-slate-400">{{ $counts['testimonials'] }} Alumni</span>
+            </a>
+
+            <a href="{{ route('admin.programs.index') }}" class="p-3.5 rounded-2xl bg-white border border-slate-200 hover:border-japan-600 transition flex flex-col items-center text-center group">
+                <div class="w-9 h-9 rounded-xl bg-red-50 text-japan-600 group-hover:bg-japan-600 group-hover:text-white flex items-center justify-center transition">
+                    <i data-lucide="briefcase" class="w-4 h-4"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-900 mt-2">Program LPK</p>
+                <span class="text-[10px] text-slate-400">{{ $counts['programs'] }} Program</span>
+            </a>
+        @endif
 
     </div>
 

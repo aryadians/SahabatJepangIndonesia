@@ -83,8 +83,13 @@ class DashboardController extends Controller
         $latestLeads = Consultation::latest()->take(5)->get();
         $latestStudents = \App\Models\Student::latest()->take(5)->get();
         $latestCashTransactions = \App\Models\CashTransaction::latest('transaction_date')->latest('id')->take(5)->get();
+        $upcomingInterviews = \App\Models\JobInterview::withCount('candidates')
+            ->whereIn('status', ['scheduled', 'ongoing'])
+            ->orderBy('interview_date')
+            ->take(5)
+            ->get();
         $programs = Program::orderBy('order')->get();
 
-        return view('admin.dashboard', compact('counts', 'monthlyIntake', 'latestLeads', 'latestStudents', 'latestCashTransactions', 'programs'));
+        return view('admin.dashboard', compact('counts', 'monthlyIntake', 'latestLeads', 'latestStudents', 'latestCashTransactions', 'upcomingInterviews', 'programs'));
     }
 }
