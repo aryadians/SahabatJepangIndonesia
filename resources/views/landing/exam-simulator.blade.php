@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Simulasi Ujian JLPT & JFT-Basic CBT Online (100 Soal) - SJI Group')
-@section('meta_description', 'Latihan tryout ujian JLPT N5, N4, N3, dan JFT-Basic CBT Online gratis. 100 soal interaktif lengkap dengan skoring otomatis dan kunci pembahasan.')
-@section('meta_keywords', 'simulasi ujian jlpt online, tryout jlpt n5 n4 n3 cbt, simulasi jft basic gratis, latihan soal bahasa jepang cbt, sahabat jepang indonesia tryout')
+@section('title', 'Simulasi Tryout CBT JLPT & JFT-Basic Online (Bank 200 Soal Master) - SJI Group')
+@section('meta_description', 'Latihan tryout ujian JLPT N5, N4, N3, dan JFT-Basic CBT Online interaktif dengan sistem bank 200 soal teracak otomatis untuk setiap siswa, skoring instan, dan kunci pembahasan.')
+@section('meta_keywords', 'simulasi ujian jlpt online, tryout jlpt n5 n4 n3 cbt, simulasi jft basic gratis, latihan soal bahasa jepang cbt, bank soal 200 soal sahabat jepang indonesia')
 
 @section('content')
 <div class="bg-slate-950 text-white min-h-screen py-8 sm:py-12 relative overflow-hidden">
@@ -24,26 +24,79 @@
                     Simulasi Tryout JLPT & JFT-Basic Online
                 </h1>
                 <p class="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
-                    Uji kemampuan bahasa Jepang Anda secara instan dan gratis tanpa perlu login. Standar kurikulum resmi mencakup Kosakata (Kotoba), Tata Bahasa (Bunpou), Kanji, dan Pemahaman Membaca (Dokkai).
+                    Uji kemampuan bahasa Jepang Anda secara instan dan gratis tanpa perlu login. Bank 200 butir soal master mencakup Kosakata (Kotoba), Tata Bahasa (Bunpou), Kanji, dan Pemahaman Membaca (Dokkai).
                 </p>
             </div>
 
             <!-- Level Selector Pills -->
             <div class="flex flex-wrap items-center gap-1.5 bg-slate-950 p-2 rounded-2xl border border-slate-800 shadow-inner">
                 <a 
-                    href="{{ route('exam.simulator', ['level' => 'all']) }}" 
+                    href="{{ route('exam.simulator', ['level' => 'all', 'count' => ($count > 50 ? $count : 50)]) }}" 
                     class="px-3.5 py-2 rounded-xl text-xs font-black transition {{ $selectedLevel === 'all' ? 'bg-japan-600 text-white shadow-lg shadow-red-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
                 >
-                    🔥 Grand Tryout (100 Soal)
+                    🔥 Grand Tryout (200 Soal)
                 </a>
-                @foreach(['N5' => 'JLPT N5 (25 Soal)', 'N4' => 'JLPT N4 (25 Soal)', 'N3' => 'JLPT N3 (25 Soal)', 'JFT-Basic' => 'JFT-Basic (25 Soal)'] as $lvl => $lbl)
+                @foreach(['N5' => 'JLPT N5 (50 Soal)', 'N4' => 'JLPT N4 (50 Soal)', 'N3' => 'JLPT N3 (50 Soal)', 'JFT-Basic' => 'JFT-Basic (50 Soal)'] as $lvl => $lbl)
                     <a 
-                        href="{{ route('exam.simulator', ['level' => $lvl]) }}" 
+                        href="{{ route('exam.simulator', ['level' => $lvl, 'count' => ($count > 25 ? $count : 25)]) }}" 
                         class="px-3.5 py-2 rounded-xl text-xs font-extrabold transition {{ $selectedLevel === $lvl ? 'bg-japan-600 text-white shadow-lg shadow-red-600/30' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}"
                     >
                         {{ $lbl }}
                     </a>
                 @endforeach
+            </div>
+        </div>
+
+        <!-- Randomization Info & Question Count Selector Bar -->
+        <div class="bg-slate-900/90 backdrop-blur-md rounded-2xl p-4 border border-slate-800 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="shuffle" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-black text-white">Paket Soal Diacak Otomatis</span>
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold border border-emerald-500/30">
+                            {{ $count }} Soal Sesi Ini / {{ $availableCount }} Bank
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-slate-400">
+                        Setiap siswa mendapatkan kombinasi butir soal berbeda secara acak untuk melatih kesiapan ujian riil.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Question count options & re-shuffle button -->
+            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+                <span class="text-[11px] font-bold text-slate-400 mr-1 hidden sm:inline">Jumlah Soal:</span>
+                @if($selectedLevel === 'all')
+                    @foreach([50 => '50 Soal Acak', 100 => '100 Soal Acak', 200 => 'Semua 200 Soal'] as $cVal => $cLbl)
+                        <a 
+                            href="{{ route('exam.simulator', ['level' => 'all', 'count' => $cVal]) }}"
+                            class="px-3 py-1.5 rounded-xl text-xs font-bold transition {{ $count == $cVal ? 'bg-japan-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300 hover:bg-slate-700' }}"
+                        >
+                            {{ $cLbl }}
+                        </a>
+                    @endforeach
+                @else
+                    @foreach([25 => '25 Soal Acak', 50 => 'Semua 50 Soal'] as $cVal => $cLbl)
+                        <a 
+                            href="{{ route('exam.simulator', ['level' => $selectedLevel, 'count' => $cVal]) }}"
+                            class="px-3 py-1.5 rounded-xl text-xs font-bold transition {{ $count == $cVal ? 'bg-japan-600 text-white shadow-xs' : 'bg-slate-800 text-slate-300 hover:bg-slate-700' }}"
+                        >
+                            {{ $cLbl }}
+                        </a>
+                    @endforeach
+                @endif
+
+                <a 
+                    href="{{ route('exam.simulator', ['level' => $selectedLevel, 'count' => $count]) }}"
+                    class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 font-bold text-xs flex items-center gap-1.5 transition active:scale-95"
+                    title="Acak ulang dan ganti butir soal dengan paket soal acak baru"
+                >
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                    <span>Acak Ulang</span>
+                </a>
             </div>
         </div>
 
@@ -406,10 +459,14 @@
                 </div>
             </div>
 
-            <div class="text-center pt-4">
-                <a href="{{ route('exam.simulator', ['level' => $selectedLevel]) }}" class="px-6 py-3 rounded-2xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold text-xs inline-flex items-center gap-2">
-                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                    <span>Ulangi Simulasi Ujian Ini</span>
+            <div class="text-center pt-4 flex flex-wrap items-center justify-center gap-3">
+                <a href="{{ route('exam.simulator', ['level' => $selectedLevel, 'count' => $count]) }}" class="px-6 py-3 rounded-2xl bg-japan-600 hover:bg-japan-700 text-white font-bold text-xs inline-flex items-center gap-2 shadow-sm shadow-red-600/20 transition">
+                    <i data-lucide="shuffle" class="w-4 h-4"></i>
+                    <span>Ulangi Simulasi (Acak Soal Baru)</span>
+                </a>
+                <a href="{{ route('exam.simulator', ['level' => 'all']) }}" class="px-5 py-3 rounded-2xl border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold text-xs inline-flex items-center gap-2 transition">
+                    <i data-lucide="layers" class="w-4 h-4"></i>
+                    <span>Coba Grand Tryout (200 Soal)</span>
                 </a>
             </div>
 
@@ -774,6 +831,7 @@
                 },
                 body: JSON.stringify({
                     level: '{{ $selectedLevel }}',
+                    question_ids: questionsData.map(q => q.id),
                     answers: userAnswers
                 })
             });

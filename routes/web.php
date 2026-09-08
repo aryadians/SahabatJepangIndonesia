@@ -212,6 +212,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::resource('schedules', BatchScheduleController::class)->except(['create', 'show', 'edit']);
 
     // 10b. Modul Manajemen Bank Soal CBT (Admin & Sensei)
+    Route::post('/exam-questions/reset-bank-200', [\App\Http\Controllers\Admin\ExamQuestionController::class, 'resetBank200'])->name('exam-questions.reset-bank');
     Route::post('/exam-questions/{id}/toggle-status', [\App\Http\Controllers\Admin\ExamQuestionController::class, 'toggleStatus'])->name('exam-questions.toggle');
     Route::resource('exam-questions', \App\Http\Controllers\Admin\ExamQuestionController::class);
 

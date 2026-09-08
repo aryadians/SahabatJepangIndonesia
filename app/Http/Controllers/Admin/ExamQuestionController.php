@@ -192,6 +192,24 @@ class ExamQuestionController extends Controller
     }
 
     /**
+     * Muat ulang / reset 200 bank soal standar master (JLPT N5, N4, N3, dan JFT-Basic)
+     */
+    public function resetBank200(Request $request)
+    {
+        $seeder = new \Database\Seeders\BankSoal200Seeder();
+        $seeder->run();
+
+        AuditLog::record(
+            'exam_question_seed',
+            "Memuat ulang 200 butir bank soal master CBT JLPT & JFT-Basic",
+            ['total_questions' => 200]
+        );
+
+        return redirect()->route('admin.exam-questions.index')
+            ->with('success', 'Berhasil memuat ulang 200 butir bank soal CBT standar (50 N5, 50 N4, 50 N3, 50 JFT-Basic).');
+    }
+
+    /**
      * Validasi input butir soal
      */
     protected function validateQuestion(Request $request): array

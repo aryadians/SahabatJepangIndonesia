@@ -186,4 +186,13 @@ class ExamQuestionAdminTest extends TestCase
             'id' => $question->id,
         ]);
     }
+
+    public function test_admin_can_reset_bank_with_200_master_questions(): void
+    {
+        $response = $this->actingAs($this->admin)->post('/admin/exam-questions/reset-bank-200');
+        $response->assertRedirect(route('admin.exam-questions.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertEquals(200, ExamQuestion::count());
+    }
 }

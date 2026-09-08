@@ -85,13 +85,23 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2.5">
+                <button 
+                    type="button" 
+                    onclick="document.getElementById('seedBankModal').classList.remove('hidden')" 
+                    class="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold transition flex items-center gap-1.5 shadow-xs"
+                    title="Muat atau reset 200 butir bank soal master kurikulum SJI Group"
+                >
+                    <i data-lucide="database-zap" class="w-3.5 h-3.5 text-emerald-600"></i>
+                    <span>Muat 200 Bank Soal Master</span>
+                </button>
+
                 <a 
                     href="{{ route('exam.simulator') }}" 
                     target="_blank" 
                     class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5"
                 >
                     <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                    <span>Coba CBT Publik</span>
+                    <span>Coba CBT Siswa (Acak)</span>
                 </a>
 
                 <a 
@@ -322,6 +332,72 @@
                 {{ $questions->links() }}
             </div>
         @endif
+    </div>
+
+    <!-- Modal Konfirmasi Muat 200 Bank Soal Master -->
+    <div id="seedBankModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-in fade-in zoom-in-95 duration-200">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                        <i data-lucide="database-zap" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-black text-slate-900 text-base">Muat 200 Bank Soal Master</h4>
+                        <p class="text-xs text-slate-500">Standar Kurikulum JLPT N5, N4, N3 & JFT-Basic</p>
+                    </div>
+                </div>
+                <button type="button" onclick="document.getElementById('seedBankModal').classList.add('hidden')" class="p-1 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-600 leading-relaxed">
+                <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-1.5">
+                    <p class="font-bold flex items-center gap-1.5">
+                        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+                        <span>Rincian 200 Soal Master yang akan dimuat:</span>
+                    </p>
+                    <ul class="list-disc list-inside space-y-0.5 text-emerald-800 text-[11px] pl-1">
+                        <li><strong>50 Soal JLPT N5</strong> (Kotoba, Bunpou, Kanji, Dokkai)</li>
+                        <li><strong>50 Soal JLPT N4</strong> (Kotoba, Bunpou, Kanji, Dokkai)</li>
+                        <li><strong>50 Soal JLPT N3</strong> (Kotoba, Bunpou, Kanji, Dokkai Bisnis & K3)</li>
+                        <li><strong>50 Soal JFT-Basic A2 & Tokutei Ginou SSW</strong> (Kaigo, Restoran, Manufaktur, Pertanian, Konstruksi, Budaya Jepang)</li>
+                    </ul>
+                </div>
+
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-600 space-y-1 text-[11px]">
+                    <p class="font-bold text-slate-800 flex items-center gap-1">
+                        <span>🎲 Sistem Try Out Acak Otomatis</span>
+                    </p>
+                    <p>
+                        Saat siswa melaksanakan simulasi tryout, sistem secara otomatis <strong>mengacak butir soal</strong> sehingga setiap siswa mendapatkan variasi soal yang berbeda dan mencegah kecurangan.
+                    </p>
+                </div>
+
+                <p class="text-amber-700 font-semibold bg-amber-50 p-2.5 rounded-xl border border-amber-200 text-[11px]">
+                    ⚠️ Tindakan ini akan memperbarui Bank Soal dengan 200 butir soal master kurikulum resmi. Lanjutkan?
+                </p>
+            </div>
+
+            <form action="{{ route('admin.exam-questions.reset-bank') }}" method="POST" class="pt-2 flex items-center justify-end gap-2.5">
+                @csrf
+                <button 
+                    type="button" 
+                    onclick="document.getElementById('seedBankModal').classList.add('hidden')" 
+                    class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 font-bold text-xs"
+                >
+                    Batal
+                </button>
+                <button 
+                    type="submit" 
+                    class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center gap-1.5 shadow-sm shadow-emerald-600/30"
+                >
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    <span>Ya, Muat 200 Soal Master Sekarang</span>
+                </button>
+            </form>
+        </div>
     </div>
 
 </div>

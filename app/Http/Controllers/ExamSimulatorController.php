@@ -15,6 +15,7 @@ class ExamSimulatorController extends Controller
     {
         $settings = SiteSetting::allCached();
         $selectedLevel = $request->query('level', 'N5');
+        $requestedCount = $request->query('count');
 
         if (!in_array($selectedLevel, ['N5', 'N4', 'N3', 'JFT-Basic', 'all'])) {
             $selectedLevel = 'N5';
@@ -24,7 +25,21 @@ class ExamSimulatorController extends Controller
         if ($selectedLevel !== 'all') {
             $query->where('level', $selectedLevel);
         }
-        $questions = $query->orderBy('order')->get();
+
+        $availableCount = (clone $query)->count();
+
+        // Tentukan jumlah butir soal acak yang disajikan untuk setiap siswa
+        // Default: 25 butir soal untuk level spesifik (dari 50 bank soal), atau 50 soal untuk Grand Tryout
+        if ($requestedCount === 'all') {
+            $count = $availableCount;
+        } elseif (is_numeric($requestedCount) && (int)$requestedCount > 0) {
+            $count = min((int)$requestedCount, $availableCount);
+        } else {
+            $count = ($selectedLevel === 'all') ? min(50, $availableCount) : min(25, $availableCount);
+        }
+
+        // Ambil soal secara acak (inRandomOrder) sehingga setiap siswa mendapatkan soal dan urutan yang berbeda
+        $questions = $query->inRandomOrder()->limit($count)->get();
 
         $levelsCount = [
             'N5' => ExamQuestion::where('level', 'N5')->where('is_active', true)->count(),
@@ -34,7 +49,7 @@ class ExamSimulatorController extends Controller
             'all' => ExamQuestion::where('is_active', true)->count(),
         ];
 
-        return view('landing.exam-simulator', compact('settings', 'questions', 'selectedLevel', 'levelsCount'));
+        return view('landing.exam-simulator', compact('settings', 'questions', 'selectedLevel', 'levelsCount', 'count', 'availableCount'));
     }
 
     /**
@@ -44,12 +59,24 @@ class ExamSimulatorController extends Controller
     {
         $level = $request->input('level', 'N5');
         $userAnswers = $request->input('answers', []); // [question_id => selected_option]
+        $questionIds = $request->input('question_ids', []); // [id1, id2, ...]
 
-        $query = ExamQuestion::where('is_active', true);
-        if ($level !== 'all') {
-            $query->where('level', $level);
+        if (!empty($questionIds) && is_array($questionIds)) {
+            // Ambil spesifik butir soal yang diujikan kepada siswa tersebut dalam urutan yang tepat
+            $questions = ExamQuestion::whereIn('id', $questionIds)
+                ->get()
+                ->sortBy(function ($q) use ($questionIds) {
+                    return array_search($q->id, $questionIds);
+                })
+                ->values();
+        } else {
+            // Fallback untuk backward compatibility
+            $query = ExamQuestion::where('is_active', true);
+            if ($level !== 'all') {
+                $query->where('level', $level);
+            }
+            $questions = $query->orderBy('order')->get();
         }
-        $questions = $query->orderBy('order')->get();
 
         $totalPoints = 0;
         $earnedPoints = 0;
