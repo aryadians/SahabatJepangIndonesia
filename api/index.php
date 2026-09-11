@@ -11,11 +11,27 @@ $_ENV['APP_STORAGE'] = $storagePath;
 $_SERVER['APP_STORAGE'] = $storagePath;
 putenv("APP_STORAGE={$storagePath}");
 
+// Alihkan cache bootstrap ke /tmp/storage/bootstrap karena folder bootstrap/cache bawaan read-only di Vercel
+$cacheEnv = [
+    'APP_SERVICES_CACHE' => "{$storagePath}/bootstrap/services.php",
+    'APP_PACKAGES_CACHE' => "{$storagePath}/bootstrap/packages.php",
+    'APP_CONFIG_CACHE'   => "{$storagePath}/bootstrap/config.php",
+    'APP_ROUTES_CACHE'   => "{$storagePath}/bootstrap/routes.php",
+    'APP_EVENTS_CACHE'   => "{$storagePath}/bootstrap/events.php",
+];
+
+foreach ($cacheEnv as $key => $val) {
+    $_ENV[$key] = $val;
+    $_SERVER[$key] = $val;
+    putenv("{$key}={$val}");
+}
+
 // Buat folder storage sementara di /tmp (karena Vercel filesystem bersifat read-only kecuali /tmp)
 $storageDirs = [
     $storagePath,
     $storagePath . '/app',
     $storagePath . '/app/public',
+    $storagePath . '/bootstrap',
     $storagePath . '/framework',
     $storagePath . '/framework/cache',
     $storagePath . '/framework/cache/data',
