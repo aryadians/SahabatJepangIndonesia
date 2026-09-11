@@ -19,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https' || env('APP_ENV') === 'production' || isset($_SERVER['VERCEL']) || isset($_ENV['VERCEL'])) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('site_settings')) {
                 \Illuminate\Support\Facades\View::composer('*', function ($view) {

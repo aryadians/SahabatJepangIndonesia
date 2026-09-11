@@ -3,14 +3,23 @@
     $cleanWa = preg_replace('/[^0-9]/', '', $settings['contact_whatsapp'] ?? '6281234567890');
     if (str_starts_with($cleanWa, '0')) $cleanWa = '62' . substr($cleanWa, 1);
 @endphp
-<div id="successModal" class="custom-modal fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+<div id="successModal" class="custom-modal fixed inset-0 z-50 items-center justify-center p-4 sm:p-6 overflow-y-auto hidden" style="display: none;">
     
     <!-- Backdrop Blur -->
-    <div class="modal-backdrop-blur fixed inset-0"></div>
+    <div class="modal-backdrop-blur fixed inset-0" onclick="closeModal('successModal')"></div>
 
     <!-- Modal Box -->
     <div class="modal-content-box relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-emerald-100 z-10 my-8 text-center p-8">
-        
+        <!-- Close X Button -->
+        <button 
+            type="button" 
+            onclick="closeModal('successModal')" 
+            class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition focus:outline-none"
+            aria-label="Tutup Dialog"
+        >
+            <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+
         <!-- Animated Success Badge -->
         <div class="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-6 ring-8 ring-emerald-50">
             <i data-lucide="check" class="w-10 h-10 stroke-[3]"></i>

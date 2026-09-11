@@ -475,6 +475,7 @@ window.openModal = function (modalId) {
     modal.classList.add('active');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
+    modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 };
 
@@ -484,16 +485,22 @@ window.closeModal = function (modalId) {
     modal.classList.remove('active');
     modal.classList.add('hidden');
     modal.classList.remove('flex');
+    modal.style.display = 'none';
     document.body.style.overflow = '';
 };
 
 function initModals() {
-    // Close modal on click backdrop
+    // Ensure all custom modals start safely closed
     document.querySelectorAll('.custom-modal').forEach((modal) => {
+        if (!modal.classList.contains('active')) {
+            modal.style.display = 'none';
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
         modal.addEventListener('click', (e) => {
             if (e.target === modal || e.target.classList.contains('modal-backdrop-blur')) {
-                modal.classList.remove('active');
-                document.body.style.overflow = '';
+                window.closeModal(modal.id);
             }
         });
     });
@@ -501,12 +508,12 @@ function initModals() {
     // Close on Escape key
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-            document.querySelectorAll('.custom-modal.active').forEach((modal) => {
-                modal.classList.remove('active');
-                document.body.style.overflow = '';
+            document.querySelectorAll('.custom-modal.active, .custom-modal:not(.hidden)').forEach((modal) => {
+                window.closeModal(modal.id);
             });
         }
     });
+
 
     // Open Program detail modal helper
     window.showProgramDetail = function (programJsonStr) {

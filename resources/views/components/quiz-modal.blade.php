@@ -1,5 +1,7 @@
 <!-- Interactive Program Matchmaker Quiz Modal -->
-<div id="quizModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 custom-modal">
+<div id="quizModal" class="fixed inset-0 z-50 items-center justify-center p-4 custom-modal hidden" style="display: none;">
+
+
     <!-- Backdrop -->
     <div class="fixed inset-0 modal-backdrop-blur" onclick="closeModal('quizModal')"></div>
 

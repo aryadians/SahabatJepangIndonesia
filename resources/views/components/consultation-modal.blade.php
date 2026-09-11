@@ -3,7 +3,7 @@
     $cleanWa = preg_replace('/[^0-9]/', '', $settings['contact_whatsapp'] ?? '6281234567890');
     if (str_starts_with($cleanWa, '0')) $cleanWa = '62' . substr($cleanWa, 1);
 @endphp
-<div id="consultationModal" class="custom-modal fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+<div id="consultationModal" class="custom-modal fixed inset-0 z-50 items-center justify-center p-3 sm:p-4 overflow-y-auto hidden" style="display: none;">
     
     <!-- Backdrop Blur -->
     <div class="modal-backdrop-blur fixed inset-0" onclick="closeModal('consultationModal')"></div>

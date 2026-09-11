@@ -3,6 +3,11 @@
 // Pastikan environment APP_STORAGE terdefinisi untuk Vercel
 $storagePath = '/tmp/storage';
 
+if ((isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') || isset($_SERVER['VERCEL']) || isset($_ENV['VERCEL'])) {
+    $_SERVER['HTTPS'] = 'on';
+    $_SERVER['SERVER_PORT'] = 443;
+}
+
 $_ENV['APP_STORAGE'] = $storagePath;
 $_SERVER['APP_STORAGE'] = $storagePath;
 putenv("APP_STORAGE={$storagePath}");

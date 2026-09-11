@@ -1,8 +1,9 @@
 <!-- Detailed Program Info Modal Pop-up -->
-<div id="programDetailModal" class="custom-modal fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+<div id="programDetailModal" class="custom-modal fixed inset-0 z-50 items-center justify-center p-4 sm:p-6 overflow-y-auto hidden" style="display: none;">
     
     <!-- Backdrop Blur -->
-    <div class="modal-backdrop-blur fixed inset-0"></div>
+    <div class="modal-backdrop-blur fixed inset-0" onclick="closeModal('programDetailModal')"></div>
+
 
     <!-- Modal Box -->
     <div class="modal-content-box relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-red-100 z-10 my-8">

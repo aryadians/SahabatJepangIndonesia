@@ -1,5 +1,5 @@
 <!-- Facility Interactive Lightbox Preview Modal -->
-<div id="facilityModal" class="custom-modal fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="facModalTitle">
+<div id="facilityModal" class="custom-modal fixed inset-0 z-50 items-center justify-center p-3 sm:p-6 overflow-y-auto hidden" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="facModalTitle">
     
     <!-- Backdrop Blur -->
     <div class="modal-backdrop-blur fixed inset-0 bg-slate-950/80 backdrop-blur-md" onclick="closeModal('facilityModal')"></div>
