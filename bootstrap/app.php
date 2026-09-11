@@ -23,3 +23,13 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
+
+// Dukungan filesystem read-only pada serverless (Vercel / AWS Lambda)
+if (isset($_ENV['APP_STORAGE']) || isset($_SERVER['APP_STORAGE']) || getenv('APP_STORAGE')) {
+    $storagePath = $_ENV['APP_STORAGE'] ?? $_SERVER['APP_STORAGE'] ?? getenv('APP_STORAGE');
+    $app->useStoragePath($storagePath);
+} elseif (isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || getenv('VERCEL')) {
+    $app->useStoragePath('/tmp/storage');
+}
+
+return $app;

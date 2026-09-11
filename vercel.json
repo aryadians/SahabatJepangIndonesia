@@ -8,7 +8,32 @@
   },
   "routes": [
     {
-      "handle": "filesystem"
+      "src": "/build/(.*)",
+      "dest": "/build/$1"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/css/(.*)",
+      "dest": "/css/$1"
+    },
+    {
+      "src": "/js/(.*)",
+      "dest": "/js/$1"
+    },
+    {
+      "src": "/images/(.*)",
+      "dest": "/images/$1"
+    },
+    {
+      "src": "/favicon.ico",
+      "dest": "/favicon.ico"
+    },
+    {
+      "src": "/robots.txt",
+      "dest": "/robots.txt"
     },
     {
       "src": "/(.*)",
@@ -17,12 +42,7 @@
   ],
   "env": {
     "APP_ENV": "production",
-    "APP_DEBUG": "false",
-    "APP_CONFIG_CACHE": "/tmp/config.php",
-    "APP_EVENTS_CACHE": "/tmp/events.php",
-    "APP_PACKAGES_CACHE": "/tmp/packages.php",
-    "APP_ROUTES_CACHE": "/tmp/routes.php",
-    "APP_SERVICES_CACHE": "/tmp/services.php",
+    "APP_STORAGE": "/tmp/storage",
     "VIEW_COMPILED_PATH": "/tmp/storage/framework/views",
     "CACHE_STORE": "array",
     "SESSION_DRIVER": "cookie",
