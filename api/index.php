@@ -1,9 +1,5 @@
 <?php
 
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-error_reporting(E_ALL);
-
 // Pastikan environment APP_STORAGE terdefinisi untuk Vercel
 $storagePath = '/tmp/storage';
 
@@ -47,29 +43,22 @@ foreach ($storageDirs as $dir) {
     }
 }
 
-// Tangani fatal error jika terjadi sebelum output dikirim
-register_shutdown_function(function () {
-    $error = error_get_last();
-    if ($error !== null && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
-        http_response_code(500);
-        echo "<div style='font-family:sans-serif; padding:30px; background:#fff1f2; border:1px solid #f43f5e; margin:20px; border-radius:8px;'>";
-        echo "<h2 style='color:#be123c; margin-top:0;'>PHP Fatal Error</h2>";
-        echo "<p><strong>Pesan:</strong> " . htmlspecialchars($error['message']) . "</p>";
-        echo "<p><strong>File:</strong> " . htmlspecialchars($error['file']) . " (Baris " . $error['line'] . ")</p>";
-        echo "</div>";
-    }
-});
-
 try {
     // Teruskan request ke file index utama Laravel
     require __DIR__ . '/../public/index.php';
 } catch (\Throwable $e) {
+    error_log((string) $e);
     http_response_code(500);
-    echo "<div style='font-family:sans-serif; padding:30px; background:#fff1f2; border:1px solid #f43f5e; margin:20px; border-radius:8px;'>";
-    echo "<h2 style='color:#be123c; margin-top:0;'>Laravel Server Error</h2>";
-    echo "<p><strong>Pesan:</strong> " . htmlspecialchars($e->getMessage()) . "</p>";
-    echo "<p><strong>File:</strong> " . htmlspecialchars($e->getFile()) . " (Baris " . $e->getLine() . ")</p>";
-    echo "<h3 style='color:#881337; margin-top:20px;'>Stack Trace:</h3>";
-    echo "<pre style='background:#f8fafc; padding:15px; border-radius:6px; overflow:auto; font-size:13px; border:1px solid #e2e8f0;'>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
-    echo "</div>";
+
+    if (getenv('APP_DEBUG') === 'true' || (isset($_ENV['APP_DEBUG']) && $_ENV['APP_DEBUG'] === 'true')) {
+        echo "<div style='font-family:sans-serif; padding:30px; background:#fff1f2; border:1px solid #f43f5e; margin:20px; border-radius:8px;'>";
+        echo "<h2 style='color:#be123c; margin-top:0;'>Laravel Server Error</h2>";
+        echo "<p><strong>Pesan:</strong> " . htmlspecialchars($e->getMessage()) . "</p>";
+        echo "<p><strong>File:</strong> " . htmlspecialchars($e->getFile()) . " (Baris " . $e->getLine() . ")</p>";
+        echo "<h3 style='color:#881337; margin-top:20px;'>Stack Trace:</h3>";
+        echo "<pre style='background:#f8fafc; padding:15px; border-radius:6px; overflow:auto; font-size:13px; border:1px solid #e2e8f0;'>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+        echo "</div>";
+    } else {
+        echo "<!DOCTYPE html><html><head><title>500 - Server Error</title><meta name='viewport' content='width=device-width, initial-scale=1.0'></head><body style='font-family:sans-serif; text-align:center; padding:50px; background:#f8fafc; color:#334155;'><h1 style='font-size:32px; color:#e11d48; margin-bottom:10px;'>500 | Server Error</h1><p style='font-size:16px;'>Terjadi kendala pada server. Silakan refresh halaman atau coba beberapa saat lagi.</p></body></html>";
+    }
 }
