@@ -21,7 +21,8 @@
   <img src="https://img.shields.io/badge/Tailwind_CSS-3.4+-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
   <img src="https://img.shields.io/badge/Database-MySQL%20%2F%20SQLite-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL / SQLite">
   <img src="https://img.shields.io/badge/RBAC-Multi--Role%20Segregation-8B5CF6?style=for-the-badge&logo=auth0&logoColor=white" alt="RBAC Multi-Role">
-  <img src="https://img.shields.io/badge/Tests-105%20Passed%20%7C%20668%20Assertions-success?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Tests 100% Passing">
+  <img src="https://img.shields.io/badge/Tests-133%20Passed%20%7C%20823%20Assertions-success?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Tests 100% Passing">
+  <img src="https://img.shields.io/badge/CBT_Bank_Soal-200_Master_Questions-E11D48?style=for-the-badge&logo=buffer&logoColor=white" alt="Bank Soal 200 Soal Master">
   <img src="https://img.shields.io/badge/Design-Japanese_Zen_Luxury-DC2626?style=for-the-badge&logo=affinitydesigner&logoColor=white" alt="Japanese Zen Luxury">
   <img src="https://img.shields.io/badge/PWA-Ready%20%7C%20Offline%20Cache-8A2BE2?style=for-the-badge&logo=pwa&logoColor=white" alt="PWA Ready">
   <img src="https://img.shields.io/badge/License-MIT-F59E0B?style=for-the-badge" alt="License MIT">
@@ -113,6 +114,8 @@ Sistem mengimplementasikan pemisahan tugas (*Segregation of Duties*) yang kokoh 
 | **Kelola Konten Web (CMS)** (`/admin/programs`, dll) | ✅ | ❌ | ❌ | Khusus Super Admin |
 | **Buku Kas Umum & Jurnal** (`/admin/cash-book/*`) | ✅ | ❌ | ✅ | Admin & Karyawan Keuangan |
 | **Laporan Laba Rugi & Proyeksi** (`/admin/finance/*`) | ✅ | ❌ | ✅ | Admin & Karyawan Keuangan |
+| **Konversi Leads ke Siswa Resmi** (`/admin/leads/*`) | ✅ | ❌ | ✅ | Konversi 1-klik pendaftar menjadi Siswa (NIS) |
+| **Bank Soal & Ujian CBT** (`/admin/exam-questions/*`)| ✅ | ✅ | ❌ | Admin & Sensei (CRUD Soal, Reset 200 Master) |
 | **Data Siswa & Jadwal Kelas** (`/admin/students/*`) | ✅ | ✅ | ✅ | Semua Peran Terdaftar |
 | **Wawancara Kaisha & Interview** (`/admin/interviews/*`)| ✅ | ✅ | ✅ | Semua Peran Terdaftar |
 | **Checklist Terbang Siswa** (`/admin/flight-readiness/*`)| ✅ | ✅ | ✅ | Semua Peran Terdaftar |
@@ -132,7 +135,7 @@ Sistem mengimplementasikan pemisahan tugas (*Segregation of Duties*) yang kokoh 
 | **💴 Kalkulator Remitansi & Nenkin** | Simulasi kurs kirim uang Yen ke Rupiah dan simulasi pencairan uang pensiun Nenkin (± Rp 45jt - Rp 95jt). | `/#kalkulator` |
 | **💼 Katalog Program Karir** | Silabus kurikulum dan jalur penempatan: Tokutei Ginou (SSW), Magang 3 Tahun, Engineer/IT Pro, serta Kursus N5-N3. | `/#program` |
 | **🏛️ MoU Pemerintah & Kampus** | Showcase kerja sama resmi Kemenkes RI (**SMILE Project**) dan Kemendikbudristek (**SMK Go Japan**) dengan galeri kunjungan kampus. | `/#kemitraan` |
-| **📝 Simulasi Ujian JLPT CBT** | Aplikasi simulator Computer-Based Test (CBT) dengan 100 bank soal, pintasan keyboard, penanda ragu-ragu, dan sertifikat Goukaku digital. | `/simulasi-ujian` |
+| **📝 Simulasi Ujian JLPT CBT** | Simulator Computer-Based Test (CBT) interaktif dengan **Bank 200 Soal Master** (N5-N3 & JFT-Basic/SSW), **randomisasi soal unik per-siswa**, pemilihan paket soal acak (25, 50, 100, 200), penanda ragu-ragu, dan sertifikat Goukaku digital. | `/simulasi-ujian` |
 | **🗺️ Peta Alumni 47 Prefektur** | Peta interaktif sebaran alumni LPK SJI yang aktif bekerja di Tokyo, Osaka, Aichi, Kanagawa, Fukuoka, dll. | `/sebaran-alumni` |
 | **📥 Katalog Brosur Resmi** | Unduhan brosur kurikulum & rincian biaya resmi 2026 dengan pencatat statistik unduhan real-time. | `/brosur` |
 | **🤝 Kemitraan SMK & BKK** | Portal pendaftaran kerja sama BKK SMK dengan perhitungan komisi referral kemitraan transparan. | `/mitra-sekolah` |
@@ -156,6 +159,15 @@ Panel Admin dirancang dengan konsep *Control Room* berstandar tinggi:
    - Database instruktur JLPT N1/N2/Native, riwayat pengalaman Jepang, dan pembayaran gaji honorarium yang tercatat otomatis ke Buku Kas Umum.
 7. **Arsip Digital Explorer SPA (`/admin/digital-archives`)**:
    - Pengelola berkas berkategori folder bergaya Windows Explorer untuk nota fisik, bukti transfer, dan dokumen legalitas.
+8. **Pusat Manajemen Bank Soal CBT (`/admin/exam-questions`)**:
+   - Filter cepat level (`N5`, `N4`, `N3`, `JFT-Basic`) dan materi (`Kotoba`, `Bunpou`, `Dokkai`, `Kanji`, `Choukai`).
+   - Editor soal dwibahasa (Latin & Kanji/Kana otentik), penetapan kunci jawaban A/B/C/D, poin bobot, dan penjelasan materi edukatif.
+   - Tombol dan modal 1-klik **"Muat 200 Bank Soal Master"** untuk inisialisasi / reset kurikulum resmi seketika.
+9. **1-Klik Konversi Pendaftar ke Siswa Resmi (`/admin/leads`)**:
+   - Tombol aksi cepat *"Jadikan Siswa"* pada calon pendaftar dengan modal penyesuaian batch, cabang, dan skema biaya.
+   - Auto-generate NIS resmi berurutan (`SJI-Y-XXX`), pemindahan biodata ke tabel `students`, dan pencatatan riwayat `AuditLog`.
+10. **Manajemen Jaringan Cabang SJI Group (`/admin/group-branches`)**:
+   - Pengelolaan kantor cabang resmi multi-kota (Yogyakarta, Jakarta, Surabaya, dll.), nomor kontak operasional, dan peta lokasi.
 
 ---
 
@@ -264,11 +276,22 @@ Rute: **[`/#kalkulator`](http://127.0.0.1:8000/#kalkulator)** & **[`/remitansi`]
 
 ---
 
-## 🎯 Simulasi Ujian JLPT CBT & Peta Sebaran Alumni
+## 🎯 Simulasi Ujian JLPT CBT (Bank 200 Soal Master) & Peta Sebaran Alumni
 
-1. **Simulasi CBT Online (`/simulasi-ujian`)**:
-   - 100 bank soal interaktif berstandar JLPT & JFT-Basic (Kotoba, Bunpou, Kanji, Dokkai).
-   - Pintasan keyboard (`A-D`, `1-4`, `←`, `→`, `R`), penanda ragu-ragu (*Flag for Review*), dan sertifikat kelulusan digital (*Goukaku Certificate*).
+1. **Simulasi CBT Online Teracak Per-Siswa (`/simulasi-ujian` & `/tryout`)**:
+   - **Bank 200 Soal Master Lengkap**:
+     - **50 Soal JLPT N5**: Kosakata dasar, partikel, konjugasi, kanji N5, memo pendek.
+     - **50 Soal JLPT N4**: Kosakata kerja harian, bentuk potensial/pasif/kausatif/keigo awal, kanji N4, brosur kerja.
+     - **50 Soal JLPT N3**: Kosakata industri/teknis, keigo bisnis (Kenjougo/Sonkeigo), kanji N3, SOP K3 zat kimia & regulasi lembur 36 Kyoutei.
+     - **50 Soal JFT-Basic A2 & Tokutei Ginou SSW**: Kaigo (Lansia), Restoran/Gaishoku, Pengolahan Pangan, Manufaktur K3, Pertanian, Konstruksi, Pembersihan Gedung, dan tata cara hidup di Jepang (sampah, Seisanki, 119/110, bank, apartemen).
+   - **Sistem Randomisasi Unik Per-Siswa**:
+     - Menggunakan query dinamis `inRandomOrder()` sehingga setiap siswa/sesi mendapatkan kombinasi dan nomor urut butir soal berbeda, mencegah sontekan/kebocoran ujian.
+     - Pilihan paket fleksibel: **25 Soal Acak** (standar latihan berkala) atau **50 Soal Acak** per level, serta **50/100/200 Soal** pada Grand Tryout.
+     - Tombol cepat *"Acak Ulang"* dan *"Ulangi Simulasi (Acak Soal Baru)"*.
+   - **Fitur Interaktif CBT**:
+     - Audio sintetis mikrofon web audio zero-latency.
+     - Pintasan keyboard (`A-D`, `1-4`, `←`, `→`, `R`), penanda ragu-ragu (*Flag for Review*).
+     - Skoring akurat berbasis `question_ids` yang ditampilkan, breakdown skor per section, dan sertifikat kelulusan digital (*Goukaku Certificate 合格証*).
 2. **Peta Sebaran Alumni 47 Prefektur (`/sebaran-alumni`)**:
    - Peta visual alumni yang bekerja di prefektur seluruh Jepang dengan filter pencarian instan nama, prefektur, dan Kaisha.
 
@@ -309,6 +332,9 @@ php artisan key:generate
 ### 4. Jalankan Migrasi & Database Seeder
 ```bash
 php artisan migrate --seed
+
+# (Opsional) Memuat atau reset 200 Bank Soal Master CBT secara mandiri:
+php artisan db:seed --class=BankSoal200Seeder
 ```
 
 ### 5. Jalankan Server Pengembangan Lokal
@@ -324,26 +350,22 @@ Aplikasi siap diakses di: **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
 Sistem dilengkapi rangkaian pengujian otomatis unit dan fitur komprehensif menggunakan PHPUnit:
 
 ```bash
-php vendor/bin/phpunit
+php artisan test
 ```
 
 ### Ringkasan Eksekusi Pengujian (100% Passed):
 ```text
-PHPUnit 11.5.56 by Sebastian Bergmann and contributors.
-
-Runtime:       PHP 8.2.12
-Configuration: C:\Tugas Kuliah\Belajar\Project\SahabatJepangIndonesia\phpunit.xml
-
-...............................................................  63 / 105 ( 60%)
-..........................................                      105 / 105 (100%)
-
-Time: 00:35.959, Memory: 64.00 MB
-
-OK (105 tests, 668 assertions)
+Tests:    133 passed (823 assertions)
+Duration: 40.75s
+Status:   100% PASS (Semua Unit & Fitur Terverifikasi)
 ```
 
 | File Pengujian | Asersi | Cakupan Pengujian |
 | :--- | :---: | :--- |
+| `tests/Feature/BankSoal200SeederTest.php` | 12 | Integritas 200 soal, sebaran level N5-JFT, kunci jawaban seimbang A/B/C/D |
+| `tests/Feature/ExamSimulatorRandomizationTest.php` | 40 | Randomisasi butir soal unik per-siswa, evaluasi akurat berbasis `question_ids` |
+| `tests/Feature/ExamQuestionAdminTest.php` | 26 | CRUD soal admin/sensei, toggle status AJAX, 1-klik reset 200 bank soal |
+| `tests/Feature/LeadConversionTest.php` | 24 | Konversi 1-klik lead konsultasi ke siswa resmi, sequence penomoran NIS |
 | `tests/Feature/RbacTest.php` | 31 | Middleware `CheckRole`, penolakan akses 403, toggle status user, pembuatan user RBAC |
 | `tests/Feature/ProfileAndAuditLogTest.php` | 24 | Akses profil semua peran, ganti sandi mandiri, pembatasan audit log, pembersihan log |
 | `tests/Feature/CashBookTest.php` | 42 | Jurnal kas, nomor bukti kas, periode kunci pembukuan, balance sheet |
@@ -351,7 +373,9 @@ OK (105 tests, 668 assertions)
 | `tests/Feature/StudentPortalTest.php` | 36 | Tracking progres 6 tahapan siswa, cetak mandiri kwitansi & invoice |
 | `tests/Feature/RealTimeSyncTest.php` | 25 | Live polling sinkronisasi leads dan metrik dashboard |
 | `tests/Feature/StudentManagementTest.php` | 45 | CRUD siswa, export/import CSV massal, auto-calculate saldo |
-| *Modul Pengujian Lainnya* | 437 | Wawancara Kaisha, brosur, P&L, galeri kampus, reimbursement, dan CBT |
+| `tests/Feature/SjiGroupTest.php` | 53 | Portal korporasi holding SJI Group, redirect alias, cabang resmi |
+| `tests/Feature/ReimbursementAndEmployeeTest.php` | 138 | Klaim reimburse, cash advance, spj settlement, arsip explorer |
+| *Modul Pengujian Lainnya* | 378 | Wawancara Kaisha, brosur, P&L, galeri kampus, dan profil |
 
 ---
 
@@ -366,6 +390,7 @@ SahabatJepangIndonesia/
 │   │   │   │   ├── AuditLogController.php         # Audit Trail & Rekam Jejak Sistem
 │   │   │   │   ├── AuthController.php             # Login Luxury, Reset Password & Throttle
 │   │   │   │   ├── CashBookController.php         # Buku Kas Umum & Jurnal Keuangan
+│   │   │   │   ├── ExamQuestionController.php     # Manajemen Bank Soal CBT & Reset 200 Master
 │   │   │   │   ├── FinancialAnalyticsController.php# Analisis Keuangan & P&L Statement
 │   │   │   │   ├── ProfileController.php          # Profil Mandiri & Ganti Password
 │   │   │   │   ├── StudentController.php          # Database Siswa, Kwitansi & Invoice
@@ -373,28 +398,28 @@ SahabatJepangIndonesia/
 │   │   │   │   └── UserController.php             # Manajemen Akun & Matriks RBAC
 │   │   │   ├── StudentPortalController.php        # Portal Mandiri Siswa (/cek-status)
 │   │   │   ├── DocumentVerificationController.php # Verifikasi QR Code Keaslian Dokumen
-│   │   │   └── ExamSimulatorController.php        # CBT Tryout JLPT 100 Soal
+│   │   │   └── ExamSimulatorController.php        # CBT Tryout JLPT & JFT 200 Soal Master Acak
 │   │   └── Middleware/
 │   │       └── CheckRole.php                      # Enforcer Hak Akses Multi-Role RBAC
-│   ├── Models/                                    # AuditLog, User, Student, Teacher, CashTransaction
+│   ├── Models/                                    # AuditLog, User, Student, Teacher, ExamQuestion, CashTransaction
 │   └── Traits/
 │       └── UploadsImage.php                       # Kompresi Otomatis Gambar & Avatar GD
 ├── database/
 │   ├── migrations/                                # 31 Migrasi Skema Database
-│   └── seeders/                                   # Database Seeder Pengguna & Data Awal
+│   └── seeders/                                   # DatabaseSeeder, BankSoal200Seeder, GroupBranchSeeder
 ├── public/
 │   ├── manifest.json                              # PWA Web App Manifest
 │   ├── sw.js                                      # PWA Service Worker Offline Cache
 │   └── images/                                    # Asset Banner, Hanko, & PWA Icons
 ├── resources/
 │   └── views/
-│       ├── admin/                                 # Views Panel ERP, RBAC, Audit Log & Dashboard
+│       ├── admin/                                 # Views Panel ERP, RBAC, Exam Questions, Audit Log & Dashboard
 │       ├── components/                            # Reusable Blade Components (Navbar, Command Palette)
-│       └── landing/                               # Halaman Tamu, Portal Siswa & Simulator CBT
+│       └── landing/                               # Halaman Tamu, Portal Siswa & Simulator CBT Acak
 ├── routes/
 │   └── web.php                                    # Definisi Rute Lengkap & Kebijakan Role
 └── tests/
-    └── Feature/                                   # 105 Automated Feature Tests
+    └── Feature/                                   # 133 Automated Feature Tests (823 Assertions)
 ```
 
 ---
